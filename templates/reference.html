@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t.ref_title }} — {{ t.site_title }}{% endblock %}
+
+{% block content %}
+<article class="reference-page">
+    <header class="lesson-header">
+        <h1>{{ t.ref_title }}</h1>
+        <p class="lesson-intro">{{ t.ref_intro }}</p>
+    </header>
+
+    {% for category in ref_categories %}
+    <section class="ref-category">
+        <h2>{{ t['ref_cat_' ~ category] }}</h2>
+        <div class="table-wrapper">
+            <table class="ref-table">
+                <thead>
+                    <tr>
+                        <th>{{ t.ref_col_python }}</th>
+                        <th>{{ t.ref_col_java }}</th>
+                        <th>{{ t.ref_col_description }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in get_reference(category) %}
+                    <tr>
+                        <td><code>{{ row.python }}</code></td>
+                        <td><code>{{ row.java }}</code></td>
+                        <td>{{ row.desc }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+    {% endfor %}
+</article>
+{% endblock %}

@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% set lesson = get_lesson(current_lesson) %}
+
+{% block title %}{{ lesson.title }} — {{ t.site_title }}{% endblock %}
+
+{% block content %}
+<article class="lesson">
+    <header class="lesson-header">
+        <h1>{{ lesson.title }}</h1>
+        <p class="lesson-intro" style="font-size: 1.1rem; line-height: 1.6;">{{ lesson.intro | safe }}</p>
+    </header>
+
+    <div class="w3-example">
+        <h3>Example</h3>
+        <section class="code-comparison" {% if current_category == 'java2py' %}style="flex-direction: row-reverse;"{% endif %}>
+            <div class="code-panel code-panel-python">
+            <div class="code-panel-header">
+                <span class="lang-badge python-badge">{{ t.python_label }}</span>
+                <button class="btn-copy" data-target="python-code" data-copied="{{ t.copied }}">
+                    {{ t.copy_code }}
+                </button>
+            </div>
+            <p class="lang-desc">{{ lesson.python_desc | safe }}</p>
+            <div class="code-block-interactive" id="python-code">
+                {% if lesson.code_mappings %}
+                    {% for mapping in lesson.code_mappings %}
+                        {% if mapping.python %}
+                        <div class="code-line interactive-line" data-mapping-id="{{ mapping.id }}" data-explanation="{{ mapping.explanation }}"><pre><code class="language-python">{{ mapping.python }}</code></pre></div>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <pre class="code-block"><code class="language-python">{{ lesson.python_code }}</code></pre>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="code-panel code-panel-java">
+            <div class="code-panel-header">
+                <span class="lang-badge java-badge">{{ t.java_label }}</span>
+                <button class="btn-copy" data-target="java-code" data-copied="{{ t.copied }}">
+                    {{ t.copy_code }}
+                </button>
+            </div>
+            <p class="lang-desc">{{ lesson.java_desc | safe }}</p>
+            <div class="code-block-interactive" id="java-code">
+                {% if lesson.code_mappings %}
+                    {% for mapping in lesson.code_mappings %}
+                        {% if mapping.java %}
+                        <div class="code-line interactive-line" data-mapping-id="{{ mapping.id }}" data-explanation="{{ mapping.explanation }}"><pre><code class="language-java">{{ mapping.java }}</code></pre></div>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <pre class="code-block"><code class="language-java">{{ lesson.java_code }}</code></pre>
+                {% endif %}
+            </div>
+            </div>
+        </section>
+        
+        {% if lesson.explanation %}
+        <div class="w3-note">
+            <p>{{ lesson.explanation | safe }}</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <section class="editor-section" id="translator-section">
+        <h2>{{ t.try_editor }}</h2>
+        <p class="editor-hint">{{ t.run_hint }}</p>
+
+        <div class="translator-panels">
+            <div class="translator-panel">
+                <div class="translator-panel-header">
+                    <span class="lang-badge python-badge">{{ t.python_label }}</span>
+                    <button type="button" id="btn-translate" class="btn-translate">{{ t.translate_btn }}</button>
+                </div>
+                {% set editor_code = lesson.python_code %}
+                {% if lesson.code_mappings %}
+                    {% set editor_code = lesson.code_mappings | selectattr('python') | map(attribute='python') | join('\n') %}
+                {% endif %}
+                <textarea id="practice-editor" class="code-editor" spellcheck="false"
+                          placeholder="{{ editor_code }}">{{ editor_code }}</textarea>
+            </div>
+
+            <div class="translator-panel">
+                <div class="translator-panel-header">
+                    <span class="lang-badge java-badge">{{ t.java_output }}</span>
+                    <button class="btn-copy" data-target="translated-java" data-copied="{{ t.copied }}">
+                        {{ t.copy_code }}
+                    </button>
+                </div>
+                <pre class="code-block translator-output"><code id="translated-java" class="language-java"></code></pre>
+            </div>
+        </div>
+
+        <div id="translation-messages" class="translation-messages" hidden>
+            <div id="translation-errors" class="msg-box msg-error" hidden>
+                <strong>{{ t.translation_errors }}</strong>
+                <ul id="error-list"></ul>
+            </div>
+            <div id="translation-warnings" class="msg-box msg-warning" hidden>
+                <strong>{{ t.translation_warnings }}</strong>
+                <ul id="warning-list"></ul>
+            </div>
+        </div>
+    </section>
+
+    {% set lesson_data = get_lesson(current_lesson) %}
+    {% if lesson_data and lesson_data.exercises %}
+    <section class="exercises-section" id="exercises-section">
+        <h2 class="exercises-title">Ponte a prueba</h2>
+        <p class="exercises-intro">Completa los siguientes ejercicios para verificar tu comprensión. Escribe en los espacios en blanco.</p>
+
+        {% for ex in lesson_data.exercises %}
+        <div class="exercise-card" id="exercise-{{ ex.id }}">
+            <div class="exercise-header">
+                <span class="exercise-badge">Ejercicio {{ loop.index }}</span>
+            </div>
+            <p class="exercise-question">{{ ex.question }}</p>
+            <div class="exercise-python-ref">
+                <span class="lang-badge python-badge" style="font-size:0.75rem;">Python</span>
+                <code>{{ ex.python_code }}</code>
+            </div>
+            <div class="exercise-code-area">
+                <span class="lang-badge java-badge" style="font-size:0.75rem;">Java</span>
+                <div class="exercise-template">{{ ex.template_html | safe }}</div>
+            </div>
+            <div class="exercise-controls">
+                <button class="btn-check" data-exercise-id="{{ ex.id }}" data-lesson="{{ current_lesson }}">
+                    Submit Answer
+                </button>
+                <button class="btn-show-answer" data-exercise-id="{{ ex.id }}">Show Answer</button>
+            </div>
+            <div class="exercise-feedback" id="feedback-{{ ex.id }}" hidden></div>
+        </div>
+        {% endfor %}
+    </section>
+    {% endif %}
+
+    <nav class="lesson-navigation" style="display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+        {% if prev_lesson %}
+        <a href="{{ url_for('lesson', lesson_id=prev_lesson) }}" class="btn-ghost" style="background: var(--green); color: white;">
+            &laquo; Anterior
+        </a>
+        {% else %}
+        <div></div>
+        {% endif %}
+
+        {% if next_lesson %}
+        <a href="{{ url_for('lesson', lesson_id=next_lesson) }}" class="btn-ghost" style="background: var(--green); color: white;">
+            Siguiente &raquo;
+        </a>
+        {% else %}
+        <div></div>
+        {% endif %}
+    </nav>
+
+</article>
+{% endblock %}
+
+{% block scripts %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+
+<script>
+    window.TRANSLATOR_LABELS = {
+        translating: {{ t.translating | tojson }}
+    };
+    window.currentLessonId = "{{ current_lesson }}";
+
+    // Re-highlighting on translation
+    const originalTranslate = window.translateCode; // We will handle translation highlighting in main.js if needed, or just let it be.
+</script>
+{% endblock %}

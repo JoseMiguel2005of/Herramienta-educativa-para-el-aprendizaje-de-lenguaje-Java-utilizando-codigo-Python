@@ -1,0 +1,174 @@
+
+/* =============================================
+   EXERCISES W3SCHOOLS STYLE
+   ============================================= */
+
+.exercises-section {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.exercises-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.exercises-intro {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 2rem;
+}
+
+.exercise-card {
+    background: #1e1e1e;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.exercise-header {
+    margin-bottom: 1rem;
+}
+
+.exercise-badge {
+    background: var(--green);
+    color: #fff;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+}
+
+.exercise-question {
+    font-size: 1.15rem;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+.exercise-python-ref {
+    background: #2a2a2a;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    border-left: 4px solid var(--python-color);
+}
+
+.exercise-python-ref code {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 1.05rem;
+    color: #a6e22e; /* green string color typical of syntax highlight */
+    display: block;
+    margin-top: 0.5rem;
+}
+
+.exercise-code-area {
+    background: #000;
+    padding: 1.25rem;
+    border-radius: 6px;
+    border-left: 4px solid var(--java-color);
+    margin-bottom: 1.5rem;
+}
+
+.exercise-template {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 1.15rem;
+    color: #fff;
+    line-height: 1.8;
+    margin-top: 0.5rem;
+}
+
+.exercise-input {
+    background: #fff;
+    border: 2px solid transparent;
+    color: #000;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 1.1rem;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    outline: none;
+    transition: border 0.3s;
+}
+
+.exercise-input:focus {
+    border: 2px solid var(--green);
+}
+
+.exercise-input.input-incorrect {
+    background: #ffebee;
+    border: 2px solid #ef5350;
+    color: #c62828;
+}
+
+.exercise-input.input-correct {
+    background: #e8f5e9;
+    border: 2px solid #66bb6a;
+    color: #2e7d32;
+}
+
+.exercise-controls {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-check {
+    background: var(--green);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-check:hover:not(:disabled) {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+}
+
+.btn-check:disabled {
+    background: #555;
+    cursor: not-allowed;
+}
+
+.btn-show-answer {
+    background: transparent;
+    color: var(--green);
+    border: 1px solid var(--green);
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-show-answer:hover {
+    background: rgba(4, 170, 109, 0.1);
+}
+
+.exercise-feedback {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 1.05rem;
+}
+
+.feedback-correct {
+    background: rgba(4, 170, 109, 0.15);
+    color: #66bb6a;
+    border-left: 4px solid #66bb6a;
+}
+
+.feedback-incorrect {
+    background: rgba(239, 83, 80, 0.15);
+    color: #ef5350;
+    border-left: 4px solid #ef5350;
+}

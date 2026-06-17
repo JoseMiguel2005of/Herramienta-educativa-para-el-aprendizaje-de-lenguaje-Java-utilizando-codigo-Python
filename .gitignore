@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.env
+
+# Misceláneos
+.DS_Store
+*.log
+
+# Scripts temporales
+inject_exercises.py
+fix_newlines.py
+repair_translations.py
+fix_quotes.py
+fix_quotes_2.py
+fix_quotes_3.py
+restore_keys.py
