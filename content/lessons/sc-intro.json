@@ -1,0 +1,17 @@
+{
+    "id": "sc-intro",
+    "title": "SciPy Intro",
+    "intro": "Welcome to the SciPy Intro lesson.",
+    "python_desc": "Python code for SciPy Intro",
+    "java_desc": "Java equivalent for SciPy Intro",
+    "explanation": "<p>In this lesson we cover <b>SciPy Intro</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "sc-intro-1",
+            "python": "# SciPy Intro Python example\nprint('SciPy Intro')",
+            "java": "// SciPy Intro Java example\nSystem.out.println(\"SciPy Intro\");",
+            "explanation": "Basic example demonstrating SciPy Intro."
+        }
+    ]
+}

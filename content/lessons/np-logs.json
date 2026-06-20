@@ -1,0 +1,17 @@
+{
+    "id": "np-logs",
+    "title": "Logs",
+    "intro": "Welcome to the Logs lesson.",
+    "python_desc": "Python code for Logs",
+    "java_desc": "Java equivalent for Logs",
+    "explanation": "<p>In this lesson we cover <b>Logs</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-logs-1",
+            "python": "# Logs Python example\nprint('Logs')",
+            "java": "// Logs Java example\nSystem.out.println(\"Logs\");",
+            "explanation": "Basic example demonstrating Logs."
+        }
+    ]
+}

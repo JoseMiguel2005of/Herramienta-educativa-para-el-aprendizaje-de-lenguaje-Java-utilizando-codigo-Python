@@ -1,0 +1,17 @@
+{
+    "id": "np-create",
+    "title": "NumPy Creating Arrays",
+    "intro": "Welcome to the NumPy Creating Arrays lesson.",
+    "python_desc": "Python code for NumPy Creating Arrays",
+    "java_desc": "Java equivalent for NumPy Creating Arrays",
+    "explanation": "<p>In this lesson we cover <b>NumPy Creating Arrays</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-create-1",
+            "python": "# NumPy Creating Arrays Python example\nprint('NumPy Creating Arrays')",
+            "java": "// NumPy Creating Arrays Java example\nSystem.out.println(\"NumPy Creating Arrays\");",
+            "explanation": "Basic example demonstrating NumPy Creating Arrays."
+        }
+    ]
+}

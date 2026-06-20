@@ -1,0 +1,17 @@
+{
+    "id": "np-rounding",
+    "title": "Rounding Decimals",
+    "intro": "Welcome to the Rounding Decimals lesson.",
+    "python_desc": "Python code for Rounding Decimals",
+    "java_desc": "Java equivalent for Rounding Decimals",
+    "explanation": "<p>In this lesson we cover <b>Rounding Decimals</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-rounding-1",
+            "python": "# Rounding Decimals Python example\nprint('Rounding Decimals')",
+            "java": "// Rounding Decimals Java example\nSystem.out.println(\"Rounding Decimals\");",
+            "explanation": "Basic example demonstrating Rounding Decimals."
+        }
+    ]
+}

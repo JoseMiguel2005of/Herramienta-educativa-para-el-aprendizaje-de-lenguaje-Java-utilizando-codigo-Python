@@ -1,0 +1,17 @@
+{
+    "id": "mongo-drop",
+    "title": "MongoDB Drop Collection",
+    "intro": "Welcome to the MongoDB Drop Collection lesson.",
+    "python_desc": "Python code for MongoDB Drop Collection",
+    "java_desc": "Java equivalent for MongoDB Drop Collection",
+    "explanation": "<p>In this lesson we cover <b>MongoDB Drop Collection</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "mongo-drop-1",
+            "python": "# MongoDB Drop Collection Python example\nprint('MongoDB Drop Collection')",
+            "java": "// MongoDB Drop Collection Java example\nSystem.out.println(\"MongoDB Drop Collection\");",
+            "explanation": "Basic example demonstrating MongoDB Drop Collection."
+        }
+    ]
+}

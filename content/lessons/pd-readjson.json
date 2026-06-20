@@ -1,0 +1,17 @@
+{
+    "id": "pd-readjson",
+    "title": "Pandas Read JSON",
+    "intro": "Welcome to the Pandas Read JSON lesson.",
+    "python_desc": "Python code for Pandas Read JSON",
+    "java_desc": "Java equivalent for Pandas Read JSON",
+    "explanation": "<p>In this lesson we cover <b>Pandas Read JSON</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "pd-readjson-1",
+            "python": "# Pandas Read JSON Python example\nprint('Pandas Read JSON')",
+            "java": "// Pandas Read JSON Java example\nSystem.out.println(\"Pandas Read JSON\");",
+            "explanation": "Basic example demonstrating Pandas Read JSON."
+        }
+    ]
+}

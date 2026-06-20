@@ -1,0 +1,17 @@
+{
+    "id": "np-shape",
+    "title": "NumPy Array Shape",
+    "intro": "Welcome to the NumPy Array Shape lesson.",
+    "python_desc": "Python code for NumPy Array Shape",
+    "java_desc": "Java equivalent for NumPy Array Shape",
+    "explanation": "<p>In this lesson we cover <b>NumPy Array Shape</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-shape-1",
+            "python": "# NumPy Array Shape Python example\nprint('NumPy Array Shape')",
+            "java": "// NumPy Array Shape Java example\nSystem.out.println(\"NumPy Array Shape\");",
+            "explanation": "Basic example demonstrating NumPy Array Shape."
+        }
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "id": "py-variables",
+    "title": "Python Variables",
+    "intro": "Welcome to the Python Variables lesson.",
+    "python_desc": "Python code for Python Variables",
+    "java_desc": "Java equivalent for Python Variables",
+    "explanation": "<p>In this lesson we cover <b>Python Variables</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-variables-1",
+            "python": "# Python Variables Python example\nprint('Python Variables')",
+            "java": "// Python Variables Java example\nSystem.out.println(\"Python Variables\");",
+            "explanation": "Basic example demonstrating Python Variables."
+        }
+    ]
+}

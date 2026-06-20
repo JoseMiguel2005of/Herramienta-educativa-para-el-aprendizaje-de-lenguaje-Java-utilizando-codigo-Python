@@ -1,0 +1,17 @@
+{
+    "id": "np-split",
+    "title": "NumPy Array Split",
+    "intro": "Welcome to the NumPy Array Split lesson.",
+    "python_desc": "Python code for NumPy Array Split",
+    "java_desc": "Java equivalent for NumPy Array Split",
+    "explanation": "<p>In this lesson we cover <b>NumPy Array Split</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-split-1",
+            "python": "# NumPy Array Split Python example\nprint('NumPy Array Split')",
+            "java": "// NumPy Array Split Java example\nSystem.out.println(\"NumPy Array Split\");",
+            "explanation": "Basic example demonstrating NumPy Array Split."
+        }
+    ]
+}

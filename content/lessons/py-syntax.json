@@ -1,0 +1,17 @@
+{
+    "id": "py-syntax",
+    "title": "Python Syntax",
+    "intro": "Welcome to the Python Syntax lesson.",
+    "python_desc": "Python code for Python Syntax",
+    "java_desc": "Java equivalent for Python Syntax",
+    "explanation": "<p>In this lesson we cover <b>Python Syntax</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-syntax-1",
+            "python": "# Python Syntax Python example\nprint('Python Syntax')",
+            "java": "// Python Syntax Java example\nSystem.out.println(\"Python Syntax\");",
+            "explanation": "Basic example demonstrating Python Syntax."
+        }
+    ]
+}

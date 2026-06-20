@@ -1,0 +1,17 @@
+{
+    "id": "py-stringformat",
+    "title": "Python String Formatting",
+    "intro": "Welcome to the Python String Formatting lesson.",
+    "python_desc": "Python code for Python String Formatting",
+    "java_desc": "Java equivalent for Python String Formatting",
+    "explanation": "<p>In this lesson we cover <b>Python String Formatting</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-stringformat-1",
+            "python": "# Python String Formatting Python example\nprint('Python String Formatting')",
+            "java": "// Python String Formatting Java example\nSystem.out.println(\"Python String Formatting\");",
+            "explanation": "Basic example demonstrating Python String Formatting."
+        }
+    ]
+}

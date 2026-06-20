@@ -1,0 +1,13 @@
+<div class="quiz-find-error">
+    <p class="find-error-instruction">Haz click en la línea que contiene el error.</p>
+    <div class="find-error-code">
+        {% set lines = ex.code.split('\n') %}
+        {% for line in lines %}
+        <div class="error-line" data-line-index="{{ loop.index0 }}">
+            <span class="line-number">{{ loop.index }}</span>
+            <code class="language-java">{{ line }}</code>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="quiz-answer-data" data-error-line="{{ ex.error_line }}" data-explanation="{{ ex.explanation }}" hidden></div>
+</div>

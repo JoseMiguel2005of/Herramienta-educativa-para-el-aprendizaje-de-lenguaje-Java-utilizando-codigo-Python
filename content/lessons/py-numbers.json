@@ -1,0 +1,17 @@
+{
+    "id": "py-numbers",
+    "title": "Python Numbers",
+    "intro": "Welcome to the Python Numbers lesson.",
+    "python_desc": "Python code for Python Numbers",
+    "java_desc": "Java equivalent for Python Numbers",
+    "explanation": "<p>In this lesson we cover <b>Python Numbers</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-numbers-1",
+            "python": "# Python Numbers Python example\nprint('Python Numbers')",
+            "java": "// Python Numbers Java example\nSystem.out.println(\"Python Numbers\");",
+            "explanation": "Basic example demonstrating Python Numbers."
+        }
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "id": "np-setops",
+    "title": "Set Operations",
+    "intro": "Welcome to the Set Operations lesson.",
+    "python_desc": "Python code for Set Operations",
+    "java_desc": "Java equivalent for Set Operations",
+    "explanation": "<p>In this lesson we cover <b>Set Operations</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-setops-1",
+            "python": "# Set Operations Python example\nprint('Set Operations')",
+            "java": "// Set Operations Java example\nSystem.out.println(\"Set Operations\");",
+            "explanation": "Basic example demonstrating Set Operations."
+        }
+    ]
+}

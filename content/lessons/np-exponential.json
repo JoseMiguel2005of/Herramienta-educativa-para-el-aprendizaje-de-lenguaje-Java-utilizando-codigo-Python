@@ -1,0 +1,17 @@
+{
+    "id": "np-exponential",
+    "title": "Exponential Distribution",
+    "intro": "Welcome to the Exponential Distribution lesson.",
+    "python_desc": "Python code for Exponential Distribution",
+    "java_desc": "Java equivalent for Exponential Distribution",
+    "explanation": "<p>In this lesson we cover <b>Exponential Distribution</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-exponential-1",
+            "python": "# Exponential Distribution Python example\nprint('Exponential Distribution')",
+            "java": "// Exponential Distribution Java example\nSystem.out.println(\"Exponential Distribution\");",
+            "explanation": "Basic example demonstrating Exponential Distribution."
+        }
+    ]
+}

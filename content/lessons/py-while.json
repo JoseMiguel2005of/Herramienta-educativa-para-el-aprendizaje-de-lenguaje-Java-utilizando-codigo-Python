@@ -1,0 +1,17 @@
+{
+    "id": "py-while",
+    "title": "Python While Loops",
+    "intro": "Welcome to the Python While Loops lesson.",
+    "python_desc": "Python code for Python While Loops",
+    "java_desc": "Java equivalent for Python While Loops",
+    "explanation": "<p>In this lesson we cover <b>Python While Loops</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-while-1",
+            "python": "# Python While Loops Python example\nprint('Python While Loops')",
+            "java": "// Python While Loops Java example\nSystem.out.println(\"Python While Loops\");",
+            "explanation": "Basic example demonstrating Python While Loops."
+        }
+    ]
+}

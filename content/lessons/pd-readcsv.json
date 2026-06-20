@@ -1,0 +1,17 @@
+{
+    "id": "pd-readcsv",
+    "title": "Pandas Read CSV",
+    "intro": "Welcome to the Pandas Read CSV lesson.",
+    "python_desc": "Python code for Pandas Read CSV",
+    "java_desc": "Java equivalent for Pandas Read CSV",
+    "explanation": "<p>In this lesson we cover <b>Pandas Read CSV</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "pd-readcsv-1",
+            "python": "# Pandas Read CSV Python example\nprint('Pandas Read CSV')",
+            "java": "// Pandas Read CSV Java example\nSystem.out.println(\"Pandas Read CSV\");",
+            "explanation": "Basic example demonstrating Pandas Read CSV."
+        }
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "id": "pd-cleandata",
+    "title": "Cleaning Data",
+    "intro": "Welcome to the Cleaning Data lesson.",
+    "python_desc": "Python code for Cleaning Data",
+    "java_desc": "Java equivalent for Cleaning Data",
+    "explanation": "<p>In this lesson we cover <b>Cleaning Data</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "pd-cleandata-1",
+            "python": "# Cleaning Data Python example\nprint('Cleaning Data')",
+            "java": "// Cleaning Data Java example\nSystem.out.println(\"Cleaning Data\");",
+            "explanation": "Basic example demonstrating Cleaning Data."
+        }
+    ]
+}

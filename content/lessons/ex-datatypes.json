@@ -1,0 +1,46 @@
+{
+    "id": "ex-datatypes",
+    "title": "Data Types Exercises",
+    "intro": "Welcome to the Data Types Exercises.",
+    "python_desc": "Ejercicios sobre Data Types",
+    "java_desc": "Práctica equivalente en Java",
+    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>Data Types</b> resolviendo estos ejercicios.</p>",
+    "exercises": [
+        {
+            "question": "The following code example would print the data type of x, what data type would that be? x = 5",
+            "expected_output": "int"
+        },
+        {
+            "question": "What data type would that be? x = 'Hello World'",
+            "expected_output": "str"
+        },
+        {
+            "question": "What data type would that be? x = 20.5",
+            "expected_output": "float"
+        },
+        {
+            "question": "What data type would that be? x = ['apple', 'banana', 'cherry']",
+            "expected_output": "list"
+        },
+        {
+            "question": "What data type would that be? x = ('apple', 'banana', 'cherry')",
+            "expected_output": "tuple"
+        },
+        {
+            "question": "What data type would that be? x = {'name': 'John', 'age': 36}",
+            "expected_output": "dict"
+        },
+        {
+            "question": "What data type would that be? x = True",
+            "expected_output": "bool"
+        }
+    ],
+    "code_mappings": [
+        {
+            "id": "ex-datatypes-1",
+            "python": "# Completa el ejercicio de Data Types\\n",
+            "java": "// Completa el ejercicio en Java\\n",
+            "explanation": "Espacio de práctica para Data Types."
+        }
+    ]
+}

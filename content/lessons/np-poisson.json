@@ -1,0 +1,17 @@
+{
+    "id": "np-poisson",
+    "title": "Poisson Distribution",
+    "intro": "Welcome to the Poisson Distribution lesson.",
+    "python_desc": "Python code for Poisson Distribution",
+    "java_desc": "Java equivalent for Poisson Distribution",
+    "explanation": "<p>In this lesson we cover <b>Poisson Distribution</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-poisson-1",
+            "python": "# Poisson Distribution Python example\nprint('Poisson Distribution')",
+            "java": "// Poisson Distribution Java example\nSystem.out.println(\"Poisson Distribution\");",
+            "explanation": "Basic example demonstrating Poisson Distribution."
+        }
+    ]
+}

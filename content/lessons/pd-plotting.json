@@ -1,0 +1,17 @@
+{
+    "id": "pd-plotting",
+    "title": "Plotting",
+    "intro": "Welcome to the Plotting lesson.",
+    "python_desc": "Python code for Plotting",
+    "java_desc": "Java equivalent for Plotting",
+    "explanation": "<p>In this lesson we cover <b>Plotting</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "pd-plotting-1",
+            "python": "# Plotting Python example\nprint('Plotting')",
+            "java": "// Plotting Java example\nSystem.out.println(\"Plotting\");",
+            "explanation": "Basic example demonstrating Plotting."
+        }
+    ]
+}

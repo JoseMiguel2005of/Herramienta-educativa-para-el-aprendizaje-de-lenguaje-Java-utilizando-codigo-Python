@@ -1,0 +1,17 @@
+{
+    "id": "py-getstarted",
+    "title": "Python Get Started",
+    "intro": "Welcome to the Python Get Started lesson.",
+    "python_desc": "Python code for Python Get Started",
+    "java_desc": "Java equivalent for Python Get Started",
+    "explanation": "<p>In this lesson we cover <b>Python Get Started</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-getstarted-1",
+            "python": "# Python Get Started Python example\nprint('Python Get Started')",
+            "java": "// Python Get Started Java example\nSystem.out.println(\"Python Get Started\");",
+            "explanation": "Basic example demonstrating Python Get Started."
+        }
+    ]
+}

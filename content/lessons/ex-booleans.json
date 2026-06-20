@@ -1,0 +1,38 @@
+{
+    "id": "ex-booleans",
+    "title": "Booleans Exercises",
+    "intro": "Welcome to the Booleans Exercises.",
+    "python_desc": "Ejercicios sobre Booleans",
+    "java_desc": "Práctica equivalente en Java",
+    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>Booleans</b> resolviendo estos ejercicios.</p>",
+    "exercises": [
+        {
+            "question": "The statement below would print a Boolean value, which one?",
+            "expected_output": "print(10 > 9)\n# True"
+        },
+        {
+            "question": "The statement below would print a Boolean value, which one?",
+            "expected_output": "print(10 == 9)\n# False"
+        },
+        {
+            "question": "The statement below would print a Boolean value, which one?",
+            "expected_output": "print(10 < 9)\n# False"
+        },
+        {
+            "question": "The statement below would print a Boolean value, which one?",
+            "expected_output": "print(bool('abc'))\n# True"
+        },
+        {
+            "question": "The statement below would print a Boolean value, which one?",
+            "expected_output": "print(bool(0))\n# False"
+        }
+    ],
+    "code_mappings": [
+        {
+            "id": "ex-booleans-1",
+            "python": "# Completa el ejercicio de Booleans\\n",
+            "java": "// Completa el ejercicio en Java\\n",
+            "explanation": "Espacio de práctica para Booleans."
+        }
+    ]
+}

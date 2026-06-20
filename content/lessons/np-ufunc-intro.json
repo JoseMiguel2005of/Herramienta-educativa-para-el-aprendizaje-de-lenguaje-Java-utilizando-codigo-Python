@@ -1,0 +1,17 @@
+{
+    "id": "np-ufunc-intro",
+    "title": "ufuncs Intro",
+    "intro": "Welcome to the ufuncs Intro lesson.",
+    "python_desc": "Python code for ufuncs Intro",
+    "java_desc": "Java equivalent for ufuncs Intro",
+    "explanation": "<p>In this lesson we cover <b>ufuncs Intro</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-ufunc-intro-1",
+            "python": "# ufuncs Intro Python example\nprint('ufuncs Intro')",
+            "java": "// ufuncs Intro Java example\nSystem.out.println(\"ufuncs Intro\");",
+            "explanation": "Basic example demonstrating ufuncs Intro."
+        }
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "id": "sc-matlab",
+    "title": "SciPy Matlab Arrays",
+    "intro": "Welcome to the SciPy Matlab Arrays lesson.",
+    "python_desc": "Python code for SciPy Matlab Arrays",
+    "java_desc": "Java equivalent for SciPy Matlab Arrays",
+    "explanation": "<p>In this lesson we cover <b>SciPy Matlab Arrays</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "sc-matlab-1",
+            "python": "# SciPy Matlab Arrays Python example\nprint('SciPy Matlab Arrays')",
+            "java": "// SciPy Matlab Arrays Java example\nSystem.out.println(\"SciPy Matlab Arrays\");",
+            "explanation": "Basic example demonstrating SciPy Matlab Arrays."
+        }
+    ]
+}

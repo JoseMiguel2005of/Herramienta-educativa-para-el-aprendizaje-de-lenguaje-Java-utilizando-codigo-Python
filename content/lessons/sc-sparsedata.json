@@ -1,0 +1,17 @@
+{
+    "id": "sc-sparsedata",
+    "title": "SciPy Sparse Data",
+    "intro": "Welcome to the SciPy Sparse Data lesson.",
+    "python_desc": "Python code for SciPy Sparse Data",
+    "java_desc": "Java equivalent for SciPy Sparse Data",
+    "explanation": "<p>In this lesson we cover <b>SciPy Sparse Data</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "sc-sparsedata-1",
+            "python": "# SciPy Sparse Data Python example\nprint('SciPy Sparse Data')",
+            "java": "// SciPy Sparse Data Java example\nSystem.out.println(\"SciPy Sparse Data\");",
+            "explanation": "Basic example demonstrating SciPy Sparse Data."
+        }
+    ]
+}

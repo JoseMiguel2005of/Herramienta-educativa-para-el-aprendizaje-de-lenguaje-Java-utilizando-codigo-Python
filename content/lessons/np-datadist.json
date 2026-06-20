@@ -1,0 +1,17 @@
+{
+    "id": "np-datadist",
+    "title": "Data Distribution",
+    "intro": "Welcome to the Data Distribution lesson.",
+    "python_desc": "Python code for Data Distribution",
+    "java_desc": "Java equivalent for Data Distribution",
+    "explanation": "<p>In this lesson we cover <b>Data Distribution</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-datadist-1",
+            "python": "# Data Distribution Python example\nprint('Data Distribution')",
+            "java": "// Data Distribution Java example\nSystem.out.println(\"Data Distribution\");",
+            "explanation": "Basic example demonstrating Data Distribution."
+        }
+    ]
+}

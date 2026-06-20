@@ -1,0 +1,17 @@
+{
+    "id": "np-chisquare",
+    "title": "Chi Square Distribution",
+    "intro": "Welcome to the Chi Square Distribution lesson.",
+    "python_desc": "Python code for Chi Square Distribution",
+    "java_desc": "Java equivalent for Chi Square Distribution",
+    "explanation": "<p>In this lesson we cover <b>Chi Square Distribution</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-chisquare-1",
+            "python": "# Chi Square Distribution Python example\nprint('Chi Square Distribution')",
+            "java": "// Chi Square Distribution Java example\nSystem.out.println(\"Chi Square Distribution\");",
+            "explanation": "Basic example demonstrating Chi Square Distribution."
+        }
+    ]
+}

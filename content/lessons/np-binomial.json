@@ -1,0 +1,17 @@
+{
+    "id": "np-binomial",
+    "title": "Binomial Distribution",
+    "intro": "Welcome to the Binomial Distribution lesson.",
+    "python_desc": "Python code for Binomial Distribution",
+    "java_desc": "Java equivalent for Binomial Distribution",
+    "explanation": "<p>In this lesson we cover <b>Binomial Distribution</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-binomial-1",
+            "python": "# Binomial Distribution Python example\nprint('Binomial Distribution')",
+            "java": "// Binomial Distribution Java example\nSystem.out.println(\"Binomial Distribution\");",
+            "explanation": "Basic example demonstrating Binomial Distribution."
+        }
+    ]
+}

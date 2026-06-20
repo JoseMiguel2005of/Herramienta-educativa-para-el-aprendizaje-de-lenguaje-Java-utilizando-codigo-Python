@@ -1,0 +1,17 @@
+{
+    "id": "pd-removedup",
+    "title": "Removing Duplicates",
+    "intro": "Welcome to the Removing Duplicates lesson.",
+    "python_desc": "Python code for Removing Duplicates",
+    "java_desc": "Java equivalent for Removing Duplicates",
+    "explanation": "<p>In this lesson we cover <b>Removing Duplicates</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "pd-removedup-1",
+            "python": "# Removing Duplicates Python example\nprint('Removing Duplicates')",
+            "java": "// Removing Duplicates Java example\nSystem.out.println(\"Removing Duplicates\");",
+            "explanation": "Basic example demonstrating Removing Duplicates."
+        }
+    ]
+}

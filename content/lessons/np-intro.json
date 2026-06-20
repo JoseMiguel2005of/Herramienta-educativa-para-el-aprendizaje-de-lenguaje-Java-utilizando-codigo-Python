@@ -1,0 +1,17 @@
+{
+    "id": "np-intro",
+    "title": "NumPy Intro",
+    "intro": "Welcome to the NumPy Intro lesson.",
+    "python_desc": "Python code for NumPy Intro",
+    "java_desc": "Java equivalent for NumPy Intro",
+    "explanation": "<p>In this lesson we cover <b>NumPy Intro</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-intro-1",
+            "python": "# NumPy Intro Python example\nprint('NumPy Intro')",
+            "java": "// NumPy Intro Java example\nSystem.out.println(\"NumPy Intro\");",
+            "explanation": "Basic example demonstrating NumPy Intro."
+        }
+    ]
+}

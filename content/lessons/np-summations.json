@@ -1,0 +1,17 @@
+{
+    "id": "np-summations",
+    "title": "Summations",
+    "intro": "Welcome to the Summations lesson.",
+    "python_desc": "Python code for Summations",
+    "java_desc": "Java equivalent for Summations",
+    "explanation": "<p>In this lesson we cover <b>Summations</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-summations-1",
+            "python": "# Summations Python example\nprint('Summations')",
+            "java": "// Summations Java example\nSystem.out.println(\"Summations\");",
+            "explanation": "Basic example demonstrating Summations."
+        }
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "id": "np-reshape",
+    "title": "NumPy Array Reshape",
+    "intro": "Welcome to the NumPy Array Reshape lesson.",
+    "python_desc": "Python code for NumPy Array Reshape",
+    "java_desc": "Java equivalent for NumPy Array Reshape",
+    "explanation": "<p>In this lesson we cover <b>NumPy Array Reshape</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-reshape-1",
+            "python": "# NumPy Array Reshape Python example\nprint('NumPy Array Reshape')",
+            "java": "// NumPy Array Reshape Java example\nSystem.out.println(\"NumPy Array Reshape\");",
+            "explanation": "Basic example demonstrating NumPy Array Reshape."
+        }
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "id": "pd-emptycells",
+    "title": "Cleaning Empty Cells",
+    "intro": "Welcome to the Cleaning Empty Cells lesson.",
+    "python_desc": "Python code for Cleaning Empty Cells",
+    "java_desc": "Java equivalent for Cleaning Empty Cells",
+    "explanation": "<p>In this lesson we cover <b>Cleaning Empty Cells</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "pd-emptycells-1",
+            "python": "# Cleaning Empty Cells Python example\nprint('Cleaning Empty Cells')",
+            "java": "// Cleaning Empty Cells Java example\nSystem.out.println(\"Cleaning Empty Cells\");",
+            "explanation": "Basic example demonstrating Cleaning Empty Cells."
+        }
+    ]
+}

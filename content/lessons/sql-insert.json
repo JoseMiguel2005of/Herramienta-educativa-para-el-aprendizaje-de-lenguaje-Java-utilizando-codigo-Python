@@ -1,0 +1,17 @@
+{
+    "id": "sql-insert",
+    "title": "MySQL Insert",
+    "intro": "Welcome to the MySQL Insert lesson.",
+    "python_desc": "Python code for MySQL Insert",
+    "java_desc": "Java equivalent for MySQL Insert",
+    "explanation": "<p>In this lesson we cover <b>MySQL Insert</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "sql-insert-1",
+            "python": "# MySQL Insert Python example\nprint('MySQL Insert')",
+            "java": "// MySQL Insert Java example\nSystem.out.println(\"MySQL Insert\");",
+            "explanation": "Basic example demonstrating MySQL Insert."
+        }
+    ]
+}

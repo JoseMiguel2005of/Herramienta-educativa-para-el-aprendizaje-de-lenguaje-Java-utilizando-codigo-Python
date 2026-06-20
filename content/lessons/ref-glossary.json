@@ -1,0 +1,17 @@
+{
+    "id": "ref-glossary",
+    "title": "Python Glossary",
+    "intro": "Welcome to the Python Glossary lesson.",
+    "python_desc": "Python code for Python Glossary",
+    "java_desc": "Java equivalent for Python Glossary",
+    "explanation": "<p>In this lesson we cover <b>Python Glossary</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "ref-glossary-1",
+            "python": "# Python Glossary Python example\nprint('Python Glossary')",
+            "java": "// Python Glossary Java example\nSystem.out.println(\"Python Glossary\");",
+            "explanation": "Basic example demonstrating Python Glossary."
+        }
+    ]
+}

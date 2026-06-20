@@ -1,0 +1,26 @@
+{
+    "id": "ex-inheritance",
+    "title": "Inheritance Exercises",
+    "intro": "Welcome to the Inheritance Exercises.",
+    "python_desc": "Ejercicios sobre Inheritance",
+    "java_desc": "Práctica equivalente en Java",
+    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>Inheritance</b> resolviendo estos ejercicios.</p>",
+    "exercises": [
+        {
+            "question": "What is the correct syntax to create a class named Student that will inherit properties and methods from a class named Person?",
+            "expected_output": "class Student(Person):"
+        },
+        {
+            "question": "We have used the Student class to create an object named x. What is the correct syntax to execute the printname method of the object x?",
+            "expected_output": "class Person:\n    def __init__(self, fname):\n        self.firstname = fname\n    def printname(self):\n        print(self.firstname)\nclass Student(Person):\n    pass\nx = Student('Mike')\nx.printname()"
+        }
+    ],
+    "code_mappings": [
+        {
+            "id": "ex-inheritance-1",
+            "python": "# Completa el ejercicio de Inheritance\\n",
+            "java": "// Completa el ejercicio en Java\\n",
+            "explanation": "Espacio de práctica para Inheritance."
+        }
+    ]
+}

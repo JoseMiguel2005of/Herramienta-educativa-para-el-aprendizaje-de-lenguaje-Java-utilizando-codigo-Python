@@ -1,0 +1,17 @@
+{
+    "id": "pd-intro",
+    "title": "Pandas Intro",
+    "intro": "Welcome to the Pandas Intro lesson.",
+    "python_desc": "Python code for Pandas Intro",
+    "java_desc": "Java equivalent for Pandas Intro",
+    "explanation": "<p>In this lesson we cover <b>Pandas Intro</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "pd-intro-1",
+            "python": "# Pandas Intro Python example\nprint('Pandas Intro')",
+            "java": "// Pandas Intro Java example\nSystem.out.println(\"Pandas Intro\");",
+            "explanation": "Basic example demonstrating Pandas Intro."
+        }
+    ]
+}

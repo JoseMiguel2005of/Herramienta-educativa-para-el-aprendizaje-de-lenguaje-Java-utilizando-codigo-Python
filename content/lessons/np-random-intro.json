@@ -1,0 +1,17 @@
+{
+    "id": "np-random-intro",
+    "title": "Random Intro",
+    "intro": "Welcome to the Random Intro lesson.",
+    "python_desc": "Python code for Random Intro",
+    "java_desc": "Java equivalent for Random Intro",
+    "explanation": "<p>In this lesson we cover <b>Random Intro</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-random-intro-1",
+            "python": "# Random Intro Python example\nprint('Random Intro')",
+            "java": "// Random Intro Java example\nSystem.out.println(\"Random Intro\");",
+            "explanation": "Basic example demonstrating Random Intro."
+        }
+    ]
+}

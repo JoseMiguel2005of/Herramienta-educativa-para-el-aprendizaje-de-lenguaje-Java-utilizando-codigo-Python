@@ -1,0 +1,17 @@
+{
+    "id": "py-ifelse",
+    "title": "Python If...Else",
+    "intro": "Welcome to the Python If...Else lesson.",
+    "python_desc": "Python code for Python If...Else",
+    "java_desc": "Java equivalent for Python If...Else",
+    "explanation": "<p>In this lesson we cover <b>Python If...Else</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-ifelse-1",
+            "python": "# Python If...Else Python example\nprint('Python If...Else')",
+            "java": "// Python If...Else Java example\nSystem.out.println(\"Python If...Else\");",
+            "explanation": "Basic example demonstrating Python If...Else."
+        }
+    ]
+}

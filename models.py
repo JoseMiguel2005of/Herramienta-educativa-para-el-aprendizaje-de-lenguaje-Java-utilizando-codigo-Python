@@ -1,0 +1,58 @@
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
+from datetime import datetime
+
+db = SQLAlchemy()
+
+class User(UserMixin, db.Model):
+    __tablename__ = 'users'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
+    role = db.Column(db.String(20), default='student') # 'student' or 'teacher'
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relaciones
+    progress = db.relationship('LessonProgress', backref='user', lazy=True)
+    attempts = db.relationship('ExerciseAttempt', backref='user', lazy=True)
+    achievements = db.relationship('Achievement', backref='user', lazy=True)
+    streaks = db.relationship('DailyStreak', backref='user', lazy=True)
+
+class LessonProgress(db.Model):
+    __tablename__ = 'lesson_progress'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    lesson_id = db.Column(db.String(100), nullable=False)
+    completed = db.Column(db.Boolean, default=False)
+    score = db.Column(db.Integer, default=0) # XP gained
+    time_spent = db.Column(db.Integer, default=0) # in seconds
+    completed_at = db.Column(db.DateTime, nullable=True)
+
+class ExerciseAttempt(db.Model):
+    __tablename__ = 'exercise_attempts'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    lesson_id = db.Column(db.String(100), nullable=False)
+    exercise_id = db.Column(db.String(100), nullable=False)
+    passed = db.Column(db.Boolean, default=False)
+    answer = db.Column(db.Text, nullable=True)
+    attempted_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class Achievement(db.Model):
+    __tablename__ = 'achievements'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    badge_id = db.Column(db.String(100), nullable=False)
+    unlocked_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class DailyStreak(db.Model):
+    __tablename__ = 'daily_streaks'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    lessons_completed = db.Column(db.Integer, default=0)

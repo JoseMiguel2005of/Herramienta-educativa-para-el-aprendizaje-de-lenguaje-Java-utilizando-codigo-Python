@@ -1,0 +1,17 @@
+{
+    "id": "pd-dataframes",
+    "title": "Pandas DataFrames",
+    "intro": "Welcome to the Pandas DataFrames lesson.",
+    "python_desc": "Python code for Pandas DataFrames",
+    "java_desc": "Java equivalent for Pandas DataFrames",
+    "explanation": "<p>In this lesson we cover <b>Pandas DataFrames</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "pd-dataframes-1",
+            "python": "# Pandas DataFrames Python example\nprint('Pandas DataFrames')",
+            "java": "// Pandas DataFrames Java example\nSystem.out.println(\"Pandas DataFrames\");",
+            "explanation": "Basic example demonstrating Pandas DataFrames."
+        }
+    ]
+}

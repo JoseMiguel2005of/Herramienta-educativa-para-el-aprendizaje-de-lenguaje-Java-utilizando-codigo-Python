@@ -1,0 +1,17 @@
+{
+    "id": "mongo-delete",
+    "title": "MongoDB Delete",
+    "intro": "Welcome to the MongoDB Delete lesson.",
+    "python_desc": "Python code for MongoDB Delete",
+    "java_desc": "Java equivalent for MongoDB Delete",
+    "explanation": "<p>In this lesson we cover <b>MongoDB Delete</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "mongo-delete-1",
+            "python": "# MongoDB Delete Python example\nprint('MongoDB Delete')",
+            "java": "// MongoDB Delete Java example\nSystem.out.println(\"MongoDB Delete\");",
+            "explanation": "Basic example demonstrating MongoDB Delete."
+        }
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "id": "sql-where",
+    "title": "MySQL Where",
+    "intro": "Welcome to the MySQL Where lesson.",
+    "python_desc": "Python code for MySQL Where",
+    "java_desc": "Java equivalent for MySQL Where",
+    "explanation": "<p>In this lesson we cover <b>MySQL Where</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "sql-where-1",
+            "python": "# MySQL Where Python example\nprint('MySQL Where')",
+            "java": "// MySQL Where Java example\nSystem.out.println(\"MySQL Where\");",
+            "explanation": "Basic example demonstrating MySQL Where."
+        }
+    ]
+}

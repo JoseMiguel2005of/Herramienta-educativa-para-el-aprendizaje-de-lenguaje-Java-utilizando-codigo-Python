@@ -1,0 +1,34 @@
+{
+    "id": "ex-classes",
+    "title": "Classes Exercises",
+    "intro": "Welcome to the Classes Exercises.",
+    "python_desc": "Ejercicios sobre Classes",
+    "java_desc": "Práctica equivalente en Java",
+    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>Classes</b> resolviendo estos ejercicios.</p>",
+    "exercises": [
+        {
+            "question": "Create a class named MyClass.",
+            "expected_output": "class MyClass:\n    x = 5"
+        },
+        {
+            "question": "Create an object of MyClass called p1.",
+            "expected_output": "class MyClass:\n    x = 5\np1 = MyClass()"
+        },
+        {
+            "question": "Use the p1 object to print the value of x.",
+            "expected_output": "class MyClass:\n    x = 5\np1 = MyClass()\nprint(p1.x)"
+        },
+        {
+            "question": "What is the correct syntax to assign a 'init' function to a class?",
+            "expected_output": "class Person:\n    def __init__(self, name, age):\n        self.name = name\n        self.age = age"
+        }
+    ],
+    "code_mappings": [
+        {
+            "id": "ex-classes-1",
+            "python": "# Completa el ejercicio de Classes\\n",
+            "java": "// Completa el ejercicio en Java\\n",
+            "explanation": "Espacio de práctica para Classes."
+        }
+    ]
+}

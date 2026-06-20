@@ -1,0 +1,17 @@
+{
+    "id": "mongo-find",
+    "title": "MongoDB Find",
+    "intro": "Welcome to the MongoDB Find lesson.",
+    "python_desc": "Python code for MongoDB Find",
+    "java_desc": "Java equivalent for MongoDB Find",
+    "explanation": "<p>In this lesson we cover <b>MongoDB Find</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "mongo-find-1",
+            "python": "# MongoDB Find Python example\nprint('MongoDB Find')",
+            "java": "// MongoDB Find Java example\nSystem.out.println(\"MongoDB Find\");",
+            "explanation": "Basic example demonstrating MongoDB Find."
+        }
+    ]
+}

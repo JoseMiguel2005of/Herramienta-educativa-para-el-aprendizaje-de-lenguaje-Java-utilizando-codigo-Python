@@ -1,0 +1,17 @@
+{
+    "id": "py-comments",
+    "title": "Python Comments",
+    "intro": "Welcome to the Python Comments lesson.",
+    "python_desc": "Python code for Python Comments",
+    "java_desc": "Java equivalent for Python Comments",
+    "explanation": "<p>In this lesson we cover <b>Python Comments</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-comments-1",
+            "python": "# Python Comments Python example\nprint('Python Comments')",
+            "java": "// Python Comments Java example\nSystem.out.println(\"Python Comments\");",
+            "explanation": "Basic example demonstrating Python Comments."
+        }
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "id": "np-datatypes",
+    "title": "NumPy Data Types",
+    "intro": "Welcome to the NumPy Data Types lesson.",
+    "python_desc": "Python code for NumPy Data Types",
+    "java_desc": "Java equivalent for NumPy Data Types",
+    "explanation": "<p>In this lesson we cover <b>NumPy Data Types</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-datatypes-1",
+            "python": "# NumPy Data Types Python example\nprint('NumPy Data Types')",
+            "java": "// NumPy Data Types Java example\nSystem.out.println(\"NumPy Data Types\");",
+            "explanation": "Basic example demonstrating NumPy Data Types."
+        }
+    ]
+}

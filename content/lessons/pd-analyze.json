@@ -1,0 +1,17 @@
+{
+    "id": "pd-analyze",
+    "title": "Pandas Analyzing Data",
+    "intro": "Welcome to the Pandas Analyzing Data lesson.",
+    "python_desc": "Python code for Pandas Analyzing Data",
+    "java_desc": "Java equivalent for Pandas Analyzing Data",
+    "explanation": "<p>In this lesson we cover <b>Pandas Analyzing Data</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "pd-analyze-1",
+            "python": "# Pandas Analyzing Data Python example\nprint('Pandas Analyzing Data')",
+            "java": "// Pandas Analyzing Data Java example\nSystem.out.println(\"Pandas Analyzing Data\");",
+            "explanation": "Basic example demonstrating Pandas Analyzing Data."
+        }
+    ]
+}

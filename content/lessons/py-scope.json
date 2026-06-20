@@ -1,0 +1,17 @@
+{
+    "id": "py-scope",
+    "title": "Python Scope",
+    "intro": "Welcome to the Python Scope lesson.",
+    "python_desc": "Python code for Python Scope",
+    "java_desc": "Java equivalent for Python Scope",
+    "explanation": "<p>In this lesson we cover <b>Python Scope</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-scope-1",
+            "python": "# Python Scope Python example\nprint('Python Scope')",
+            "java": "// Python Scope Java example\nSystem.out.println(\"Python Scope\");",
+            "explanation": "Basic example demonstrating Python Scope."
+        }
+    ]
+}

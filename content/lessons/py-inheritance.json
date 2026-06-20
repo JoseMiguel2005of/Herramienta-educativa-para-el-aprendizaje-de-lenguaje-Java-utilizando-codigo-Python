@@ -1,0 +1,17 @@
+{
+    "id": "py-inheritance",
+    "title": "Python Inheritance",
+    "intro": "Welcome to the Python Inheritance lesson.",
+    "python_desc": "Python code for Python Inheritance",
+    "java_desc": "Java equivalent for Python Inheritance",
+    "explanation": "<p>In this lesson we cover <b>Python Inheritance</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-inheritance-1",
+            "python": "# Python Inheritance Python example\nprint('Python Inheritance')",
+            "java": "// Python Inheritance Java example\nSystem.out.println(\"Python Inheritance\");",
+            "explanation": "Basic example demonstrating Python Inheritance."
+        }
+    ]
+}

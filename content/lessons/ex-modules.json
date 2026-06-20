@@ -1,0 +1,34 @@
+{
+    "id": "ex-modules",
+    "title": "Modules Exercises",
+    "intro": "Welcome to the Modules Exercises.",
+    "python_desc": "Ejercicios sobre Modules",
+    "java_desc": "Práctica equivalente en Java",
+    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>Modules</b> resolviendo estos ejercicios.</p>",
+    "exercises": [
+        {
+            "question": "What is the correct syntax to import a module named mymodule?",
+            "expected_output": "import mymodule"
+        },
+        {
+            "question": "If you want to refer to a module by using a different name, you can create an alias. What is the correct syntax for creating an alias for a module?",
+            "expected_output": "import mymodule as mx"
+        },
+        {
+            "question": "What is the correct syntax of printing all variables and function names of the 'mymodule' module?",
+            "expected_output": "import mymodule\nprint(dir(mymodule))"
+        },
+        {
+            "question": "What is the correct syntax of importing only the person1 dictionary of the 'mymodule' module?",
+            "expected_output": "from mymodule import person1"
+        }
+    ],
+    "code_mappings": [
+        {
+            "id": "ex-modules-1",
+            "python": "# Completa el ejercicio de Modules\\n",
+            "java": "// Completa el ejercicio en Java\\n",
+            "explanation": "Espacio de práctica para Modules."
+        }
+    ]
+}

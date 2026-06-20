@@ -1,0 +1,17 @@
+{
+    "id": "py-iterators",
+    "title": "Python Iterators",
+    "intro": "Welcome to the Python Iterators lesson.",
+    "python_desc": "Python code for Python Iterators",
+    "java_desc": "Java equivalent for Python Iterators",
+    "explanation": "<p>In this lesson we cover <b>Python Iterators</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-iterators-1",
+            "python": "# Python Iterators Python example\nprint('Python Iterators')",
+            "java": "// Python Iterators Java example\nSystem.out.println(\"Python Iterators\");",
+            "explanation": "Basic example demonstrating Python Iterators."
+        }
+    ]
+}

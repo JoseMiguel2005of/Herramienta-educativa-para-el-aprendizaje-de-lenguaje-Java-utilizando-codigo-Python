@@ -1,0 +1,17 @@
+{
+    "id": "np-trig",
+    "title": "Trigonometric",
+    "intro": "Welcome to the Trigonometric lesson.",
+    "python_desc": "Python code for Trigonometric",
+    "java_desc": "Java equivalent for Trigonometric",
+    "explanation": "<p>In this lesson we cover <b>Trigonometric</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-trig-1",
+            "python": "# Trigonometric Python example\nprint('Trigonometric')",
+            "java": "// Trigonometric Java example\nSystem.out.println(\"Trigonometric\");",
+            "explanation": "Basic example demonstrating Trigonometric."
+        }
+    ]
+}

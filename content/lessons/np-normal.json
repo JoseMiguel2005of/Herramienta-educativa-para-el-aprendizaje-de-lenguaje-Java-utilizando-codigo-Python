@@ -1,0 +1,17 @@
+{
+    "id": "np-normal",
+    "title": "Normal Distribution",
+    "intro": "Welcome to the Normal Distribution lesson.",
+    "python_desc": "Python code for Normal Distribution",
+    "java_desc": "Java equivalent for Normal Distribution",
+    "explanation": "<p>In this lesson we cover <b>Normal Distribution</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-normal-1",
+            "python": "# Normal Distribution Python example\nprint('Normal Distribution')",
+            "java": "// Normal Distribution Java example\nSystem.out.println(\"Normal Distribution\");",
+            "explanation": "Basic example demonstrating Normal Distribution."
+        }
+    ]
+}

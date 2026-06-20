@@ -1,0 +1,17 @@
+{
+    "id": "np-products",
+    "title": "Products",
+    "intro": "Welcome to the Products lesson.",
+    "python_desc": "Python code for Products",
+    "java_desc": "Java equivalent for Products",
+    "explanation": "<p>In this lesson we cover <b>Products</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-products-1",
+            "python": "# Products Python example\nprint('Products')",
+            "java": "// Products Java example\nSystem.out.println(\"Products\");",
+            "explanation": "Basic example demonstrating Products."
+        }
+    ]
+}

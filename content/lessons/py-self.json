@@ -1,0 +1,17 @@
+{
+    "id": "py-self",
+    "title": "The self Parameter",
+    "intro": "Welcome to the The self Parameter lesson.",
+    "python_desc": "Python code for The self Parameter",
+    "java_desc": "Java equivalent for The self Parameter",
+    "explanation": "<p>In this lesson we cover <b>The self Parameter</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-self-1",
+            "python": "# The self Parameter Python example\nprint('The self Parameter')",
+            "java": "// The self Parameter Java example\nSystem.out.println(\"The self Parameter\");",
+            "explanation": "Basic example demonstrating The self Parameter."
+        }
+    ]
+}

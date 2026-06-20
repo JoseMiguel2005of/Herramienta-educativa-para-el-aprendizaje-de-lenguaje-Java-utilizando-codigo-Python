@@ -1,0 +1,17 @@
+{
+    "id": "np-arithmetic",
+    "title": "Simple Arithmetic",
+    "intro": "Welcome to the Simple Arithmetic lesson.",
+    "python_desc": "Python code for Simple Arithmetic",
+    "java_desc": "Java equivalent for Simple Arithmetic",
+    "explanation": "<p>In this lesson we cover <b>Simple Arithmetic</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-arithmetic-1",
+            "python": "# Simple Arithmetic Python example\nprint('Simple Arithmetic')",
+            "java": "// Simple Arithmetic Java example\nSystem.out.println(\"Simple Arithmetic\");",
+            "explanation": "Basic example demonstrating Simple Arithmetic."
+        }
+    ]
+}

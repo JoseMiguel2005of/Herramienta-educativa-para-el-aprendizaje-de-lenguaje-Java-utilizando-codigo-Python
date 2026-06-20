@@ -1,0 +1,17 @@
+{
+    "id": "pd-wrongdata",
+    "title": "Cleaning Wrong Data",
+    "intro": "Welcome to the Cleaning Wrong Data lesson.",
+    "python_desc": "Python code for Cleaning Wrong Data",
+    "java_desc": "Java equivalent for Cleaning Wrong Data",
+    "explanation": "<p>In this lesson we cover <b>Cleaning Wrong Data</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "pd-wrongdata-1",
+            "python": "# Cleaning Wrong Data Python example\nprint('Cleaning Wrong Data')",
+            "java": "// Cleaning Wrong Data Java example\nSystem.out.println(\"Cleaning Wrong Data\");",
+            "explanation": "Basic example demonstrating Cleaning Wrong Data."
+        }
+    ]
+}

@@ -1,0 +1,46 @@
+{
+    "id": "ex-variables",
+    "title": "Variables Exercises",
+    "intro": "Welcome to the Variables Exercises.",
+    "python_desc": "Ejercicios sobre Variables",
+    "java_desc": "Práctica equivalente en Java",
+    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>Variables</b> resolviendo estos ejercicios.</p>",
+    "exercises": [
+        {
+            "question": "Create a variable named carname and assign the value Volvo to it.",
+            "expected_output": "carname = 'Volvo'"
+        },
+        {
+            "question": "Create a variable named x and assign the value 50 to it.",
+            "expected_output": "x = 50"
+        },
+        {
+            "question": "Display the sum of 5 + 10, using two variables: x and y.",
+            "expected_output": "x = 5\ny = 10\nprint(x + y)"
+        },
+        {
+            "question": "Create a variable called z, assign x + y to it, and display the result.",
+            "expected_output": "x = 5\ny = 10\nz = x + y\nprint(z)"
+        },
+        {
+            "question": "Remove the illegal characters in the variable name: 2my-first_name = 'John'",
+            "expected_output": "myfirst_name = 'John'"
+        },
+        {
+            "question": "Insert the correct syntax to assign the same value to all three variables in one code line.",
+            "expected_output": "x = y = z = 'Orange'"
+        },
+        {
+            "question": "Insert the correct keyword to make the variable x belong to the global scope.",
+            "expected_output": "def myfunc():\n    global x\n    x = 'fantastic'"
+        }
+    ],
+    "code_mappings": [
+        {
+            "id": "ex-variables-1",
+            "python": "# Completa el ejercicio de Variables\\n",
+            "java": "// Completa el ejercicio en Java\\n",
+            "explanation": "Espacio de práctica para Variables."
+        }
+    ]
+}

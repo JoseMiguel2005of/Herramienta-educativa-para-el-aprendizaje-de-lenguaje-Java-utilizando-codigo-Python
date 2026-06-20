@@ -1,0 +1,38 @@
+{
+    "id": "ex-dicts",
+    "title": "Dictionaries Exercises",
+    "intro": "Welcome to the Dictionaries Exercises.",
+    "python_desc": "Ejercicios sobre Dictionaries",
+    "java_desc": "Práctica equivalente en Java",
+    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>Dictionaries</b> resolviendo estos ejercicios.</p>",
+    "exercises": [
+        {
+            "question": "Use the get method to print the value of the 'model' key of the car dictionary.",
+            "expected_output": "car = {'brand': 'Ford', 'model': 'Mustang', 'year': 1964}\nprint(car.get('model'))"
+        },
+        {
+            "question": "Change the 'year' value from 1964 to 2020.",
+            "expected_output": "car = {'brand': 'Ford', 'model': 'Mustang', 'year': 1964}\ncar['year'] = 2020"
+        },
+        {
+            "question": "Add the key/value pair 'color': 'red' to the car dictionary.",
+            "expected_output": "car = {'brand': 'Ford', 'model': 'Mustang', 'year': 1964}\ncar['color'] = 'red'"
+        },
+        {
+            "question": "Use the pop method to remove 'model' from the car dictionary.",
+            "expected_output": "car = {'brand': 'Ford', 'model': 'Mustang', 'year': 1964}\ncar.pop('model')"
+        },
+        {
+            "question": "Use the clear method to empty the car dictionary.",
+            "expected_output": "car = {'brand': 'Ford', 'model': 'Mustang', 'year': 1964}\ncar.clear()"
+        }
+    ],
+    "code_mappings": [
+        {
+            "id": "ex-dicts-1",
+            "python": "# Completa el ejercicio de Dictionaries\\n",
+            "java": "// Completa el ejercicio en Java\\n",
+            "explanation": "Espacio de práctica para Dictionaries."
+        }
+    ]
+}

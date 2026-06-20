@@ -1,0 +1,17 @@
+{
+    "id": "ref-strings",
+    "title": "String Methods",
+    "intro": "Welcome to the String Methods lesson.",
+    "python_desc": "Python code for String Methods",
+    "java_desc": "Java equivalent for String Methods",
+    "explanation": "<p>In this lesson we cover <b>String Methods</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "ref-strings-1",
+            "python": "# String Methods Python example\nprint('String Methods')",
+            "java": "// String Methods Java example\nSystem.out.println(\"String Methods\");",
+            "explanation": "Basic example demonstrating String Methods."
+        }
+    ]
+}

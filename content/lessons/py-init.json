@@ -1,0 +1,17 @@
+{
+    "id": "py-init",
+    "title": "The __init__() Function",
+    "intro": "Welcome to the The __init__() Function lesson.",
+    "python_desc": "Python code for The __init__() Function",
+    "java_desc": "Java equivalent for The __init__() Function",
+    "explanation": "<p>In this lesson we cover <b>The __init__() Function</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-init-1",
+            "python": "# The __init__() Function Python example\nprint('The __init__() Function')",
+            "java": "// The __init__() Function Java example\nSystem.out.println(\"The __init__() Function\");",
+            "explanation": "Basic example demonstrating The __init__() Function."
+        }
+    ]
+}

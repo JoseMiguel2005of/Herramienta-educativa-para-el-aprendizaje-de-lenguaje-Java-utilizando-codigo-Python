@@ -1,0 +1,17 @@
+{
+    "id": "ref-sets",
+    "title": "Set Methods",
+    "intro": "Welcome to the Set Methods lesson.",
+    "python_desc": "Python code for Set Methods",
+    "java_desc": "Java equivalent for Set Methods",
+    "explanation": "<p>In this lesson we cover <b>Set Methods</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "ref-sets-1",
+            "python": "# Set Methods Python example\nprint('Set Methods')",
+            "java": "// Set Methods Java example\nSystem.out.println(\"Set Methods\");",
+            "explanation": "Basic example demonstrating Set Methods."
+        }
+    ]
+}

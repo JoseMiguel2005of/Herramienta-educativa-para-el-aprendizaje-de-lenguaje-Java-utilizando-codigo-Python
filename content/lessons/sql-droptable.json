@@ -1,0 +1,17 @@
+{
+    "id": "sql-droptable",
+    "title": "MySQL Drop Table",
+    "intro": "Welcome to the MySQL Drop Table lesson.",
+    "python_desc": "Python code for MySQL Drop Table",
+    "java_desc": "Java equivalent for MySQL Drop Table",
+    "explanation": "<p>In this lesson we cover <b>MySQL Drop Table</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "sql-droptable-1",
+            "python": "# MySQL Drop Table Python example\nprint('MySQL Drop Table')",
+            "java": "// MySQL Drop Table Java example\nSystem.out.println(\"MySQL Drop Table\");",
+            "explanation": "Basic example demonstrating MySQL Drop Table."
+        }
+    ]
+}

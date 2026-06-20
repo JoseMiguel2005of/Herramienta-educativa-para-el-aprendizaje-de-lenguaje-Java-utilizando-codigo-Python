@@ -1,0 +1,17 @@
+{
+    "id": "np-filter",
+    "title": "NumPy Array Filter",
+    "intro": "Welcome to the NumPy Array Filter lesson.",
+    "python_desc": "Python code for NumPy Array Filter",
+    "java_desc": "Java equivalent for NumPy Array Filter",
+    "explanation": "<p>In this lesson we cover <b>NumPy Array Filter</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-filter-1",
+            "python": "# NumPy Array Filter Python example\nprint('NumPy Array Filter')",
+            "java": "// NumPy Array Filter Java example\nSystem.out.println(\"NumPy Array Filter\");",
+            "explanation": "Basic example demonstrating NumPy Array Filter."
+        }
+    ]
+}

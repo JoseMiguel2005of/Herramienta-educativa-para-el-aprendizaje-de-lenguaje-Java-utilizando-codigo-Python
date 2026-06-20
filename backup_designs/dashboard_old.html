@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — {{ t.site_title }}{% endblock %}
+
+{% block content %}
+<article class="dashboard-page">
+    <header class="lesson-header" style="margin-bottom: 2rem;">
+        <h1>Tu Progreso</h1>
+        <p class="lesson-intro">Sigue tu avance, nivel y logros desbloqueados.</p>
+    </header>
+
+    <div class="dashboard-grid">
+        <!-- Resumen -->
+        <div class="dashboard-card stat-card">
+            <h3>Nivel Actual</h3>
+            <div class="stat-value" style="color: var(--green);">{{ (summary.total_xp // 100) + 1 }}</div>
+            <p>Total XP: <strong>{{ summary.total_xp }}</strong></p>
+            <div class="xp-bar-container" style="margin-top: 1rem; width: 100%; height: 8px; background: #333; border-radius: 4px;">
+                <div class="xp-bar-fill" style="width: {{ summary.total_xp % 100 }}%; height: 100%; background: var(--green); border-radius: 4px;"></div>
+            </div>
+            <p style="text-align: right; font-size: 0.8rem; margin-top: 0.5rem;">{{ summary.total_xp % 100 }} / 100 XP para el próximo nivel</p>
+        </div>
+
+        <div class="dashboard-card stat-card">
+            <h3>Lecciones Completadas</h3>
+            <div class="stat-value">{{ summary.completed_lessons | length }}</div>
+            <p>De un total de {{ lessons | length }} lecciones</p>
+            <div class="xp-bar-container" style="margin-top: 1rem; width: 100%; height: 8px; background: #333; border-radius: 4px;">
+                <div class="xp-bar-fill" style="width: {{ (summary.completed_lessons | length / lessons | length * 100) | round }}%; height: 100%; background: var(--python-color); border-radius: 4px;"></div>
+            </div>
+        </div>
+
+        <div class="dashboard-card stat-card">
+            <h3>Racha Actual</h3>
+            <div class="stat-value" style="color: #ff9800;">1 Día</div>
+            <p>¡Sigue así mañana!</p>
+        </div>
+    </div>
+
+    <div class="dashboard-sections" style="margin-top: 2rem;">
+        <div class="dashboard-card">
+            <h2>Logros Desbloqueados</h2>
+            <div class="badges-grid" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;">
+                {% if summary.total_xp > 0 %}
+                <div class="badge-item" title="Primer Paso" style="background: #2a2a2a; padding: 1rem; border-radius: 8px; text-align: center; border: 1px solid rgba(255,255,255,0.1);">
+                    <div><strong>Primer Paso</strong></div>
+                </div>
+                {% else %}
+                <p style="color: #888;">Completa tu primera lección para empezar a ganar insignias.</p>
+                {% endif %}
+                
+                {% if summary.completed_lessons | length >= 10 %}
+                <div class="badge-item" title="Explorador" style="background: #2a2a2a; padding: 1rem; border-radius: 8px; text-align: center; border: 1px solid rgba(255,255,255,0.1);">
+                    <div><strong>Explorador</strong></div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="dashboard-card" style="margin-top: 2rem;">
+            <h2>Progreso por Sección</h2>
+            <div style="margin-top: 1rem;">
+                {% for category in categories %}
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="margin-bottom: 0.5rem;">{{ t[category.label_key] }}</h4>
+                    {% set cat_lessons = category.sections | map(attribute='lessons') | sum(start=[]) | map(attribute='id') | list %}
+                    {% set completed_in_cat = cat_lessons | select("in", summary.completed_lessons) | list | length %}
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div class="xp-bar-container" style="flex-grow: 1; height: 10px; background: #333; border-radius: 5px;">
+                            <div class="xp-bar-fill" style="width: {{ (completed_in_cat / cat_lessons | length * 100) | round }}%; height: 100%; background: var(--green); border-radius: 5px;"></div>
+                        </div>
+                        <span style="font-size: 0.9rem; font-weight: bold; width: 60px; text-align: right;">{{ completed_in_cat }} / {{ cat_lessons | length }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</article>
+
+<style>
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+.dashboard-card {
+    background: #1e1e1e;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+.stat-value {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin: 0.5rem 0;
+    font-family: 'Source Code Pro', monospace;
+}
+</style>
+{% endblock %}

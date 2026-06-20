@@ -1,0 +1,17 @@
+{
+    "id": "py-classes",
+    "title": "Classes/Objects",
+    "intro": "Welcome to the Classes/Objects lesson.",
+    "python_desc": "Python code for Classes/Objects",
+    "java_desc": "Java equivalent for Classes/Objects",
+    "explanation": "<p>In this lesson we cover <b>Classes/Objects</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-classes-1",
+            "python": "# Classes/Objects Python example\nprint('Classes/Objects')",
+            "java": "// Classes/Objects Java example\nSystem.out.println(\"Classes/Objects\");",
+            "explanation": "Basic example demonstrating Classes/Objects."
+        }
+    ]
+}

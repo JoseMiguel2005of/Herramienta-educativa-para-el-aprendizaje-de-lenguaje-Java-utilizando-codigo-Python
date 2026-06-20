@@ -1,0 +1,17 @@
+{
+    "id": "np-gcd",
+    "title": "GCD",
+    "intro": "Welcome to the GCD lesson.",
+    "python_desc": "Python code for GCD",
+    "java_desc": "Java equivalent for GCD",
+    "explanation": "<p>In this lesson we cover <b>GCD</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-gcd-1",
+            "python": "# GCD Python example\nprint('GCD')",
+            "java": "// GCD Java example\nSystem.out.println(\"GCD\");",
+            "explanation": "Basic example demonstrating GCD."
+        }
+    ]
+}

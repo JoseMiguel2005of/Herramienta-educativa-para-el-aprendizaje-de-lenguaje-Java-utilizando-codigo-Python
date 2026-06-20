@@ -1,0 +1,17 @@
+{
+    "id": "mongo-query",
+    "title": "MongoDB Query",
+    "intro": "Welcome to the MongoDB Query lesson.",
+    "python_desc": "Python code for MongoDB Query",
+    "java_desc": "Java equivalent for MongoDB Query",
+    "explanation": "<p>In this lesson we cover <b>MongoDB Query</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "mongo-query-1",
+            "python": "# MongoDB Query Python example\nprint('MongoDB Query')",
+            "java": "// MongoDB Query Java example\nSystem.out.println(\"MongoDB Query\");",
+            "explanation": "Basic example demonstrating MongoDB Query."
+        }
+    ]
+}

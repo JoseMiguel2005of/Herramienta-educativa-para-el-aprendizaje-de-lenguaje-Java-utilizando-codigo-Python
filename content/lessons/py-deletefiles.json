@@ -1,0 +1,17 @@
+{
+    "id": "py-deletefiles",
+    "title": "Python Delete Files",
+    "intro": "Welcome to the Python Delete Files lesson.",
+    "python_desc": "Python code for Python Delete Files",
+    "java_desc": "Java equivalent for Python Delete Files",
+    "explanation": "<p>In this lesson we cover <b>Python Delete Files</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-deletefiles-1",
+            "python": "# Python Delete Files Python example\nprint('Python Delete Files')",
+            "java": "// Python Delete Files Java example\nSystem.out.println(\"Python Delete Files\");",
+            "explanation": "Basic example demonstrating Python Delete Files."
+        }
+    ]
+}

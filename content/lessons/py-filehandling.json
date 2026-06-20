@@ -1,0 +1,17 @@
+{
+    "id": "py-filehandling",
+    "title": "Python File Handling",
+    "intro": "Welcome to the Python File Handling lesson.",
+    "python_desc": "Python code for Python File Handling",
+    "java_desc": "Java equivalent for Python File Handling",
+    "explanation": "<p>In this lesson we cover <b>Python File Handling</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-filehandling-1",
+            "python": "# Python File Handling Python example\nprint('Python File Handling')",
+            "java": "// Python File Handling Java example\nSystem.out.println(\"Python File Handling\");",
+            "explanation": "Basic example demonstrating Python File Handling."
+        }
+    ]
+}

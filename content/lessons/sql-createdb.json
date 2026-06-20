@@ -1,0 +1,17 @@
+{
+    "id": "sql-createdb",
+    "title": "MySQL Create Database",
+    "intro": "Welcome to the MySQL Create Database lesson.",
+    "python_desc": "Python code for MySQL Create Database",
+    "java_desc": "Java equivalent for MySQL Create Database",
+    "explanation": "<p>In this lesson we cover <b>MySQL Create Database</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "sql-createdb-1",
+            "python": "# MySQL Create Database Python example\nprint('MySQL Create Database')",
+            "java": "// MySQL Create Database Java example\nSystem.out.println(\"MySQL Create Database\");",
+            "explanation": "Basic example demonstrating MySQL Create Database."
+        }
+    ]
+}

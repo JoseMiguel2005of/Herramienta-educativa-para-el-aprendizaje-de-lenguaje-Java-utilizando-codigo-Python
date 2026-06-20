@@ -1,0 +1,17 @@
+{
+    "id": "py-writefiles",
+    "title": "Python Write/Create Files",
+    "intro": "Welcome to the Python Write/Create Files lesson.",
+    "python_desc": "Python code for Python Write/Create Files",
+    "java_desc": "Java equivalent for Python Write/Create Files",
+    "explanation": "<p>In this lesson we cover <b>Python Write/Create Files</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-writefiles-1",
+            "python": "# Python Write/Create Files Python example\nprint('Python Write/Create Files')",
+            "java": "// Python Write/Create Files Java example\nSystem.out.println(\"Python Write/Create Files\");",
+            "explanation": "Basic example demonstrating Python Write/Create Files."
+        }
+    ]
+}

@@ -1,0 +1,50 @@
+{
+    "id": "ex-lists",
+    "title": "Lists Exercises",
+    "intro": "Welcome to the Lists Exercises.",
+    "python_desc": "Ejercicios sobre Lists",
+    "java_desc": "Práctica equivalente en Java",
+    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>Lists</b> resolviendo estos ejercicios.</p>",
+    "exercises": [
+        {
+            "question": "Print the second item in the fruits list.",
+            "expected_output": "fruits = ['apple', 'banana', 'cherry']\nprint(fruits[1])"
+        },
+        {
+            "question": "Change the value from 'apple' to 'kiwi', in the fruits list.",
+            "expected_output": "fruits = ['apple', 'banana', 'cherry']\nfruits[0] = 'kiwi'"
+        },
+        {
+            "question": "Use the append method to add 'orange' to the fruits list.",
+            "expected_output": "fruits = ['apple', 'banana', 'cherry']\nfruits.append('orange')"
+        },
+        {
+            "question": "Use the insert method to add 'lemon' as the second item in the fruits list.",
+            "expected_output": "fruits = ['apple', 'banana', 'cherry']\nfruits.insert(1, 'lemon')"
+        },
+        {
+            "question": "Use the remove method to remove 'banana' from the fruits list.",
+            "expected_output": "fruits = ['apple', 'banana', 'cherry']\nfruits.remove('banana')"
+        },
+        {
+            "question": "Use negative indexing to print the last item in the list.",
+            "expected_output": "fruits = ['apple', 'banana', 'cherry']\nprint(fruits[-1])"
+        },
+        {
+            "question": "Use a range of indexes to print the third, fourth, and fifth item in the list.",
+            "expected_output": "fruits = ['apple', 'banana', 'cherry', 'orange', 'kiwi', 'melon', 'mango']\nprint(fruits[2:5])"
+        },
+        {
+            "question": "Use the correct syntax to print the number of items in the list.",
+            "expected_output": "fruits = ['apple', 'banana', 'cherry']\nprint(len(fruits))"
+        }
+    ],
+    "code_mappings": [
+        {
+            "id": "ex-lists-1",
+            "python": "# Completa el ejercicio de Lists\\n",
+            "java": "// Completa el ejercicio en Java\\n",
+            "explanation": "Espacio de práctica para Lists."
+        }
+    ]
+}

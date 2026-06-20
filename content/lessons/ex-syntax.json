@@ -1,0 +1,26 @@
+{
+    "id": "ex-syntax",
+    "title": "Syntax Exercises",
+    "intro": "Welcome to the Syntax Exercises.",
+    "python_desc": "Ejercicios sobre Syntax",
+    "java_desc": "Práctica equivalente en Java",
+    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>Syntax</b> resolviendo estos ejercicios.</p>",
+    "exercises": [
+        {
+            "question": "Insert the missing part of the code below to output 'Hello World'.",
+            "expected_output": "print('Hello World')"
+        },
+        {
+            "question": "This example misses indentations to be correct. Insert missing indent.",
+            "expected_output": "if 5 > 2:\n    print('Five is greater than two!')"
+        }
+    ],
+    "code_mappings": [
+        {
+            "id": "ex-syntax-1",
+            "python": "# Completa el ejercicio de Syntax\\n",
+            "java": "// Completa el ejercicio en Java\\n",
+            "explanation": "Espacio de práctica para Syntax."
+        }
+    ]
+}

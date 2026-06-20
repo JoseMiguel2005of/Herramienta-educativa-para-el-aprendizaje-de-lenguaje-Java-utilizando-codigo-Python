@@ -1,0 +1,17 @@
+{
+    "id": "np-lcm",
+    "title": "LCM",
+    "intro": "Welcome to the LCM lesson.",
+    "python_desc": "Python code for LCM",
+    "java_desc": "Java equivalent for LCM",
+    "explanation": "<p>In this lesson we cover <b>LCM</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-lcm-1",
+            "python": "# LCM Python example\nprint('LCM')",
+            "java": "// LCM Java example\nSystem.out.println(\"LCM\");",
+            "explanation": "Basic example demonstrating LCM."
+        }
+    ]
+}

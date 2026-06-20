@@ -1,0 +1,17 @@
+{
+    "id": "py-operators",
+    "title": "Python Operators",
+    "intro": "Welcome to the Python Operators lesson.",
+    "python_desc": "Python code for Python Operators",
+    "java_desc": "Java equivalent for Python Operators",
+    "explanation": "<p>In this lesson we cover <b>Python Operators</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-operators-1",
+            "python": "# Python Operators Python example\nprint('Python Operators')",
+            "java": "// Python Operators Java example\nSystem.out.println(\"Python Operators\");",
+            "explanation": "Basic example demonstrating Python Operators."
+        }
+    ]
+}

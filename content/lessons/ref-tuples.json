@@ -1,0 +1,17 @@
+{
+    "id": "ref-tuples",
+    "title": "Tuple Methods",
+    "intro": "Welcome to the Tuple Methods lesson.",
+    "python_desc": "Python code for Tuple Methods",
+    "java_desc": "Java equivalent for Tuple Methods",
+    "explanation": "<p>In this lesson we cover <b>Tuple Methods</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "ref-tuples-1",
+            "python": "# Tuple Methods Python example\nprint('Tuple Methods')",
+            "java": "// Tuple Methods Java example\nSystem.out.println(\"Tuple Methods\");",
+            "explanation": "Basic example demonstrating Tuple Methods."
+        }
+    ]
+}

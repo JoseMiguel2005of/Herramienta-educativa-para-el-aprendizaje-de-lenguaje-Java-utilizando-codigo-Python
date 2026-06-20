@@ -1,0 +1,17 @@
+{
+    "id": "mongo-getstarted",
+    "title": "MongoDB Get Started",
+    "intro": "Welcome to the MongoDB Get Started lesson.",
+    "python_desc": "Python code for MongoDB Get Started",
+    "java_desc": "Java equivalent for MongoDB Get Started",
+    "explanation": "<p>In this lesson we cover <b>MongoDB Get Started</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "mongo-getstarted-1",
+            "python": "# MongoDB Get Started Python example\nprint('MongoDB Get Started')",
+            "java": "// MongoDB Get Started Java example\nSystem.out.println(\"MongoDB Get Started\");",
+            "explanation": "Basic example demonstrating MongoDB Get Started."
+        }
+    ]
+}

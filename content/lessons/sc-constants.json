@@ -1,0 +1,17 @@
+{
+    "id": "sc-constants",
+    "title": "SciPy Constants",
+    "intro": "Welcome to the SciPy Constants lesson.",
+    "python_desc": "Python code for SciPy Constants",
+    "java_desc": "Java equivalent for SciPy Constants",
+    "explanation": "<p>In this lesson we cover <b>SciPy Constants</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "sc-constants-1",
+            "python": "# SciPy Constants Python example\nprint('SciPy Constants')",
+            "java": "// SciPy Constants Java example\nSystem.out.println(\"SciPy Constants\");",
+            "explanation": "Basic example demonstrating SciPy Constants."
+        }
+    ]
+}

@@ -1,0 +1,11 @@
+<div class="quiz-multiple-choice">
+    <div class="quiz-options">
+        {% for option in ex.options %}
+        <label class="quiz-option-label">
+            <input type="radio" name="quiz_{{ ex.id }}" value="{{ loop.index0 }}">
+            <span class="quiz-option-text">{{ option }}</span>
+        </label>
+        {% endfor %}
+    </div>
+    <div class="quiz-answer-data" data-correct="{{ ex.correct }}" data-explanation="{{ ex.explanation }}" hidden></div>
+</div>

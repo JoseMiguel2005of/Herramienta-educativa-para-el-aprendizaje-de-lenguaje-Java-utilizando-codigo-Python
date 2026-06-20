@@ -1,0 +1,17 @@
+{
+    "id": "py-dates",
+    "title": "Python Dates",
+    "intro": "Welcome to the Python Dates lesson.",
+    "python_desc": "Python code for Python Dates",
+    "java_desc": "Java equivalent for Python Dates",
+    "explanation": "<p>In this lesson we cover <b>Python Dates</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-dates-1",
+            "python": "# Python Dates Python example\nprint('Python Dates')",
+            "java": "// Python Dates Java example\nSystem.out.println(\"Python Dates\");",
+            "explanation": "Basic example demonstrating Python Dates."
+        }
+    ]
+}

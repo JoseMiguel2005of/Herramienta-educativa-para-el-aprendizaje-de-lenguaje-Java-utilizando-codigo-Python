@@ -1,0 +1,17 @@
+{
+    "id": "np-differences",
+    "title": "Differences",
+    "intro": "Welcome to the Differences lesson.",
+    "python_desc": "Python code for Differences",
+    "java_desc": "Java equivalent for Differences",
+    "explanation": "<p>In this lesson we cover <b>Differences</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-differences-1",
+            "python": "# Differences Python example\nprint('Differences')",
+            "java": "// Differences Java example\nSystem.out.println(\"Differences\");",
+            "explanation": "Basic example demonstrating Differences."
+        }
+    ]
+}

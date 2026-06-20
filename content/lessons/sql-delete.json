@@ -1,0 +1,17 @@
+{
+    "id": "sql-delete",
+    "title": "MySQL Delete",
+    "intro": "Welcome to the MySQL Delete lesson.",
+    "python_desc": "Python code for MySQL Delete",
+    "java_desc": "Java equivalent for MySQL Delete",
+    "explanation": "<p>In this lesson we cover <b>MySQL Delete</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "sql-delete-1",
+            "python": "# MySQL Delete Python example\nprint('MySQL Delete')",
+            "java": "// MySQL Delete Java example\nSystem.out.println(\"MySQL Delete\");",
+            "explanation": "Basic example demonstrating MySQL Delete."
+        }
+    ]
+}

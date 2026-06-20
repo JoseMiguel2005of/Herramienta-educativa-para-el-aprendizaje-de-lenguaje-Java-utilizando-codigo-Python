@@ -1,0 +1,17 @@
+{
+    "id": "np-copyview",
+    "title": "NumPy Copy vs View",
+    "intro": "Welcome to the NumPy Copy vs View lesson.",
+    "python_desc": "Python code for NumPy Copy vs View",
+    "java_desc": "Java equivalent for NumPy Copy vs View",
+    "explanation": "<p>In this lesson we cover <b>NumPy Copy vs View</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-copyview-1",
+            "python": "# NumPy Copy vs View Python example\nprint('NumPy Copy vs View')",
+            "java": "// NumPy Copy vs View Java example\nSystem.out.println(\"NumPy Copy vs View\");",
+            "explanation": "Basic example demonstrating NumPy Copy vs View."
+        }
+    ]
+}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Mapa de Ruta — {{ t.site_title }}{% endblock %}
+
+{% block content %}
+<article class="roadmap-page" style="display: flex; flex-direction: column; height: calc(100vh - 80px);">
+    <header class="telemetry-header term-hero" style="border-bottom: 1px dashed var(--border); padding-bottom: 1rem; margin-bottom: 1rem;">
+        <h1 style="font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; margin: 0; color: #fff;">
+            <span style="color: var(--green);">[MODULE]</span> SYS.PATHFINDER
+        </h1>
+        <div class="terminal-intro" style="margin-top: 1rem; background: var(--bg-code); border: 1px solid var(--border); padding: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; color: var(--text-muted);">
+            <span style="color: var(--green);">>_ </span>Explora el árbol de dependencias. Arrastra para desplazar. Scroll para zoom.
+        </div>
+    </header>
+
+    <div class="roadmap-container" id="roadmap-container" style="flex-grow: 1; position: relative; background: var(--bg-code); border: 1px dashed var(--border); overflow: hidden; cursor: grab;">
+        <canvas id="roadmap-canvas"></canvas>
+        <div id="roadmap-tooltip" style="position: absolute; display: none; background: var(--bg); padding: 1rem; border: 1px solid var(--green); pointer-events: none; z-index: 10; color: white; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; box-shadow: 4px 4px 0 rgba(0, 229, 255, 0.2);"></div>
+    </div>
+</article>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    window.ROADMAP_DATA = {{ categories | tojson }};
+    window.COMPLETED_LESSONS = {{ summary.completed_lessons | tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/roadmap.js') }}"></script>
+{% endblock %}

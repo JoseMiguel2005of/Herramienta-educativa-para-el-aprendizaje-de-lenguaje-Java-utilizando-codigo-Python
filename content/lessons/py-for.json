@@ -1,0 +1,17 @@
+{
+    "id": "py-for",
+    "title": "Python For Loops",
+    "intro": "Welcome to the Python For Loops lesson.",
+    "python_desc": "Python code for Python For Loops",
+    "java_desc": "Java equivalent for Python For Loops",
+    "explanation": "<p>In this lesson we cover <b>Python For Loops</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-for-1",
+            "python": "# Python For Loops Python example\nprint('Python For Loops')",
+            "java": "// Python For Loops Java example\nSystem.out.println(\"Python For Loops\");",
+            "explanation": "Basic example demonstrating Python For Loops."
+        }
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "id": "py-casting",
+    "title": "Python Casting",
+    "intro": "Welcome to the Python Casting lesson.",
+    "python_desc": "Python code for Python Casting",
+    "java_desc": "Java equivalent for Python Casting",
+    "explanation": "<p>In this lesson we cover <b>Python Casting</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-casting-1",
+            "python": "# Python Casting Python example\nprint('Python Casting')",
+            "java": "// Python Casting Java example\nSystem.out.println(\"Python Casting\");",
+            "explanation": "Basic example demonstrating Python Casting."
+        }
+    ]
+}

@@ -1,0 +1,42 @@
+{
+    "id": "ex-tuples",
+    "title": "Tuples Exercises",
+    "intro": "Welcome to the Tuples Exercises.",
+    "python_desc": "Ejercicios sobre Tuples",
+    "java_desc": "Práctica equivalente en Java",
+    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>Tuples</b> resolviendo estos ejercicios.</p>",
+    "exercises": [
+        {
+            "question": "Print the first item in the fruits tuple.",
+            "expected_output": "fruits = ('apple', 'banana', 'cherry')\nprint(fruits[0])"
+        },
+        {
+            "question": "Use the correct syntax to print the number of items in the fruits tuple.",
+            "expected_output": "fruits = ('apple', 'banana', 'cherry')\nprint(len(fruits))"
+        },
+        {
+            "question": "Use negative indexing to print the last item in the tuple.",
+            "expected_output": "fruits = ('apple', 'banana', 'cherry')\nprint(fruits[-1])"
+        },
+        {
+            "question": "Use a range of indexes to print the third, fourth, and fifth item in the tuple.",
+            "expected_output": "fruits = ('apple', 'banana', 'cherry', 'orange', 'kiwi', 'melon', 'mango')\nprint(fruits[2:5])"
+        },
+        {
+            "question": "Use the correct syntax to unpack the tuple into variables.",
+            "expected_output": "fruits = ('apple', 'banana', 'cherry')\n(green, yellow, red) = fruits"
+        },
+        {
+            "question": "Use the correct syntax to add a list to a tuple.",
+            "expected_output": "fruits = ('apple', 'banana', 'cherry')\nfruits_list = list(fruits)\nfruits_list.append('orange')\nfruits = tuple(fruits_list)"
+        }
+    ],
+    "code_mappings": [
+        {
+            "id": "ex-tuples-1",
+            "python": "# Completa el ejercicio de Tuples\\n",
+            "java": "// Completa el ejercicio en Java\\n",
+            "explanation": "Espacio de práctica para Tuples."
+        }
+    ]
+}

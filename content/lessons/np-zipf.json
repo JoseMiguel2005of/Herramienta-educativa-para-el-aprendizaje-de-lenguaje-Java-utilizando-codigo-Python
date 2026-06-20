@@ -1,0 +1,17 @@
+{
+    "id": "np-zipf",
+    "title": "Zipf Distribution",
+    "intro": "Welcome to the Zipf Distribution lesson.",
+    "python_desc": "Python code for Zipf Distribution",
+    "java_desc": "Java equivalent for Zipf Distribution",
+    "explanation": "<p>In this lesson we cover <b>Zipf Distribution</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-zipf-1",
+            "python": "# Zipf Distribution Python example\nprint('Zipf Distribution')",
+            "java": "// Zipf Distribution Java example\nSystem.out.println(\"Zipf Distribution\");",
+            "explanation": "Basic example demonstrating Zipf Distribution."
+        }
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "id": "py-pip",
+    "title": "Python PIP",
+    "intro": "Welcome to the Python PIP lesson.",
+    "python_desc": "Python code for Python PIP",
+    "java_desc": "Java equivalent for Python PIP",
+    "explanation": "<p>In this lesson we cover <b>Python PIP</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-pip-1",
+            "python": "# Python PIP Python example\nprint('Python PIP')",
+            "java": "// Python PIP Java example\nSystem.out.println(\"Python PIP\");",
+            "explanation": "Basic example demonstrating Python PIP."
+        }
+    ]
+}

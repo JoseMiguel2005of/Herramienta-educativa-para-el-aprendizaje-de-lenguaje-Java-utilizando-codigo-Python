@@ -1,0 +1,17 @@
+{
+    "id": "pd-wrongformat",
+    "title": "Cleaning Wrong Format",
+    "intro": "Welcome to the Cleaning Wrong Format lesson.",
+    "python_desc": "Python code for Cleaning Wrong Format",
+    "java_desc": "Java equivalent for Cleaning Wrong Format",
+    "explanation": "<p>In this lesson we cover <b>Cleaning Wrong Format</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "pd-wrongformat-1",
+            "python": "# Cleaning Wrong Format Python example\nprint('Cleaning Wrong Format')",
+            "java": "// Cleaning Wrong Format Java example\nSystem.out.println(\"Cleaning Wrong Format\");",
+            "explanation": "Basic example demonstrating Cleaning Wrong Format."
+        }
+    ]
+}

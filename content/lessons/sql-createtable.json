@@ -1,0 +1,17 @@
+{
+    "id": "sql-createtable",
+    "title": "MySQL Create Table",
+    "intro": "Welcome to the MySQL Create Table lesson.",
+    "python_desc": "Python code for MySQL Create Table",
+    "java_desc": "Java equivalent for MySQL Create Table",
+    "explanation": "<p>In this lesson we cover <b>MySQL Create Table</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "sql-createtable-1",
+            "python": "# MySQL Create Table Python example\nprint('MySQL Create Table')",
+            "java": "// MySQL Create Table Java example\nSystem.out.println(\"MySQL Create Table\");",
+            "explanation": "Basic example demonstrating MySQL Create Table."
+        }
+    ]
+}

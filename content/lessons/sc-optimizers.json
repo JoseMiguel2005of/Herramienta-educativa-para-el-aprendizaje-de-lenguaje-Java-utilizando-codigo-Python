@@ -1,0 +1,17 @@
+{
+    "id": "sc-optimizers",
+    "title": "SciPy Optimizers",
+    "intro": "Welcome to the SciPy Optimizers lesson.",
+    "python_desc": "Python code for SciPy Optimizers",
+    "java_desc": "Java equivalent for SciPy Optimizers",
+    "explanation": "<p>In this lesson we cover <b>SciPy Optimizers</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "sc-optimizers-1",
+            "python": "# SciPy Optimizers Python example\nprint('SciPy Optimizers')",
+            "java": "// SciPy Optimizers Java example\nSystem.out.println(\"SciPy Optimizers\");",
+            "explanation": "Basic example demonstrating SciPy Optimizers."
+        }
+    ]
+}

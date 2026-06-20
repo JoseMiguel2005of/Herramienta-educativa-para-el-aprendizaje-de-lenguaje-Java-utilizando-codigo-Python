@@ -1,0 +1,17 @@
+{
+    "id": "mongo-limit",
+    "title": "MongoDB Limit",
+    "intro": "Welcome to the MongoDB Limit lesson.",
+    "python_desc": "Python code for MongoDB Limit",
+    "java_desc": "Java equivalent for MongoDB Limit",
+    "explanation": "<p>In this lesson we cover <b>MongoDB Limit</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "mongo-limit-1",
+            "python": "# MongoDB Limit Python example\nprint('MongoDB Limit')",
+            "java": "// MongoDB Limit Java example\nSystem.out.println(\"MongoDB Limit\");",
+            "explanation": "Basic example demonstrating MongoDB Limit."
+        }
+    ]
+}

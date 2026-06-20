@@ -1,0 +1,22 @@
+{
+    "id": "ex-lambda",
+    "title": "Lambda Exercises",
+    "intro": "Welcome to the Lambda Exercises.",
+    "python_desc": "Ejercicios sobre Lambda",
+    "java_desc": "Práctica equivalente en Java",
+    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>Lambda</b> resolviendo estos ejercicios.</p>",
+    "exercises": [
+        {
+            "question": "Create a lambda function that takes one parameter (a) and returns it.",
+            "expected_output": "x = lambda a: a"
+        }
+    ],
+    "code_mappings": [
+        {
+            "id": "ex-lambda-1",
+            "python": "# Completa el ejercicio de Lambda\\n",
+            "java": "// Completa el ejercicio en Java\\n",
+            "explanation": "Espacio de práctica para Lambda."
+        }
+    ]
+}

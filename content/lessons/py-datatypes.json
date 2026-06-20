@@ -1,0 +1,17 @@
+{
+    "id": "py-datatypes",
+    "title": "Python Data Types",
+    "intro": "Welcome to the Python Data Types lesson.",
+    "python_desc": "Python code for Python Data Types",
+    "java_desc": "Java equivalent for Python Data Types",
+    "explanation": "<p>In this lesson we cover <b>Python Data Types</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-datatypes-1",
+            "python": "# Python Data Types Python example\nprint('Python Data Types')",
+            "java": "// Python Data Types Java example\nSystem.out.println(\"Python Data Types\");",
+            "explanation": "Basic example demonstrating Python Data Types."
+        }
+    ]
+}

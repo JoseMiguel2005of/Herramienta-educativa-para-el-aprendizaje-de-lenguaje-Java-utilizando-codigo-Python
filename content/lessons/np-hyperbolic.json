@@ -1,0 +1,17 @@
+{
+    "id": "np-hyperbolic",
+    "title": "Hyperbolic",
+    "intro": "Welcome to the Hyperbolic lesson.",
+    "python_desc": "Python code for Hyperbolic",
+    "java_desc": "Java equivalent for Hyperbolic",
+    "explanation": "<p>In this lesson we cover <b>Hyperbolic</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-hyperbolic-1",
+            "python": "# Hyperbolic Python example\nprint('Hyperbolic')",
+            "java": "// Hyperbolic Java example\nSystem.out.println(\"Hyperbolic\");",
+            "explanation": "Basic example demonstrating Hyperbolic."
+        }
+    ]
+}

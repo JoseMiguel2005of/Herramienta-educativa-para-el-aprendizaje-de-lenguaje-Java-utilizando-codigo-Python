@@ -1,0 +1,17 @@
+{
+    "id": "np-iterating",
+    "title": "NumPy Array Iterating",
+    "intro": "Welcome to the NumPy Array Iterating lesson.",
+    "python_desc": "Python code for NumPy Array Iterating",
+    "java_desc": "Java equivalent for NumPy Array Iterating",
+    "explanation": "<p>In this lesson we cover <b>NumPy Array Iterating</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-iterating-1",
+            "python": "# NumPy Array Iterating Python example\nprint('NumPy Array Iterating')",
+            "java": "// NumPy Array Iterating Java example\nSystem.out.println(\"NumPy Array Iterating\");",
+            "explanation": "Basic example demonstrating NumPy Array Iterating."
+        }
+    ]
+}

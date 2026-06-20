@@ -1,0 +1,17 @@
+{
+    "id": "np-search",
+    "title": "NumPy Array Search",
+    "intro": "Welcome to the NumPy Array Search lesson.",
+    "python_desc": "Python code for NumPy Array Search",
+    "java_desc": "Java equivalent for NumPy Array Search",
+    "explanation": "<p>In this lesson we cover <b>NumPy Array Search</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-search-1",
+            "python": "# NumPy Array Search Python example\nprint('NumPy Array Search')",
+            "java": "// NumPy Array Search Java example\nSystem.out.println(\"NumPy Array Search\");",
+            "explanation": "Basic example demonstrating NumPy Array Search."
+        }
+    ]
+}

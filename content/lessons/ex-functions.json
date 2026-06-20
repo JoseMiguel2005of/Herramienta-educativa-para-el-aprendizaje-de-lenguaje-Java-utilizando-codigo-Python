@@ -1,0 +1,42 @@
+{
+    "id": "ex-functions",
+    "title": "Functions Exercises",
+    "intro": "Welcome to the Functions Exercises.",
+    "python_desc": "Ejercicios sobre Functions",
+    "java_desc": "Práctica equivalente en Java",
+    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>Functions</b> resolviendo estos ejercicios.</p>",
+    "exercises": [
+        {
+            "question": "Create a function named my_function.",
+            "expected_output": "def my_function():\n    print('Hello from a function')"
+        },
+        {
+            "question": "Execute a function named my_function.",
+            "expected_output": "def my_function():\n    print('Hello from a function')\nmy_function()"
+        },
+        {
+            "question": "Inside a function with two parameters, print the first parameter.",
+            "expected_output": "def my_function(fname, lname):\n    print(fname)"
+        },
+        {
+            "question": "Let the function return the x parameter + 5.",
+            "expected_output": "def my_function(x):\n    return x + 5"
+        },
+        {
+            "question": "If you do not know the number of arguments that will be passed into your function, there is a prefix you can add in the function definition, which one?",
+            "expected_output": "def my_function(*kids):\n    print('The youngest child is ' + kids[2])"
+        },
+        {
+            "question": "If you do not know the number of keyword arguments that will be passed into your function, there is a prefix you can add in the function definition, which one?",
+            "expected_output": "def my_function(**kid):\n    print('His last name is ' + kid['lname'])"
+        }
+    ],
+    "code_mappings": [
+        {
+            "id": "ex-functions-1",
+            "python": "# Completa el ejercicio de Functions\\n",
+            "java": "// Completa el ejercicio en Java\\n",
+            "explanation": "Espacio de práctica para Functions."
+        }
+    ]
+}

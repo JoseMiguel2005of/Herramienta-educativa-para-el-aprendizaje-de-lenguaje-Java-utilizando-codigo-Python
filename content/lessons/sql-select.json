@@ -1,0 +1,17 @@
+{
+    "id": "sql-select",
+    "title": "MySQL Select",
+    "intro": "Welcome to the MySQL Select lesson.",
+    "python_desc": "Python code for MySQL Select",
+    "java_desc": "Java equivalent for MySQL Select",
+    "explanation": "<p>In this lesson we cover <b>MySQL Select</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "sql-select-1",
+            "python": "# MySQL Select Python example\nprint('MySQL Select')",
+            "java": "// MySQL Select Java example\nSystem.out.println(\"MySQL Select\");",
+            "explanation": "Basic example demonstrating MySQL Select."
+        }
+    ]
+}

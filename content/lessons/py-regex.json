@@ -1,0 +1,17 @@
+{
+    "id": "py-regex",
+    "title": "Python RegEx",
+    "intro": "Welcome to the Python RegEx lesson.",
+    "python_desc": "Python code for Python RegEx",
+    "java_desc": "Java equivalent for Python RegEx",
+    "explanation": "<p>In this lesson we cover <b>Python RegEx</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-regex-1",
+            "python": "# Python RegEx Python example\nprint('Python RegEx')",
+            "java": "// Python RegEx Java example\nSystem.out.println(\"Python RegEx\");",
+            "explanation": "Basic example demonstrating Python RegEx."
+        }
+    ]
+}

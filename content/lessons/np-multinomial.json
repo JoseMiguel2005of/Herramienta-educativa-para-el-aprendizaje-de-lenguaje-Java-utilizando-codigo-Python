@@ -1,0 +1,17 @@
+{
+    "id": "np-multinomial",
+    "title": "Multinomial Distribution",
+    "intro": "Welcome to the Multinomial Distribution lesson.",
+    "python_desc": "Python code for Multinomial Distribution",
+    "java_desc": "Java equivalent for Multinomial Distribution",
+    "explanation": "<p>In this lesson we cover <b>Multinomial Distribution</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-multinomial-1",
+            "python": "# Multinomial Distribution Python example\nprint('Multinomial Distribution')",
+            "java": "// Multinomial Distribution Java example\nSystem.out.println(\"Multinomial Distribution\");",
+            "explanation": "Basic example demonstrating Multinomial Distribution."
+        }
+    ]
+}

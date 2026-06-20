@@ -1,0 +1,17 @@
+{
+    "id": "pd-getstarted",
+    "title": "Pandas Getting Started",
+    "intro": "Welcome to the Pandas Getting Started lesson.",
+    "python_desc": "Python code for Pandas Getting Started",
+    "java_desc": "Java equivalent for Pandas Getting Started",
+    "explanation": "<p>In this lesson we cover <b>Pandas Getting Started</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "pd-getstarted-1",
+            "python": "# Pandas Getting Started Python example\nprint('Pandas Getting Started')",
+            "java": "// Pandas Getting Started Java example\nSystem.out.println(\"Pandas Getting Started\");",
+            "explanation": "Basic example demonstrating Pandas Getting Started."
+        }
+    ]
+}

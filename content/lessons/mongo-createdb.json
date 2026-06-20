@@ -1,0 +1,17 @@
+{
+    "id": "mongo-createdb",
+    "title": "MongoDB Create Database",
+    "intro": "Welcome to the MongoDB Create Database lesson.",
+    "python_desc": "Python code for MongoDB Create Database",
+    "java_desc": "Java equivalent for MongoDB Create Database",
+    "explanation": "<p>In this lesson we cover <b>MongoDB Create Database</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "mongo-createdb-1",
+            "python": "# MongoDB Create Database Python example\nprint('MongoDB Create Database')",
+            "java": "// MongoDB Create Database Java example\nSystem.out.println(\"MongoDB Create Database\");",
+            "explanation": "Basic example demonstrating MongoDB Create Database."
+        }
+    ]
+}

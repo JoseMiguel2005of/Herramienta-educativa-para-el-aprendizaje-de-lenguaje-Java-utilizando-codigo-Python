@@ -1,0 +1,122 @@
+{
+  "basico": [
+    {
+      "python": "No requiere clase",
+      "java": "public class MiClase { }",
+      "desc": "Java exige al menos una clase pública por archivo."
+    },
+    {
+      "python": "# comentario",
+      "java": "// comentario",
+      "desc": "Comentarios de una línea."
+    },
+    {
+      "python": "\"\"\"docstring\"\"\"",
+      "java": "/** Javadoc */",
+      "desc": "Documentación de código."
+    },
+    {
+      "python": "pass",
+      "java": ";  o bloque vacío { }",
+      "desc": "Marcador de bloque vacío."
+    }
+  ],
+  "tipos": [
+    {
+      "python": "int, float",
+      "java": "int, double, float",
+      "desc": "Números enteros y decimales."
+    },
+    {
+      "python": "str",
+      "java": "String",
+      "desc": "Cadenas de texto."
+    },
+    {
+      "python": "bool (True/False)",
+      "java": "boolean (true/false)",
+      "desc": "Valores lógicos."
+    },
+    {
+      "python": "list",
+      "java": "ArrayList<T> o T[]",
+      "desc": "Listas y arreglos dinámicos."
+    },
+    {
+      "python": "dict",
+      "java": "HashMap<K, V>",
+      "desc": "Estructuras clave-valor."
+    },
+    {
+      "python": "None",
+      "java": "null",
+      "desc": "Ausencia de valor."
+    }
+  ],
+  "estructuras": [
+    {
+      "python": "if / elif / else",
+      "java": "if / else if / else",
+      "desc": "Condicionales."
+    },
+    {
+      "python": "for x in iterable:",
+      "java": "for (Tipo x : coleccion)",
+      "desc": "Bucle for-each."
+    },
+    {
+      "python": "while cond:",
+      "java": "while (cond)",
+      "desc": "Bucle while."
+    },
+    {
+      "python": "break / continue",
+      "java": "break / continue",
+      "desc": "Control de flujo en bucles."
+    }
+  ],
+  "funciones": [
+    {
+      "python": "def nombre(params):",
+      "java": "Tipo nombre(Tipo param) { }",
+      "desc": "Definición de función/método."
+    },
+    {
+      "python": "return valor",
+      "java": "return valor;",
+      "desc": "Devolver un resultado."
+    },
+    {
+      "python": "lambda x: x * 2",
+      "java": "x -> x * 2",
+      "desc": "Funciones anónimas."
+    },
+    {
+      "python": "len(lista)",
+      "java": "lista.size() o array.length",
+      "desc": "Longitud de colección."
+    }
+  ],
+  "entrada_salida": [
+    {
+      "python": "print(\"texto\")",
+      "java": "System.out.println(\"texto\");",
+      "desc": "Salida por consola."
+    },
+    {
+      "python": "input(\"mensaje\")",
+      "java": "Scanner + nextLine()",
+      "desc": "Entrada desde teclado."
+    },
+    {
+      "python": "open('archivo.txt')",
+      "java": "Files.readAllLines(Paths.get(...))",
+      "desc": "Lectura de archivos."
+    },
+    {
+      "python": "import modulo",
+      "java": "import paquete.Clase;",
+      "desc": "Importar dependencias."
+    }
+  ]
+}

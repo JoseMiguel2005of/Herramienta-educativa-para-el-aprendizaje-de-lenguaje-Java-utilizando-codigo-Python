@@ -1,0 +1,17 @@
+{
+    "id": "py-lists",
+    "title": "Python Lists",
+    "intro": "Welcome to the Python Lists lesson.",
+    "python_desc": "Python code for Python Lists",
+    "java_desc": "Java equivalent for Python Lists",
+    "explanation": "<p>In this lesson we cover <b>Python Lists</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-lists-1",
+            "python": "# Python Lists Python example\nprint('Python Lists')",
+            "java": "// Python Lists Java example\nSystem.out.println(\"Python Lists\");",
+            "explanation": "Basic example demonstrating Python Lists."
+        }
+    ]
+}

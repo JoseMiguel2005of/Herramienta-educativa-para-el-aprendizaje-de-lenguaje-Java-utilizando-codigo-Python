@@ -1,0 +1,17 @@
+{
+    "id": "np-logistic",
+    "title": "Logistic Distribution",
+    "intro": "Welcome to the Logistic Distribution lesson.",
+    "python_desc": "Python code for Logistic Distribution",
+    "java_desc": "Java equivalent for Logistic Distribution",
+    "explanation": "<p>In this lesson we cover <b>Logistic Distribution</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-logistic-1",
+            "python": "# Logistic Distribution Python example\nprint('Logistic Distribution')",
+            "java": "// Logistic Distribution Java example\nSystem.out.println(\"Logistic Distribution\");",
+            "explanation": "Basic example demonstrating Logistic Distribution."
+        }
+    ]
+}

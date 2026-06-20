@@ -1,0 +1,17 @@
+{
+    "id": "np-indexing",
+    "title": "NumPy Array Indexing",
+    "intro": "Welcome to the NumPy Array Indexing lesson.",
+    "python_desc": "Python code for NumPy Array Indexing",
+    "java_desc": "Java equivalent for NumPy Array Indexing",
+    "explanation": "<p>In this lesson we cover <b>NumPy Array Indexing</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-indexing-1",
+            "python": "# NumPy Array Indexing Python example\nprint('NumPy Array Indexing')",
+            "java": "// NumPy Array Indexing Java example\nSystem.out.println(\"NumPy Array Indexing\");",
+            "explanation": "Basic example demonstrating NumPy Array Indexing."
+        }
+    ]
+}

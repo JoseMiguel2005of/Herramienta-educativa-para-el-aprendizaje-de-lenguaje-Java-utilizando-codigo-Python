@@ -1,0 +1,17 @@
+{
+    "id": "py-home",
+    "title": "Python HOME",
+    "intro": "Welcome to the Python HOME lesson.",
+    "python_desc": "Python code for Python HOME",
+    "java_desc": "Java equivalent for Python HOME",
+    "explanation": "<p>In this lesson we cover <b>Python HOME</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-home-1",
+            "python": "# Python HOME Python example\nprint('Python HOME')",
+            "java": "// Python HOME Java example\nSystem.out.println(\"Python HOME\");",
+            "explanation": "Basic example demonstrating Python HOME."
+        }
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "id": "np-sort",
+    "title": "NumPy Array Sort",
+    "intro": "Welcome to the NumPy Array Sort lesson.",
+    "python_desc": "Python code for NumPy Array Sort",
+    "java_desc": "Java equivalent for NumPy Array Sort",
+    "explanation": "<p>In this lesson we cover <b>NumPy Array Sort</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-sort-1",
+            "python": "# NumPy Array Sort Python example\nprint('NumPy Array Sort')",
+            "java": "// NumPy Array Sort Java example\nSystem.out.println(\"NumPy Array Sort\");",
+            "explanation": "Basic example demonstrating NumPy Array Sort."
+        }
+    ]
+}

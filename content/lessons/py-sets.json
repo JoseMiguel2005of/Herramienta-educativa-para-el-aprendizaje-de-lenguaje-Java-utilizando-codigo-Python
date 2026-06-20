@@ -1,0 +1,17 @@
+{
+    "id": "py-sets",
+    "title": "Python Sets",
+    "intro": "Welcome to the Python Sets lesson.",
+    "python_desc": "Python code for Python Sets",
+    "java_desc": "Java equivalent for Python Sets",
+    "explanation": "<p>In this lesson we cover <b>Python Sets</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-sets-1",
+            "python": "# Python Sets Python example\nprint('Python Sets')",
+            "java": "// Python Sets Java example\nSystem.out.println(\"Python Sets\");",
+            "explanation": "Basic example demonstrating Python Sets."
+        }
+    ]
+}

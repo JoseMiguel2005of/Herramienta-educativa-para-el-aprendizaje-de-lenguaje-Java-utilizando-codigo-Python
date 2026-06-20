@@ -1,0 +1,17 @@
+{
+    "id": "py-lambda",
+    "title": "Python Lambda",
+    "intro": "Welcome to the Python Lambda lesson.",
+    "python_desc": "Python code for Python Lambda",
+    "java_desc": "Java equivalent for Python Lambda",
+    "explanation": "<p>In this lesson we cover <b>Python Lambda</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-lambda-1",
+            "python": "# Python Lambda Python example\nprint('Python Lambda')",
+            "java": "// Python Lambda Java example\nSystem.out.println(\"Python Lambda\");",
+            "explanation": "Basic example demonstrating Python Lambda."
+        }
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "id": "py-math",
+    "title": "Python Math",
+    "intro": "Welcome to the Python Math lesson.",
+    "python_desc": "Python code for Python Math",
+    "java_desc": "Java equivalent for Python Math",
+    "explanation": "<p>In this lesson we cover <b>Python Math</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-math-1",
+            "python": "# Python Math Python example\nprint('Python Math')",
+            "java": "// Python Math Java example\nSystem.out.println(\"Python Math\");",
+            "explanation": "Basic example demonstrating Python Math."
+        }
+    ]
+}

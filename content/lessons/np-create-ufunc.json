@@ -1,0 +1,17 @@
+{
+    "id": "np-create-ufunc",
+    "title": "Create ufuncs",
+    "intro": "Welcome to the Create ufuncs lesson.",
+    "python_desc": "Python code for Create ufuncs",
+    "java_desc": "Java equivalent for Create ufuncs",
+    "explanation": "<p>In this lesson we cover <b>Create ufuncs</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-create-ufunc-1",
+            "python": "# Create ufuncs Python example\nprint('Create ufuncs')",
+            "java": "// Create ufuncs Java example\nSystem.out.println(\"Create ufuncs\");",
+            "explanation": "Basic example demonstrating Create ufuncs."
+        }
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "id": "sql-getstarted",
+    "title": "MySQL Get Started",
+    "intro": "Welcome to the MySQL Get Started lesson.",
+    "python_desc": "Python code for MySQL Get Started",
+    "java_desc": "Java equivalent for MySQL Get Started",
+    "explanation": "<p>In this lesson we cover <b>MySQL Get Started</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "sql-getstarted-1",
+            "python": "# MySQL Get Started Python example\nprint('MySQL Get Started')",
+            "java": "// MySQL Get Started Java example\nSystem.out.println(\"MySQL Get Started\");",
+            "explanation": "Basic example demonstrating MySQL Get Started."
+        }
+    ]
+}

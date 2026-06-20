@@ -1,0 +1,436 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — {{ t.site_title }}{% endblock %}
+
+{% block content %}
+<article class="telemetry-dashboard">
+    <header class="telemetry-header">
+        <h1>SYS.PROGRESS</h1>
+        <div class="system-status">
+            <span class="status-indicator"></span>
+            ONLINE_TRACKING_ACTIVE
+        </div>
+    </header>
+
+    <div class="telemetry-grid">
+        <!-- Main XP/Level Terminal Readout -->
+        <div class="data-module module-primary">
+            <div class="module-header">
+                <span>// IDENTIFIER: LEVEL</span>
+                <span>DATA_STREAM</span>
+            </div>
+            <div class="module-body level-readout">
+                <div class="level-display">
+                    <span class="level-label">LVL</span>
+                    <span class="level-value">{{ (summary.total_xp // 100) + 1 }}</span>
+                </div>
+                <div class="xp-data">
+                    <div class="data-row">
+                        <span class="data-key">TOTAL_XP:</span>
+                        <span class="data-val">{{ summary.total_xp }}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-key">NEXT_THRESHOLD:</span>
+                        <span class="data-val">{{ summary.total_xp % 100 }}/100</span>
+                    </div>
+                </div>
+            </div>
+            <div class="terminal-progress-container">
+                <div class="terminal-progress-bar" style="width: {{ summary.total_xp % 100 }}%;"></div>
+            </div>
+        </div>
+
+        <!-- Metrics -->
+        <div class="data-module module-metric">
+            <div class="module-header">
+                <span>// METRICS: COMPLETED</span>
+            </div>
+            <div class="module-body center-data">
+                <span class="metric-value">{{ summary.completed_lessons | length }}</span>
+                <span class="metric-total">/ {{ lessons | length }} MODULES</span>
+            </div>
+            <div class="segmented-bar">
+                {% set comp_pct = (summary.completed_lessons | length / lessons | length * 100) | round %}
+                <div class="seg-fill" style="width: {{ comp_pct }}%;"></div>
+            </div>
+        </div>
+
+        <div class="data-module module-metric">
+            <div class="module-header">
+                <span>// METRICS: STREAK</span>
+            </div>
+            <div class="module-body center-data">
+                <span class="metric-value highlight-orange">1</span>
+                <span class="metric-total">DAY_ACTIVE</span>
+            </div>
+            <div class="status-pulse-container">
+                <span class="pulse-ring"></span>
+                LOGGED_TODAY
+            </div>
+        </div>
+
+        <!-- Badges -->
+        <div class="data-module module-badges span-2">
+            <div class="module-header">
+                <span>// ACHIEVEMENTS_UNLOCKED</span>
+            </div>
+            <div class="module-body badges-container">
+                {% if summary.total_xp > 0 %}
+                <div class="badge-item">
+                    <span class="badge-icon">01</span>
+                    <span class="badge-label">PRIMER_PASO</span>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    [ NO_ACHIEVEMENTS_DETECTED : EXECUTE_LESSON_01 ]
+                </div>
+                {% endif %}
+                
+                {% if summary.completed_lessons | length >= 10 %}
+                <div class="badge-item">
+                    <span class="badge-icon">10</span>
+                    <span class="badge-label">EXPLORADOR</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Section Progress -->
+        <div class="data-module module-sections span-full">
+            <div class="module-header">
+                <span>// MODULE_BREAKDOWN</span>
+            </div>
+            <div class="module-body sections-container">
+                {% for category in categories %}
+                {% set cat_lessons = category.sections | map(attribute='lessons') | sum(start=[]) | map(attribute='id') | list %}
+                {% set completed_in_cat = cat_lessons | select("in", summary.completed_lessons) | list | length %}
+                <div class="section-row">
+                    <div class="section-info">
+                        <span class="sec-id">SEC_{{ loop.index }}</span>
+                        <span class="sec-name">{{ t[category.label_key] | upper }}</span>
+                    </div>
+                    <div class="section-tracker">
+                        <div class="terminal-progress-container sec-bar">
+                            <div class="terminal-progress-bar bg-python" style="width: {{ (completed_in_cat / cat_lessons | length * 100) | round }}%;"></div>
+                        </div>
+                        <span class="sec-ratio">[{{ completed_in_cat }}/{{ cat_lessons | length }}]</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</article>
+
+<style>
+.telemetry-dashboard {
+    font-family: "JetBrains Mono", monospace;
+    color: var(--text);
+    padding: 0 1rem;
+}
+
+.telemetry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 2px solid var(--text);
+    padding-bottom: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.telemetry-header h1 {
+    font-size: 1.5rem;
+    font-family: "Space Grotesk", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 0;
+    color: #fff;
+}
+
+.system-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--green);
+}
+
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    background-color: var(--green);
+    border-radius: 50%;
+    animation: blink 2s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+.telemetry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1px;
+    background: var(--border); /* Borders formed by grid gap */
+    border: 1px solid var(--border);
+}
+
+.data-module {
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+}
+
+.span-2 {
+    grid-column: span 2;
+}
+@media (max-width: 800px) {
+    .span-2 { grid-column: span 1; }
+}
+
+.span-full {
+    grid-column: 1 / -1;
+}
+
+.module-header {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+}
+
+.module-body {
+    padding: 1.5rem;
+    flex-grow: 1;
+}
+
+/* Level Readout */
+.level-readout {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.level-display {
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+}
+
+.level-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.level-value {
+    font-size: 4rem;
+    font-weight: 700;
+    color: var(--green);
+    text-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+}
+
+.xp-data {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: right;
+}
+
+.data-row {
+    font-size: 0.85rem;
+}
+
+.data-key {
+    color: var(--text-muted);
+    margin-right: 0.5rem;
+}
+
+.data-val {
+    color: #fff;
+    font-weight: 700;
+}
+
+.terminal-progress-container {
+    height: 12px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+}
+
+.terminal-progress-bar {
+    height: 100%;
+    background: var(--green);
+    position: relative;
+}
+.terminal-progress-bar.bg-python {
+    background: var(--python-color);
+}
+
+.terminal-progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 5px,
+        rgba(0,0,0,0.3) 5px,
+        rgba(0,0,0,0.3) 10px
+    );
+}
+
+/* Center Metrics */
+.center-data {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.metric-value {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+}
+.highlight-orange {
+    color: #ff9800;
+}
+
+.metric-total {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+}
+
+.segmented-bar {
+    height: 12px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+    padding: 2px;
+}
+.seg-fill {
+    height: 100%;
+    background: var(--python-color);
+}
+
+.status-pulse-container {
+    padding: 0.5rem;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 0.75rem;
+    color: #ff9800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: rgba(255, 152, 0, 0.05);
+}
+
+/* Badges */
+.badges-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+}
+
+.badge-item {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+    padding: 0.5rem 1rem;
+}
+
+.badge-icon {
+    color: var(--green);
+    font-weight: 700;
+    margin-right: 0.75rem;
+}
+
+.badge-label {
+    font-size: 0.85rem;
+    color: #fff;
+}
+
+.empty-state {
+    color: #666;
+    font-size: 0.85rem;
+}
+
+/* Sections */
+.sections-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+}
+
+.section-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+}
+.section-row:last-child {
+    border-bottom: none;
+}
+
+.section-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 30%;
+}
+
+.sec-id {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+}
+
+.sec-name {
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.section-tracker {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    width: 60%;
+}
+
+.sec-bar {
+    flex-grow: 1;
+    border-top: none;
+    border: 1px solid var(--border);
+}
+
+.sec-ratio {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    min-width: 60px;
+    text-align: right;
+}
+
+@media (max-width: 600px) {
+    .section-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    .section-info, .section-tracker {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}

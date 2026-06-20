@@ -1,0 +1,17 @@
+{
+    "id": "py-userinput",
+    "title": "Python User Input",
+    "intro": "Welcome to the Python User Input lesson.",
+    "python_desc": "Python code for Python User Input",
+    "java_desc": "Java equivalent for Python User Input",
+    "explanation": "<p>In this lesson we cover <b>Python User Input</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-userinput-1",
+            "python": "# Python User Input Python example\nprint('Python User Input')",
+            "java": "// Python User Input Java example\nSystem.out.println(\"Python User Input\");",
+            "explanation": "Basic example demonstrating Python User Input."
+        }
+    ]
+}

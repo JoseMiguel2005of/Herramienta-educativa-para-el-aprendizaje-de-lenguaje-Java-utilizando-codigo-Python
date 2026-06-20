@@ -1,0 +1,17 @@
+{
+    "id": "np-rayleigh",
+    "title": "Rayleigh Distribution",
+    "intro": "Welcome to the Rayleigh Distribution lesson.",
+    "python_desc": "Python code for Rayleigh Distribution",
+    "java_desc": "Java equivalent for Rayleigh Distribution",
+    "explanation": "<p>In this lesson we cover <b>Rayleigh Distribution</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-rayleigh-1",
+            "python": "# Rayleigh Distribution Python example\nprint('Rayleigh Distribution')",
+            "java": "// Rayleigh Distribution Java example\nSystem.out.println(\"Rayleigh Distribution\");",
+            "explanation": "Basic example demonstrating Rayleigh Distribution."
+        }
+    ]
+}

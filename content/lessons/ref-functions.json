@@ -1,0 +1,17 @@
+{
+    "id": "ref-functions",
+    "title": "Built-in Functions",
+    "intro": "Welcome to the Built-in Functions lesson.",
+    "python_desc": "Python code for Built-in Functions",
+    "java_desc": "Java equivalent for Built-in Functions",
+    "explanation": "<p>In this lesson we cover <b>Built-in Functions</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "ref-functions-1",
+            "python": "# Built-in Functions Python example\nprint('Built-in Functions')",
+            "java": "// Built-in Functions Java example\nSystem.out.println(\"Built-in Functions\");",
+            "explanation": "Basic example demonstrating Built-in Functions."
+        }
+    ]
+}

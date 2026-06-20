@@ -1,0 +1,17 @@
+{
+    "id": "sc-graphs",
+    "title": "SciPy Graphs",
+    "intro": "Welcome to the SciPy Graphs lesson.",
+    "python_desc": "Python code for SciPy Graphs",
+    "java_desc": "Java equivalent for SciPy Graphs",
+    "explanation": "<p>In this lesson we cover <b>SciPy Graphs</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "sc-graphs-1",
+            "python": "# SciPy Graphs Python example\nprint('SciPy Graphs')",
+            "java": "// SciPy Graphs Java example\nSystem.out.println(\"SciPy Graphs\");",
+            "explanation": "Basic example demonstrating SciPy Graphs."
+        }
+    ]
+}

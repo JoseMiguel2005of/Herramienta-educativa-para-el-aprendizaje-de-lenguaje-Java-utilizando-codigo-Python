@@ -1,0 +1,17 @@
+{
+    "id": "ref-keywords",
+    "title": "Python Keywords",
+    "intro": "Welcome to the Python Keywords lesson.",
+    "python_desc": "Python code for Python Keywords",
+    "java_desc": "Java equivalent for Python Keywords",
+    "explanation": "<p>In this lesson we cover <b>Python Keywords</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "ref-keywords-1",
+            "python": "# Python Keywords Python example\nprint('Python Keywords')",
+            "java": "// Python Keywords Java example\nSystem.out.println(\"Python Keywords\");",
+            "explanation": "Basic example demonstrating Python Keywords."
+        }
+    ]
+}

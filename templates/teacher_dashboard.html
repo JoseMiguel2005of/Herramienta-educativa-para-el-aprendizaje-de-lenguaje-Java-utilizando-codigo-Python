@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Panel Profesor — {{ t.site_title }}{% endblock %}
+
+{% block content %}
+<article class="dashboard-page">
+    <header class="lesson-header" style="margin-bottom: 2rem;">
+        <h1>Panel de Profesor</h1>
+        <p class="lesson-intro">Monitorea el progreso de tus estudiantes.</p>
+    </header>
+
+    <div class="dashboard-card" style="margin-bottom: 2rem;">
+        <h2>Gestión de Estudiantes</h2>
+        <div style="overflow-x: auto; margin-top: 1rem;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead>
+                    <tr style="border-bottom: 2px solid rgba(255,255,255,0.1);">
+                        <th style="padding: 1rem;">Usuario</th>
+                        <th style="padding: 1rem;">XP Total</th>
+                        <th style="padding: 1rem;">Lecciones Completadas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in students %}
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <td style="padding: 1rem; color: var(--green); font-weight: bold;">{{ s.username }}</td>
+                        <td style="padding: 1rem;">{{ s.total_xp }} XP</td>
+                        <td style="padding: 1rem;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <span>{{ s.completed }}</span>
+                                <div class="xp-bar-container" style="width: 100px; height: 6px; background: #333; border-radius: 3px;">
+                                    <div class="xp-bar-fill" style="width: {{ (s.completed / 30 * 100) | round }}%; height: 100%; background: var(--python-color); border-radius: 3px;"></div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3" style="padding: 2rem; text-align: center; color: #888;">No hay estudiantes registrados aún.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="dashboard-card">
+        <h2>Gestión de Lecciones (CRUD Próximamente)</h2>
+        <p style="color: #888; font-size: 0.9rem;">El CRUD de lecciones dinámico está planeado para la siguiente versión usando el sistema JSON actual.</p>
+        <button class="btn-ghost" style="margin-top: 1rem; opacity: 0.5; cursor: not-allowed;" disabled>+ Añadir Nueva Lección</button>
+    </div>
+</article>
+{% endblock %}

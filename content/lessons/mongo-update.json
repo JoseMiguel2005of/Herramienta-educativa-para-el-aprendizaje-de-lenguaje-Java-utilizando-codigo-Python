@@ -1,0 +1,17 @@
+{
+    "id": "mongo-update",
+    "title": "MongoDB Update",
+    "intro": "Welcome to the MongoDB Update lesson.",
+    "python_desc": "Python code for MongoDB Update",
+    "java_desc": "Java equivalent for MongoDB Update",
+    "explanation": "<p>In this lesson we cover <b>MongoDB Update</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "mongo-update-1",
+            "python": "# MongoDB Update Python example\nprint('MongoDB Update')",
+            "java": "// MongoDB Update Java example\nSystem.out.println(\"MongoDB Update\");",
+            "explanation": "Basic example demonstrating MongoDB Update."
+        }
+    ]
+}

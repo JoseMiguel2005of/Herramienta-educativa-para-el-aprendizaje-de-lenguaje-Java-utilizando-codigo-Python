@@ -1,0 +1,17 @@
+{
+    "id": "pd-correlations",
+    "title": "Data Correlations",
+    "intro": "Welcome to the Data Correlations lesson.",
+    "python_desc": "Python code for Data Correlations",
+    "java_desc": "Java equivalent for Data Correlations",
+    "explanation": "<p>In this lesson we cover <b>Data Correlations</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "pd-correlations-1",
+            "python": "# Data Correlations Python example\nprint('Data Correlations')",
+            "java": "// Data Correlations Java example\nSystem.out.println(\"Data Correlations\");",
+            "explanation": "Basic example demonstrating Data Correlations."
+        }
+    ]
+}

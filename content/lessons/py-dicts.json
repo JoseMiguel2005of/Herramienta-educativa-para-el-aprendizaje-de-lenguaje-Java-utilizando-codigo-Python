@@ -1,0 +1,17 @@
+{
+    "id": "py-dicts",
+    "title": "Python Dictionaries",
+    "intro": "Welcome to the Python Dictionaries lesson.",
+    "python_desc": "Python code for Python Dictionaries",
+    "java_desc": "Java equivalent for Python Dictionaries",
+    "explanation": "<p>In this lesson we cover <b>Python Dictionaries</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-dicts-1",
+            "python": "# Python Dictionaries Python example\nprint('Python Dictionaries')",
+            "java": "// Python Dictionaries Java example\nSystem.out.println(\"Python Dictionaries\");",
+            "explanation": "Basic example demonstrating Python Dictionaries."
+        }
+    ]
+}

@@ -1,0 +1,38 @@
+{
+    "id": "ex-operators",
+    "title": "Operators Exercises",
+    "intro": "Welcome to the Operators Exercises.",
+    "python_desc": "Ejercicios sobre Operators",
+    "java_desc": "Práctica equivalente en Java",
+    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>Operators</b> resolviendo estos ejercicios.</p>",
+    "exercises": [
+        {
+            "question": "Multiply 10 with 5, and print the result.",
+            "expected_output": "print(10 * 5)"
+        },
+        {
+            "question": "Divide 10 by 2, and print the result.",
+            "expected_output": "print(10 / 2)"
+        },
+        {
+            "question": "Use the correct membership operator to check if 'apple' is present in the fruits object.",
+            "expected_output": "fruits = ['apple', 'banana']\nif 'apple' in fruits:\n    print('Yes, apple is a fruit!')"
+        },
+        {
+            "question": "Use the correct comparison operator to check if 5 is not equal to 10.",
+            "expected_output": "if 5 != 10:\n    print('5 and 10 is not equal')"
+        },
+        {
+            "question": "Use the correct logical operator to check if at least one of two statements is True.",
+            "expected_output": "if 5 == 10 or 4 == 4:\n    print('At least one of the statements is true')"
+        }
+    ],
+    "code_mappings": [
+        {
+            "id": "ex-operators-1",
+            "python": "# Completa el ejercicio de Operators\\n",
+            "java": "// Completa el ejercicio en Java\\n",
+            "explanation": "Espacio de práctica para Operators."
+        }
+    ]
+}

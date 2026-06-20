@@ -1,0 +1,17 @@
+{
+    "id": "np-slicing",
+    "title": "NumPy Array Slicing",
+    "intro": "Welcome to the NumPy Array Slicing lesson.",
+    "python_desc": "Python code for NumPy Array Slicing",
+    "java_desc": "Java equivalent for NumPy Array Slicing",
+    "explanation": "<p>In this lesson we cover <b>NumPy Array Slicing</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-slicing-1",
+            "python": "# NumPy Array Slicing Python example\nprint('NumPy Array Slicing')",
+            "java": "// NumPy Array Slicing Java example\nSystem.out.println(\"NumPy Array Slicing\");",
+            "explanation": "Basic example demonstrating NumPy Array Slicing."
+        }
+    ]
+}

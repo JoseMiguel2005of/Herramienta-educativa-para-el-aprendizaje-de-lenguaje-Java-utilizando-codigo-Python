@@ -1,0 +1,17 @@
+{
+    "id": "sql-orderby",
+    "title": "MySQL Order By",
+    "intro": "Welcome to the MySQL Order By lesson.",
+    "python_desc": "Python code for MySQL Order By",
+    "java_desc": "Java equivalent for MySQL Order By",
+    "explanation": "<p>In this lesson we cover <b>MySQL Order By</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "sql-orderby-1",
+            "python": "# MySQL Order By Python example\nprint('MySQL Order By')",
+            "java": "// MySQL Order By Java example\nSystem.out.println(\"MySQL Order By\");",
+            "explanation": "Basic example demonstrating MySQL Order By."
+        }
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "id": "pd-series",
+    "title": "Pandas Series",
+    "intro": "Welcome to the Pandas Series lesson.",
+    "python_desc": "Python code for Pandas Series",
+    "java_desc": "Java equivalent for Pandas Series",
+    "explanation": "<p>In this lesson we cover <b>Pandas Series</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "pd-series-1",
+            "python": "# Pandas Series Python example\nprint('Pandas Series')",
+            "java": "// Pandas Series Java example\nSystem.out.println(\"Pandas Series\");",
+            "explanation": "Basic example demonstrating Pandas Series."
+        }
+    ]
+}

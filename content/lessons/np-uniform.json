@@ -1,0 +1,17 @@
+{
+    "id": "np-uniform",
+    "title": "Uniform Distribution",
+    "intro": "Welcome to the Uniform Distribution lesson.",
+    "python_desc": "Python code for Uniform Distribution",
+    "java_desc": "Java equivalent for Uniform Distribution",
+    "explanation": "<p>In this lesson we cover <b>Uniform Distribution</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-uniform-1",
+            "python": "# Uniform Distribution Python example\nprint('Uniform Distribution')",
+            "java": "// Uniform Distribution Java example\nSystem.out.println(\"Uniform Distribution\");",
+            "explanation": "Basic example demonstrating Uniform Distribution."
+        }
+    ]
+}

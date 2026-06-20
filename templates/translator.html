@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Transpilador Visual - Py2Java Edu{% endblock %}
+
+{% block content %}
+<div class="page-content" style="padding: 2rem;">
+    <h1 style="color: var(--green); margin-bottom: 0.5rem; font-size: 2.5rem;">⚡ Transpilador Visual</h1>
+    <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 1.1rem; max-width: 800px;">
+        Escribe código Python básico en el editor. Observa cómo se convierte en Java en tiempo real. 
+        <strong>Pasa el cursor sobre el código traducido</strong> para ver qué parte de Python corresponde a cada parte de Java.
+    </p>
+
+    <div class="translator-workspace" style="display: flex; flex-direction: column; gap: 2rem; max-width: 1400px; margin: 0 auto;">
+        
+        <!-- Input Panel -->
+        <div class="input-panel" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+            <div class="panel-header" style="background: var(--bg); padding: 0.5rem 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+                <span style="color: var(--python-color); font-weight: bold; font-family: 'Space Grotesk', sans-serif;">&gt;_ Entrada Python</span>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">Soporta: variables, print, if/else, for, def</span>
+            </div>
+            <textarea id="python-input" spellcheck="false" style="width: 100%; height: 150px; background: transparent; border: none; padding: 1rem; color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 14px; resize: vertical; outline: none; box-sizing: border-box;">
+# Escribe aquí tu código Python
+nombre = "Carlos"
+print("Hola " + nombre)
+
+if True:
+    print("Es verdadero")
+
+for i in range(5):
+    print(i)
+</textarea>
+        </div>
+
+        <!-- Output Panel (Side by Side AST) -->
+        <div class="output-panel" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            
+            <div class="ast-side python-side" style="background: var(--bg-code); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+                <div class="panel-header" style="background: rgba(0, 229, 255, 0.1); padding: 0.5rem 1rem; border-bottom: 1px solid var(--border);">
+                    <span style="color: var(--python-color); font-weight: bold;">[AST] PYTHON</span>
+                </div>
+                <div id="python-ast-output" class="ast-content" style="padding: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 14px; white-space: pre-wrap; color: #fff; min-height: 250px;">
+                    <!-- Auto-generated -->
+                </div>
+            </div>
+
+            <div class="ast-side java-side" style="background: var(--bg-code); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+                <div class="panel-header" style="background: rgba(255, 85, 85, 0.1); padding: 0.5rem 1rem; border-bottom: 1px solid var(--border);">
+                    <span style="color: var(--java-color); font-weight: bold;">[AST] JAVA</span>
+                </div>
+                <div id="java-ast-output" class="ast-content" style="padding: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 14px; white-space: pre-wrap; color: #fff; min-height: 250px;">
+                    <!-- Auto-generated -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Transpiler Specific Styles */
+    .token-span {
+        transition: all 0.2s ease;
+        border-radius: 2px;
+        padding: 0 2px;
+        margin: 0 -2px;
+        cursor: crosshair;
+    }
+    
+    .token-span.hovered {
+        background-color: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 0 5px rgba(255,255,255,0.5);
+    }
+    
+    /* Token Colors */
+    .token-keyword { color: #ff7b72; } /* Reddish */
+    .token-string { color: #a5d6ff; } /* Light blue */
+    .token-number { color: #79c0ff; }
+    .token-variable { color: #d2a8ff; } /* Purple */
+    .token-punctuation { color: #c9d1d9; }
+    .token-comment { color: #8b949e; font-style: italic; }
+</style>
+
+<script src="{{ url_for('static', filename='js/transpiler.js') }}"></script>
+{% endblock %}

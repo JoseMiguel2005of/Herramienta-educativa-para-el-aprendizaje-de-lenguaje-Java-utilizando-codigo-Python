@@ -1,0 +1,17 @@
+{
+    "id": "py-json",
+    "title": "Python JSON",
+    "intro": "Welcome to the Python JSON lesson.",
+    "python_desc": "Python code for Python JSON",
+    "java_desc": "Java equivalent for Python JSON",
+    "explanation": "<p>In this lesson we cover <b>Python JSON</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-json-1",
+            "python": "# Python JSON Python example\nprint('Python JSON')",
+            "java": "// Python JSON Java example\nSystem.out.println(\"Python JSON\");",
+            "explanation": "Basic example demonstrating Python JSON."
+        }
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "id": "np-pareto",
+    "title": "Pareto Distribution",
+    "intro": "Welcome to the Pareto Distribution lesson.",
+    "python_desc": "Python code for Pareto Distribution",
+    "java_desc": "Java equivalent for Pareto Distribution",
+    "explanation": "<p>In this lesson we cover <b>Pareto Distribution</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-pareto-1",
+            "python": "# Pareto Distribution Python example\nprint('Pareto Distribution')",
+            "java": "// Pareto Distribution Java example\nSystem.out.println(\"Pareto Distribution\");",
+            "explanation": "Basic example demonstrating Pareto Distribution."
+        }
+    ]
+}

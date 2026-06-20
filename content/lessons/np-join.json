@@ -1,0 +1,17 @@
+{
+    "id": "np-join",
+    "title": "NumPy Array Join",
+    "intro": "Welcome to the NumPy Array Join lesson.",
+    "python_desc": "Python code for NumPy Array Join",
+    "java_desc": "Java equivalent for NumPy Array Join",
+    "explanation": "<p>In this lesson we cover <b>NumPy Array Join</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "np-join-1",
+            "python": "# NumPy Array Join Python example\nprint('NumPy Array Join')",
+            "java": "// NumPy Array Join Java example\nSystem.out.println(\"NumPy Array Join\");",
+            "explanation": "Basic example demonstrating NumPy Array Join."
+        }
+    ]
+}

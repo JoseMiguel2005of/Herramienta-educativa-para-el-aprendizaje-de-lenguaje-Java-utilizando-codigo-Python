@@ -1,0 +1,17 @@
+{
+    "id": "ref-dicts",
+    "title": "Dictionary Methods",
+    "intro": "Welcome to the Dictionary Methods lesson.",
+    "python_desc": "Python code for Dictionary Methods",
+    "java_desc": "Java equivalent for Dictionary Methods",
+    "explanation": "<p>In this lesson we cover <b>Dictionary Methods</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "ref-dicts-1",
+            "python": "# Dictionary Methods Python example\nprint('Dictionary Methods')",
+            "java": "// Dictionary Methods Java example\nSystem.out.println(\"Dictionary Methods\");",
+            "explanation": "Basic example demonstrating Dictionary Methods."
+        }
+    ]
+}

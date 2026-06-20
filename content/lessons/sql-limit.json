@@ -1,0 +1,17 @@
+{
+    "id": "sql-limit",
+    "title": "MySQL Limit",
+    "intro": "Welcome to the MySQL Limit lesson.",
+    "python_desc": "Python code for MySQL Limit",
+    "java_desc": "Java equivalent for MySQL Limit",
+    "explanation": "<p>In this lesson we cover <b>MySQL Limit</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "sql-limit-1",
+            "python": "# MySQL Limit Python example\nprint('MySQL Limit')",
+            "java": "// MySQL Limit Java example\nSystem.out.println(\"MySQL Limit\");",
+            "explanation": "Basic example demonstrating MySQL Limit."
+        }
+    ]
+}

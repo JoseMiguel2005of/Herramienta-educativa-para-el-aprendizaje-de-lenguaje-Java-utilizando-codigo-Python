@@ -1,0 +1,17 @@
+{
+    "id": "ref-lists",
+    "title": "List Methods",
+    "intro": "Welcome to the List Methods lesson.",
+    "python_desc": "Python code for List Methods",
+    "java_desc": "Java equivalent for List Methods",
+    "explanation": "<p>In this lesson we cover <b>List Methods</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "ref-lists-1",
+            "python": "# List Methods Python example\nprint('List Methods')",
+            "java": "// List Methods Java example\nSystem.out.println(\"List Methods\");",
+            "explanation": "Basic example demonstrating List Methods."
+        }
+    ]
+}

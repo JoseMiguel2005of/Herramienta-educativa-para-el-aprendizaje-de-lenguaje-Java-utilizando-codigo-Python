@@ -1,0 +1,17 @@
+{
+    "id": "ref-file",
+    "title": "File Methods",
+    "intro": "Welcome to the File Methods lesson.",
+    "python_desc": "Python code for File Methods",
+    "java_desc": "Java equivalent for File Methods",
+    "explanation": "<p>In this lesson we cover <b>File Methods</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "ref-file-1",
+            "python": "# File Methods Python example\nprint('File Methods')",
+            "java": "// File Methods Java example\nSystem.out.println(\"File Methods\");",
+            "explanation": "Basic example demonstrating File Methods."
+        }
+    ]
+}

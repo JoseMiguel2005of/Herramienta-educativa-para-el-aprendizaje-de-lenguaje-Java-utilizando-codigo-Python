@@ -1,0 +1,17 @@
+{
+    "id": "py-tryexcept",
+    "title": "Python Try...Except",
+    "intro": "Welcome to the Python Try...Except lesson.",
+    "python_desc": "Python code for Python Try...Except",
+    "java_desc": "Java equivalent for Python Try...Except",
+    "explanation": "<p>In this lesson we cover <b>Python Try...Except</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-tryexcept-1",
+            "python": "# Python Try...Except Python example\nprint('Python Try...Except')",
+            "java": "// Python Try...Except Java example\nSystem.out.println(\"Python Try...Except\");",
+            "explanation": "Basic example demonstrating Python Try...Except."
+        }
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "id": "sql-update",
+    "title": "MySQL Update",
+    "intro": "Welcome to the MySQL Update lesson.",
+    "python_desc": "Python code for MySQL Update",
+    "java_desc": "Java equivalent for MySQL Update",
+    "explanation": "<p>In this lesson we cover <b>MySQL Update</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "sql-update-1",
+            "python": "# MySQL Update Python example\nprint('MySQL Update')",
+            "java": "// MySQL Update Java example\nSystem.out.println(\"MySQL Update\");",
+            "explanation": "Basic example demonstrating MySQL Update."
+        }
+    ]
+}

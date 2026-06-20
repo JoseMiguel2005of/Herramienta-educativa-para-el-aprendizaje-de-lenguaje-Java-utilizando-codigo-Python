@@ -1,0 +1,17 @@
+{
+    "id": "py-strings",
+    "title": "Python Strings",
+    "intro": "Welcome to the Python Strings lesson.",
+    "python_desc": "Python code for Python Strings",
+    "java_desc": "Java equivalent for Python Strings",
+    "explanation": "<p>In this lesson we cover <b>Python Strings</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "exercises": [],
+    "code_mappings": [
+        {
+            "id": "py-strings-1",
+            "python": "# Python Strings Python example\nprint('Python Strings')",
+            "java": "// Python Strings Java example\nSystem.out.println(\"Python Strings\");",
+            "explanation": "Basic example demonstrating Python Strings."
+        }
+    ]
+}
