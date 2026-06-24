@@ -23,8 +23,10 @@
     <header class="topbar telemetry-topbar"
         style="background: var(--bg-code); border-bottom: 1px dashed var(--border); font-family: 'JetBrains Mono', monospace; position: sticky; top: 0; z-index: 100;">
         <div class="topbar-inner">
-            <button id="mobile-menu-toggle" class="btn-ghost hide-desktop"
-                style="font-size:1.5rem; margin-right:1rem; color: var(--green);" aria-label="Menú">☰</button>
+            <div class="mobile-menu-container">
+                <button id="mobile-menu-toggle" class="btn-ghost hide-desktop"
+                    style="font-size:1.5rem; margin-right:1rem; color: var(--green);" aria-label="Menú">☰</button>
+            </div>
 
             <a href="{{ url_for('lesson', lesson_id='py-home') }}" class="brand"
                 style="text-decoration: none; color: #fff; position: absolute; left: 50%; transform: translateX(-50%);">
