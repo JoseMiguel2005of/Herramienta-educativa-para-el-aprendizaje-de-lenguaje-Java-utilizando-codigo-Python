@@ -1,17 +1,93 @@
 {
     "id": "py-datatypes",
-    "title": "Python Data Types",
-    "intro": "Welcome to the Python Data Types lesson.",
-    "python_desc": "Python code for Python Data Types",
-    "java_desc": "Java equivalent for Python Data Types",
-    "explanation": "<p>In this lesson we cover <b>Python Data Types</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Tipos de Datos en Python",
+    "intro": "En programación, los tipos de datos definen qué clase de valor puede almacenar una variable. Python tiene varios tipos de datos incorporados.",
+    "python_desc": "Código Python para Tipos de Datos",
+    "java_desc": "Equivalente en Java para Tipos de Datos",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Tipos Incorporados",
+            "text": "Python tiene los siguientes tipos de datos incorporados por defecto: texto (<code>str</code>), numéricos (<code>int</code>, <code>float</code>, <code>complex</code>), secuencias (<code>list</code>, <code>tuple</code>, <code>range</code>), mappings (<code>dict</code>), conjuntos (<code>set</code>, <code>frozenset</code>), y booleanos (<code>bool</code>).",
+            "notes": [
+                {"type": "note", "text": "Java tiene <b>tipos primitivos</b> (<code>int</code>, <code>double</code>, <code>boolean</code>, <code>char</code>) y <b>clases wrapper</b> (<code>Integer</code>, <code>Double</code>, <code>Boolean</code>, <code>String</code>). Python no tiene esta distinción."}
+            ]
+        },
+        {
+            "title": "Obtener el Tipo",
+            "text": "Puedes obtener el tipo de dato de cualquier objeto usando la función <code>type()</code>.",
+            "notes": []
+        },
+        {
+            "title": "Asignación Automática",
+            "text": "En Python, el tipo de dato se asigna automáticamente cuando asignas un valor a una variable. No necesitas declararlo explícitamente.",
+            "notes": [
+                {"type": "tip", "text": "Esto se llama <b>tipado dinámico</b>. Java usa <b>tipado estático</b>: debes declarar el tipo antes de usar una variable."}
+            ]
+        },
+        {
+            "title": "Especificar el Tipo",
+            "text": "Si quieres especificar el tipo de dato, puedes usar funciones de casting como <code>str()</code>, <code>int()</code>, <code>float()</code>, <code>list()</code>, <code>dict()</code>, etc.",
+            "notes": [
+                {"type": "warning", "text": "No todos los castings son válidos. Por ejemplo, <code>int(\"hola\")</code> producirá un <code>ValueError</code>."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-datatypes-1",
-            "python": "# Python Data Types Python example\nprint('Python Data Types')",
-            "java": "// Python Data Types Java example\nSystem.out.println(\"Python Data Types\");",
-            "explanation": "Basic example demonstrating Python Data Types."
+            "id": "py-dt-types",
+            "section": "Tipos Incorporados",
+            "python": "x = \"Hola\"         # str\ny = 20              # int\nz = 20.5            # float\nw = True            # bool\nq = [1, 2, 3]       # list\nprint(type(x), type(y), type(z))",
+            "java": "String x = \"Hola\";    // String\nint y = 20;           // int\ndouble z = 20.5;      // double\nboolean w = true;     // boolean\nint[] q = {1, 2, 3};  // array\nSystem.out.println(x.getClass().getSimpleName());",
+            "explanation": "Python detecta tipos automáticamente. Java requiere declaración explícita de cada tipo."
+        },
+        {
+            "id": "py-dt-gettype",
+            "section": "Obtener el Tipo",
+            "python": "x = 5\ny = \"Hola\"\nz = [1, 2, 3]\nprint(type(x))  # <class 'int'>\nprint(type(y))  # <class 'str'>\nprint(type(z))  # <class 'list'>",
+            "java": "int x = 5;\nString y = \"Hola\";\nint[] z = {1, 2, 3};\nSystem.out.println(((Object)x).getClass().getSimpleName());\nSystem.out.println(y.getClass().getSimpleName());",
+            "explanation": "<code>type()</code> devuelve la clase del objeto en Python. En Java se usa <code>getClass().getSimpleName()</code>."
+        },
+        {
+            "id": "py-dt-auto",
+            "section": "Asignación Automática",
+            "python": "x = 1       # Python sabe que es int\nx = \"hola\"  # Ahora es str, sin error\nprint(type(x))",
+            "java": "int x = 1;\n// x = \"hola\";  // ERROR en Java\n// El tipo es fijo una vez declarado\nString y = \"hola\";\nSystem.out.println(y.getClass().getSimpleName());",
+            "explanation": "Python permite cambiar de tipo dinámicamente. Java no: una vez <code>int</code>, siempre <code>int</code>."
+        },
+        {
+            "id": "py-dt-cast",
+            "section": "Especificar el Tipo",
+            "python": "x = int(1)       # x será 1 (int)\ny = float(\"3\")   # y será 3.0 (float)\nz = str(3.14)    # z será '3.14' (str)\nprint(x, y, z)",
+            "java": "int x = (int) 1;\ndouble y = Double.parseDouble(\"3\");\nString z = String.valueOf(3.14);\nSystem.out.println(x + \" \" + y + \" \" + z);",
+            "explanation": "Python: <code>int()</code>, <code>float()</code>, <code>str()</code>. Java: casting explícito o métodos <code>parse</code>/<code>valueOf</code>."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-dt-1",
+            "type": "multiple-choice",
+            "question": "¿Cuál es el tipo de dato de <code>x = 5.0</code> en Python?",
+            "options": ["int", "float", "str", "double"],
+            "correct": 1
+        },
+        {
+            "id": "ex-dt-2",
+            "type": "fill-blank",
+            "question": "Obtén el tipo de dato de la variable <code>x</code>.",
+            "template": "print(_____(x))",
+            "template_html": "print(<input type='text' class='exercise-input' data-answer='type' placeholder='___'>(x))",
+            "python_code": "print(type(x))",
+            "answer": "type"
+        },
+        {
+            "id": "ex-dt-3",
+            "type": "fill-blank",
+            "question": "Convierte el número <code>5</code> a un float.",
+            "template": "x = _____(5)",
+            "template_html": "x = <input type='text' class='exercise-input' data-answer='float' placeholder='___'>(5)",
+            "python_code": "x = float(5)",
+            "answer": "float"
         }
     ]
 }

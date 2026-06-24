@@ -1,17 +1,58 @@
 {
     "id": "np-split",
-    "title": "NumPy Array Split",
-    "intro": "Welcome to the NumPy Array Split lesson.",
-    "python_desc": "Python code for NumPy Array Split",
-    "java_desc": "Java equivalent for NumPy Array Split",
-    "explanation": "<p>In this lesson we cover <b>NumPy Array Split</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Dividir Arrays (Split)",
+    "intro": "Dividir (Splitting) es la operación inversa a Unir (Joining). Unir fusiona múltiples arrays en uno y Dividir rompe un array en múltiples.",
+    "python_desc": "Código Python para Split",
+    "java_desc": "Equivalente en Java para Split",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "La Función array_split()",
+            "text": "Usamos <code>array_split()</code> para dividir arrays. Le pasamos el array que queremos dividir y el número de particiones requeridas.",
+            "notes": [
+                {"type": "note", "text": "Si el array tiene menos elementos de los requeridos para ser dividido en partes iguales, se ajustará desde el final de forma automática."}
+            ]
+        },
+        {
+            "title": "División de Arrays 2-D",
+            "text": "Puedes especificar en qué eje (axis) quieres realizar la división. <code>array_split(array, particiones, axis=1)</code> lo dividirá por columnas en vez de por filas.",
+            "notes": [
+                {"type": "tip", "text": "Para dividir a lo largo del eje horizontal o vertical, NumPy provee atajos como <code>hsplit()</code> (horizontal split) y <code>vsplit()</code> (vertical split)."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "np-split-1",
-            "python": "# NumPy Array Split Python example\nprint('NumPy Array Split')",
-            "java": "// NumPy Array Split Java example\nSystem.out.println(\"NumPy Array Split\");",
-            "explanation": "Basic example demonstrating NumPy Array Split."
+            "id": "np-split-1d",
+            "section": "La Función array_split()",
+            "python": "import numpy as np\n\narr = np.array([1, 2, 3, 4, 5, 6])\n\n# Dividir en 3 arrays más pequeños:\nnuevos_arrays = np.array_split(arr, 3)\n\nprint(nuevos_arrays[0]) # [1 2]\nprint(nuevos_arrays[1]) # [3 4]",
+            "java": "// En Java no hay método nativo para dividir un array en N partes.\n// Tienes que usar Arrays.copyOfRange() manualmente en un bucle.\nint[] arr = {1, 2, 3, 4, 5, 6};\nint[][] nuevos = new int[3][2];\n\nfor(int i=0; i<3; i++) {\n    nuevos[i] = java.util.Arrays.copyOfRange(arr, i*2, i*2 + 2);\n}",
+            "explanation": "<code>array_split()</code> de NumPy divide un solo array en una lista/array con N sub-arrays. En Java requieres calcular cortes manuales."
+        },
+        {
+            "id": "np-split-2d",
+            "section": "División de Arrays 2-D",
+            "python": "import numpy as np\n\narr = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12], [13, 14, 15], [16, 17, 18]])\n\n# Dividir el array 2-D en 3 nuevos arrays 2-D:\nnuevos = np.array_split(arr, 3)\n\nprint(nuevos[0])\n# [[1 2 3]\n#  [4 5 6]]",
+            "java": "int[][] arr = {{1,2,3}, {4,5,6}, {7,8,9}, {10,11,12}, {13,14,15}, {16,17,18}};\n// La misma lógica de calcular los rangos debe aplicarse al índice de filas.",
+            "explanation": "El proceso en Python respeta la forma de la matriz, abstrayendo cálculos engorrosos de longitudes."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-split-1",
+            "type": "fill-blank",
+            "question": "Divide el array 'arr' en 4 partes usando la función adecuada.",
+            "template": "x = np._____(arr, 4)",
+            "template_html": "x = np.<input type='text' class='exercise-input' data-answer='array_split' placeholder='___________'>(arr, 4)",
+            "python_code": "x = np.array_split(arr, 4)",
+            "answer": "array_split"
+        },
+        {
+            "id": "ex-np-split-2",
+            "type": "multiple-choice",
+            "question": "En un array 2-D, si usas la función de división especificando el atributo axis=1, ¿cómo se dividirá?",
+            "options": ["Por filas", "Por columnas", "Como un array plano", "Lanzará un error"],
+            "correct": 1
         }
     ]
 }

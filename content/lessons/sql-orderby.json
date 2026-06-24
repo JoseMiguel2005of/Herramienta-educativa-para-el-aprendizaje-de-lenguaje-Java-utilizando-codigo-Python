@@ -1,17 +1,44 @@
 {
     "id": "sql-orderby",
-    "title": "MySQL Order By",
-    "intro": "Welcome to the MySQL Order By lesson.",
-    "python_desc": "Python code for MySQL Order By",
-    "java_desc": "Java equivalent for MySQL Order By",
-    "explanation": "<p>In this lesson we cover <b>MySQL Order By</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "MySQL - Ordenar (Order By)",
+    "intro": "Para organizar los resultados en un orden específico en MySQL, utilizamos la instrucción 'ORDER BY'.",
+    "python_desc": "Uso de ORDER BY en Python",
+    "java_desc": "Uso de ORDER BY en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Ordenar los Resultados",
+            "text": "La cláusula <code>ORDER BY</code> se encarga de ordenar los resultados ascendente o descendentemente. Por defecto, MySQL ordena ascendentemente. Para ordenar descendente usa <code>DESC</code>.",
+            "notes": [
+                {"type": "note", "text": "La instrucción se ejecuta completamente dentro del motor de base de datos antes de devolver la data al lenguaje (Python o Java), por lo que el código en el lenguaje host casi no cambia."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "sql-orderby-1",
-            "python": "# MySQL Order By Python example\nprint('MySQL Order By')",
-            "java": "// MySQL Order By Java example\nSystem.out.println(\"MySQL Order By\");",
-            "explanation": "Basic example demonstrating MySQL Order By."
+            "section": "Ordenar los Resultados",
+            "python": "import mysql.connector\n\nmydb = mysql.connector.connect(host=\"localhost\", user=\"user\", password=\"pass\", database=\"mibase\")\nmicursor = mydb.cursor()\n\n# Ordenar alfabéticamente por nombre descendente (Z a A)\nsql = \"SELECT * FROM clientes ORDER BY nombre DESC\"\n\nmicursor.execute(sql)\nresultado = micursor.fetchall()\n\nfor fila in resultado:\n  print(fila)",
+            "java": "import java.sql.Connection;\nimport java.sql.DriverManager;\nimport java.sql.ResultSet;\nimport java.sql.Statement;\n\npublic class Main {\n  public static void main(String[] args) throws Exception {\n      Connection conn = DriverManager.getConnection(\"jdbc:mysql://localhost/mibase\", \"user\", \"pass\");\n      Statement stmt = conn.createStatement();\n      \n      String sql = \"SELECT * FROM clientes ORDER BY nombre DESC\";\n      ResultSet rs = stmt.executeQuery(sql);\n      \n      while (rs.next()) {\n          System.out.println(rs.getString(\"nombre\"));\n      }\n  }\n}",
+            "explanation": "El proceso es transparente. La base de datos asume el costo computacional del ordenamiento y el código de extracción es idéntico a una consulta SELECT básica."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-sql-orderby-1",
+            "type": "fill-blank",
+            "question": "Selecciona todos los registros ordenados por la columna 'nombre' de forma Ascendente (por defecto).",
+            "template": "sql = \"SELECT * FROM clientes ________ nombre\"",
+            "template_html": "sql = \"SELECT * FROM clientes <input type='text' class='exercise-input' data-answer='ORDER BY' placeholder='________'> nombre\"",
+            "python_code": "sql = \"SELECT * FROM clientes ORDER BY nombre\"",
+            "answer": "ORDER BY"
+        },
+        {
+            "id": "ex-sql-orderby-2",
+            "type": "multiple-choice",
+            "question": "¿Qué palabra clave utilizas al final del ORDER BY para que el orden sea Inverso (de mayor a menor)?",
+            "options": ["REV", "REVERSE", "ASC", "DESC"],
+            "correct": 3
         }
     ]
 }

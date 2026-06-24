@@ -1,17 +1,51 @@
 {
     "id": "pd-removedup",
-    "title": "Removing Duplicates",
-    "intro": "Welcome to the Removing Duplicates lesson.",
-    "python_desc": "Python code for Removing Duplicates",
-    "java_desc": "Java equivalent for Removing Duplicates",
-    "explanation": "<p>In this lesson we cover <b>Removing Duplicates</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Remover Duplicados",
+    "intro": "Para limpiar datasets enormes es vital remover registros que se han copiado o introducido más de una vez. Pandas ofrece utilidades súper veloces para identificar y purgar estos duplicados.",
+    "python_desc": "Uso de Funciones Nativas",
+    "java_desc": "Lógica equivalente en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Descubrir Duplicados",
+            "text": "El método <code>duplicated()</code> devuelve valores Booleanos indicando si la fila es un duplicado o no. Analiza absolutamente todas las columnas por ti sin tener que especificar lógica de igualdad (equals).",
+            "notes": [
+                {"type": "note", "text": "En Java necesitarías sobreescribir el método `equals()` y `hashCode()` de tu clase de Registro, y luego usar Sets (colecciones únicas) para detectar qué objetos están repetidos."}
+            ]
+        },
+        {
+            "title": "Remover los Duplicados",
+            "text": "Para quitarlos definitivamente del DataFrame, usamos el método <code>drop_duplicates()</code>. Al igual que con los vacíos, asegúrate de pasar <code>inplace = True</code> para modificar el archivo original en memoria.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
             "id": "pd-removedup-1",
-            "python": "# Removing Duplicates Python example\nprint('Removing Duplicates')",
-            "java": "// Removing Duplicates Java example\nSystem.out.println(\"Removing Duplicates\");",
-            "explanation": "Basic example demonstrating Removing Duplicates."
+            "section": "Remover los Duplicados",
+            "python": "import pandas as pd\n\ndf = pd.read_csv('data.csv')\n\n# Simplemente llamamos a la función mágica de Pandas:\ndf.drop_duplicates(inplace = True)\n\nprint(df.to_string())",
+            "java": "import java.util.ArrayList;\nimport java.util.HashSet;\nimport java.util.List;\nimport java.util.Set;\n\npublic class Main {\n  public static void main(String[] args) {\n      List<Registro> tabla = obtenerDatos();\n      \n      // En Java purgaríamos duplicados insertándolos a un Set:\n      Set<Registro> setUnico = new HashSet<>(tabla);\n      \n      // Luego reconstruimos la lista sin duplicados:\n      tabla.clear();\n      tabla.addAll(setUnico);\n  }\n}",
+            "explanation": "El proceso en Python requiere apenas 1 palabra. En Java, debemos basarnos en estructuras de datos secundarias como el `HashSet`, lo que requiere que las clases tengan bien implementado su contrato `equals/hashCode`."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-pd-removedup-1",
+            "type": "fill-blank",
+            "question": "Llama al método que detecta qué registros están duplicados.",
+            "template": "print(df.________())",
+            "template_html": "print(df.<input type='text' class='exercise-input' data-answer='duplicated' placeholder='__________'>())",
+            "python_code": "print(df.duplicated())",
+            "answer": "duplicated"
+        },
+        {
+            "id": "ex-pd-removedup-2",
+            "type": "fill-blank",
+            "question": "Usa la función correcta para remover (drop) los duplicados del DataFrame.",
+            "template": "df._______________(inplace = True)",
+            "template_html": "df.<input type='text' class='exercise-input' data-answer='drop_duplicates' placeholder='_______________'>(inplace = True)",
+            "python_code": "df.drop_duplicates(inplace = True)",
+            "answer": "drop_duplicates"
         }
     ]
 }

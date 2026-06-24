@@ -1,17 +1,42 @@
 {
     "id": "np-normal",
-    "title": "Normal Distribution",
-    "intro": "Welcome to the Normal Distribution lesson.",
-    "python_desc": "Python code for Normal Distribution",
-    "java_desc": "Java equivalent for Normal Distribution",
-    "explanation": "<p>In this lesson we cover <b>Normal Distribution</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "NumPy - Distribución Normal",
+    "intro": "La Distribución Normal (o Campana de Gauss) es una de las distribuciones más importantes en matemáticas y estadística.",
+    "python_desc": "Curva de Gauss en NumPy",
+    "java_desc": "Gauss en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "¿Qué es la Distribución Normal?",
+            "text": "Se ajusta a la distribución de probabilidad de muchos eventos aleatorios de la vida real (como el latido del corazón, el coeficiente intelectual de la población o la estatura).",
+            "notes": [
+                {"type": "note", "text": "En Java, la clase <code>Random</code> posee un método <code>nextGaussian()</code> específicamente diseñado para simular esto."}
+            ]
+        },
+        {
+            "title": "Generar Datos Normales",
+            "text": "Usas el método <code>random.normal()</code>. Puedes especificar <code>loc</code> (la Media), <code>scale</code> (la Desviación Estándar) y <code>size</code> (la cantidad y forma del array).",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
             "id": "np-normal-1",
-            "python": "# Normal Distribution Python example\nprint('Normal Distribution')",
-            "java": "// Normal Distribution Java example\nSystem.out.println(\"Normal Distribution\");",
-            "explanation": "Basic example demonstrating Normal Distribution."
+            "section": "Generar Datos Normales",
+            "python": "from numpy import random\n\n# Genera un array de 2x3 con una media de 1 y desviación de 2\nx = random.normal(loc=1, scale=2, size=(2, 3))\n\nprint(x)",
+            "java": "import java.util.Random;\nimport java.util.Arrays;\n\npublic class Gaussiana {\n  public static void main(String[] args) {\n      Random rand = new Random();\n      double[][] matriz = new double[2][3];\n      \n      double media = 1.0;\n      double desv = 2.0;\n      \n      for (int i = 0; i < 2; i++) {\n          for (int j = 0; j < 3; j++) {\n              // En Java aplicas la fórmula: (Gaussian * Desviacion) + Media\n              matriz[i][j] = (rand.nextGaussian() * desv) + media;\n          }\n      }\n      System.out.println(Arrays.deepToString(matriz));\n  }\n}",
+            "explanation": "Dado que el método `nextGaussian()` de Java siempre produce una curva normal 'estándar' (Media de 0.0 y Desviación de 1.0), el desarrollador de Java debe multiplicar y sumar manualmente para desplazar y ensanchar la campana. En NumPy esto es simplemente parámetro."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-normal-1",
+            "type": "fill-blank",
+            "question": "Llama al método que genera distribuciones en forma de campana de Gauss (Distribución Normal).",
+            "template": "x = random.______(size=(2, 3))",
+            "template_html": "x = random.<input type='text' class='exercise-input' data-answer='normal' placeholder='______'>(size=(2, 3))",
+            "python_code": "x = random.normal(size=(2, 3))",
+            "answer": "normal"
         }
     ]
 }

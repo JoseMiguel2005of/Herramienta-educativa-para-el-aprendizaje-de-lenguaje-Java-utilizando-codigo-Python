@@ -1,17 +1,37 @@
 {
     "id": "sql-delete",
-    "title": "MySQL Delete",
-    "intro": "Welcome to the MySQL Delete lesson.",
-    "python_desc": "Python code for MySQL Delete",
-    "java_desc": "Java equivalent for MySQL Delete",
-    "explanation": "<p>In this lesson we cover <b>MySQL Delete</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "MySQL - Eliminar Registros (Delete)",
+    "intro": "Para quitar registros existentes de una tabla MySQL, utiliza la declaración 'DELETE FROM'.",
+    "python_desc": "Borrar desde Python",
+    "java_desc": "Borrar desde Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Cuidado con Delete",
+            "text": "Siempre incluye la cláusula <code>WHERE</code> cuando estés haciendo un <code>DELETE FROM</code>. ¡Si no lo haces, estarás eliminando todos los registros de tu tabla!",
+            "notes": [
+                {"type": "warning", "text": "Al igual que con el comando INSERT, debido a que el DELETE altera la base de datos de manera destructiva o permanente, debes ejecutar <code>mydb.commit()</code> tanto en Python como en JDBC."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "sql-delete-1",
-            "python": "# MySQL Delete Python example\nprint('MySQL Delete')",
-            "java": "// MySQL Delete Java example\nSystem.out.println(\"MySQL Delete\");",
-            "explanation": "Basic example demonstrating MySQL Delete."
+            "section": "Cuidado con Delete",
+            "python": "import mysql.connector\n\nmydb = mysql.connector.connect(host=\"localhost\", user=\"user\", password=\"pass\", database=\"mibase\")\nmicursor = mydb.cursor()\n\n# La consulta sql con marcador protegido\nsql = \"DELETE FROM clientes WHERE direccion = %s\"\nadr = (\"Mountain 21\", )\n\nmicursor.execute(sql, adr)\nmydb.commit()\n\nprint(micursor.rowcount, \"registro(s) borrado(s)\")",
+            "java": "import java.sql.Connection;\nimport java.sql.DriverManager;\nimport java.sql.PreparedStatement;\n\npublic class Main {\n  public static void main(String[] args) throws Exception {\n      Connection conn = DriverManager.getConnection(\"jdbc:mysql://localhost/mibase\", \"user\", \"pass\");\n      \n      String sql = \"DELETE FROM clientes WHERE direccion = ?\";\n      PreparedStatement pstmt = conn.prepareStatement(sql);\n      pstmt.setString(1, \"Mountain 21\");\n      \n      int afectadas = pstmt.executeUpdate();\n      System.out.println(afectadas + \" registro(s) borrado(s)\");\n  }\n}",
+            "explanation": "Ambos lenguajes utilizan el método de 'executeUpdate' o 'commit()' y reportan el número de filas que se vieron afectadas por el borrado de manera nativa."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-sql-delete-1",
+            "type": "fill-blank",
+            "question": "Usa la declaración correcta para borrar registros de la tabla.",
+            "template": "sql = \"______ FROM clientes WHERE direccion = 'Mountain 21'\"",
+            "template_html": "sql = \"<input type='text' class='exercise-input' data-answer='DELETE' placeholder='______'> FROM clientes WHERE direccion = 'Mountain 21'\"",
+            "python_code": "sql = \"DELETE FROM clientes WHERE direccion = 'Mountain 21'\"",
+            "answer": "DELETE"
         }
     ]
 }

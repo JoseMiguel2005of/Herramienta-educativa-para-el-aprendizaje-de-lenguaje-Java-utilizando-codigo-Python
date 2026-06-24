@@ -1,17 +1,49 @@
 {
     "id": "sql-createdb",
-    "title": "MySQL Create Database",
-    "intro": "Welcome to the MySQL Create Database lesson.",
-    "python_desc": "Python code for MySQL Create Database",
-    "java_desc": "Java equivalent for MySQL Create Database",
-    "explanation": "<p>In this lesson we cover <b>MySQL Create Database</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "MySQL - Crear Base de Datos",
+    "intro": "Para crear una base de datos en MySQL, usa la instrucción 'CREATE DATABASE'.",
+    "python_desc": "Crear DB en Python",
+    "java_desc": "Crear DB en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Creando la Base de Datos",
+            "text": "Para ejecutar sentencias SQL en Python, necesitas crear un objeto Cursor a partir de la conexión y llamar a su método <code>execute()</code>.",
+            "notes": [
+                {"type": "note", "text": "En Java, el equivalente al 'Cursor' de Python es la interfaz `Statement` o `PreparedStatement`."}
+            ]
+        },
+        {
+            "title": "Comprobar si existe",
+            "text": "Puedes comprobar si la base de datos se creó exitosamente ejecutando el comando <code>SHOW DATABASES</code> y luego iterando sobre el cursor para imprimir los resultados.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
             "id": "sql-createdb-1",
-            "python": "# MySQL Create Database Python example\nprint('MySQL Create Database')",
-            "java": "// MySQL Create Database Java example\nSystem.out.println(\"MySQL Create Database\");",
-            "explanation": "Basic example demonstrating MySQL Create Database."
+            "section": "Creando la Base de Datos",
+            "python": "import mysql.connector\n\nmydb = mysql.connector.connect(host=\"localhost\", user=\"user\", password=\"pass\")\n\n# Crear el cursor y ejecutar\nmicursor = mydb.cursor()\nmicursor.execute(\"CREATE DATABASE mibase\")",
+            "java": "import java.sql.Connection;\nimport java.sql.DriverManager;\nimport java.sql.Statement;\n\npublic class Main {\n  public static void main(String[] args) throws Exception {\n      Connection conn = DriverManager.getConnection(\"jdbc:mysql://localhost/\", \"user\", \"pass\");\n      \n      // Crear el statement y ejecutar\n      Statement stmt = conn.createStatement();\n      stmt.executeUpdate(\"CREATE DATABASE mibase\");\n  }\n}",
+            "explanation": "La lógica subyacente es idéntica en ambos lenguajes: 1) Conectar, 2) Crear un Cursor/Statement, 3) Ejecutar Query."
+        },
+        {
+            "id": "sql-createdb-2",
+            "section": "Comprobar si existe",
+            "python": "micursor.execute(\"SHOW DATABASES\")\n\nfor db in micursor:\n  print(db)",
+            "java": "// Ejecutar SHOW DATABASES requiere un ResultSet en Java\njava.sql.ResultSet rs = stmt.executeQuery(\"SHOW DATABASES\");\n\nwhile (rs.next()) {\n    System.out.println(rs.getString(1));\n}",
+            "explanation": "En Python, el cursor actúa directamente como un iterador (iterable). En Java, debes extraer un `ResultSet` separado y navegarlo manualmente usando `.next()`."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-sql-createdb-1",
+            "type": "fill-blank",
+            "question": "Usa el método correcto del cursor en Python para correr el comando SQL.",
+            "template": "micursor.________(\"CREATE DATABASE mydatabase\")",
+            "template_html": "micursor.<input type='text' class='exercise-input' data-answer='execute' placeholder='________'>(\"CREATE DATABASE mydatabase\")",
+            "python_code": "micursor.execute(\"CREATE DATABASE mydatabase\")",
+            "answer": "execute"
         }
     ]
 }

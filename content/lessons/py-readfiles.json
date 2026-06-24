@@ -1,17 +1,75 @@
 {
     "id": "py-readfiles",
-    "title": "Python Read Files",
-    "intro": "Welcome to the Python Read Files lesson.",
-    "python_desc": "Python code for Python Read Files",
-    "java_desc": "Java equivalent for Python Read Files",
-    "explanation": "<p>In this lesson we cover <b>Python Read Files</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Leer Archivos en Python",
+    "intro": "Para leer el contenido de un archivo, usamos la función open() junto con los métodos de lectura incorporados.",
+    "python_desc": "Código Python para Leer Archivos",
+    "java_desc": "Equivalente en Java para Leer Archivos",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Leer el Archivo Completo",
+            "text": "El método <code>read()</code> lee el texto completo de un archivo como una sola cadena de caracteres (string).",
+            "notes": [
+                {"type": "note", "text": "En Java 11+, existe <code>Files.readString(Path)</code> que hace exactamente lo mismo. Antes de eso, había que leerlo línea por línea."}
+            ]
+        },
+        {
+            "title": "Leer Partes del Archivo",
+            "text": "Por defecto <code>read()</code> lee todo, pero puedes especificar cuántos caracteres quieres que devuelva pasando un número como parámetro.",
+            "notes": []
+        },
+        {
+            "title": "Leer Líneas",
+            "text": "Puedes devolver una línea usando el método <code>readline()</code>. Si lo llamas dos veces, leerás las dos primeras líneas.",
+            "notes": [
+                {"type": "tip", "text": "El método <code>readlines()</code> (en plural) devuelve una <b>lista</b> que contiene todas las líneas del archivo."}
+            ]
+        },
+        {
+            "title": "Iterar por Líneas",
+            "text": "La forma más eficiente y 'Pythonica' de leer un archivo línea por línea es iterando sobre el archivo mismo en un bucle <code>for</code>.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-readfiles-1",
-            "python": "# Python Read Files Python example\nprint('Python Read Files')",
-            "java": "// Python Read Files Java example\nSystem.out.println(\"Python Read Files\");",
-            "explanation": "Basic example demonstrating Python Read Files."
+            "id": "py-read-all",
+            "section": "Leer el Archivo Completo",
+            "python": "with open(\"demofile.txt\", \"r\") as f:\n    print(f.read())",
+            "java": "import java.nio.file.Files;\nimport java.nio.file.Path;\n\npublic class Main {\n  public static void main(String[] args) throws Exception {\n    // Forma moderna en Java (Java 11+)\n    String contenido = Files.readString(Path.of(\"demofile.txt\"));\n    System.out.println(contenido);\n  }\n}",
+            "explanation": "Ambos lenguajes han evolucionado para permitir leer un archivo completo de texto en una sola línea de código."
+        },
+        {
+            "id": "py-read-parts",
+            "section": "Leer Partes del Archivo",
+            "python": "with open(\"demofile.txt\", \"r\") as f:\n    # Leer solo los primeros 5 caracteres\n    print(f.read(5))",
+            "java": "// En Java se hace habitualmente con un FileReader y un char[]\nimport java.io.FileReader;\n\npublic class Main {\n  public static void main(String[] args) throws Exception {\n    try(FileReader fr = new FileReader(\"demofile.txt\")) {\n      char[] buffer = new char[5];\n      fr.read(buffer);\n      System.out.println(new String(buffer));\n    }\n  }\n}",
+            "explanation": "Python: <code>read(5)</code>. Java: requiere crear un buffer de caracteres y leer en él."
+        },
+        {
+            "id": "py-read-lines",
+            "section": "Iterar por Líneas",
+            "python": "with open(\"demofile.txt\", \"r\") as f:\n    for x in f:\n        print(x.strip())",
+            "java": "import java.nio.file.Files;\nimport java.nio.file.Path;\nimport java.util.List;\n\npublic class Main {\n  public static void main(String[] args) throws Exception {\n    List<String> lineas = Files.readAllLines(Path.of(\"demofile.txt\"));\n    for(String linea : lineas) {\n        System.out.println(linea);\n    }\n  }\n}",
+            "explanation": "El archivo abierto en Python es directamente iterable. En Java, puedes usar <code>Files.readAllLines()</code> que devuelve una lista (List<String>) que luego puedes iterar."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-read-1",
+            "type": "fill-blank",
+            "question": "¿Qué método lee el contenido COMPLETO de un archivo?",
+            "template": "f = open(\"test.txt\")\nprint(f._____())",
+            "template_html": "f = open(\"test.txt\")<br>print(f.<input type='text' class='exercise-input' data-answer='read' placeholder='___'>())",
+            "python_code": "f = open(\"test.txt\")\nprint(f.read())",
+            "answer": "read"
+        },
+        {
+            "id": "ex-read-2",
+            "type": "multiple-choice",
+            "question": "¿Qué método devuelve una sola línea de un archivo?",
+            "options": ["read()", "readlines()", "readline()", "getline()"],
+            "correct": 2
         }
     ]
 }

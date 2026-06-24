@@ -1,17 +1,105 @@
 {
     "id": "py-dicts",
-    "title": "Python Dictionaries",
-    "intro": "Welcome to the Python Dictionaries lesson.",
-    "python_desc": "Python code for Python Dictionaries",
-    "java_desc": "Java equivalent for Python Dictionaries",
-    "explanation": "<p>In this lesson we cover <b>Python Dictionaries</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Diccionarios en Python",
+    "intro": "Los diccionarios se usan para almacenar valores en pares clave-valor (key-value). Son una estructura de datos muy poderosa y optimizada.",
+    "python_desc": "Código Python para Diccionarios",
+    "java_desc": "Equivalente en Java para Diccionarios",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Crear un Diccionario",
+            "text": "Los diccionarios se crean usando llaves <code>{}</code> y pares <code>clave: valor</code>. Las claves deben ser únicas e inmutables (usualmente strings).",
+            "notes": [
+                {"type": "note", "text": "En Java, el equivalente más común es <code>HashMap</code> o <code>Map</code>. Python ofrece una sintaxis literal mucho más limpia."}
+            ]
+        },
+        {
+            "title": "Acceder a Elementos",
+            "text": "Puedes acceder a un valor refiriéndote a su clave entre corchetes <code>[]</code>, o usando el método <code>get()</code>.",
+            "notes": [
+                {"type": "tip", "text": "El método <code>get()</code> es más seguro porque devuelve <code>None</code> si la clave no existe, mientras que usar <code>[]</code> lanzará un error."}
+            ]
+        },
+        {
+            "title": "Modificar y Agregar",
+            "text": "Puedes cambiar el valor de un elemento existente, o agregar un nuevo par clave-valor, simplemente asignándole un valor.",
+            "notes": []
+        },
+        {
+            "title": "Eliminar Elementos",
+            "text": "Hay varios métodos para eliminar elementos, como <code>pop()</code> (elimina por clave) o la palabra clave <code>del</code>.",
+            "notes": []
+        },
+        {
+            "title": "Iterar un Diccionario",
+            "text": "Puedes iterar sobre las claves, los valores, o ambos a la vez usando el método <code>items()</code>.",
+            "notes": [
+                {"type": "warning", "text": "En Java iterar un Map es más verboso (usando <code>Map.Entry</code>). Python lo hace natural con <code>for clave, valor in dict.items():</code>."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-dicts-1",
-            "python": "# Python Dictionaries Python example\nprint('Python Dictionaries')",
-            "java": "// Python Dictionaries Java example\nSystem.out.println(\"Python Dictionaries\");",
-            "explanation": "Basic example demonstrating Python Dictionaries."
+            "id": "py-dicts-create",
+            "section": "Crear un Diccionario",
+            "python": "carro = {\n    \"marca\": \"Ford\",\n    \"modelo\": \"Mustang\",\n    \"anio\": 1964\n}\nprint(carro)",
+            "java": "import java.util.HashMap;\n\nHashMap<String, Object> carro = new HashMap<>();\ncarro.put(\"marca\", \"Ford\");\ncarro.put(\"modelo\", \"Mustang\");\ncarro.put(\"anio\", 1964);\nSystem.out.println(carro);",
+            "explanation": "Python usa llaves <code>{}</code> para crear el diccionario directamente. Java requiere instanciar <code>HashMap</code> y usar <code>put()</code>."
+        },
+        {
+            "id": "py-dicts-access",
+            "section": "Acceder a Elementos",
+            "python": "carro = {\"marca\": \"Ford\", \"modelo\": \"Mustang\"}\n\n# Usando corchetes\nx = carro[\"modelo\"]\n# Usando get()\ny = carro.get(\"marca\")\n\nprint(x, y)",
+            "java": "HashMap<String, String> carro = new HashMap<>();\ncarro.put(\"marca\", \"Ford\");\ncarro.put(\"modelo\", \"Mustang\");\n\nString x = carro.get(\"modelo\");\nString y = carro.get(\"marca\");\n\nSystem.out.println(x + \" \" + y);",
+            "explanation": "Python permite <code>dict[clave]</code> y <code>dict.get(clave)</code>. Java siempre usa <code>.get()</code>."
+        },
+        {
+            "id": "py-dicts-modify",
+            "section": "Modificar y Agregar",
+            "python": "carro = {\"marca\": \"Ford\"}\n# Modificar existente\ncarro[\"marca\"] = \"Toyota\"\n# Agregar nuevo\ncarro[\"color\"] = \"Rojo\"\n\nprint(carro)",
+            "java": "HashMap<String, String> carro = new HashMap<>();\ncarro.put(\"marca\", \"Ford\");\n\ncarro.put(\"marca\", \"Toyota\"); // Sobreescribe\ncarro.put(\"color\", \"Rojo\");   // Agrega nuevo\n\nSystem.out.println(carro);",
+            "explanation": "En Java, <code>put()</code> sirve tanto para agregar como para modificar."
+        },
+        {
+            "id": "py-dicts-remove",
+            "section": "Eliminar Elementos",
+            "python": "carro = {\"marca\": \"Ford\", \"modelo\": \"Mustang\"}\ncarro.pop(\"modelo\")\n# o usando del:\n# del carro[\"modelo\"]\nprint(carro)",
+            "java": "HashMap<String, String> carro = new HashMap<>();\ncarro.put(\"marca\", \"Ford\");\ncarro.put(\"modelo\", \"Mustang\");\n\ncarro.remove(\"modelo\");\nSystem.out.println(carro);",
+            "explanation": "Python usa <code>pop()</code> o <code>del</code>. Java usa <code>remove()</code>."
+        },
+        {
+            "id": "py-dicts-iterate",
+            "section": "Iterar un Diccionario",
+            "python": "carro = {\"marca\": \"Ford\", \"año\": 1964}\n\nfor clave, valor in carro.items():\n    print(f\"{clave}: {valor}\")",
+            "java": "HashMap<String, Object> carro = new HashMap<>();\ncarro.put(\"marca\", \"Ford\");\ncarro.put(\"año\", 1964);\n\nfor (HashMap.Entry<String, Object> e : carro.entrySet()) {\n    System.out.println(e.getKey() + \": \" + e.getValue());\n}",
+            "explanation": "Python usa <code>items()</code> para obtener tuplas de clave y valor. Java usa <code>entrySet()</code>."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-dict-1",
+            "type": "fill-blank",
+            "question": "Usa el método <code>get</code> para obtener el valor de <code>\"modelo\"</code> del diccionario <code>carro</code>.",
+            "template": "x = carro._____(\"modelo\")",
+            "template_html": "x = carro.<input type='text' class='exercise-input' data-answer='get' placeholder='___'>(\"modelo\")",
+            "python_code": "x = carro.get(\"modelo\")",
+            "answer": "get"
+        },
+        {
+            "id": "ex-dict-2",
+            "type": "fill-blank",
+            "question": "Cambia el valor de la clave <code>\"año\"</code> a <code>2020</code>.",
+            "template": "carro[_____] = 2020",
+            "template_html": "carro[<input type='text' class='exercise-input' data-answer='\"año\"' placeholder='___'>] = 2020",
+            "python_code": "carro[\"año\"] = 2020",
+            "answer": "\"año\""
+        },
+        {
+            "id": "ex-dict-3",
+            "type": "multiple-choice",
+            "question": "¿Qué método se usa para eliminar un elemento de un diccionario en Python?",
+            "options": ["delete()", "remove()", "pop()", "clear()"],
+            "correct": 2
         }
     ]
 }

@@ -1,17 +1,37 @@
 {
     "id": "np-hyperbolic",
-    "title": "Hyperbolic",
-    "intro": "Welcome to the Hyperbolic lesson.",
-    "python_desc": "Python code for Hyperbolic",
-    "java_desc": "Java equivalent for Hyperbolic",
-    "explanation": "<p>In this lesson we cover <b>Hyperbolic</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "NumPy - Funciones Hiperbólicas",
+    "intro": "NumPy provee las ufuncs (funciones universales) de sinh, cosh y tanh para procesar Arrays que contengan valores en radianes hiperbólicos.",
+    "python_desc": "Hiperbólicas en NumPy",
+    "java_desc": "Hiperbólicas en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Seno Hiperbólico",
+            "text": "Las funciones hiperbólicas se usan en ciencias para describir formas como la curva colgante de los cables de alta tensión (catenarias) o relatividad especial. Utilizas <code>np.sinh()</code>, <code>np.cosh()</code> y <code>np.tanh()</code>, de la misma forma vectorial que usas el Seno ordinario.",
+            "notes": [
+                {"type": "note", "text": "Al igual que todas las Ufuncs de trigonometría, retornan un Array con la transformación hiperbólica correspondiente."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "np-hyperbolic-1",
-            "python": "# Hyperbolic Python example\nprint('Hyperbolic')",
-            "java": "// Hyperbolic Java example\nSystem.out.println(\"Hyperbolic\");",
-            "explanation": "Basic example demonstrating Hyperbolic."
+            "section": "Seno Hiperbólico",
+            "python": "import numpy as np\n\n# Array con valores\narr = np.array([np.pi/2, np.pi/3, np.pi/4, np.pi/5])\n\n# Calcular el seno hiperbólico (sinh)\nx = np.sinh(arr)\n\nprint(x)",
+            "java": "public class Hiperbolas {\n  public static void main(String[] args) {\n      double[] arr = {Math.PI/2, Math.PI/3, Math.PI/4, Math.PI/5};\n      double[] hiperes = new double[4];\n      \n      // La API Math de Java también incluye sinh, cosh, y tanh\n      for(int i = 0; i < arr.length; i++) {\n          hiperes[i] = Math.sinh(arr[i]);\n      }\n      \n      System.out.println(java.util.Arrays.toString(hiperes));\n  }\n}",
+            "explanation": "El ecosistema Math de Java (vía C nativo en la JVM) se diseñó completo desde sus inicios, conteniendo funciones hiperbólicas. A pesar de esto, requerirá el bucle For que NumPy nos evita totalmente al delegar el array a C."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-hyperbolic-1",
+            "type": "fill-blank",
+            "question": "Escribe el nombre de la ufunc capaz de calcular el 'Seno Hiperbólico' de todos los elementos dentro de un Array NumPy.",
+            "template": "x = np.____(arr)",
+            "template_html": "x = np.<input type='text' class='exercise-input' data-answer='sinh' placeholder='____'>(arr)",
+            "python_code": "x = np.sinh(arr)",
+            "answer": "sinh"
         }
     ]
 }

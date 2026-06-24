@@ -1,17 +1,42 @@
 {
     "id": "np-random-intro",
-    "title": "Random Intro",
-    "intro": "Welcome to the Random Intro lesson.",
-    "python_desc": "Python code for Random Intro",
-    "java_desc": "Java equivalent for Random Intro",
-    "explanation": "<p>In this lesson we cover <b>Random Intro</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "NumPy - Introducción a Random",
+    "intro": "NumPy ofrece el módulo <code>random</code> para generar números aleatorios verdaderamente enfocados a la ciencia de datos.",
+    "python_desc": "Módulo Random de NumPy",
+    "java_desc": "Clase Random en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "¿Qué es un número aleatorio?",
+            "text": "Los números aleatorios no significa 'números diferentes cada vez', significa números que no pueden ser predichos matemáticamente de forma trivial. NumPy los genera usando algoritmos Pseudo-Aleatorios (PRNG) sumamente veloces.",
+            "notes": [
+                {"type": "note", "text": "Al igual que NumPy, Java utiliza algoritmos Pseudo-Aleatorios con una Semilla (Seed) inicial, usualmente en su clase <code>java.util.Random</code>."}
+            ]
+        },
+        {
+            "title": "Generar Arrays Aleatorios",
+            "text": "A diferencia del módulo <code>random</code> tradicional de Python, el módulo <code>random</code> de NumPy está optimizado para rellenar Arrays enteros multidimensionales de una sola vez.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
             "id": "np-random-intro-1",
-            "python": "# Random Intro Python example\nprint('Random Intro')",
-            "java": "// Random Intro Java example\nSystem.out.println(\"Random Intro\");",
-            "explanation": "Basic example demonstrating Random Intro."
+            "section": "Generar Arrays Aleatorios",
+            "python": "from numpy import random\n\n# Genera un array 2-D con 3 filas, conteniendo cada fila 5 números aleatorios del 0 al 100\nx = random.randint(100, size=(3, 5))\n\nprint(x)",
+            "java": "import java.util.Random;\nimport java.util.Arrays;\n\npublic class Main {\n  public static void main(String[] args) {\n      Random rand = new Random();\n      int[][] matriz = new int[3][5];\n      \n      // En Java debes rellenar la matriz manualmente con bucles anidados:\n      for (int i = 0; i < 3; i++) {\n          for (int j = 0; j < 5; j++) {\n              matriz[i][j] = rand.nextInt(100);\n          }\n      }\n      System.out.println(Arrays.deepToString(matriz));\n  }\n}",
+            "explanation": "Poblar estructuras de datos aleatoriamente en lenguajes C-Like como Java requiere iteración manual explícita. NumPy abstrae esto mediante el parámetro `size=()`."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-random-intro-1",
+            "type": "fill-blank",
+            "question": "Escribe el atributo que te permite generar un array entero de dimensiones específicas con números aleatorios enteros.",
+            "template": "x = random.randint(100, ______=(3, 5))",
+            "template_html": "x = random.randint(100, <input type='text' class='exercise-input' data-answer='size' placeholder='______'>=(3, 5))",
+            "python_code": "x = random.randint(100, size=(3, 5))",
+            "answer": "size"
         }
     ]
 }

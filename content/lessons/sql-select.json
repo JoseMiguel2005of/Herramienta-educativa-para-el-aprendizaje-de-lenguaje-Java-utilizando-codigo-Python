@@ -1,17 +1,42 @@
 {
     "id": "sql-select",
-    "title": "MySQL Select",
-    "intro": "Welcome to the MySQL Select lesson.",
-    "python_desc": "Python code for MySQL Select",
-    "java_desc": "Java equivalent for MySQL Select",
-    "explanation": "<p>In this lesson we cover <b>MySQL Select</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "MySQL - Selección (Select)",
+    "intro": "Para seleccionar y leer registros en MySQL, usa la instrucción 'SELECT'.",
+    "python_desc": "Extraer Datos en Python",
+    "java_desc": "Equivalente en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Seleccionar y Fetch",
+            "text": "Usamos la sentencia <code>SELECT</code> para consultar información. Posteriormente usamos el método <code>fetchall()</code> del cursor de Python, el cual extrae todas las filas del resultado de la última declaración ejecutada.",
+            "notes": [
+                {"type": "note", "text": "En Java no tienes un método <code>fetchall()</code> que vuelque todos los registros a una lista nativa en una línea. Debes usar un bucle `while(rs.next())`."}
+            ]
+        },
+        {
+            "title": "Seleccionar Una Sola Fila",
+            "text": "Si solo estás interesado en un único registro, puedes usar el método <code>fetchone()</code> del cursor.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
             "id": "sql-select-1",
-            "python": "# MySQL Select Python example\nprint('MySQL Select')",
-            "java": "// MySQL Select Java example\nSystem.out.println(\"MySQL Select\");",
-            "explanation": "Basic example demonstrating MySQL Select."
+            "section": "Seleccionar y Fetch",
+            "python": "import mysql.connector\n\nmydb = mysql.connector.connect(host=\"localhost\", user=\"user\", password=\"pass\", database=\"mibase\")\nmicursor = mydb.cursor()\n\nmicursor.execute(\"SELECT * FROM clientes\")\n\n# fetchall() obtiene todas las filas como una Lista de Tuplas:\nresultado = micursor.fetchall()\n\nfor fila in resultado:\n  print(fila)",
+            "java": "import java.sql.Connection;\nimport java.sql.DriverManager;\nimport java.sql.ResultSet;\nimport java.sql.Statement;\n\npublic class Main {\n  public static void main(String[] args) throws Exception {\n      Connection conn = DriverManager.getConnection(\"jdbc:mysql://localhost/mibase\", \"user\", \"pass\");\n      Statement stmt = conn.createStatement();\n      \n      ResultSet rs = stmt.executeQuery(\"SELECT * FROM clientes\");\n      \n      while (rs.next()) {\n          // En Java debes acceder manualmente a las columnas por nombre o índice\n          String nombre = rs.getString(\"nombre\");\n          String direc = rs.getString(\"direccion\");\n          System.out.println(\"Nombre: \" + nombre + \", Dir: \" + direc);\n      }\n  }\n}",
+            "explanation": "El método `fetchall()` de Python abstrae completamente el manejo de estado de los cursores, entregando una lista común y silvestre. Java requiere lidiar con la persistencia en red llamando a `.next()` en tiempo real."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-sql-select-1",
+            "type": "fill-blank",
+            "question": "Llama a la función del cursor que obtiene y devuelve todas las filas de la base de datos.",
+            "template": "resultado = micursor.__________()",
+            "template_html": "resultado = micursor.<input type='text' class='exercise-input' data-answer='fetchall' placeholder='__________'>()",
+            "python_code": "resultado = micursor.fetchall()",
+            "answer": "fetchall"
         }
     ]
 }

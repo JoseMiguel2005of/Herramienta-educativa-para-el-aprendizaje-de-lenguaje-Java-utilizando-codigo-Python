@@ -1,17 +1,49 @@
 {
     "id": "py-init",
-    "title": "The __init__() Function",
-    "intro": "Welcome to the The __init__() Function lesson.",
-    "python_desc": "Python code for The __init__() Function",
-    "java_desc": "Java equivalent for The __init__() Function",
-    "explanation": "<p>In this lesson we cover <b>The __init__() Function</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "La Función __init__()",
+    "intro": "Todas las clases tienen una función incorporada llamada __init__(), que siempre se ejecuta cuando se inicia la clase (similar a un constructor).",
+    "python_desc": "Código Python para __init__",
+    "java_desc": "Equivalente en Java (Constructor)",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Uso de __init__()",
+            "text": "Usa la función <code>__init__()</code> para asignar valores a las propiedades del objeto u otras operaciones que sean necesarias cuando se crea el objeto.",
+            "notes": [
+                {"type": "note", "text": "En Java, el equivalente es el <b>Constructor</b> de la clase, que es un método que tiene exactamente el mismo nombre que la clase."}
+            ]
+        },
+        {
+            "title": "Llamada Automática",
+            "text": "La función <code>__init__()</code> se llama automáticamente cada vez que se usa la clase para crear un nuevo objeto.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-init-1",
-            "python": "# The __init__() Function Python example\nprint('The __init__() Function')",
-            "java": "// The __init__() Function Java example\nSystem.out.println(\"The __init__() Function\");",
-            "explanation": "Basic example demonstrating The __init__() Function."
+            "id": "py-init-create",
+            "section": "Uso de __init__()",
+            "python": "class Persona:\n    def __init__(self, nombre, edad):\n        self.nombre = nombre\n        self.edad = edad\n\np1 = Persona(\"Juan\", 36)\nprint(p1.nombre)",
+            "java": "public class Persona {\n    String nombre;\n    int edad;\n    \n    // Este es el constructor en Java\n    public Persona(String nombre, int edad) {\n        this.nombre = nombre;\n        this.edad = edad;\n    }\n    \n    public static void main(String[] args) {\n        Persona p1 = new Persona(\"Juan\", 36);\n        System.out.println(p1.nombre);\n    }\n}",
+            "explanation": "Python usa <code>__init__</code>. Java usa un método con el mismo nombre de la clase (<code>Persona()</code>)."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-init-1",
+            "type": "multiple-choice",
+            "question": "¿Cuál es el equivalente de __init__() en Java?",
+            "options": ["El método toString()", "El método main()", "El Constructor", "La Interfaz"],
+            "correct": 2
+        },
+        {
+            "id": "ex-init-2",
+            "type": "fill-blank",
+            "question": "Escribe el nombre correcto del constructor integrado de Python.",
+            "template": "def _____(self):",
+            "template_html": "def <input type='text' class='exercise-input' data-answer='__init__' placeholder='________'>(self):",
+            "python_code": "def __init__(self):",
+            "answer": "__init__"
         }
     ]
 }

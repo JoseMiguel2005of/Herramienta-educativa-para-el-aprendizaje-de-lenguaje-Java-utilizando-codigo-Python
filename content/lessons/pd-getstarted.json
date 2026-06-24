@@ -1,17 +1,44 @@
 {
     "id": "pd-getstarted",
-    "title": "Pandas Getting Started",
-    "intro": "Welcome to the Pandas Getting Started lesson.",
-    "python_desc": "Python code for Pandas Getting Started",
-    "java_desc": "Java equivalent for Pandas Getting Started",
-    "explanation": "<p>In this lesson we cover <b>Pandas Getting Started</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Empezando con Pandas",
+    "intro": "Aprende cómo instalar y empezar a usar la librería Pandas en tus proyectos de Python.",
+    "python_desc": "Código en Python",
+    "java_desc": "Contexto en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Instalación de Pandas",
+            "text": "Si ya tienes Python y PIP instalados en tu sistema, la instalación de Pandas es muy sencilla usando la consola o terminal: <code>pip install pandas</code>.",
+            "notes": [
+                {"type": "note", "text": "Si usas entornos como Anaconda, Pandas ya viene instalado por defecto."}
+            ]
+        },
+        {
+            "title": "Importar Pandas",
+            "text": "Una vez instalado Pandas, lo importas a tus aplicaciones utilizando la palabra clave <code>import</code>. Por convención general en la industria, Pandas se importa siempre bajo el alias <code>pd</code>.",
+            "notes": [
+                {"type": "tip", "text": "En Java no existe el concepto de alias al importar clases (<code>import java.util.List as L</code> no es posible de forma nativa). Python nos permite acortar nombres largos usando <code>as</code>."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "pd-getstarted-1",
-            "python": "# Pandas Getting Started Python example\nprint('Pandas Getting Started')",
-            "java": "// Pandas Getting Started Java example\nSystem.out.println(\"Pandas Getting Started\");",
-            "explanation": "Basic example demonstrating Pandas Getting Started."
+            "id": "pd-getstart-1",
+            "section": "Importar Pandas",
+            "python": "import pandas as pd\n\n# Ahora puedes usar el alias pd:\nconjunto_datos = {\n  'autos': ['BMW', 'Volvo', 'Ford'],\n  'pasajes': [3, 7, 2]\n}\n\nmivar = pd.DataFrame(conjunto_datos)\nprint(mivar)",
+            "java": "import java.util.HashMap;\nimport java.util.Map;\nimport java.util.List;\nimport java.util.Arrays;\n\npublic class Main {\n  public static void main(String[] args) {\n      Map<String, List<Object>> conjunto_datos = new HashMap<>();\n      conjunto_datos.put(\"autos\", Arrays.asList(\"BMW\", \"Volvo\", \"Ford\"));\n      conjunto_datos.put(\"pasajes\", Arrays.asList(3, 7, 2));\n      System.out.println(conjunto_datos);\n  }\n}",
+            "explanation": "Al usar <code>pd.DataFrame()</code> en Python, los datos se moldean en una tabla visual estructurada. En Java necesitamos emularlo con Mapas de Listas, pero al imprimirlos no tendrán formato tabular."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-pd-getstarted-1",
+            "type": "fill-blank",
+            "question": "Importa el módulo pandas usando la convención estándar (el alias 'pd').",
+            "template": "import pandas _____ pd",
+            "template_html": "import pandas <input type='text' class='exercise-input' data-answer='as' placeholder='__'> pd",
+            "python_code": "import pandas as pd",
+            "answer": "as"
         }
     ]
 }

@@ -1,17 +1,77 @@
 {
     "id": "py-pip",
-    "title": "Python PIP",
-    "intro": "Welcome to the Python PIP lesson.",
-    "python_desc": "Python code for Python PIP",
-    "java_desc": "Java equivalent for Python PIP",
-    "explanation": "<p>In this lesson we cover <b>Python PIP</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "PIP en Python",
+    "intro": "PIP es un gestor de paquetes para paquetes o módulos de Python si prefieres ese término. Si usas Python moderno, PIP ya viene preinstalado.",
+    "python_desc": "Uso de PIP en Python",
+    "java_desc": "Equivalente en Java (Maven/Gradle)",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "¿Qué es un Paquete?",
+            "text": "Un paquete (package) contiene todos los archivos necesarios para un módulo. Un módulo es una biblioteca de código de Python que puedes incluir en tu proyecto.",
+            "notes": [
+                {"type": "note", "text": "En Java, en lugar de paquetes de código fuente suelto, se distribuyen archivos <code>.jar</code>, y el equivalente a PIP son gestores de dependencias como <b>Maven</b> o <b>Gradle</b>."}
+            ]
+        },
+        {
+            "title": "Instalar PIP y Paquetes",
+            "text": "Puedes descargar paquetes instalándolos desde la línea de comandos usando el comando <code>pip install nombre_paquete</code>.",
+            "notes": [
+                {"type": "tip", "text": "Pip descarga paquetes del 'Python Package Index' (PyPI), un repositorio público con miles de paquetes gratuitos listos para usar."}
+            ]
+        },
+        {
+            "title": "Usar un Paquete",
+            "text": "Una vez que el paquete está instalado, está listo para usarse. Importas el paquete de la misma forma que importas cualquier otro módulo de Python.",
+            "notes": []
+        },
+        {
+            "title": "Eliminar y Listar Paquetes",
+            "text": "Usa <code>pip uninstall paquete</code> para remover algo que ya no usas. Usa <code>pip list</code> para ver todos los paquetes instalados en tu entorno.",
+            "notes": [
+                {"type": "warning", "text": "En Java (Maven/Gradle), las dependencias se gestionan modificando un archivo <code>pom.xml</code> o <code>build.gradle</code>, en lugar de instalarlas o eliminarlas con comandos globales como en Python."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-pip-1",
-            "python": "# Python PIP Python example\nprint('Python PIP')",
-            "java": "// Python PIP Java example\nSystem.out.println(\"Python PIP\");",
-            "explanation": "Basic example demonstrating Python PIP."
+            "id": "py-pip-install",
+            "section": "Instalar PIP y Paquetes",
+            "python": "# Desde tu consola / terminal:\npip install camelcase",
+            "java": "<!-- En tu archivo pom.xml (Maven) -->\n<dependency>\n    <groupId>org.apache.commons</groupId>\n    <artifactId>commons-text</artifactId>\n    <version>1.9</version>\n</dependency>",
+            "explanation": "Python usa comandos de terminal para instalar paquetes global o virtualmente. Java usa archivos de configuración declarativos."
+        },
+        {
+            "id": "py-pip-use",
+            "section": "Usar un Paquete",
+            "python": "import camelcase\n\nc = camelcase.CamelCase()\ntxt = \"hola mundo\"\nprint(c.hump(txt)) # Hola Mundo",
+            "java": "import org.apache.commons.text.WordUtils;\n\npublic class Main {\n  public static void main(String[] args) {\n    String txt = \"hola mundo\";\n    System.out.println(WordUtils.capitalize(txt));\n  }\n}",
+            "explanation": "Una vez descargados (vía pip o maven), los módulos se importan y se usan normalmente en el código."
+        },
+        {
+            "id": "py-pip-uninstall",
+            "section": "Eliminar y Listar Paquetes",
+            "python": "# Eliminar:\npip uninstall camelcase\n\n# Listar paquetes:\npip list",
+            "java": "// Para 'eliminar' en Java, simplemente borras la\n// dependencia <dependency> de tu pom.xml \n// o build.gradle y recargas el proyecto.",
+            "explanation": "PIP es interactivo y operado por comandos de shell. Maven/Gradle son operados a través del ciclo de compilación del IDE."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-pip-1",
+            "type": "fill-blank",
+            "question": "Comando para instalar un paquete llamado <code>requests</code>.",
+            "template": "_____ install requests",
+            "template_html": "<input type='text' class='exercise-input' data-answer='pip' placeholder='___'> install requests",
+            "python_code": "pip install requests",
+            "answer": "pip"
+        },
+        {
+            "id": "ex-pip-2",
+            "type": "multiple-choice",
+            "question": "¿Cuál es el equivalente conceptual de PIP en el mundo Java?",
+            "options": ["JDK", "Maven / Gradle", "Spring Boot", "javac"],
+            "correct": 1
         }
     ]
 }

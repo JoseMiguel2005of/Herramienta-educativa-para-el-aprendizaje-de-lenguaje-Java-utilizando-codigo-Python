@@ -1,17 +1,37 @@
 {
     "id": "sql-join",
-    "title": "MySQL Join",
-    "intro": "Welcome to the MySQL Join lesson.",
-    "python_desc": "Python code for MySQL Join",
-    "java_desc": "Java equivalent for MySQL Join",
-    "explanation": "<p>In this lesson we cover <b>MySQL Join</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "MySQL - Uniones (Join)",
+    "intro": "A menudo los datos no están aislados en una tabla. Para juntar información relacionada ubicada en dos o más tablas de MySQL diferentes basado en una columna compartida (Foreign Keys), se utiliza el comando 'JOIN'.",
+    "python_desc": "Uso de JOIN en Python",
+    "java_desc": "Uso de JOIN en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Cruzando Entidades",
+            "text": "Imagina que tienes una tabla de `Usuarios` y una de `Productos`. Si quieres saber qué usuario compró qué producto, puedes hacer un <code>INNER JOIN</code> donde cruces el 'id' del comprador en la tabla productos con el 'id' único de la tabla Usuarios.",
+            "notes": [
+                {"type": "note", "text": "Hacer la unión dentro del motor MySQL (usando JOIN) es varios cientos de miles de veces más rápido y eficiente en memoria RAM que extraer las dos tablas completas a Python/Java y luego unirlas programáticamente con bucles FOR."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "sql-join-1",
-            "python": "# MySQL Join Python example\nprint('MySQL Join')",
-            "java": "// MySQL Join Java example\nSystem.out.println(\"MySQL Join\");",
-            "explanation": "Basic example demonstrating MySQL Join."
+            "section": "Cruzando Entidades",
+            "python": "import mysql.connector\n\nmydb = mysql.connector.connect(host=\"localhost\", user=\"user\", password=\"pass\", database=\"mibase\")\nmicursor = mydb.cursor()\n\nsql = \"\"\"\n  SELECT usuarios.nombre AS us_nombre, productos.nombre AS pr_nombre \n  FROM usuarios \n  INNER JOIN productos ON usuarios.id = productos.usuario_id\n\"\"\"\n\nmicursor.execute(sql)\nresultado = micursor.fetchall()\n\nfor fila in resultado:\n  print(fila)",
+            "java": "import java.sql.Connection;\nimport java.sql.DriverManager;\nimport java.sql.ResultSet;\nimport java.sql.Statement;\n\npublic class Main {\n  public static void main(String[] args) throws Exception {\n      Connection conn = DriverManager.getConnection(\"jdbc:mysql://localhost/mibase\", \"user\", \"pass\");\n      Statement stmt = conn.createStatement();\n      \n      String sql = \"SELECT usuarios.nombre AS us_nombre, productos.nombre AS pr_nombre \" +\n                   \"FROM usuarios INNER JOIN productos ON usuarios.id = productos.usuario_id\";\n                   \n      ResultSet rs = stmt.executeQuery(sql);\n      while (rs.next()) {\n          System.out.println(rs.getString(\"us_nombre\") + \" - \" + rs.getString(\"pr_nombre\"));\n      }\n  }\n}",
+            "explanation": "El Join recae por entero sobre la base de datos relacional. En Python los strings multilínea `\"\"\"` facilitan escribir queries complejas y muy largas visualmente. En Java se requiere mucha concatenación con `+` o constructores StringBuilder (hasta Java 15+)."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-sql-join-1",
+            "type": "fill-blank",
+            "question": "Escribe la orden SQL correcta para combinar dos tablas basadas en una columna relacional (Foreign Key).",
+            "template": "sql = \"SELECT \n  usuarios.nombre, productos.nombre \n  FROM usuarios \n  INNER ____ productos ON usuarios.id = productos.usuario_id\"",
+            "template_html": "sql = \"SELECT <br>&nbsp;&nbsp;usuarios.nombre, productos.nombre <br>&nbsp;&nbsp;FROM usuarios <br>&nbsp;&nbsp;INNER <input type='text' class='exercise-input' data-answer='JOIN' placeholder='____'> productos ON usuarios.id = productos.usuario_id\"",
+            "python_code": "sql = \"SELECT \n  usuarios.nombre, productos.nombre \n  FROM usuarios \n  INNER JOIN productos ON usuarios.id = productos.usuario_id\"",
+            "answer": "JOIN"
         }
     ]
 }

@@ -1,17 +1,51 @@
 {
     "id": "mongo-find",
-    "title": "MongoDB Find",
-    "intro": "Welcome to the MongoDB Find lesson.",
-    "python_desc": "Python code for MongoDB Find",
-    "java_desc": "Java equivalent for MongoDB Find",
-    "explanation": "<p>In this lesson we cover <b>MongoDB Find</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "MongoDB - Búsqueda (Find)",
+    "intro": "Para extraer o buscar información en MongoDB, no usamos 'SELECT' como en MySQL, sino métodos de búsqueda nativos de la base de datos documental.",
+    "python_desc": "Búsqueda en Python",
+    "java_desc": "Búsqueda en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Encontrar Uno (Find One)",
+            "text": "El método <code>find_one()</code> devuelve el primer documento (la primera coincidencia) que encuentra en la colección. Esto equivale más o menos a <code>SELECT * FROM tabla LIMIT 1</code>.",
+            "notes": [
+                {"type": "note", "text": "En Java usamos exactamente el mismo método: <code>collection.find().first()</code>."}
+            ]
+        },
+        {
+            "title": "Encontrar Todos (Find)",
+            "text": "El método <code>find()</code> devuelve todos los documentos en la colección. No tienes parámetros obligatorios, por lo que llamarlo vacío equivale a <code>SELECT * FROM tabla</code> en SQL.",
+            "notes": [
+                {"type": "tip", "text": "Al igual que con el cursor de base relacional, el objeto devuelto por `find()` puede iterarse directamente mediante un bucle for."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "mongo-find-1",
-            "python": "# MongoDB Find Python example\nprint('MongoDB Find')",
-            "java": "// MongoDB Find Java example\nSystem.out.println(\"MongoDB Find\");",
-            "explanation": "Basic example demonstrating MongoDB Find."
+            "section": "Encontrar Todos (Find)",
+            "python": "import pymongo\n\nmyclient = pymongo.MongoClient(\"mongodb://localhost:27017/\")\nmydb = myclient[\"mibasededatos\"]\nmycol = mydb[\"clientes\"]\n\n# Buscar todos los documentos de la colección\nfor x in mycol.find():\n  print(x)",
+            "java": "import com.mongodb.client.MongoClients;\nimport com.mongodb.client.MongoCollection;\nimport com.mongodb.client.MongoCursor;\nimport org.bson.Document;\n\npublic class Main {\n  public static void main(String[] args) {\n      MongoCollection<Document> collection = db.getCollection(\"clientes\");\n      \n      // En Java, find() devuelve un objeto iterable que debe recorrerse con un Cursor\n      try (MongoCursor<Document> cursor = collection.find().iterator()) {\n          while (cursor.hasNext()) {\n              System.out.println(cursor.next().toJson());\n          }\n      }\n  }\n}",
+            "explanation": "Extraer colecciones completas es trivial en ambos ecosistemas debido a la abstracción de MongoDB de no depender de sentencias de cadena (SQL). Python itera automáticamente; Java usa el clásico iterador `.hasNext()`."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-mongo-find-1",
+            "type": "fill-blank",
+            "question": "Extrae e imprime en pantalla el primer documento de la colección usando el método adecuado.",
+            "template": "x = mycol.________()\nprint(x)",
+            "template_html": "x = mycol.<input type='text' class='exercise-input' data-answer='find_one' placeholder='________'>()<br>print(x)",
+            "python_code": "x = mycol.find_one()\nprint(x)",
+            "answer": "find_one"
+        },
+        {
+            "id": "ex-mongo-find-2",
+            "type": "multiple-choice",
+            "question": "¿A qué sentencia SQL equivale ejecutar el comando mycol.find() sin ningún parámetro?",
+            "options": ["SELECT ID FROM tabla", "SELECT * FROM tabla", "INSERT INTO tabla", "SELECT FIRST FROM tabla"],
+            "correct": 1
         }
     ]
 }

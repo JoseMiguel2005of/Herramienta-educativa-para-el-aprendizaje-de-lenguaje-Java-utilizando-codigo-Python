@@ -1,17 +1,42 @@
 {
     "id": "np-datadist",
-    "title": "Data Distribution",
-    "intro": "Welcome to the Data Distribution lesson.",
-    "python_desc": "Python code for Data Distribution",
-    "java_desc": "Java equivalent for Data Distribution",
-    "explanation": "<p>In this lesson we cover <b>Data Distribution</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "NumPy - Distribución de Datos",
+    "intro": "Una Distribución de Datos es una lista de todos los valores posibles y cuán a menudo ocurre cada uno (su probabilidad).",
+    "python_desc": "Distribuciones de NumPy",
+    "java_desc": "Estadística en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Arrays con Probabilidad",
+            "text": "El módulo random de NumPy incluye una función <code>choice()</code> que te permite definir la probabilidad matemática que tiene cada elemento específico de aparecer cuando se genere el arreglo al azar.",
+            "notes": [
+                {"type": "note", "text": "Este nivel de control estadístico no existe en el módulo Random estándar de Java, obligando al desarrollador a utilizar o programar Distribuciones Empíricas."}
+            ]
+        },
+        {
+            "title": "Definir Probabilidades (p)",
+            "text": "Usando el argumento <code>p</code>, le pasas un array con los pesos de probabilidad. La suma de todos estos pesos obligatoriamente debe ser 1.0 (el 100%).",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
             "id": "np-datadist-1",
-            "python": "# Data Distribution Python example\nprint('Data Distribution')",
-            "java": "// Data Distribution Java example\nSystem.out.println(\"Data Distribution\");",
-            "explanation": "Basic example demonstrating Data Distribution."
+            "section": "Definir Probabilidades (p)",
+            "python": "from numpy import random\n\n# El 3 tiene 10% probabilidad, el 5 tiene 30%, el 7 un 60%, el 9 tiene 0%\nx = random.choice([3, 5, 7, 9], p=[0.1, 0.3, 0.6, 0.0], size=(100))\n\nprint(x)",
+            "java": "import org.apache.commons.math3.distribution.EnumeratedIntegerDistribution;\nimport java.util.Arrays;\n\npublic class Main {\n  public static void main(String[] args) {\n      // En Java corporativo se usa EnumeratedDistribution de Commons Math:\n      int[] valores = {3, 5, 7, 9};\n      double[] probabilidades = {0.1, 0.3, 0.6, 0.0};\n      \n      EnumeratedIntegerDistribution dist = \n              new EnumeratedIntegerDistribution(valores, probabilidades);\n      \n      // Generar 100 muestras\n      int[] muestras = dist.sample(100);\n      System.out.println(Arrays.toString(muestras));\n  }\n}",
+            "explanation": "Asignar pesos a generadores aleatorios es esencial en Data Science para simular modelos realistas. Python lo provee de forma nativa en la base de NumPy; Java lo soluciona mediante librerías de modelado matemático externas."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-datadist-1",
+            "type": "fill-blank",
+            "question": "Pasa el arreglo de probabilidades al atributo `p` para que el número '5' tenga el 100% de probabilidad de salir.",
+            "template": "x = random.choice([3, 5, 7, 9], p=[0.0, ___, 0.0, 0.0], size=(100))",
+            "template_html": "x = random.choice([3, 5, 7, 9], p=[0.0, <input type='text' class='exercise-input' data-answer='1.0' placeholder='___'>, 0.0, 0.0], size=(100))",
+            "python_code": "x = random.choice([3, 5, 7, 9], p=[0.0, 1.0, 0.0, 0.0], size=(100))",
+            "answer": "1.0"
         }
     ]
 }

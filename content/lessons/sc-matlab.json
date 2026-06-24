@@ -1,17 +1,42 @@
 {
     "id": "sc-matlab",
-    "title": "SciPy Matlab Arrays",
-    "intro": "Welcome to the SciPy Matlab Arrays lesson.",
-    "python_desc": "Python code for SciPy Matlab Arrays",
-    "java_desc": "Java equivalent for SciPy Matlab Arrays",
-    "explanation": "<p>In this lesson we cover <b>SciPy Matlab Arrays</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "SciPy - MATLAB Arrays",
+    "intro": "Para la integración con sistemas preexistentes, SciPy provee utilidades de alto rendimiento que permiten importar o exportar archivos de MATLAB.",
+    "python_desc": "SciPy y MATLAB",
+    "java_desc": "Interoperabilidad",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "¿Qué es MATLAB?",
+            "text": "MATLAB es un lenguaje y plataforma comercial sumamente utilizada en ingeniería electrónica, robótica e industrias aeroespaciales, antes de que Python se popularizara. SciPy tiene interoperabilidad nativa con ellos.",
+            "notes": [
+                {"type": "note", "text": "Los archivos generados por MATLAB tienen la extensión '.mat'. La interoperabilidad desde Java usualmente es sumamente limitada, requiriendo puentes especiales (Matlab Engine API for Java) con licencias restrictivas."}
+            ]
+        },
+        {
+            "title": "Exportar e Importar (io)",
+            "text": "SciPy te permite empaquetar tus modelos Numpy/SciPy y exportarlos directamente a un archivo '.mat' a través del módulo de Entrada y Salida <code>scipy.io</code>, utilizando la función <code>savemat()</code> o importarlos con <code>loadmat()</code>.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
             "id": "sc-matlab-1",
-            "python": "# SciPy Matlab Arrays Python example\nprint('SciPy Matlab Arrays')",
-            "java": "// SciPy Matlab Arrays Java example\nSystem.out.println(\"SciPy Matlab Arrays\");",
-            "explanation": "Basic example demonstrating SciPy Matlab Arrays."
+            "section": "Exportar e Importar (io)",
+            "python": "from scipy import io\nimport numpy as np\n\narr = np.arange(10)\n\n# Exportamos el array a un archivo MATLAB (.mat)\nio.savemat('arr.mat', {\"mi_array\": arr})\n\n# Lo podemos leer (importar) nuevamente de forma nativa:\nmydata = io.loadmat('arr.mat')\n\nprint(mydata[\"mi_array\"])",
+            "java": "import com.mathworks.engine.*;\n\npublic class Main {\n  public static void main(String[] args) throws Exception {\n      // En Java, la interoperabilidad oficial de MATLAB es compleja.\n      // Requiere arrancar un Motor (Engine) completo en memoria que es pesado:\n      MatlabEngine eng = MatlabEngine.startMatlab();\n      double[] data = {1.0, 2.0, 3.0};\n      eng.putVariable(\"mi_array\", data);\n      eng.close();\n  }\n}",
+            "explanation": "La comunidad científica estandarizó Python como el puente oficial hacia las herramientas antiguas (Legacy). La función `io.savemat` simplemente genera el archivo binario, mientras que Java a menudo requiere levantar el proceso pesado del programa entero (Engine) en el fondo."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-sc-matlab-1",
+            "type": "fill-blank",
+            "question": "Escribe el comando correcto para leer (cargar) un archivo de datos de MATLAB en SciPy.",
+            "template": "mydata = io._______('arr.mat')",
+            "template_html": "mydata = io.<input type='text' class='exercise-input' data-answer='loadmat' placeholder='_______'>('arr.mat')",
+            "python_code": "mydata = io.loadmat('arr.mat')",
+            "answer": "loadmat"
         }
     ]
 }

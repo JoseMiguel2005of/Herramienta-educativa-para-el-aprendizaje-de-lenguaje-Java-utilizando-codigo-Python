@@ -1,32 +1,34 @@
 import ast
 from .environment import Environment, Type
 
+
 class Analyzer(ast.NodeVisitor):
     """
-    First pass: Analyzes the AST to populate the environment with 
+    First pass: Analyzes the AST to populate the environment with
     type information, variable declarations, and function signatures.
     """
+
     def __init__(self, env: Environment):
         self.env = env
-    
+
     def analyze(self, tree: ast.AST):
         self.visit(tree)
-        
+
     def visit_FunctionDef(self, node: ast.FunctionDef):
         # Register function signature in the current scope
         # In a more advanced implementation, we'd infer return types here.
         # For now, just register the existence of the function.
         self.env.current_scope.functions[node.name] = {
             "node": node,
-            "params": [arg.arg for arg in node.args.args]
+            "params": [arg.arg for arg in node.args.args],
         }
-        
+
         self.env.push_scope(name=node.name)
         # Register parameters as variables in the new scope
         for arg in node.args.args:
             # We assume Object if no annotation, or we could look at arg.annotation
             self.env.current_scope.define_var(arg.arg, self.env.type_object)
-            
+
         self.generic_visit(node)
         self.env.pop_scope()
 
@@ -53,7 +55,7 @@ class Analyzer(ast.NodeVisitor):
                 java_type = self._map_annotation(type_name)
                 self.env.current_scope.define_var(name, java_type)
         self.generic_visit(node)
-        
+
     def _map_annotation(self, type_name: str) -> Type:
         mapping = {
             "int": self.env.type_int,
@@ -67,17 +69,23 @@ class Analyzer(ast.NodeVisitor):
 
     def _infer_type(self, node: ast.AST) -> Type:
         if isinstance(node, ast.Constant):
-            if isinstance(node.value, bool): return self.env.type_boolean
-            if isinstance(node.value, int): return self.env.type_int
-            if isinstance(node.value, float): return self.env.type_double
-            if isinstance(node.value, str): return self.env.type_string
+            if isinstance(node.value, bool):
+                return self.env.type_boolean
+            if isinstance(node.value, int):
+                return self.env.type_int
+            if isinstance(node.value, float):
+                return self.env.type_double
+            if isinstance(node.value, str):
+                return self.env.type_string
         elif isinstance(node, ast.Name):
             return self.env.current_scope.get_var(node.id) or self.env.type_object
         elif isinstance(node, ast.BinOp):
             lt = self._infer_type(node.left)
             rt = self._infer_type(node.right)
-            if lt.name == "double" or rt.name == "double": return self.env.type_double
-            if lt.name == "String" or rt.name == "String": return self.env.type_string
+            if lt.name == "double" or rt.name == "double":
+                return self.env.type_double
+            if lt.name == "String" or rt.name == "String":
+                return self.env.type_string
             return self.env.type_int
         elif isinstance(node, ast.List):
             return Type("java.util.List", [self.env.type_object])
@@ -91,8 +99,12 @@ class Analyzer(ast.NodeVisitor):
                 return self.env.type_string
             # Simple heuristic for common casts
             if isinstance(node.func, ast.Name):
-                if node.func.id == "int": return self.env.type_int
-                if node.func.id == "float": return self.env.type_double
-                if node.func.id == "str": return self.env.type_string
-                if node.func.id == "bool": return self.env.type_boolean
+                if node.func.id == "int":
+                    return self.env.type_int
+                if node.func.id == "float":
+                    return self.env.type_double
+                if node.func.id == "str":
+                    return self.env.type_string
+                if node.func.id == "bool":
+                    return self.env.type_boolean
         return self.env.type_object

@@ -1,17 +1,107 @@
 {
     "id": "py-for",
-    "title": "Python For Loops",
-    "intro": "Welcome to the Python For Loops lesson.",
-    "python_desc": "Python code for Python For Loops",
-    "java_desc": "Java equivalent for Python For Loops",
-    "explanation": "<p>In this lesson we cover <b>Python For Loops</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Bucle For en Python",
+    "intro": "El bucle for en Python se usa para iterar sobre una secuencia (lista, tupla, diccionario, conjunto o string).",
+    "python_desc": "Código Python para For",
+    "java_desc": "Equivalente en Java para For",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "For Básico",
+            "text": "El bucle <code>for</code> en Python itera directamente sobre los elementos de una secuencia. No necesitas un contador ni índices.",
+            "notes": [
+                {"type": "note", "text": "El <code>for</code> de Python es similar al <b>for-each</b> de Java (<code>for (Type x : colección)</code>), no al <code>for</code> clásico con contador."}
+            ]
+        },
+        {
+            "title": "Iterar Strings",
+            "text": "Los strings también son secuencias iterables. El bucle <code>for</code> recorre cada carácter uno por uno.",
+            "notes": []
+        },
+        {
+            "title": "La Función range()",
+            "text": "Para repetir un bloque un número específico de veces, usa <code>range()</code>. Genera una secuencia de números.",
+            "notes": [
+                {"type": "tip", "text": "<code>range(6)</code> genera <code>0, 1, 2, 3, 4, 5</code> (no incluye el 6). Puedes especificar inicio, fin y paso: <code>range(2, 10, 2)</code>."}
+            ]
+        },
+        {
+            "title": "Break y Continue",
+            "text": "<code>break</code> termina el bucle antes de que haya recorrido todos los elementos. <code>continue</code> salta a la siguiente iteración.",
+            "notes": [
+                {"type": "note", "text": "<code>break</code> y <code>continue</code> funcionan exactamente igual en Python y Java."}
+            ]
+        },
+        {
+            "title": "For con Else",
+            "text": "Python tiene una característica única: un bloque <code>else</code> después de un <code>for</code>. Se ejecuta cuando el bucle termina normalmente (sin <code>break</code>).",
+            "notes": [
+                {"type": "warning", "text": "Java <b>no</b> tiene <code>for...else</code>. Esta es una característica exclusiva de Python."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-for-1",
-            "python": "# Python For Loops Python example\nprint('Python For Loops')",
-            "java": "// Python For Loops Java example\nSystem.out.println(\"Python For Loops\");",
-            "explanation": "Basic example demonstrating Python For Loops."
+            "id": "py-for-basic",
+            "section": "For Básico",
+            "python": "frutas = [\"manzana\", \"banana\", \"cereza\"]\nfor fruta in frutas:\n    print(fruta)",
+            "java": "String[] frutas = {\"manzana\", \"banana\", \"cereza\"};\nfor (String fruta : frutas) {\n    System.out.println(fruta);\n}",
+            "explanation": "Python: <code>for x in lista</code>. Java: <code>for (Type x : array)</code>. Ambos iteran directamente."
+        },
+        {
+            "id": "py-for-string",
+            "section": "Iterar Strings",
+            "python": "for letra in \"Python\":\n    print(letra)",
+            "java": "String texto = \"Python\";\nfor (char letra : texto.toCharArray()) {\n    System.out.println(letra);\n}",
+            "explanation": "Python itera strings directamente. Java necesita <code>.toCharArray()</code> primero."
+        },
+        {
+            "id": "py-for-range",
+            "section": "La Función range()",
+            "python": "for i in range(6):\n    print(i)  # 0, 1, 2, 3, 4, 5\n\nfor i in range(2, 10, 2):\n    print(i)  # 2, 4, 6, 8",
+            "java": "for (int i = 0; i < 6; i++) {\n    System.out.println(i);  // 0-5\n}\n\nfor (int i = 2; i < 10; i += 2) {\n    System.out.println(i);  // 2, 4, 6, 8\n}",
+            "explanation": "Python: <code>range(inicio, fin, paso)</code>. Java: <code>for (int i = inicio; i < fin; i += paso)</code>."
+        },
+        {
+            "id": "py-for-break",
+            "section": "Break y Continue",
+            "python": "for i in range(10):\n    if i == 3:\n        continue  # salta el 3\n    if i == 7:\n        break     # termina en el 7\n    print(i)  # 0, 1, 2, 4, 5, 6",
+            "java": "for (int i = 0; i < 10; i++) {\n    if (i == 3) continue;\n    if (i == 7) break;\n    System.out.println(i);\n}",
+            "explanation": "<code>break</code> y <code>continue</code> funcionan igual en ambos lenguajes."
+        },
+        {
+            "id": "py-for-else",
+            "section": "For con Else",
+            "python": "for i in range(6):\n    print(i)\nelse:\n    print(\"¡Bucle completado!\")\n# El else se ejecuta al terminar normalmente",
+            "java": "// Java NO tiene for...else\nfor (int i = 0; i < 6; i++) {\n    System.out.println(i);\n}\nSystem.out.println(\"Bucle completado!\");\n// Se simula poniendo el código después del for",
+            "explanation": "Python tiene <code>for...else</code> (se ejecuta si no hubo <code>break</code>). Java no tiene esta característica."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-for-1",
+            "type": "fill-blank",
+            "question": "Crea un bucle que imprima los números del 0 al 4.",
+            "template": "for i in _____(5):\n    print(i)",
+            "template_html": "for i in <input type='text' class='exercise-input' data-answer='range' placeholder='___'>(5):<br>&nbsp;&nbsp;&nbsp;&nbsp;print(i)",
+            "python_code": "for i in range(5):\n    print(i)",
+            "answer": "range"
+        },
+        {
+            "id": "ex-for-2",
+            "type": "multiple-choice",
+            "question": "¿Qué hace <code>continue</code> dentro de un bucle?",
+            "options": ["Termina el bucle", "Salta a la siguiente iteración", "Reinicia el bucle", "Pausa el bucle"],
+            "correct": 1
+        },
+        {
+            "id": "ex-for-3",
+            "type": "fill-blank",
+            "question": "Detén el bucle cuando <code>i</code> sea igual a 3.",
+            "template": "for i in range(10):\n    if i == 3:\n        _____",
+            "template_html": "for i in range(10):<br>&nbsp;&nbsp;&nbsp;&nbsp;if i == 3:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='text' class='exercise-input' data-answer='break' placeholder='___'>",
+            "python_code": "for i in range(10):\n    if i == 3:\n        break",
+            "answer": "break"
         }
     ]
 }

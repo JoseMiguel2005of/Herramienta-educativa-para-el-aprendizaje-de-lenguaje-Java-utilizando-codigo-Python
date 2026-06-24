@@ -1,17 +1,42 @@
 {
     "id": "pd-intro",
-    "title": "Pandas Intro",
-    "intro": "Welcome to the Pandas Intro lesson.",
-    "python_desc": "Python code for Pandas Intro",
-    "java_desc": "Java equivalent for Pandas Intro",
-    "explanation": "<p>In this lesson we cover <b>Pandas Intro</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Introducción a Pandas",
+    "intro": "Pandas es una librería de Python utilizada para trabajar con conjuntos de datos. Tiene funciones para analizar, limpiar, explorar y manipular datos.",
+    "python_desc": "Código Python con Pandas",
+    "java_desc": "Equivalente en Java puro",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "¿Por qué usar Pandas?",
+            "text": "Pandas nos permite analizar grandes volúmenes de datos y sacar conclusiones basadas en teorías estadísticas. También puede limpiar datos desordenados y hacerlos legibles y relevantes.",
+            "notes": [
+                {"type": "note", "text": "El nombre 'Pandas' hace referencia a 'Panel Data' (Datos de Panel) y a 'Python Data Analysis'."}
+            ]
+        },
+        {
+            "title": "¿Qué puede hacer Pandas?",
+            "text": "Puede responder preguntas complejas sobre los datos: ¿Existe correlación entre dos o más columnas? ¿Cuál es el valor medio? ¿Cuál es el valor máximo/mínimo? Pandas también borra las filas que no son relevantes o contienen valores incorrectos (limpieza de datos).",
+            "notes": [
+                {"type": "tip", "text": "En Java no existe una herramienta estándar idéntica a Pandas. Las empresas suelen usar librerías de terceros (como Apache Spark) o escribir mucho código usando Listas de objetos (`List<POJO>`) y la API de Streams."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "pd-intro-1",
-            "python": "# Pandas Intro Python example\nprint('Pandas Intro')",
-            "java": "// Pandas Intro Java example\nSystem.out.println(\"Pandas Intro\");",
-            "explanation": "Basic example demonstrating Pandas Intro."
+            "id": "pd-intro-map1",
+            "section": "¿Qué puede hacer Pandas?",
+            "python": "import pandas as pd\n\n# Pandas puede agrupar y calcular estadísticas en 1 línea:\n# media_precios = df.groupby('Categoria')['Precio'].mean()",
+            "java": "// En Java puro usando Streams y Lambdas:\n// Map<String, Double> media = productos.stream()\n//   .collect(Collectors.groupingBy(Producto::getCategoria, \n//            Collectors.averagingDouble(Producto::getPrecio)));",
+            "explanation": "La API de Pandas está optimizada para la manipulación estadística de bases de datos. En Java necesitamos usar Collectors que pueden resultar engorrosos de leer."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-pd-intro-1",
+            "type": "multiple-choice",
+            "question": "¿Para qué tipo de trabajo está principalmente diseñado Pandas?",
+            "options": ["Desarrollo web backend", "Creación de videojuegos", "Análisis y manipulación de datos tabulares", "Renderizado 3D"],
+            "correct": 2
         }
     ]
 }

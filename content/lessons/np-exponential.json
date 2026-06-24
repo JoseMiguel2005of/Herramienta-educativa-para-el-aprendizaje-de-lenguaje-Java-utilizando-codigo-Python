@@ -1,17 +1,37 @@
 {
     "id": "np-exponential",
-    "title": "Exponential Distribution",
-    "intro": "Welcome to the Exponential Distribution lesson.",
-    "python_desc": "Python code for Exponential Distribution",
-    "java_desc": "Java equivalent for Exponential Distribution",
-    "explanation": "<p>In this lesson we cover <b>Exponential Distribution</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "NumPy - Distribución Exponencial",
+    "intro": "La Distribución Exponencial se usa para describir el tiempo hasta que ocurra el próximo evento (como el tiempo de falla o éxito).",
+    "python_desc": "Exponencial en NumPy",
+    "java_desc": "Exponencial en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "¿Qué es la Exponencial?",
+            "text": "Si quieres predecir probabilísticamente en qué mes va a explotar o quemarse el motor de un automóvil que acabas de construir, utilizas la distribución exponencial pasándole la variable <code>scale</code> (la inversa de la tasa de fallas conocida).",
+            "notes": [
+                {"type": "note", "text": "La distribución Exponencial describe el 'Tiempo entre eventos', mientras que la Distribución Poisson describe la 'Cantidad de eventos en un tiempo'. Son hermanas matemáticas."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "np-exponential-1",
-            "python": "# Exponential Distribution Python example\nprint('Exponential Distribution')",
-            "java": "// Exponential Distribution Java example\nSystem.out.println(\"Exponential Distribution\");",
-            "explanation": "Basic example demonstrating Exponential Distribution."
+            "section": "¿Qué es la Exponencial?",
+            "python": "from numpy import random\n\n# Simulamos el tiempo para el próximo evento con escala (media) = 2\nx = random.exponential(scale=2, size=5)\n\nprint(x)\n# Salida de floats indicando los posibles tiempos hasta la falla",
+            "java": "import org.apache.commons.math3.distribution.ExponentialDistribution;\nimport java.util.Arrays;\n\npublic class Motor {\n  public static void main(String[] args) {\n      // Creamos la distribución asumiendo media = 2\n      ExponentialDistribution dist = new ExponentialDistribution(2.0);\n      \n      double[] predicciones = dist.sample(5);\n      System.out.println(Arrays.toString(predicciones));\n  }\n}",
+            "explanation": "La ciencia de datos Predictiva de fiabilidad/supervivencia utiliza este modelado fuertemente. El motor `ExponentialDistribution` se comporta como el par exacto de la llamada en Python."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-exponential-1",
+            "type": "fill-blank",
+            "question": "Escribe el nombre correcto de la distribución para pronosticar el tiempo (time-to-event) entre cada falla de un dispositivo.",
+            "template": "x = random.___________(scale=2, size=5)",
+            "template_html": "x = random.<input type='text' class='exercise-input' data-answer='exponential' placeholder='___________'>(scale=2, size=5)",
+            "python_code": "x = random.exponential(scale=2, size=5)",
+            "answer": "exponential"
         }
     ]
 }

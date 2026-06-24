@@ -1,17 +1,37 @@
 {
     "id": "sc-getstarted",
-    "title": "SciPy Get Started",
-    "intro": "Welcome to the SciPy Get Started lesson.",
-    "python_desc": "Python code for SciPy Get Started",
-    "java_desc": "Java equivalent for SciPy Get Started",
-    "explanation": "<p>In this lesson we cover <b>SciPy Get Started</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "SciPy - Empezando",
+    "intro": "Para empezar a utilizar SciPy, primero debemos asegurarnos de tenerlo instalado en nuestro entorno.",
+    "python_desc": "Importar SciPy",
+    "java_desc": "Uso en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Instalación e Importación",
+            "text": "Si ya tienes Python y PIP instalados, usa el comando <code>pip install scipy</code>. Una vez hecho, importa solo los submódulos específicos que necesites para evitar sobrecargar la memoria.",
+            "notes": [
+                {"type": "note", "text": "Al igual que en Java prefieres hacer <code>import java.util.List</code> en vez de <code>import java.util.*</code> para ser explícito, en SciPy se recomienda importar específicamente lo necesario de sus cientos de paquetes."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "sc-getstarted-1",
-            "python": "# SciPy Get Started Python example\nprint('SciPy Get Started')",
-            "java": "// SciPy Get Started Java example\nSystem.out.println(\"SciPy Get Started\");",
-            "explanation": "Basic example demonstrating SciPy Get Started."
+            "section": "Instalación e Importación",
+            "python": "from scipy import constants\n\n# Imprimimos la constante matemática Pi:\nprint(constants.pi)",
+            "java": "public class Main {\n  public static void main(String[] args) {\n      // En Java, las constantes matemáticas más comunes \n      // ya vienen en la clase nativa Math.\n      System.out.println(Math.PI);\n  }\n}",
+            "explanation": "El ecosistema base es similar para matemáticas primitivas (Math.PI / constants.pi). La diferencia radica en constantes de física (masa atómica, años luz, etc) que SciPy ofrece nativamente y Java no."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-sc-getstarted-1",
+            "type": "fill-blank",
+            "question": "Importa ÚNICAMENTE el submódulo de constantes desde scipy.",
+            "template": "____ scipy import constants",
+            "template_html": "<input type='text' class='exercise-input' data-answer='from' placeholder='____'> scipy import constants",
+            "python_code": "from scipy import constants",
+            "answer": "from"
         }
     ]
 }

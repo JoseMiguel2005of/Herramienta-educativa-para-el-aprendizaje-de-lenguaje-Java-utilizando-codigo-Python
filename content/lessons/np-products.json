@@ -1,17 +1,37 @@
 {
     "id": "np-products",
-    "title": "Products",
-    "intro": "Welcome to the Products lesson.",
-    "python_desc": "Python code for Products",
-    "java_desc": "Java equivalent for Products",
-    "explanation": "<p>In this lesson we cover <b>Products</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "NumPy - Productos (Products)",
+    "intro": "Un Producto es el resultado de la multiplicación acumulada de los elementos en un Array.",
+    "python_desc": "Prod Ufunc",
+    "java_desc": "Multiplicación Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Calculando Productos",
+            "text": "De la misma manera que <code>sum()</code> sumaba todos los datos de un Array, la función <code>prod()</code> multiplica todos los datos de forma consecutiva (1 * 2 * 3 * 4...).",
+            "notes": [
+                {"type": "note", "text": "Al igual que con la suma, puedes indicarle a NumPy que el producto acumulativo se calcule únicamente sobre un Eje específico usando <code>axis=1</code>."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "np-products-1",
-            "python": "# Products Python example\nprint('Products')",
-            "java": "// Products Java example\nSystem.out.println(\"Products\");",
-            "explanation": "Basic example demonstrating Products."
+            "section": "Calculando Productos",
+            "python": "import numpy as np\n\narr = np.array([1, 2, 3, 4])\n\n# Multiplica 1*2*3*4 = 24\nx = np.prod(arr)\n\nprint(x)\n# Salida: 24",
+            "java": "import java.util.stream.IntStream;\n\npublic class Productos {\n  public static void main(String[] args) {\n      int[] arr = {1, 2, 3, 4};\n      \n      // En Java, los Streams no tienen una función .prod() lista para usar.\n      // Hay que proveerle una lambda de reducción matemática manual:\n      int producto = IntStream.of(arr)\n                              .reduce(1, (acumulador, actual) -> acumulador * actual);\n                              \n      System.out.println(producto);\n  }\n}",
+            "explanation": "La operación 'reduce' es el estándar funcional de la industria. Python incluye este reducer especializado (`np.prod`), mientras Java Streams obliga a utilizar su reducer genérico multiplicativo desde 1 (su elemento neutro)."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-products-1",
+            "type": "fill-blank",
+            "question": "Invoca a la función correcta de NumPy que multiplica todos los números contenidos en el array progresivamente.",
+            "template": "x = np.____(arr)",
+            "template_html": "x = np.<input type='text' class='exercise-input' data-answer='prod' placeholder='____'>(arr)",
+            "python_code": "x = np.prod(arr)",
+            "answer": "prod"
         }
     ]
 }

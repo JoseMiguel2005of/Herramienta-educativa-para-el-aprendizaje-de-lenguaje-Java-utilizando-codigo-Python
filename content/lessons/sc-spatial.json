@@ -1,0 +1,42 @@
+{
+    "id": "sc-spatial",
+    "title": "SciPy - Datos Espaciales",
+    "intro": "Los datos espaciales (Spatial Data) se refieren a información que es representada en un espacio geométrico.",
+    "python_desc": "SciPy Spatial",
+    "java_desc": "Procesamiento en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "¿Qué son los datos Espaciales?",
+            "text": "Los algoritmos espaciales tratan problemas espaciales como buscar si un punto está dentro o fuera de un límite de un polígono, o calcular distancias entre puntos geográficos (por ejemplo en aplicaciones como Uber o Google Maps). SciPy los agrupa en el módulo <code>scipy.spatial</code>.",
+            "notes": [
+                {"type": "note", "text": "En Java esto suele tratarse usando librerías GIS (Sistemas de Información Geográfica) como GeoTools o JTS Topology Suite."}
+            ]
+        },
+        {
+            "title": "Triangulación (Delaunay)",
+            "text": "Uno de los usos matemáticos espaciales es generar triangulaciones. La técnica Delaunay crea un tapiz de triángulos perfectos uniendo un grupo de puntos dispersos, vital para renderizar Gráficos 3D en videojuegos.",
+            "notes": []
+        }
+    ],
+    "code_mappings": [
+        {
+            "id": "sc-spatial-1",
+            "section": "Triangulación (Delaunay)",
+            "python": "import numpy as np\nfrom scipy.spatial import Delaunay\nimport matplotlib.pyplot as plt\n\npuntos = np.array([\n  [2, 4], [3, 4], [3, 0], [2, 2], [4, 1]\n])\n\n# Delaunay toma todos los puntos (X,Y) y devuelve los vértices óptimos\nsimplices = Delaunay(puntos).simplices\n\n# Triplot dibujaría la malla 3D/2D en pantalla\nplt.triplot(puntos[:, 0], puntos[:, 1], simplices)\nplt.show()",
+            "java": "// En Java, una librería como JTS haría algo así:\n/*\nCoordinate[] coords = new Coordinate[] {\n    new Coordinate(2, 4),\n    new Coordinate(3, 4),\n    new Coordinate(3, 0)\n};\n\nDelaunayTriangulationBuilder builder = new DelaunayTriangulationBuilder();\nbuilder.setSites(Arrays.asList(coords));\nGeometry triangulos = builder.getTriangles(new GeometryFactory());\n*/",
+            "explanation": "Nuevamente, SciPy acepta arrays en bruto para hacer toda la triangulación computacional geométrica. Las contrapartes corporativas (JTS) exigen objetos estrictos como `Coordinate` y fábricas (`GeometryFactory`)."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-sc-spatial-1",
+            "type": "fill-blank",
+            "question": "Escribe el nombre de la clase de scipy que ejecuta la triangulación de puntos geométricos.",
+            "template": "simplices = ________(puntos).simplices",
+            "template_html": "simplices = <input type='text' class='exercise-input' data-answer='Delaunay' placeholder='________'>(puntos).simplices",
+            "python_code": "simplices = Delaunay(puntos).simplices",
+            "answer": "Delaunay"
+        }
+    ]
+}

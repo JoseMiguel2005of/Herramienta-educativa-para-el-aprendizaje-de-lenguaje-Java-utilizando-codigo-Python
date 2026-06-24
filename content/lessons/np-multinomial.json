@@ -1,17 +1,37 @@
 {
     "id": "np-multinomial",
-    "title": "Multinomial Distribution",
-    "intro": "Welcome to the Multinomial Distribution lesson.",
-    "python_desc": "Python code for Multinomial Distribution",
-    "java_desc": "Java equivalent for Multinomial Distribution",
-    "explanation": "<p>In this lesson we cover <b>Multinomial Distribution</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "NumPy - Distribución Multinomial",
+    "intro": "La Distribución Multinomial es una generalización de la distribución binomial.",
+    "python_desc": "Multinomial en NumPy",
+    "java_desc": "Multinomial en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "¿Qué es la Multinomial?",
+            "text": "Mientras la binomial asume que solo hay 2 resultados posibles (ejemplo: Cara o Cruz, Éxito o Fracaso), la multinomial describe eventos con múltiples escenarios. Por ejemplo, lanzar un dado tradicional tiene 6 resultados posibles.",
+            "notes": [
+                {"type": "note", "text": "Al arrojar un dado las probabilidades (pvals) de que caiga cualquier cara deben sumar 1.0 (1/6 para cada una)."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "np-multinomial-1",
-            "python": "# Multinomial Distribution Python example\nprint('Multinomial Distribution')",
-            "java": "// Multinomial Distribution Java example\nSystem.out.println(\"Multinomial Distribution\");",
-            "explanation": "Basic example demonstrating Multinomial Distribution."
+            "section": "¿Qué es la Multinomial?",
+            "python": "from numpy import random\n\n# Simulamos arrojar un dado perfecto (n=1) y reportar cuál de los 6\n# escenarios posibles se materializó:\nx = random.multinomial(n=1, pvals=[1/6, 1/6, 1/6, 1/6, 1/6, 1/6])\n\nprint(x)\n# Salida ej: [0 0 1 0 0 0] -> Indica que cayó en la cara #3",
+            "java": "import org.apache.commons.math3.distribution.MultivariateRealDistribution;\n// Nota: Java Commons Math no expone una Multinomial discreta de fácil acceso.\n\npublic class Dado {\n  public static void main(String[] args) {\n      // Para simular esto en Java puro de forma sencilla:\n      java.util.Random rand = new java.util.Random();\n      int resultadoDado = rand.nextInt(6) + 1; \n      \n      int[] arraySalida = new int[6];\n      arraySalida[resultadoDado - 1] = 1;\n      \n      System.out.println(java.util.Arrays.toString(arraySalida));\n  }\n}",
+            "explanation": "El ecosistema Python vuelve a brillar con un módulo estadístico específico, mientras que en Java, a menudo es más eficiente simular la distribución manualmente con clases base que intentar levantar todo un motor estadístico multivariado."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-multinomial-1",
+            "type": "fill-blank",
+            "question": "Usa la distribución generalizada ideal para modelar eventos que tienen más de 2 resultados finales (como lanzar un dado).",
+            "template": "x = random.___________(n=1, pvals=[1/6, 1/6, 1/6, 1/6, 1/6, 1/6])",
+            "template_html": "x = random.<input type='text' class='exercise-input' data-answer='multinomial' placeholder='___________'>(n=1, pvals=[1/6, 1/6, 1/6, 1/6, 1/6, 1/6])",
+            "python_code": "x = random.multinomial(n=1, pvals=[1/6, 1/6, 1/6, 1/6, 1/6, 1/6])",
+            "answer": "multinomial"
         }
     ]
 }

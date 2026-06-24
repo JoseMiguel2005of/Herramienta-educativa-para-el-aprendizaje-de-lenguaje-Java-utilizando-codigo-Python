@@ -1,17 +1,65 @@
 {
     "id": "pd-analyze",
-    "title": "Pandas Analyzing Data",
-    "intro": "Welcome to the Pandas Analyzing Data lesson.",
-    "python_desc": "Python code for Pandas Analyzing Data",
-    "java_desc": "Java equivalent for Pandas Analyzing Data",
-    "explanation": "<p>In this lesson we cover <b>Pandas Analyzing Data</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Analizar DataFrames",
+    "intro": "Una de las funciones más usadas para tener un vistazo rápido de los datos en Pandas es el método head() y tail().",
+    "python_desc": "Inspección de DataFrames",
+    "java_desc": "Equivalencia en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Visualizar las Primeras Filas",
+            "text": "El método <code>head()</code> devuelve los encabezados y el número de filas especificadas a partir de la cima. Si no le pasas un número, devuelve las 5 primeras filas por defecto.",
+            "notes": [
+                {"type": "note", "text": "En Java, para tomar los primeros 5 elementos de una lista, usarías <code>lista.subList(0, 5)</code> o la API de Streams <code>stream().limit(5)</code>."}
+            ]
+        },
+        {
+            "title": "Visualizar las Últimas Filas",
+            "text": "De manera similar, el método <code>tail()</code> devuelve los encabezados y las filas especificadas, pero contando desde abajo (la base) del DataFrame.",
+            "notes": []
+        },
+        {
+            "title": "Información Técnica (Info)",
+            "text": "El objeto DataFrame tiene un método llamado <code>info()</code>, que te imprime la información técnica del dataset: número de columnas, los tipos de datos de cada columna y si hay datos nulos o vacíos en el medio.",
+            "notes": [
+                {"type": "tip", "text": "Este método <code>info()</code> equivale a analizar los Metadatos en Java, algo muy común cuando interactuamos con Bases de Datos reales vía <code>ResultSetMetaData</code> en JDBC."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "pd-analyze-1",
-            "python": "# Pandas Analyzing Data Python example\nprint('Pandas Analyzing Data')",
-            "java": "// Pandas Analyzing Data Java example\nSystem.out.println(\"Pandas Analyzing Data\");",
-            "explanation": "Basic example demonstrating Pandas Analyzing Data."
+            "section": "Visualizar las Primeras Filas",
+            "python": "import pandas as pd\n\ndf = pd.read_csv('data.csv')\n\n# Imprime los primeros 5 registros:\nprint(df.head())",
+            "java": "import java.util.List;\n\npublic class Main {\n  public static void main(String[] args) {\n      List<Registro> tabla = obtenerDatos(); // Función simulada\n      \n      // Tomar las primeras 5 filas (head):\n      List<Registro> head = tabla.subList(0, Math.min(5, tabla.size()));\n      \n      System.out.println(head);\n  }\n}",
+            "explanation": "Extraer extractos iniciales o finales es muy común para entender grandes datasets sin sobrecargar la consola."
+        },
+        {
+            "id": "pd-analyze-2",
+            "section": "Información Técnica (Info)",
+            "python": "import pandas as pd\n\ndf = pd.read_csv('data.csv')\n\n# Imprime el conteo de elementos y tipos de datos por columna:\nprint(df.info())",
+            "java": "// En Java, si extraes datos de una Base de Datos SQL (JDBC):\nResultSet rs = stmt.executeQuery(\"SELECT * FROM data\");\nResultSetMetaData rsmd = rs.getMetaData();\n\nfor (int i = 1; i <= rsmd.getColumnCount(); i++) {\n    System.out.println(rsmd.getColumnName(i) + \" : \" + rsmd.getColumnTypeName(i));\n}",
+            "explanation": "Saber si hay 'Non-Null Counts' desiguales en las columnas te advierte que los datos están sucios."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-pd-analyze-1",
+            "type": "fill-blank",
+            "question": "Imprime únicamente las primeras 10 filas del DataFrame.",
+            "template": "print(df.____(10))",
+            "template_html": "print(df.<input type='text' class='exercise-input' data-answer='head' placeholder='____'>(10))",
+            "python_code": "print(df.head(10))",
+            "answer": "head"
+        },
+        {
+            "id": "ex-pd-analyze-2",
+            "type": "fill-blank",
+            "question": "Imprime las últimas 5 filas del DataFrame.",
+            "template": "print(df.____())",
+            "template_html": "print(df.<input type='text' class='exercise-input' data-answer='tail' placeholder='____'>())",
+            "python_code": "print(df.tail())",
+            "answer": "tail"
         }
     ]
 }

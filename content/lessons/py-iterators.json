@@ -1,17 +1,72 @@
 {
     "id": "py-iterators",
-    "title": "Python Iterators",
-    "intro": "Welcome to the Python Iterators lesson.",
-    "python_desc": "Python code for Python Iterators",
-    "java_desc": "Java equivalent for Python Iterators",
-    "explanation": "<p>In this lesson we cover <b>Python Iterators</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Iteradores en Python",
+    "intro": "Un iterador es un objeto que contiene un número contable de valores. Es un objeto por el cual puedes iterar, lo que significa que puedes recorrer todos sus valores.",
+    "python_desc": "Código Python para Iteradores",
+    "java_desc": "Equivalente en Java para Iteradores",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Iterables vs Iteradores",
+            "text": "Listas, tuplas, diccionarios y conjuntos son objetos <b>iterables</b>. De ellos puedes obtener un <b>iterador</b>.",
+            "notes": [
+                {"type": "note", "text": "En Java existe la interfaz <code>Iterable</code> (que puede devolver un <code>Iterator</code>) y la interfaz <code>Iterator</code> (que tiene <code>hasNext()</code> y <code>next()</code>)."}
+            ]
+        },
+        {
+            "title": "La Función iter() y next()",
+            "text": "Técnicamente, en Python un iterador es un objeto que implementa los métodos <code>__iter__()</code> y <code>__next__()</code>.",
+            "notes": [
+                {"type": "tip", "text": "Usas la función <code>iter()</code> para obtener un iterador de un iterable, y la función <code>next()</code> para avanzar al siguiente valor."}
+            ]
+        },
+        {
+            "title": "Iterar en un Bucle For",
+            "text": "El bucle <code>for</code> realmente crea un objeto iterador y ejecuta el método <code>next()</code> por cada bucle.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-iterators-1",
-            "python": "# Python Iterators Python example\nprint('Python Iterators')",
-            "java": "// Python Iterators Java example\nSystem.out.println(\"Python Iterators\");",
-            "explanation": "Basic example demonstrating Python Iterators."
+            "id": "py-iter-basic",
+            "section": "La Función iter() y next()",
+            "python": "tupla_frutas = (\"manzana\", \"banana\", \"cereza\")\nmi_iterador = iter(tupla_frutas)\n\nprint(next(mi_iterador)) # manzana\nprint(next(mi_iterador)) # banana\nprint(next(mi_iterador)) # cereza",
+            "java": "import java.util.List;\nimport java.util.Iterator;\n\nList<String> frutas = List.of(\"manzana\", \"banana\", \"cereza\");\nIterator<String> miIterador = frutas.iterator();\n\nSystem.out.println(miIterador.next()); // manzana\nSystem.out.println(miIterador.next()); // banana\nSystem.out.println(miIterador.next()); // cereza",
+            "explanation": "Python usa las funciones integradas <code>iter()</code> y <code>next()</code>. Java usa métodos en los objetos <code>.iterator()</code> y <code>.next()</code>."
+        },
+        {
+            "id": "py-iter-string",
+            "section": "La Función iter() y next()",
+            "python": "texto = \"uva\"\niterador = iter(texto)\n\nprint(next(iterador)) # u\nprint(next(iterador)) # v\nprint(next(iterador)) # a",
+            "java": "// En Java los Strings NO son Iterable directamente\nString texto = \"uva\";\njava.util.Iterator<Integer> iterador = texto.chars().iterator();\n\nSystem.out.println((char) iterador.next().intValue()); // u\nSystem.out.println((char) iterador.next().intValue()); // v",
+            "explanation": "En Python hasta los strings son iterables simples. En Java, iterar un string como objeto iterador requiere streams (<code>.chars()</code>)."
+        },
+        {
+            "id": "py-iter-for",
+            "section": "Iterar en un Bucle For",
+            "python": "tupla = (\"manzana\", \"banana\", \"cereza\")\n\n# El bucle for hace el iter() y next() por ti\nfor x in tupla:\n    print(x)",
+            "java": "import java.util.List;\n\nList<String> tupla = List.of(\"manzana\", \"banana\", \"cereza\");\n\n// El for-each de Java hace lo mismo internamente\nfor (String x : tupla) {\n    System.out.println(x);\n}",
+            "explanation": "Ambos lenguajes abstraen la lógica compleja del iterador usando el bucle for / for-each."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-iter-1",
+            "type": "fill-blank",
+            "question": "Crea un iterador a partir de la tupla <code>frutas</code>.",
+            "template": "it = _____(frutas)",
+            "template_html": "it = <input type='text' class='exercise-input' data-answer='iter' placeholder='___'>(frutas)",
+            "python_code": "it = iter(frutas)",
+            "answer": "iter"
+        },
+        {
+            "id": "ex-iter-2",
+            "type": "fill-blank",
+            "question": "Imprime el siguiente valor del iterador <code>it</code>.",
+            "template": "print(_____(it))",
+            "template_html": "print(<input type='text' class='exercise-input' data-answer='next' placeholder='___'>(it))",
+            "python_code": "print(next(it))",
+            "answer": "next"
         }
     ]
 }

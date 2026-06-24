@@ -1,17 +1,93 @@
 {
     "id": "py-operators",
-    "title": "Python Operators",
-    "intro": "Welcome to the Python Operators lesson.",
-    "python_desc": "Python code for Python Operators",
-    "java_desc": "Java equivalent for Python Operators",
-    "explanation": "<p>In this lesson we cover <b>Python Operators</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Operadores en Python",
+    "intro": "Los operadores se usan para realizar operaciones sobre variables y valores. Python divide los operadores en varios grupos.",
+    "python_desc": "Código Python para Operadores",
+    "java_desc": "Equivalente en Java para Operadores",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Operadores Aritméticos",
+            "text": "Los operadores aritméticos realizan operaciones matemáticas comunes: suma, resta, multiplicación, división, módulo, exponenciación y división entera.",
+            "notes": [
+                {"type": "note", "text": "Python tiene el operador de exponenciación <code>**</code> que no existe en Java. En Java se usa <code>Math.pow()</code>."}
+            ]
+        },
+        {
+            "title": "Operadores de Asignación",
+            "text": "Los operadores de asignación se usan para asignar valores a variables. El más básico es <code>=</code>, pero existen atajos combinados como <code>+=</code>, <code>-=</code>, etc.",
+            "notes": []
+        },
+        {
+            "title": "Operadores de Comparación",
+            "text": "Se usan para comparar dos valores. Devuelven <code>True</code> o <code>False</code>.",
+            "notes": [
+                {"type": "tip", "text": "En Python, puedes encadenar comparaciones: <code>1 < x < 10</code>. En Java esto no es válido; necesitarías <code>x > 1 && x < 10</code>."}
+            ]
+        },
+        {
+            "title": "Operadores Lógicos",
+            "text": "Los operadores lógicos combinan condiciones. Python usa las palabras <code>and</code>, <code>or</code>, <code>not</code> en lugar de símbolos.",
+            "notes": [
+                {"type": "note", "text": "Java usa símbolos: <code>&&</code> (and), <code>||</code> (or), <code>!</code> (not). Python usa palabras en inglés, lo cual es más legible."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-operators-1",
-            "python": "# Python Operators Python example\nprint('Python Operators')",
-            "java": "// Python Operators Java example\nSystem.out.println(\"Python Operators\");",
-            "explanation": "Basic example demonstrating Python Operators."
+            "id": "py-op-arith",
+            "section": "Operadores Aritméticos",
+            "python": "x = 10\ny = 3\nprint(x + y)   # 13  Suma\nprint(x - y)   # 7   Resta\nprint(x * y)   # 30  Multiplicación\nprint(x / y)   # 3.33 División\nprint(x % y)   # 1   Módulo\nprint(x ** y)  # 1000 Exponente\nprint(x // y)  # 3   División entera",
+            "java": "int x = 10;\nint y = 3;\nSystem.out.println(x + y);          // 13\nSystem.out.println(x - y);          // 7\nSystem.out.println(x * y);          // 30\nSystem.out.println((double)x / y);  // 3.33\nSystem.out.println(x % y);          // 1\nSystem.out.println(Math.pow(x, y)); // 1000.0\nSystem.out.println(x / y);          // 3 (div entera)",
+            "explanation": "Python: <code>**</code> para exponente, <code>//</code> para div entera. Java: <code>Math.pow()</code> y la div entera es automática con <code>int</code>."
+        },
+        {
+            "id": "py-op-assign",
+            "section": "Operadores de Asignación",
+            "python": "x = 5\nx += 3   # x = x + 3 → 8\nprint(x)\nx -= 2   # x = x - 2 → 6\nprint(x)\nx *= 4   # x = x * 4 → 24\nprint(x)",
+            "java": "int x = 5;\nx += 3;   // 8\nSystem.out.println(x);\nx -= 2;   // 6\nSystem.out.println(x);\nx *= 4;   // 24\nSystem.out.println(x);",
+            "explanation": "Los operadores de asignación compuesta (<code>+=</code>, <code>-=</code>, <code>*=</code>) funcionan igual en ambos lenguajes."
+        },
+        {
+            "id": "py-op-compare",
+            "section": "Operadores de Comparación",
+            "python": "x = 5\ny = 3\nprint(x == y)   # False (igual)\nprint(x != y)   # True  (diferente)\nprint(x > y)    # True  (mayor)\nprint(x < y)    # False (menor)\nprint(x >= y)   # True  (mayor o igual)\nprint(x <= y)   # False (menor o igual)",
+            "java": "int x = 5;\nint y = 3;\nSystem.out.println(x == y);   // false\nSystem.out.println(x != y);   // true\nSystem.out.println(x > y);    // true\nSystem.out.println(x < y);    // false\nSystem.out.println(x >= y);   // true\nSystem.out.println(x <= y);   // false",
+            "explanation": "Los operadores de comparación son idénticos en Python y Java."
+        },
+        {
+            "id": "py-op-logic",
+            "section": "Operadores Lógicos",
+            "python": "x = 5\nprint(x > 3 and x < 10)  # True\nprint(x > 3 or x < 4)    # True\nprint(not(x > 3))         # False",
+            "java": "int x = 5;\nSystem.out.println(x > 3 && x < 10);  // true\nSystem.out.println(x > 3 || x < 4);   // true\nSystem.out.println(!(x > 3));          // false",
+            "explanation": "Python: <code>and</code>, <code>or</code>, <code>not</code>. Java: <code>&&</code>, <code>||</code>, <code>!</code>."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-op-1",
+            "type": "fill-blank",
+            "question": "Calcula <code>2</code> elevado a la potencia <code>3</code> en Python.",
+            "template": "resultado = 2 _____ 3",
+            "template_html": "resultado = 2 <input type='text' class='exercise-input' data-answer='**' placeholder='___'> 3",
+            "python_code": "resultado = 2 ** 3",
+            "answer": "**"
+        },
+        {
+            "id": "ex-op-2",
+            "type": "multiple-choice",
+            "question": "¿Cuál operador lógico se usa en Python para 'Y'?",
+            "options": ["&&", "and", "&", "AND"],
+            "correct": 1
+        },
+        {
+            "id": "ex-op-3",
+            "type": "fill-blank",
+            "question": "Obtén el resto de dividir 10 entre 3.",
+            "template": "print(10 _____ 3)",
+            "template_html": "print(10 <input type='text' class='exercise-input' data-answer='%' placeholder='___'> 3)",
+            "python_code": "print(10 % 3)",
+            "answer": "%"
         }
     ]
 }

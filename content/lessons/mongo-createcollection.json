@@ -1,0 +1,44 @@
+{
+    "id": "mongo-createcollection",
+    "title": "MongoDB - Crear Colección",
+    "intro": "Una Colección en MongoDB es el equivalente a una 'Tabla' en las bases de datos SQL relacionales (como MySQL).",
+    "python_desc": "Creando Colecciones en Python",
+    "java_desc": "Equivalencia en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Creando una Colección",
+            "text": "Al igual que con la base de datos, no necesitas ejecutar una orden estricta 'CREATE TABLE'. Solo especifica el nombre de la colección que quieres utilizar, y MongoDB la creará automáticamente cuando insertes el primer Documento en ella.",
+            "notes": [
+                {"type": "tip", "text": "Un 'Documento' en MongoDB es lo que conocerías como una 'Fila' (Row) o 'Registro' en SQL."}
+            ]
+        }
+    ],
+    "code_mappings": [
+        {
+            "id": "mongo-createcol-1",
+            "section": "Creando una Colección",
+            "python": "import pymongo\n\nmyclient = pymongo.MongoClient(\"mongodb://localhost:27017/\")\nmydb = myclient[\"mibasededatos\"]\n\n# Acceder a (o declarar) la colección 'clientes'\nmycol = mydb[\"clientes\"]\n\nprint(mycol)",
+            "java": "import com.mongodb.client.MongoClients;\nimport com.mongodb.client.MongoClient;\nimport com.mongodb.client.MongoDatabase;\nimport com.mongodb.client.MongoCollection;\nimport org.bson.Document;\n\npublic class Main {\n  public static void main(String[] args) {\n      MongoClient client = MongoClients.create(\"mongodb://localhost:27017\");\n      MongoDatabase db = client.getDatabase(\"mibasededatos\");\n      \n      // En Java declaramos el tipo que guardará la colección, usualmente un Document de BSON\n      MongoCollection<Document> collection = db.getCollection(\"clientes\");\n      \n      System.out.println(collection.getNamespace());\n  }\n}",
+            "explanation": "El proceso es idéntico a nivel arquitectura pero diverge estáticamente. Java requiere tipar la colección devuelta mediante Genéricos (`<Document>`), porque puedes forzar la colección a mapear directamente a Clases Java POJOs (Object-Document Mapping)."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-mongo-createcol-1",
+            "type": "fill-blank",
+            "question": "Apunta o declara la colección 'clientes' que se encuentra dentro de tu base de datos.",
+            "template": "mycol = mydb[\"________\"]",
+            "template_html": "mycol = mydb[\"<input type='text' class='exercise-input' data-answer='clientes' placeholder='________'>\"]",
+            "python_code": "mycol = mydb[\"clientes\"]",
+            "answer": "clientes"
+        },
+        {
+            "id": "ex-mongo-createcol-2",
+            "type": "multiple-choice",
+            "question": "¿En qué momento exacto se crea realmente y de forma física una base de datos o colección en MongoDB?",
+            "options": ["Cuando importas la librería", "Cuando ejecutas db = client['mibase']", "Solo cuando se inserta el primer contenido (documento) en ella", "Cuando llamas al método create_database()"],
+            "correct": 2
+        }
+    ]
+}

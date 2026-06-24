@@ -1,17 +1,74 @@
 {
     "id": "py-math",
-    "title": "Python Math",
-    "intro": "Welcome to the Python Math lesson.",
-    "python_desc": "Python code for Python Math",
-    "java_desc": "Java equivalent for Python Math",
-    "explanation": "<p>In this lesson we cover <b>Python Math</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Matemáticas en Python",
+    "intro": "Python tiene un conjunto de funciones matemáticas integradas, incluyendo un módulo matemático extenso, que permite realizar tareas matemáticas sobre números.",
+    "python_desc": "Código Python para Matemáticas",
+    "java_desc": "Equivalente en Java para Matemáticas",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Funciones Integradas (Built-in)",
+            "text": "Las funciones <code>min()</code> y <code>max()</code> pueden usarse para encontrar el valor más bajo o más alto en un iterable. La función <code>abs()</code> devuelve el valor absoluto positivo.",
+            "notes": [
+                {"type": "note", "text": "En Java, usas la clase estática <code>Math.max()</code>, <code>Math.min()</code> y <code>Math.abs()</code>. Python tiene estas funciones básicas integradas sin necesidad de importar nada."}
+            ]
+        },
+        {
+            "title": "Potencias",
+            "text": "La función <code>pow(x, y)</code> devuelve el valor de x elevado a la potencia de y (x^y).",
+            "notes": [
+                {"type": "tip", "text": "En Python también puedes usar el operador de doble asterisco: <code>x ** y</code>."}
+            ]
+        },
+        {
+            "title": "El Módulo math",
+            "text": "Python también tiene un módulo incorporado llamado <code>math</code>, que amplía la lista de funciones matemáticas con cosas como raíces cuadradas, trigonometría, y constantes.",
+            "notes": [
+                {"type": "warning", "text": "A diferencia de las funciones integradas, debes hacer <code>import math</code> antes de usar funciones como <code>math.sqrt()</code> o <code>math.pi</code>."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-math-1",
-            "python": "# Python Math Python example\nprint('Python Math')",
-            "java": "// Python Math Java example\nSystem.out.println(\"Python Math\");",
-            "explanation": "Basic example demonstrating Python Math."
+            "id": "py-math-builtin",
+            "section": "Funciones Integradas (Built-in)",
+            "python": "x = min(5, 10, 25)\ny = max(5, 10, 25)\nz = abs(-7.25)\n\nprint(x)\nprint(y)\nprint(z)",
+            "java": "int x = Math.min(Math.min(5, 10), 25);\nint y = Math.max(Math.max(5, 10), 25);\ndouble z = Math.abs(-7.25);\n\nSystem.out.println(x);\nSystem.out.println(y);\nSystem.out.println(z);",
+            "explanation": "Python: <code>min</code>, <code>max</code> y <code>abs</code> son nativos. Java requiere <code>Math.min()</code> (que además solo acepta dos argumentos a la vez)."
+        },
+        {
+            "id": "py-math-pow",
+            "section": "Potencias",
+            "python": "x = pow(4, 3)\n# o también x = 4 ** 3\nprint(x)  # 64",
+            "java": "double x = Math.pow(4, 3);\nSystem.out.println(x);  // 64.0",
+            "explanation": "Ambos tienen una función <code>pow()</code>. Java devuelve <code>double</code>, Python devuelve <code>int</code> si ambos argumentos lo son."
+        },
+        {
+            "id": "py-math-module",
+            "section": "El Módulo math",
+            "python": "import math\n\nx = math.sqrt(64)\npi_val = math.pi\n\nprint(x)\nprint(pi_val)",
+            "java": "double x = Math.sqrt(64);\ndouble piVal = Math.PI;\n\nSystem.out.println(x);\nSystem.out.println(piVal);",
+            "explanation": "Python importa <code>math</code> y usa <code>math.sqrt()</code>. Java usa la clase global <code>Math.sqrt()</code>."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-math-1",
+            "type": "fill-blank",
+            "question": "Encuentra el valor máximo entre 5 y 10.",
+            "template": "print(_____(5, 10))",
+            "template_html": "print(<input type='text' class='exercise-input' data-answer='max' placeholder='___'>(5, 10))",
+            "python_code": "print(max(5, 10))",
+            "answer": "max"
+        },
+        {
+            "id": "ex-math-2",
+            "type": "fill-blank",
+            "question": "Para usar la raíz cuadrada (sqrt), ¿qué módulo debes importar?",
+            "template": "_____ math\nprint(math.sqrt(64))",
+            "template_html": "<input type='text' class='exercise-input' data-answer='import' placeholder='___'> math<br>print(math.sqrt(64))",
+            "python_code": "import math",
+            "answer": "import"
         }
     ]
 }

@@ -1,17 +1,107 @@
 {
     "id": "py-functions",
-    "title": "Python Functions",
-    "intro": "Welcome to the Python Functions lesson.",
-    "python_desc": "Python code for Python Functions",
-    "java_desc": "Java equivalent for Python Functions",
-    "explanation": "<p>In this lesson we cover <b>Python Functions</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Funciones en Python",
+    "intro": "Una función es un bloque de código que solo se ejecuta cuando es llamada. Puedes pasarle datos (parámetros) y puede retornar datos como resultado.",
+    "python_desc": "Código Python para Funciones",
+    "java_desc": "Equivalente en Java para Funciones",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Crear una Función",
+            "text": "En Python, una función se define usando la palabra clave <code>def</code>, seguida del nombre de la función y paréntesis.",
+            "notes": [
+                {"type": "note", "text": "En Java, las funciones son <b>métodos</b> dentro de una clase. Necesitas especificar el tipo de retorno (<code>void</code>, <code>int</code>, etc.) y el modificador de acceso (<code>public</code>, <code>static</code>)."}
+            ]
+        },
+        {
+            "title": "Parámetros y Argumentos",
+            "text": "La información se puede pasar a funciones como <b>parámetros</b>. Los parámetros se especifican dentro de los paréntesis.",
+            "notes": [
+                {"type": "tip", "text": "En Python no declaras el tipo de los parámetros. En Java <b>debes</b> declarar el tipo: <code>void funcion(String nombre)</code>."}
+            ]
+        },
+        {
+            "title": "Valores por Defecto",
+            "text": "Si llamas a una función sin un argumento, se usa el valor por defecto (si se definió uno).",
+            "notes": [
+                {"type": "warning", "text": "Java no soporta valores por defecto en parámetros directamente. Se simula con <b>sobrecarga de métodos</b> (crear múltiples versiones de la función)."}
+            ]
+        },
+        {
+            "title": "Return",
+            "text": "Una función puede devolver un valor usando la sentencia <code>return</code>.",
+            "notes": []
+        },
+        {
+            "title": "Args Arbitrarios (*args)",
+            "text": "Si no sabes cuántos argumentos recibirá tu función, puedes usar <code>*args</code>. La función recibirá una <b>tupla</b> con todos los argumentos.",
+            "notes": [
+                {"type": "note", "text": "Java usa <b>varargs</b> con sintaxis <code>tipo... nombre</code>: <code>void funcion(String... nombres)</code>."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-functions-1",
-            "python": "# Python Functions Python example\nprint('Python Functions')",
-            "java": "// Python Functions Java example\nSystem.out.println(\"Python Functions\");",
-            "explanation": "Basic example demonstrating Python Functions."
+            "id": "py-func-create",
+            "section": "Crear una Función",
+            "python": "def mi_funcion():\n    print(\"Hola desde mi función\")\n\nmi_funcion()  # Llamar la función",
+            "java": "public static void miFuncion() {\n    System.out.println(\"Hola desde mi función\");\n}\n// En main:\nmiFuncion();",
+            "explanation": "Python: <code>def</code> y ya. Java: <code>public static void</code>, tipo de retorno, y llaves."
+        },
+        {
+            "id": "py-func-params",
+            "section": "Parámetros y Argumentos",
+            "python": "def saludar(nombre):\n    print(\"Hola, \" + nombre)\n\nsaludar(\"Ana\")\nsaludar(\"Carlos\")",
+            "java": "public static void saludar(String nombre) {\n    System.out.println(\"Hola, \" + nombre);\n}\n// En main:\nsaludar(\"Ana\");\nsaludar(\"Carlos\");",
+            "explanation": "Python: no declara tipo de parámetro. Java: <code>String nombre</code> obligatorio."
+        },
+        {
+            "id": "py-func-default",
+            "section": "Valores por Defecto",
+            "python": "def saludar(nombre=\"Mundo\"):\n    print(\"Hola, \" + nombre)\n\nsaludar(\"Ana\")    # Hola, Ana\nsaludar()          # Hola, Mundo",
+            "java": "// Java no tiene valores por defecto\n// Se simula con sobrecarga:\npublic static void saludar(String nombre) {\n    System.out.println(\"Hola, \" + nombre);\n}\npublic static void saludar() {\n    saludar(\"Mundo\");  // Llama la otra versión\n}",
+            "explanation": "Python: <code>def f(x=\"default\")</code>. Java: sobrecarga de métodos (crear varias versiones)."
+        },
+        {
+            "id": "py-func-return",
+            "section": "Return",
+            "python": "def multiplicar(x):\n    return 5 * x\n\nresultado = multiplicar(3)\nprint(resultado)  # 15",
+            "java": "public static int multiplicar(int x) {\n    return 5 * x;\n}\n// En main:\nint resultado = multiplicar(3);\nSystem.out.println(resultado);  // 15",
+            "explanation": "Python: no declara tipo de retorno. Java: debe declarar <code>int</code>, <code>String</code>, etc."
+        },
+        {
+            "id": "py-func-args",
+            "section": "Args Arbitrarios (*args)",
+            "python": "def saludar_todos(*nombres):\n    for nombre in nombres:\n        print(\"Hola, \" + nombre)\n\nsaludar_todos(\"Ana\", \"Carlos\", \"Luis\")",
+            "java": "public static void saludarTodos(String... nombres) {\n    for (String nombre : nombres) {\n        System.out.println(\"Hola, \" + nombre);\n    }\n}\n// En main:\nsaludarTodos(\"Ana\", \"Carlos\", \"Luis\");",
+            "explanation": "Python: <code>*args</code> (tupla). Java: <code>tipo... nombre</code> (varargs/array)."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-func-1",
+            "type": "fill-blank",
+            "question": "Define una función llamada <code>mi_funcion</code>.",
+            "template": "_____ mi_funcion():\n    print(\"Hola\")",
+            "template_html": "<input type='text' class='exercise-input' data-answer='def' placeholder='___'> mi_funcion():<br>&nbsp;&nbsp;&nbsp;&nbsp;print(\"Hola\")",
+            "python_code": "def mi_funcion():\n    print(\"Hola\")",
+            "answer": "def"
+        },
+        {
+            "id": "ex-func-2",
+            "type": "fill-blank",
+            "question": "Haz que la función devuelva el valor <code>x * 2</code>.",
+            "template": "def doble(x):\n    _____ x * 2",
+            "template_html": "def doble(x):<br>&nbsp;&nbsp;&nbsp;&nbsp;<input type='text' class='exercise-input' data-answer='return' placeholder='___'> x * 2",
+            "python_code": "def doble(x):\n    return x * 2",
+            "answer": "return"
+        },
+        {
+            "id": "ex-func-3",
+            "type": "multiple-choice",
+            "question": "¿Cuál es la palabra clave para definir una función en Python?",
+            "options": ["function", "func", "def", "void"],
+            "correct": 2
         }
     ]
 }

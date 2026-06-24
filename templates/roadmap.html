@@ -1,29 +1,540 @@
 {% extends "base.html" %}
 
-{% block title %}Mapa de Ruta — {{ t.site_title }}{% endblock %}
+{% block title %}Árbol de Habilidades — {{ t.site_title }}{% endblock %}
 
 {% block content %}
-<article class="roadmap-page" style="display: flex; flex-direction: column; height: calc(100vh - 80px);">
-    <header class="telemetry-header term-hero" style="border-bottom: 1px dashed var(--border); padding-bottom: 1rem; margin-bottom: 1rem;">
-        <h1 style="font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; margin: 0; color: #fff;">
-            <span style="color: var(--green);">[MODULE]</span> SYS.PATHFINDER
-        </h1>
-        <div class="terminal-intro" style="margin-top: 1rem; background: var(--bg-code); border: 1px solid var(--border); padding: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; color: var(--text-muted);">
-            <span style="color: var(--green);">>_ </span>Explora el árbol de dependencias. Arrastra para desplazar. Scroll para zoom.
+<article class="skill-tree-page">
+    <header class="skill-tree-header">
+        <div class="header-left">
+            <h1>
+                <span class="header-accent">🌳</span> SKILL_TREE
+            </h1>
+            <p class="header-subtitle">>_ Explora las ramas del conocimiento. Desbloquea habilidades completando lecciones.</p>
+        </div>
+        <div class="header-stats">
+            {% set total_all = [] %}
+            {% set completed_all = [] %}
+            {% for cat in categories %}
+                {% for sec in cat.sections %}
+                    {% for lesson in sec.lessons %}
+                        {% if total_all.append(lesson.id) %}{% endif %}
+                        {% if lesson.id in summary.completed_lessons %}
+                            {% if completed_all.append(lesson.id) %}{% endif %}
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            {% endfor %}
+            <div class="global-progress">
+                <span class="gp-label">PROGRESO GLOBAL</span>
+                <span class="gp-value">{{ completed_all | length }}/{{ total_all | length }}</span>
+            </div>
+            <div class="global-bar">
+                <div class="global-fill" style="width: {{ (completed_all | length / total_all | length * 100) | round }}%;"></div>
+            </div>
         </div>
     </header>
 
-    <div class="roadmap-container" id="roadmap-container" style="flex-grow: 1; position: relative; background: var(--bg-code); border: 1px dashed var(--border); overflow: hidden; cursor: grab;">
-        <canvas id="roadmap-canvas"></canvas>
-        <div id="roadmap-tooltip" style="position: absolute; display: none; background: var(--bg); padding: 1rem; border: 1px solid var(--green); pointer-events: none; z-index: 10; color: white; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; box-shadow: 4px 4px 0 rgba(0, 229, 255, 0.2);"></div>
+    <div class="branches-container" id="skill-branches">
+        {% for cat in categories %}
+            {% for sec in cat.sections %}
+                {% set sec_lessons = sec.lessons | map(attribute='id') | list %}
+                {% set sec_completed = sec_lessons | select("in", summary.completed_lessons) | list %}
+                {% set sec_pct = (sec_completed | length / sec_lessons | length * 100) | round %}
+                {% set branch_id = "branch-" ~ cat.id ~ "-" ~ loop.index %}
+                
+                <div class="skill-branch" data-branch="{{ branch_id }}">
+                    <button class="branch-header" onclick="toggleBranch('{{ branch_id }}')" aria-expanded="false">
+                        <div class="branch-left">
+                            <span class="branch-chevron" id="chevron-{{ branch_id }}">▶</span>
+                            <span class="branch-icon">
+                                {% if 'tutorial' in sec.label_key %}📘
+                                {% elif 'function' in sec.label_key %}⚙️
+                                {% elif 'class' in sec.label_key %}🏗️
+                                {% elif 'module' in sec.label_key %}📦
+                                {% elif 'file' in sec.label_key %}📁
+                                {% elif 'numpy' in sec.label_key %}🔢
+                                {% elif 'pandas' in sec.label_key %}🐼
+                                {% elif 'scipy' in sec.label_key %}🧪
+                                {% elif 'mysql' in sec.label_key %}🗄️
+                                {% elif 'mongo' in sec.label_key %}🍃
+                                {% elif 'reference' in sec.label_key %}📖
+                                {% elif 'exercise' in sec.label_key %}✏️
+                                {% else %}📗
+                                {% endif %}
+                            </span>
+                            <span class="branch-name">{{ t[sec.label_key] | upper }}</span>
+                        </div>
+                        <div class="branch-right">
+                            <div class="branch-progress-bar">
+                                <div class="branch-progress-fill {% if sec_pct == 100 %}complete{% endif %}" style="width: {{ sec_pct }}%;"></div>
+                            </div>
+                            <span class="branch-ratio">{{ sec_completed | length }}/{{ sec_lessons | length }}</span>
+                            {% if sec_pct == 100 %}
+                            <span class="branch-badge">✅</span>
+                            {% endif %}
+                        </div>
+                    </button>
+                    
+                    <div class="branch-content" id="content-{{ branch_id }}" style="display: none;">
+                        <div class="skill-nodes">
+                            {% for lesson in sec.lessons %}
+                                {% set is_completed = lesson.id in summary.completed_lessons %}
+                                {% set prev_completed = (loop.first) or (sec.lessons[loop.index0 - 1].id in summary.completed_lessons) %}
+                                {% set is_available = prev_completed or is_completed %}
+                                
+                                <div class="skill-node-wrapper">
+                                    {% if not loop.first %}
+                                    <div class="node-connector {{ 'active' if is_completed else '' }}">
+                                        <div class="connector-line"></div>
+                                        <div class="connector-dot"></div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <a href="{{ url_for('lesson', lesson_id=lesson.id) }}" 
+                                       class="skill-node {{ 'completed' if is_completed else ('available' if is_available else 'locked') }}">
+                                        <div class="node-icon">
+                                            {% if is_completed %}
+                                                ✅
+                                            {% elif is_available %}
+                                                🔵
+                                            {% else %}
+                                                🔒
+                                            {% endif %}
+                                        </div>
+                                        <div class="node-info">
+                                            <span class="node-title">{{ get_lesson_title(lesson.id) }}</span>
+                                            <span class="node-id">{{ lesson.id }}</span>
+                                        </div>
+                                        <div class="node-arrow">→</div>
+                                    </a>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endfor %}
     </div>
 </article>
+
+<style>
+.skill-tree-page {
+    font-family: "JetBrains Mono", monospace;
+    color: var(--text);
+    padding: 0 1rem 3rem;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* Header */
+.skill-tree-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 2px solid var(--text);
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.skill-tree-header h1 {
+    font-size: 1.5rem;
+    font-family: "Space Grotesk", sans-serif;
+    letter-spacing: 0.1em;
+    margin: 0;
+    color: #fff;
+}
+
+.header-accent {
+    font-size: 1.3rem;
+}
+
+.header-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 0.5rem 0 0;
+}
+
+.header-stats {
+    min-width: 200px;
+}
+
+.global-progress {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    margin-bottom: 0.4rem;
+}
+
+.gp-label {
+    color: var(--text-muted);
+}
+
+.gp-value {
+    color: var(--green);
+    font-weight: 700;
+}
+
+.global-bar {
+    height: 8px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.global-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), #00e5ff);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+/* Branches */
+.branches-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.skill-branch {
+    border: 1px solid var(--border);
+    background: var(--bg);
+    border-radius: 4px;
+    overflow: hidden;
+    transition: border-color 0.3s;
+}
+
+.skill-branch:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.branch-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.9rem 1.2rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: none;
+    color: inherit;
+    font-family: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    gap: 1rem;
+}
+
+.branch-header:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.branch-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+.branch-chevron {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    transition: transform 0.3s ease;
+    min-width: 1rem;
+}
+
+.branch-chevron.open {
+    transform: rotate(90deg);
+}
+
+.branch-icon {
+    font-size: 1.2rem;
+}
+
+.branch-name {
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.branch-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+}
+
+.branch-progress-bar {
+    width: 100px;
+    height: 6px;
+    background: var(--bg-secondary);
+    border-radius: 3px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+.branch-progress-fill {
+    height: 100%;
+    background: var(--python-color);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+}
+
+.branch-progress-fill.complete {
+    background: var(--green);
+}
+
+.branch-ratio {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    min-width: 40px;
+    text-align: right;
+}
+
+.branch-badge {
+    font-size: 0.9rem;
+}
+
+/* Branch Content */
+.branch-content {
+    border-top: 1px solid var(--border);
+    background: rgba(0, 0, 0, 0.2);
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        max-height: 2000px;
+    }
+}
+
+/* Skill Nodes */
+.skill-nodes {
+    padding: 1rem 1.5rem 1.5rem;
+}
+
+.skill-node-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+/* Connector */
+.node-connector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 28px;
+    position: relative;
+    margin-left: 2rem;
+}
+
+.connector-line {
+    width: 2px;
+    flex-grow: 1;
+    background: var(--border);
+    transition: background 0.3s;
+}
+
+.node-connector.active .connector-line {
+    background: var(--green);
+    box-shadow: 0 0 6px rgba(0, 229, 255, 0.3);
+}
+
+.connector-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+}
+
+.node-connector.active .connector-dot {
+    background: var(--green);
+    box-shadow: 0 0 6px rgba(0, 229, 255, 0.4);
+}
+
+/* Node */
+.skill-node {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.25s ease;
+    background: var(--bg);
+}
+
+.skill-node.completed {
+    border-color: var(--green);
+    background: rgba(0, 229, 255, 0.04);
+}
+
+.skill-node.completed:hover {
+    background: rgba(0, 229, 255, 0.1);
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(0, 229, 255, 0.15);
+}
+
+.skill-node.available {
+    border-color: var(--python-color);
+    background: rgba(55, 118, 171, 0.06);
+    animation: pulseAvailable 2.5s ease-in-out infinite;
+}
+
+.skill-node.available:hover {
+    background: rgba(55, 118, 171, 0.15);
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(55, 118, 171, 0.2);
+}
+
+@keyframes pulseAvailable {
+    0%, 100% { box-shadow: 0 0 0 rgba(55, 118, 171, 0); }
+    50% { box-shadow: 0 0 10px rgba(55, 118, 171, 0.15); }
+}
+
+.skill-node.locked {
+    opacity: 0.4;
+    cursor: default;
+    border-style: dashed;
+}
+
+.skill-node.locked:hover {
+    opacity: 0.55;
+}
+
+.node-icon {
+    font-size: 1.3rem;
+    min-width: 2rem;
+    text-align: center;
+}
+
+.node-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.node-title {
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.node-id {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.node-arrow {
+    color: var(--text-muted);
+    font-size: 1rem;
+    transition: transform 0.2s;
+}
+
+.skill-node:hover .node-arrow {
+    transform: translateX(3px);
+    color: var(--green);
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .skill-tree-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .header-stats {
+        width: 100%;
+    }
+    
+    .branch-progress-bar {
+        width: 60px;
+    }
+    
+    .branch-name {
+        font-size: 0.75rem;
+    }
+    
+    .skill-nodes {
+        padding: 0.75rem 0.75rem 1rem;
+    }
+}
+</style>
 {% endblock %}
 
 {% block scripts %}
 <script>
+    // Data for the skill tree
     window.ROADMAP_DATA = {{ categories | tojson }};
     window.COMPLETED_LESSONS = {{ summary.completed_lessons | tojson }};
+    
+    // Track which branch is currently open
+    let currentOpenBranch = null;
+    
+    function toggleBranch(branchId) {
+        const content = document.getElementById('content-' + branchId);
+        const chevron = document.getElementById('chevron-' + branchId);
+        const header = content.previousElementSibling;
+        
+        if (currentOpenBranch && currentOpenBranch !== branchId) {
+            // Close the currently open branch
+            const prevContent = document.getElementById('content-' + currentOpenBranch);
+            const prevChevron = document.getElementById('chevron-' + currentOpenBranch);
+            if (prevContent) {
+                prevContent.style.display = 'none';
+                prevChevron.classList.remove('open');
+                prevContent.previousElementSibling.setAttribute('aria-expanded', 'false');
+            }
+        }
+        
+        const isOpen = content.style.display === 'block';
+        
+        if (isOpen) {
+            content.style.display = 'none';
+            chevron.classList.remove('open');
+            header.setAttribute('aria-expanded', 'false');
+            currentOpenBranch = null;
+        } else {
+            content.style.display = 'block';
+            chevron.classList.add('open');
+            header.setAttribute('aria-expanded', 'true');
+            currentOpenBranch = branchId;
+            
+            // Scroll into view smoothly
+            setTimeout(() => {
+                content.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        }
+    }
+    
+    // Auto-open the branch that has the first uncompleted lesson
+    document.addEventListener('DOMContentLoaded', () => {
+        const branches = document.querySelectorAll('.skill-branch');
+        for (const branch of branches) {
+            const nodes = branch.querySelectorAll('.skill-node.available:not(.completed)');
+            if (nodes.length > 0) {
+                const branchId = branch.dataset.branch;
+                toggleBranch(branchId);
+                break;
+            }
+        }
+    });
 </script>
-<script src="{{ url_for('static', filename='js/roadmap.js') }}"></script>
 {% endblock %}

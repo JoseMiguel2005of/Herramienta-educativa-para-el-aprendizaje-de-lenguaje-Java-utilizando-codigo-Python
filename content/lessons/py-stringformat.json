@@ -1,17 +1,70 @@
 {
     "id": "py-stringformat",
-    "title": "Python String Formatting",
-    "intro": "Welcome to the Python String Formatting lesson.",
-    "python_desc": "Python code for Python String Formatting",
-    "java_desc": "Java equivalent for Python String Formatting",
-    "explanation": "<p>In this lesson we cover <b>Python String Formatting</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Formateo de Strings",
+    "intro": "A menudo necesitas combinar texto con variables o valores calculados. Python ofrece múltiples formas de lograr esto, siendo los f-strings la forma más moderna y preferida.",
+    "python_desc": "Código Python para Formatear Strings",
+    "java_desc": "Equivalente en Java para Formatear",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "F-Strings (Formateo Literal)",
+            "text": "Introducidos en Python 3.6, los f-strings ofrecen una sintaxis muy legible. Simplemente coloca una <code>f</code> antes de las comillas y pon las variables entre llaves <code>{}</code>.",
+            "notes": [
+                {"type": "tip", "text": "Los f-strings no solo aceptan variables, también puedes poner <b>expresiones completas</b> u operaciones matemáticas dentro de las llaves."}
+            ]
+        },
+        {
+            "title": "El Método format() (Antiguo)",
+            "text": "Antes de los f-strings, la forma principal de formatear era el método <code>.format()</code>. Todavía es muy utilizado en código antiguo.",
+            "notes": [
+                {"type": "note", "text": "En Java usas <code>String.format()</code> que se parece más al estilo antiguo del lenguaje C con <code>%s</code> y <code>%d</code>."}
+            ]
+        },
+        {
+            "title": "Modificadores de Formato",
+            "text": "Puedes agregar modificadores dentro de las llaves para especificar cómo se debe mostrar un valor (por ejemplo, con cuántos decimales).",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-stringformat-1",
-            "python": "# Python String Formatting Python example\nprint('Python String Formatting')",
-            "java": "// Python String Formatting Java example\nSystem.out.println(\"Python String Formatting\");",
-            "explanation": "Basic example demonstrating Python String Formatting."
+            "id": "py-strf-fstring",
+            "section": "F-Strings (Formateo Literal)",
+            "python": "nombre = \"Ana\"\nedad = 25\n\n# F-String:\ntexto = f\"Me llamo {nombre} y tengo {edad} años\"\nprint(texto)",
+            "java": "String nombre = \"Ana\";\nint edad = 25;\n\n// Java 15+ tiene Text Blocks pero no interpolación directa.\n// La concatenación tradicional es lo más similar:\nString texto = \"Me llamo \" + nombre + \" y tengo \" + edad + \" años\";\nSystem.out.println(texto);",
+            "explanation": "Python tiene interpolación de cadenas (f-strings). En Java, lo más común es concatenar con <code>+</code> o usar <code>String.format()</code>."
+        },
+        {
+            "id": "py-strf-format",
+            "section": "El Método format() (Antiguo)",
+            "python": "precio = 49\ntxt = \"El precio es {} dólares\"\nprint(txt.format(precio))",
+            "java": "int precio = 49;\nString txt = String.format(\"El precio es %d dólares\", precio);\nSystem.out.println(txt);",
+            "explanation": "<code>.format()</code> de Python reemplaza <code>{}</code> secuencialmente. <code>String.format()</code> de Java requiere tipos explícitos (<code>%d</code> para enteros, <code>%s</code> para strings)."
+        },
+        {
+            "id": "py-strf-modifiers",
+            "section": "Modificadores de Formato",
+            "python": "precio = 59\n# Mostrar el precio con 2 decimales:\ntxt = f\"El precio es {precio:.2f} dólares\"\nprint(txt) # 59.00",
+            "java": "double precio = 59;\nString txt = String.format(\"El precio es %.2f dólares\", precio);\nSystem.out.println(txt);",
+            "explanation": "Ambos soportan formateo numérico avanzado. <code>.2f</code> significa un número de punto flotante con 2 decimales."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-strf-1",
+            "type": "fill-blank",
+            "question": "Convierte este string en un f-string para que interpole la variable <code>x</code>.",
+            "template": "x = 5\nprint(____\"El número es {x}\")",
+            "template_html": "x = 5<br>print(<input type='text' class='exercise-input' data-answer='f' placeholder='___'>\"El número es {x}\")",
+            "python_code": "x = 5\nprint(f\"El número es {x}\")",
+            "answer": "f"
+        },
+        {
+            "id": "ex-strf-2",
+            "type": "multiple-choice",
+            "question": "¿Qué método se usaba principalmente en Python antes de los f-strings?",
+            "options": ["concat()", "String.format()", "format()", "interpolate()"],
+            "correct": 2
         }
     ]
 }

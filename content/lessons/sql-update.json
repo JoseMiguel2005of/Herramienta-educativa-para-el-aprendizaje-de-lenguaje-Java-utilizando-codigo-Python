@@ -1,17 +1,37 @@
 {
     "id": "sql-update",
-    "title": "MySQL Update",
-    "intro": "Welcome to the MySQL Update lesson.",
-    "python_desc": "Python code for MySQL Update",
-    "java_desc": "Java equivalent for MySQL Update",
-    "explanation": "<p>In this lesson we cover <b>MySQL Update</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "MySQL - Actualizar Datos (Update)",
+    "intro": "Para alterar información que ya está guardada dentro de la base de datos de MySQL, utiliza el comando 'UPDATE'.",
+    "python_desc": "Uso de UPDATE en Python",
+    "java_desc": "Equivalencia en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Alterar Filas Existentes",
+            "text": "La sintaxis general para actualizar registros combina <code>UPDATE nombre_tabla SET columna = nuevo_valor WHERE condicion</code>. Al igual que al insertar registros, siempre debes usar <code>mydb.commit()</code> para confirmar el cambio, de lo contrario la base de datos revertirá la operación silenciosamente.",
+            "notes": [
+                {"type": "note", "text": "Al utilizar <code>UPDATE</code>, ten muchísimo cuidado. Si omites la cláusula <code>WHERE</code>, ¡actualizarás TODAS las filas de la tabla al mismo valor!"}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "sql-update-1",
-            "python": "# MySQL Update Python example\nprint('MySQL Update')",
-            "java": "// MySQL Update Java example\nSystem.out.println(\"MySQL Update\");",
-            "explanation": "Basic example demonstrating MySQL Update."
+            "section": "Alterar Filas Existentes",
+            "python": "import mysql.connector\n\nmydb = mysql.connector.connect(host=\"localhost\", user=\"user\", password=\"pass\", database=\"mibase\")\nmicursor = mydb.cursor()\n\n# Consulta SQL con DOS comodines %s\nsql = \"UPDATE clientes SET direccion = %s WHERE direccion = %s\"\n\n# La tupla de parámetros en el mismo orden:\nval = (\"Canyon 123\", \"Valley 345\")\n\nmicursor.execute(sql, val)\n\n# Confirmar la escritura física en disco\nmydb.commit()\n\nprint(micursor.rowcount, \"registro(s) actualizado(s)\")",
+            "java": "import java.sql.Connection;\nimport java.sql.DriverManager;\nimport java.sql.PreparedStatement;\n\npublic class Main {\n  public static void main(String[] args) throws Exception {\n      Connection conn = DriverManager.getConnection(\"jdbc:mysql://localhost/mibase\", \"user\", \"pass\");\n      \n      String sql = \"UPDATE clientes SET direccion = ? WHERE direccion = ?\";\n      PreparedStatement pstmt = conn.prepareStatement(sql);\n      \n      // En Java debes inyectar cada placeholder por su índice 1-based:\n      pstmt.setString(1, \"Canyon 123\"); // El SET\n      pstmt.setString(2, \"Valley 345\"); // El WHERE\n      \n      int afectadas = pstmt.executeUpdate();\n      System.out.println(afectadas + \" registro(s) actualizado(s)\");\n  }\n}",
+            "explanation": "El `PreparedStatement` de Java es muy seguro pero requiere inyectar índices que, si la query crece, pueden volverse muy propensos a errores humanos. Python simplifica esto volcando toda la tupla `val` de forma posicional de una sola vez."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-sql-update-1",
+            "type": "fill-blank",
+            "question": "Escribe la palabra correcta para actualizar un registro usando SQL.",
+            "template": "sql = \"______ clientes SET direccion = 'Canyon 123' WHERE direccion = 'Valley 345'\"",
+            "template_html": "sql = \"<input type='text' class='exercise-input' data-answer='UPDATE' placeholder='______'> clientes SET direccion = 'Canyon 123' WHERE direccion = 'Valley 345'\"",
+            "python_code": "sql = \"UPDATE clientes SET direccion = 'Canyon 123' WHERE direccion = 'Valley 345'\"",
+            "answer": "UPDATE"
         }
     ]
 }

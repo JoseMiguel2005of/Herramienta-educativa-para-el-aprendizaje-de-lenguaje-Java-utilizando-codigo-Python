@@ -1,17 +1,37 @@
 {
     "id": "np-rayleigh",
-    "title": "Rayleigh Distribution",
-    "intro": "Welcome to the Rayleigh Distribution lesson.",
-    "python_desc": "Python code for Rayleigh Distribution",
-    "java_desc": "Java equivalent for Rayleigh Distribution",
-    "explanation": "<p>In this lesson we cover <b>Rayleigh Distribution</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "NumPy - Distribución Rayleigh",
+    "intro": "La Distribución Rayleigh se usa ampliamente en el procesamiento de señales de radio.",
+    "python_desc": "Rayleigh en NumPy",
+    "java_desc": "Rayleigh en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "¿Qué es Rayleigh?",
+            "text": "Nombrada en honor a Lord Rayleigh, describe variables continuas que son siempre positivas. Es ideal para modelar cómo el viento deforma la intensidad del sonido o cómo los edificios rebotan las ondas de radio de un celular (Multicamino).",
+            "notes": [
+                {"type": "note", "text": "Requiere la variable <code>scale</code> que representa la desviación estándar."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "np-rayleigh-1",
-            "python": "# Rayleigh Distribution Python example\nprint('Rayleigh Distribution')",
-            "java": "// Rayleigh Distribution Java example\nSystem.out.println(\"Rayleigh Distribution\");",
-            "explanation": "Basic example demonstrating Rayleigh Distribution."
+            "section": "¿Qué es Rayleigh?",
+            "python": "from numpy import random\n\n# Simulamos el desvanecimiento de onda (fading) con escala de 2\nx = random.rayleigh(scale=2, size=5)\n\nprint(x)",
+            "java": "import org.apache.commons.math3.distribution.WeibullDistribution;\n\npublic class SeñalRadio {\n  public static void main(String[] args) {\n      // En Java Commons Math no existe 'RayleighDistribution'. \n      // Tienes que usar la distribución generalizada Weibull para simularla.\n      WeibullDistribution dist = new WeibullDistribution(2.0, 2.0 * Math.sqrt(2));\n      \n      double prediccion = dist.sample();\n      System.out.println(prediccion);\n  }\n}",
+            "explanation": "La biblioteca de NumPy en Python es tan completa que soporta módulos oscuros y específicos como Rayleigh. En Java, el programador tendría que saber teoría matemática profunda para poder reconstruirla como un caso especial de otra distribución (Weibull)."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-rayleigh-1",
+            "type": "fill-blank",
+            "question": "Escribe el nombre de la distribución probabilística recomendada para simular atenuación en procesamiento de señales acústicas o de telecomunicaciones.",
+            "template": "x = random.________(scale=2, size=5)",
+            "template_html": "x = random.<input type='text' class='exercise-input' data-answer='rayleigh' placeholder='________'>(scale=2, size=5)",
+            "python_code": "x = random.rayleigh(scale=2, size=5)",
+            "answer": "rayleigh"
         }
     ]
 }

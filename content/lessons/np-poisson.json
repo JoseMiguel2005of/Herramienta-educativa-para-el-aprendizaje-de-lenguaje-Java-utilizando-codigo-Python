@@ -1,17 +1,37 @@
 {
     "id": "np-poisson",
-    "title": "Poisson Distribution",
-    "intro": "Welcome to the Poisson Distribution lesson.",
-    "python_desc": "Python code for Poisson Distribution",
-    "java_desc": "Java equivalent for Poisson Distribution",
-    "explanation": "<p>In this lesson we cover <b>Poisson Distribution</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "NumPy - Distribución de Poisson",
+    "intro": "La Distribución de Poisson estima cuántas veces puede ocurrir un evento en un marco de tiempo especificado.",
+    "python_desc": "Poisson en NumPy",
+    "java_desc": "Poisson en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "¿Qué es la Distribución de Poisson?",
+            "text": "Se usa muchísimo para predecir anomalías en el tiempo: por ejemplo, ¿cuántas personas es probable que visiten un centro comercial en un día si históricamente asisten 50? O ¿cuántos autos chocarán en la intersección de una calle durante el próximo año?",
+            "notes": [
+                {"type": "note", "text": "El parámetro clave aquí se llama <code>lam</code> (tasa de ocurrencia conocida o histórica)."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "np-poisson-1",
-            "python": "# Poisson Distribution Python example\nprint('Poisson Distribution')",
-            "java": "// Poisson Distribution Java example\nSystem.out.println(\"Poisson Distribution\");",
-            "explanation": "Basic example demonstrating Poisson Distribution."
+            "section": "¿Qué es la Distribución de Poisson?",
+            "python": "from numpy import random\n\n# Históricamente un usuario come 2 galletas diarias. \n# Simulamos el comportamiento del usuario por 10 días:\nx = random.poisson(lam=2, size=10)\n\nprint(x)\n# Salida ej: [3 0 2 2 1 1 5 1 2 2]",
+            "java": "import org.apache.commons.math3.distribution.PoissonDistribution;\nimport java.util.Arrays;\n\npublic class Main {\n  public static void main(String[] args) {\n      double lambdaHistorico = 2.0;\n      PoissonDistribution dist = new PoissonDistribution(lambdaHistorico);\n      \n      int[] prediccion10Dias = dist.sample(10);\n      System.out.println(Arrays.toString(prediccion10Dias));\n  }\n}",
+            "explanation": "La tasa (Lambda) dicta cuán estirada es la probabilidad temporal. Al ser un número discreto (eventos completos), ambas librerías te devolverán enteros puros, asumiendo que no puedes 'chocar medio auto'."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-poisson-1",
+            "type": "fill-blank",
+            "question": "Escribe el nombre de la distribución probabilística diseñada para predecir ocurrencias a través del tiempo.",
+            "template": "x = random._______(lam=2, size=10)",
+            "template_html": "x = random.<input type='text' class='exercise-input' data-answer='poisson' placeholder='_______'>(lam=2, size=10)",
+            "python_code": "x = random.poisson(lam=2, size=10)",
+            "answer": "poisson"
         }
     ]
 }

@@ -1,17 +1,65 @@
 {
     "id": "np-iterating",
-    "title": "NumPy Array Iterating",
-    "intro": "Welcome to the NumPy Array Iterating lesson.",
-    "python_desc": "Python code for NumPy Array Iterating",
-    "java_desc": "Java equivalent for NumPy Array Iterating",
-    "explanation": "<p>In this lesson we cover <b>NumPy Array Iterating</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Iteración de Arrays en NumPy",
+    "intro": "Iterar significa pasar por los elementos uno a uno. Mientras nos movemos por arreglos multidimensionales en NumPy, podemos hacer esto utilizando un bucle for básico de Python.",
+    "python_desc": "Código Python para Iterar",
+    "java_desc": "Equivalente en Java para Iterar",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Iterar en Arrays 1-D",
+            "text": "Si iteramos un array 1-D pasará por cada elemento uno a uno, tal cual como en una lista de Python.",
+            "notes": [
+                {"type": "note", "text": "Igual que el bucle <code>for (int x : array)</code> de Java."}
+            ]
+        },
+        {
+            "title": "Iterar en Arrays 2-D y 3-D",
+            "text": "En un array 2-D pasará por cada fila (un array 1-D). Para llegar a cada escalar, necesitas escribir bucles <code>for</code> anidados para cada dimensión.",
+            "notes": [
+                {"type": "warning", "text": "Si tu array tiene 3 dimensiones, necesitarás 3 bucles anidados para llegar al número base. Esto puede volverse muy difícil de leer."}
+            ]
+        },
+        {
+            "title": "Iterar Arrays usando nditer()",
+            "text": "La función <code>nditer()</code> es una función de ayuda que se puede usar desde iteraciones muy básicas hasta avanzadas. Resuelve el problema de tener que anidar múltiples bucles <code>for</code>.",
+            "notes": [
+                {"type": "tip", "text": "En Java siempre tendrás que anidar un <code>for</code> por cada dimensión, a menos que crees un iterador personalizado que aplane el array matricial."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "np-iterating-1",
-            "python": "# NumPy Array Iterating Python example\nprint('NumPy Array Iterating')",
-            "java": "// NumPy Array Iterating Java example\nSystem.out.println(\"NumPy Array Iterating\");",
-            "explanation": "Basic example demonstrating NumPy Array Iterating."
+            "id": "np-iter-2d",
+            "section": "Iterar en Arrays 2-D y 3-D",
+            "python": "import numpy as np\n\narr = np.array([[1, 2, 3], [4, 5, 6]])\n\n# Bucle clásico anidado:\nfor x in arr:\n  for y in x:\n    print(y)",
+            "java": "public class Main {\n  public static void main(String[] args) {\n    int[][] arr = {{1, 2, 3}, {4, 5, 6}};\n    \n    for (int[] x : arr) {\n        for (int y : x) {\n            System.out.println(y);\n        }\n    }\n  }\n}",
+            "explanation": "La forma clásica de iterar arreglos multidimensionales es idéntica en ambos lenguajes: usar bucles anidados."
+        },
+        {
+            "id": "np-iter-nditer",
+            "section": "Iterar Arrays usando nditer()",
+            "python": "import numpy as np\n\narr = np.array([[[1, 2], [3, 4]], [[5, 6], [7, 8]]])\n\n# En vez de 3 bucles for, nditer lo aplana por ti:\nfor x in np.nditer(arr):\n  print(x)",
+            "java": "// En Java no hay un equivalente nativo a nditer.\n// Para un array 3-D:\nfor(int[][] x : arr) {\n    for(int[] y : x) {\n        for(int z : y) {\n            System.out.println(z);\n        }\n    }\n}",
+            "explanation": "<code>np.nditer()</code> es extremadamente poderoso y ahorra código espagueti y bucles inmensamente profundos, abstrayendo las dimensiones."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-iter-1",
+            "type": "fill-blank",
+            "question": "Itera a través del array usando el método de ayuda que aplana las dimensiones.",
+            "template": "for x in np._____(arr):\n  print(x)",
+            "template_html": "for x in np.<input type='text' class='exercise-input' data-answer='nditer' placeholder='______'>(arr):<br>&nbsp;&nbsp;print(x)",
+            "python_code": "for x in np.nditer(arr):\n  print(x)",
+            "answer": "nditer"
+        },
+        {
+            "id": "ex-np-iter-2",
+            "type": "multiple-choice",
+            "question": "Si iteras un Array 2-D en Python (y en Java) con un solo bucle FOR, ¿qué obtienes en cada ciclo?",
+            "options": ["Elementos individuales (números)", "Filas enteras (Arrays 1-D)", "Todo el array entero", "Error"],
+            "correct": 1
         }
     ]
 }

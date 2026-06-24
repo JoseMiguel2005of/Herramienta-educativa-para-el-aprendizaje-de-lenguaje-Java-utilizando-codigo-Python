@@ -1,17 +1,54 @@
 {
     "id": "pd-series",
-    "title": "Pandas Series",
-    "intro": "Welcome to the Pandas Series lesson.",
-    "python_desc": "Python code for Pandas Series",
-    "java_desc": "Java equivalent for Pandas Series",
-    "explanation": "<p>In this lesson we cover <b>Pandas Series</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Series en Pandas",
+    "intro": "Una Serie en Pandas es como una columna en una tabla. Es un arreglo (array) de una dimensión que puede contener datos de cualquier tipo.",
+    "python_desc": "Creando Series en Python",
+    "java_desc": "Equivalencia en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "¿Qué es una Serie?",
+            "text": "Puedes pensar en una Serie de Pandas como una lista o columna unidimensional.",
+            "notes": [
+                {"type": "note", "text": "En Java, su equivalente más cercano sería una clase de envoltura alrededor de una Lista como `List<T>`, pero una Serie incluye funcionalidades matemáticas vectorizadas avanzadas similares a los arreglos de NumPy."}
+            ]
+        },
+        {
+            "title": "Etiquetas (Labels)",
+            "text": "Si no se especifica nada más, los valores de una Serie están etiquetados con su índice de forma automática (0, 1, 2, ...). Sin embargo, Pandas te permite nombrar tus propias etiquetas (índices).",
+            "notes": [
+                {"type": "warning", "text": "Al cambiar los índices (etiquetas) en una Serie, este concepto empieza a parecerse a un `HashMap<String, T>` o Diccionario, donde las llaves son los nuevos índices."}
+            ]
+        },
+        {
+            "title": "Objetos Tipo Clave/Valor como Series",
+            "text": "Puedes usar un Diccionario tradicional de Python al crear una Serie. Las llaves del diccionario se convertirán automáticamente en las etiquetas (labels).",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
             "id": "pd-series-1",
-            "python": "# Pandas Series Python example\nprint('Pandas Series')",
-            "java": "// Pandas Series Java example\nSystem.out.println(\"Pandas Series\");",
-            "explanation": "Basic example demonstrating Pandas Series."
+            "section": "Etiquetas (Labels)",
+            "python": "import pandas as pd\n\na = [1, 7, 2]\n# Creando índices personalizados\nmiserie = pd.Series(a, index = ['x', 'y', 'z'])\n\nprint(miserie)\n# x    1\n# y    7\n# z    2\n# dtype: int64",
+            "java": "import java.util.LinkedHashMap;\nimport java.util.Map;\n\npublic class Main {\n  public static void main(String[] args) {\n      // Un LinkedHashMap garantiza el orden de inserción\n      Map<String, Integer> serie = new LinkedHashMap<>();\n      serie.put(\"x\", 1);\n      serie.put(\"y\", 7);\n      serie.put(\"z\", 2);\n      \n      System.out.println(serie);\n  }\n}",
+            "explanation": "Poder darle un índice personalizado (etiqueta) a las filas (ej. 'x') es algo que en Java solo puede lograrse utilizando colecciones de tipo Map o Clave/Valor, perdiendo las bondades de arrays primitivos."
+        },
+        {
+            "id": "pd-series-2",
+            "section": "Objetos Tipo Clave/Valor como Series",
+            "python": "import pandas as pd\n\ncalorias = {\"dia1\": 420, \"dia2\": 380, \"dia3\": 390}\n\nmiserie = pd.Series(calorias)\n\nprint(miserie)",
+            "java": "// En Java se usaría el Map que vimos antes.\n// No existe un método que tome un Map y devuelva un \"Arreglo Inteligente\".",
+            "explanation": "Pandas es muy flexible: si le pasas un Diccionario (Map), usará inteligentemente las llaves como nombres de índice."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-pd-series-1",
+            "type": "multiple-choice",
+            "question": "¿Qué estructura bidimensional de Java se asemeja más a una Serie de Pandas con etiquetas personalizadas?",
+            "options": ["ArrayList", "Map (HashMap/LinkedHashMap)", "HashSet", "Vector"],
+            "correct": 1
         }
     ]
 }

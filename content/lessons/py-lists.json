@@ -1,17 +1,107 @@
 {
     "id": "py-lists",
-    "title": "Python Lists",
-    "intro": "Welcome to the Python Lists lesson.",
-    "python_desc": "Python code for Python Lists",
-    "java_desc": "Java equivalent for Python Lists",
-    "explanation": "<p>In this lesson we cover <b>Python Lists</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Listas en Python",
+    "intro": "Las listas se usan para almacenar múltiples elementos en una sola variable. Son una de las estructuras de datos más versátiles de Python.",
+    "python_desc": "Código Python para Listas",
+    "java_desc": "Equivalente en Java para Listas",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Crear Listas",
+            "text": "Las listas se crean usando corchetes <code>[]</code>. Pueden contener elementos de cualquier tipo de dato, e incluso mezclar tipos diferentes.",
+            "notes": [
+                {"type": "note", "text": "En Java, las listas se crean con <code>ArrayList</code> y solo pueden contener objetos (no primitivos directamente). Además, generalmente son de un solo tipo."}
+            ]
+        },
+        {
+            "title": "Acceder a Elementos",
+            "text": "Accedes a los elementos de una lista usando su número de índice. El primer elemento tiene índice <code>0</code>. También puedes usar índices negativos: <code>-1</code> se refiere al último elemento.",
+            "notes": [
+                {"type": "tip", "text": "Los índices negativos son exclusivos de Python. En Java deberás calcular <code>lista.size() - 1</code> para acceder al último elemento."}
+            ]
+        },
+        {
+            "title": "Modificar Elementos",
+            "text": "Las listas en Python son <b>mutables</b>, lo que significa que puedes cambiar sus elementos después de crearlas.",
+            "notes": []
+        },
+        {
+            "title": "Agregar Elementos",
+            "text": "Para agregar elementos al final de una lista usa <code>append()</code>. Para insertar en una posición específica usa <code>insert()</code>.",
+            "notes": [
+                {"type": "note", "text": "En Java, <code>ArrayList</code> usa <code>.add()</code> para agregar al final y <code>.add(index, element)</code> para insertar en posición."}
+            ]
+        },
+        {
+            "title": "Longitud y Recorrer",
+            "text": "Usa <code>len()</code> para saber cuántos elementos tiene una lista. Para recorrer sus elementos, usa un bucle <code>for</code>.",
+            "notes": [
+                {"type": "tip", "text": "Python permite recorrer listas directamente con <code>for item in lista</code>. En Java se usa el for-each: <code>for (Type item : lista)</code>."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-lists-1",
-            "python": "# Python Lists Python example\nprint('Python Lists')",
-            "java": "// Python Lists Java example\nSystem.out.println(\"Python Lists\");",
-            "explanation": "Basic example demonstrating Python Lists."
+            "id": "py-lists-create",
+            "section": "Crear Listas",
+            "python": "frutas = [\"manzana\", \"banana\", \"cereza\"]\nnumeros = [1, 5, 7, 9, 3]\nmixta = [1, \"Hola\", True, 3.14]\nprint(frutas)",
+            "java": "import java.util.ArrayList;\nimport java.util.Arrays;\n\nArrayList<String> frutas = new ArrayList<>(\n    Arrays.asList(\"manzana\", \"banana\", \"cereza\")\n);\nSystem.out.println(frutas);",
+            "explanation": "Python usa <code>[]</code> directamente. Java requiere <code>ArrayList</code> y no permite mezclar tipos fácilmente."
+        },
+        {
+            "id": "py-lists-access",
+            "section": "Acceder a Elementos",
+            "python": "frutas = [\"manzana\", \"banana\", \"cereza\"]\nprint(frutas[0])   # manzana\nprint(frutas[-1])  # cereza (último)",
+            "java": "ArrayList<String> frutas = new ArrayList<>(\n    Arrays.asList(\"manzana\", \"banana\", \"cereza\")\n);\nSystem.out.println(frutas.get(0));   // manzana\nSystem.out.println(frutas.get(frutas.size()-1)); // cereza",
+            "explanation": "Python usa <code>[]</code> con índices negativos. Java usa <code>.get()</code> sin índices negativos."
+        },
+        {
+            "id": "py-lists-modify",
+            "section": "Modificar Elementos",
+            "python": "frutas = [\"manzana\", \"banana\", \"cereza\"]\nfrutas[1] = \"kiwi\"\nprint(frutas)  # ['manzana', 'kiwi', 'cereza']",
+            "java": "ArrayList<String> frutas = new ArrayList<>(\n    Arrays.asList(\"manzana\", \"banana\", \"cereza\")\n);\nfrutas.set(1, \"kiwi\");\nSystem.out.println(frutas);",
+            "explanation": "Python usa <code>lista[i] = valor</code>. Java usa el método <code>.set(i, valor)</code>."
+        },
+        {
+            "id": "py-lists-add",
+            "section": "Agregar Elementos",
+            "python": "frutas = [\"manzana\", \"banana\"]\nfrutas.append(\"cereza\")     # al final\nfrutas.insert(1, \"naranja\") # en posición 1\nprint(frutas)",
+            "java": "ArrayList<String> frutas = new ArrayList<>(\n    Arrays.asList(\"manzana\", \"banana\")\n);\nfrutas.add(\"cereza\");       // al final\nfrutas.add(1, \"naranja\");   // en posición 1\nSystem.out.println(frutas);",
+            "explanation": "Python: <code>append()</code> y <code>insert()</code>. Java: <code>.add()</code> y <code>.add(index, elem)</code>."
+        },
+        {
+            "id": "py-lists-loop",
+            "section": "Longitud y Recorrer",
+            "python": "frutas = [\"manzana\", \"banana\", \"cereza\"]\nprint(len(frutas))  # 3\n\nfor fruta in frutas:\n    print(fruta)",
+            "java": "ArrayList<String> frutas = new ArrayList<>(\n    Arrays.asList(\"manzana\", \"banana\", \"cereza\")\n);\nSystem.out.println(frutas.size());  // 3\n\nfor (String fruta : frutas) {\n    System.out.println(fruta);\n}",
+            "explanation": "Python: <code>len()</code> y <code>for x in lista</code>. Java: <code>.size()</code> y <code>for (Type x : lista)</code>."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-list-1",
+            "type": "fill-blank",
+            "question": "Agrega el elemento <code>\"naranja\"</code> al final de la lista <code>frutas</code>.",
+            "template": "frutas._____(\"naranja\")",
+            "template_html": "frutas.<input type='text' class='exercise-input' data-answer='append' placeholder='___'>(\"naranja\")",
+            "python_code": "frutas.append(\"naranja\")",
+            "answer": "append"
+        },
+        {
+            "id": "ex-list-2",
+            "type": "multiple-choice",
+            "question": "¿Cuál es el resultado de <code>frutas[-1]</code> si <code>frutas = [\"a\", \"b\", \"c\"]</code>?",
+            "options": ["\"a\"", "\"b\"", "\"c\"", "Error"],
+            "correct": 2
+        },
+        {
+            "id": "ex-list-3",
+            "type": "fill-blank",
+            "question": "Obtén la cantidad de elementos en la lista <code>nums</code>.",
+            "template": "print(_____(nums))",
+            "template_html": "print(<input type='text' class='exercise-input' data-answer='len' placeholder='___'>(nums))",
+            "python_code": "print(len(nums))",
+            "answer": "len"
         }
     ]
 }

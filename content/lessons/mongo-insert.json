@@ -1,17 +1,53 @@
 {
     "id": "mongo-insert",
-    "title": "MongoDB Insert",
-    "intro": "Welcome to the MongoDB Insert lesson.",
-    "python_desc": "Python code for MongoDB Insert",
-    "java_desc": "Java equivalent for MongoDB Insert",
-    "explanation": "<p>In this lesson we cover <b>MongoDB Insert</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "MongoDB - Insertar Documentos",
+    "intro": "Para insertar un registro, o un 'Documento' como se le conoce en MongoDB, en una colección, usamos métodos de inserción especializados.",
+    "python_desc": "Inserción en Python",
+    "java_desc": "Inserción en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Insertar un solo Documento",
+            "text": "Un documento en MongoDB tiene la misma estructura que un Diccionario nativo en Python. Para insertar un único registro en una colección, usamos el método <code>insert_one()</code>.",
+            "notes": [
+                {"type": "note", "text": "Al insertar exitosamente, MongoDB devuelve un objeto que contiene el atributo <code>inserted_id</code>. Todo documento tiene una llave maestra única llamada <code>_id</code>."}
+            ]
+        },
+        {
+            "title": "Insertar Múltiples Documentos",
+            "text": "Si tienes una Lista completa de diccionarios, puedes usar el método <code>insert_many()</code> para insertar decenas o cientos de registros simultáneamente de forma masiva y eficiente.",
+            "notes": [
+                {"type": "tip", "text": "Al usar insert_many(), el resultado también incluye una lista en <code>inserted_ids</code> con las llaves autogeneradas."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "mongo-insert-1",
-            "python": "# MongoDB Insert Python example\nprint('MongoDB Insert')",
-            "java": "// MongoDB Insert Java example\nSystem.out.println(\"MongoDB Insert\");",
-            "explanation": "Basic example demonstrating MongoDB Insert."
+            "section": "Insertar un solo Documento",
+            "python": "import pymongo\n\nmyclient = pymongo.MongoClient(\"mongodb://localhost:27017/\")\nmydb = myclient[\"mibasededatos\"]\nmycol = mydb[\"clientes\"]\n\n# El registro es un diccionario de Python estándar:\nmidict = { \"nombre\": \"John\", \"direccion\": \"Highway 37\" }\n\n# Inserción\nx = mycol.insert_one(midict)\n\nprint(\"Documento guardado con id:\", x.inserted_id)",
+            "java": "import com.mongodb.client.MongoClients;\nimport com.mongodb.client.MongoCollection;\nimport org.bson.Document;\nimport com.mongodb.client.result.InsertOneResult;\n\npublic class Main {\n  public static void main(String[] args) {\n      // Configuración omitida por brevedad\n      MongoCollection<Document> collection = db.getCollection(\"clientes\");\n      \n      // Construimos un documento BSON (Binary JSON)\n      Document doc = new Document(\"nombre\", \"John\")\n                     .append(\"direccion\", \"Highway 37\");\n                     \n      InsertOneResult result = collection.insertOne(doc);\n      System.out.println(\"Id: \" + result.getInsertedId());\n  }\n}",
+            "explanation": "El proceso es similar, pero en Java, dado que no existe sintaxis literal de diccionarios JSON nativos como en Python `{key: value}`, debemos instanciar una clase especial `Document` y usar el patrón de encadenamiento `.append(llave, valor)`."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-mongo-insert-1",
+            "type": "fill-blank",
+            "question": "Llama al método correcto para insertar el diccionario (documento) en la colección.",
+            "template": "x = mycol.__________(midict)",
+            "template_html": "x = mycol.<input type='text' class='exercise-input' data-answer='insert_one' placeholder='__________'>(midict)",
+            "python_code": "x = mycol.insert_one(midict)",
+            "answer": "insert_one"
+        },
+        {
+            "id": "ex-mongo-insert-2",
+            "type": "fill-blank",
+            "question": "¿Qué método utilizas si quieres insertar una LISTA entera de diccionarios en MongoDB en un solo comando?",
+            "template": "mycol.___________(mi_lista_de_diccionarios)",
+            "template_html": "mycol.<input type='text' class='exercise-input' data-answer='insert_many' placeholder='___________'>(mi_lista_de_diccionarios)",
+            "python_code": "mycol.insert_many(mi_lista)",
+            "answer": "insert_many"
         }
     ]
 }

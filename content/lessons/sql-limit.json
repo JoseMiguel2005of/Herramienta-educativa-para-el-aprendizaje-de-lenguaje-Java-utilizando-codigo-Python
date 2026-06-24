@@ -1,17 +1,37 @@
 {
     "id": "sql-limit",
-    "title": "MySQL Limit",
-    "intro": "Welcome to the MySQL Limit lesson.",
-    "python_desc": "Python code for MySQL Limit",
-    "java_desc": "Java equivalent for MySQL Limit",
-    "explanation": "<p>In this lesson we cover <b>MySQL Limit</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "MySQL - Limitar Resultados (Limit)",
+    "intro": "Para limitar la cantidad máxima de filas o registros que te devuelve el motor de base de datos MySQL, puedes utilizar la cláusula 'LIMIT'.",
+    "python_desc": "Implementación en Python",
+    "java_desc": "Implementación en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Restringiendo Filas Devueltas",
+            "text": "Cuando tienes tablas con millones de transacciones, ejecutar un 'SELECT *' haría que tu servidor de Python (o Java) colapsara porque intentaría cargar todos esos datos a la Memoria RAM. Para solucionar esto o paginar resultados, concatenamos <code>LIMIT N</code>.",
+            "notes": [
+                {"type": "tip", "text": "MySQL también provee un comando acompañante `OFFSET` para indicar desde dónde empezar a contar ese límite. (Ideal para paginación web)."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "sql-limit-1",
-            "python": "# MySQL Limit Python example\nprint('MySQL Limit')",
-            "java": "// MySQL Limit Java example\nSystem.out.println(\"MySQL Limit\");",
-            "explanation": "Basic example demonstrating MySQL Limit."
+            "section": "Restringiendo Filas Devueltas",
+            "python": "import mysql.connector\n\nmydb = mysql.connector.connect(host=\"localhost\", user=\"user\", password=\"pass\", database=\"mibase\")\nmicursor = mydb.cursor()\n\n# Solo obtendrá los primeros 5 resultados de la base de datos\nmicursor.execute(\"SELECT * FROM clientes LIMIT 5\")\n\nresultado = micursor.fetchall()\n\nfor fila in resultado:\n  print(fila)",
+            "java": "import java.sql.Connection;\nimport java.sql.DriverManager;\nimport java.sql.ResultSet;\nimport java.sql.Statement;\n\npublic class Main {\n  public static void main(String[] args) throws Exception {\n      Connection conn = DriverManager.getConnection(\"jdbc:mysql://localhost/mibase\", \"user\", \"pass\");\n      Statement stmt = conn.createStatement();\n      \n      // Funciona exactamente igual en la query SQL plana:\n      ResultSet rs = stmt.executeQuery(\"SELECT * FROM clientes LIMIT 5\");\n      \n      // El bucle while solo correrá 5 veces máximo\n      while (rs.next()) {\n          System.out.println(rs.getString(\"nombre\"));\n      }\n  }\n}",
+            "explanation": "Puesto que LIMIT es una función propia del motor MySQL (y no del lenguaje huésped), su implementación visual se mantiene intacta independientemente de si estás haciendo backend en Node, Python, Java o PHP."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-sql-limit-1",
+            "type": "fill-blank",
+            "question": "Escribe el comando correcto para retornar ÚNICAMENTE 5 registros.",
+            "template": "micursor.execute(\"SELECT * FROM clientes _____ 5\")",
+            "template_html": "micursor.execute(\"SELECT * FROM clientes <input type='text' class='exercise-input' data-answer='LIMIT' placeholder='_____'> 5\")",
+            "python_code": "micursor.execute(\"SELECT * FROM clientes LIMIT 5\")",
+            "answer": "LIMIT"
         }
     ]
 }

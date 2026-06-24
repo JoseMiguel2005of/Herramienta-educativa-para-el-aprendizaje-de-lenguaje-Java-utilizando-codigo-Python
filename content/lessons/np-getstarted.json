@@ -1,17 +1,65 @@
 {
     "id": "np-getstarted",
-    "title": "NumPy Getting Started",
-    "intro": "Welcome to the NumPy Getting Started lesson.",
-    "python_desc": "Python code for NumPy Getting Started",
-    "java_desc": "Java equivalent for NumPy Getting Started",
-    "explanation": "<p>In this lesson we cover <b>NumPy Getting Started</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Empezando con NumPy",
+    "intro": "Aprende a instalar e importar NumPy en tu entorno de Python para comenzar a trabajar con arrays multidimensionales.",
+    "python_desc": "Código Python para importar NumPy",
+    "java_desc": "Java Equivalente (No aplicable directamente)",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Instalación de NumPy",
+            "text": "Si ya tienes Python y PIP instalados en tu sistema, la instalación de NumPy es muy fácil. Abre tu terminal o línea de comandos y escribe <code>pip install numpy</code>.",
+            "notes": [
+                {"type": "note", "text": "En Java, para tener funcionalidades similares, normalmente agregarías una dependencia en Maven (por ejemplo, <code>ND4J</code> o <code>Apache Commons Math</code>)."}
+            ]
+        },
+        {
+            "title": "Importar NumPy",
+            "text": "Una vez instalado NumPy, debes importarlo en tus aplicaciones usando la palabra clave <code>import</code>.",
+            "notes": []
+        },
+        {
+            "title": "NumPy como np",
+            "text": "Por convención comunitaria, NumPy siempre se importa con el alias <code>np</code> usando la palabra clave <code>as</code>.",
+            "notes": [
+                {"type": "tip", "text": "Este alias (<code>import numpy as np</code>) te ahorrará tener que escribir 'numpy' cada vez que llames a una función del módulo."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "np-getstarted-1",
-            "python": "# NumPy Getting Started Python example\nprint('NumPy Getting Started')",
-            "java": "// NumPy Getting Started Java example\nSystem.out.println(\"NumPy Getting Started\");",
-            "explanation": "Basic example demonstrating NumPy Getting Started."
+            "section": "Importar NumPy",
+            "python": "import numpy\n\narr = numpy.array([1, 2, 3, 4, 5])\nprint(arr)",
+            "java": "// En Java puro, usarías arrays nativos\nint[] arr = {1, 2, 3, 4, 5};\nSystem.out.println(java.util.Arrays.toString(arr));",
+            "explanation": "Importación directa sin alias. Python usa <code>numpy.array()</code>."
+        },
+        {
+            "id": "np-getstarted-2",
+            "section": "NumPy como np",
+            "python": "import numpy as np\n\narr = np.array([1, 2, 3, 4, 5])\nprint(arr)",
+            "java": "// En Java no existen los alias para imports.\nimport java.util.Arrays;\n// Tienes que usar el nombre corto de la clase Arrays.",
+            "explanation": "El alias <code>np</code> es un estándar absoluto en la comunidad de Data Science de Python."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-getstarted-1",
+            "type": "fill-blank",
+            "question": "¿Cómo instalas NumPy desde la terminal?",
+            "template": "_____ install numpy",
+            "template_html": "<input type='text' class='exercise-input' data-answer='pip' placeholder='___'> install numpy",
+            "python_code": "pip install numpy",
+            "answer": "pip"
+        },
+        {
+            "id": "ex-np-getstarted-2",
+            "type": "fill-blank",
+            "question": "Importa NumPy usando el alias estándar.",
+            "template": "import numpy _____ np",
+            "template_html": "import numpy <input type='text' class='exercise-input' data-answer='as' placeholder='__'> np",
+            "python_code": "import numpy as np",
+            "answer": "as"
         }
     ]
 }

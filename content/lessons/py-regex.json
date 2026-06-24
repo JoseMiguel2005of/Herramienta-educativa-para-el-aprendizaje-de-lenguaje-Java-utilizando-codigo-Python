@@ -1,17 +1,77 @@
 {
     "id": "py-regex",
-    "title": "Python RegEx",
-    "intro": "Welcome to the Python RegEx lesson.",
-    "python_desc": "Python code for Python RegEx",
-    "java_desc": "Java equivalent for Python RegEx",
-    "explanation": "<p>In this lesson we cover <b>Python RegEx</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Expresiones Regulares en Python (RegEx)",
+    "intro": "Una RegEx, o Expresión Regular, es una secuencia de caracteres que forma un patrón de búsqueda. RegEx se puede usar para comprobar si una cadena contiene el patrón de búsqueda especificado.",
+    "python_desc": "Código Python para RegEx",
+    "java_desc": "Equivalente en Java para RegEx",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "El Módulo re",
+            "text": "Python tiene un paquete incorporado llamado <code>re</code>, que se puede utilizar para trabajar con Expresiones Regulares. ¡Imprórtalo para empezar!",
+            "notes": [
+                {"type": "note", "text": "En Java usas el paquete <code>java.util.regex</code>, que contiene las clases <code>Pattern</code> y <code>Matcher</code>."}
+            ]
+        },
+        {
+            "title": "La Función search()",
+            "text": "La función <code>re.search()</code> busca en la cadena una coincidencia y devuelve un objeto <i>Match</i> si hay una coincidencia. Si hay más de una, solo se devuelve la primera ocurrencia.",
+            "notes": []
+        },
+        {
+            "title": "La Función findall()",
+            "text": "La función <code>re.findall()</code> devuelve una lista que contiene todas las coincidencias.",
+            "notes": [
+                {"type": "tip", "text": "En Java, para encontrar múltiples ocurrencias debes usar un bucle <code>while (matcher.find())</code>. Python te devuelve todo en una lista con una sola línea de código."}
+            ]
+        },
+        {
+            "title": "La Función sub()",
+            "text": "La función <code>re.sub()</code> reemplaza las coincidencias con el texto que elijas.",
+            "notes": [
+                {"type": "note", "text": "En Java, el equivalente es el método <code>replaceAll()</code> de la clase String."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-regex-1",
-            "python": "# Python RegEx Python example\nprint('Python RegEx')",
-            "java": "// Python RegEx Java example\nSystem.out.println(\"Python RegEx\");",
-            "explanation": "Basic example demonstrating Python RegEx."
+            "id": "py-regex-search",
+            "section": "La Función search()",
+            "python": "import re\n\ntxt = \"La lluvia en España\"\n# Busca si empieza con 'La' y termina con 'España':\nx = re.search(\"^La.*España$\", txt)\n\nif x:\n  print(\"¡SÍ! ¡Hay una coincidencia!\")\nelse:\n  print(\"Sin coincidencia\")",
+            "java": "import java.util.regex.Matcher;\nimport java.util.regex.Pattern;\n\nString txt = \"La lluvia en España\";\nPattern pattern = Pattern.compile(\"^La.*España$\");\nMatcher matcher = pattern.matcher(txt);\n\nif (matcher.find()) {\n  System.out.println(\"¡SÍ! ¡Hay una coincidencia!\");\n}",
+            "explanation": "Python es muy conciso con <code>re.search(patron, string)</code>. Java requiere compilar el patrón y crear un objeto matcher."
+        },
+        {
+            "id": "py-regex-findall",
+            "section": "La Función findall()",
+            "python": "import re\n\ntxt = \"La lluvia en España\"\nx = re.findall(\"ai\", txt)\nprint(x) # Imprime una lista vacía, no hay 'ai'\n\ny = re.findall(\"ll\", txt)\nprint(y) # ['ll']",
+            "java": "import java.util.regex.Matcher;\nimport java.util.regex.Pattern;\n\nString txt = \"La lluvia en España\";\nMatcher m = Pattern.compile(\"ll\").matcher(txt);\n\n// Java requiere iterar para sacar todos\nwhile(m.find()) {\n    System.out.println(m.group());\n}",
+            "explanation": "Python: <code>findall()</code> retorna un array listo. Java requiere iterar el <code>Matcher</code>."
+        },
+        {
+            "id": "py-regex-sub",
+            "section": "La Función sub()",
+            "python": "import re\n\ntxt = \"La lluvia en España\"\nx = re.sub(\"\\s\", \"9\", txt)\n# Reemplaza espacios con 9\nprint(x) # La9lluvia9en9España",
+            "java": "String txt = \"La lluvia en España\";\n// Java integra soporte RegEx básico en String\nString x = txt.replaceAll(\"\\\\s\", \"9\");\nSystem.out.println(x);",
+            "explanation": "Para reemplazar texto simple, Java facilita las cosas añadiendo <code>replaceAll()</code> directamente en el objeto <code>String</code>."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-regex-1",
+            "type": "fill-blank",
+            "question": "Importa el módulo de Expresiones Regulares en Python.",
+            "template": "_____ re",
+            "template_html": "<input type='text' class='exercise-input' data-answer='import' placeholder='___'> re",
+            "python_code": "import re",
+            "answer": "import"
+        },
+        {
+            "id": "ex-regex-2",
+            "type": "multiple-choice",
+            "question": "¿Qué función de 're' devuelve una lista con todas las coincidencias encontradas?",
+            "options": ["search()", "match()", "sub()", "findall()"],
+            "correct": 3
         }
     ]
 }

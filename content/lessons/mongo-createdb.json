@@ -1,17 +1,37 @@
 {
     "id": "mongo-createdb",
-    "title": "MongoDB Create Database",
-    "intro": "Welcome to the MongoDB Create Database lesson.",
-    "python_desc": "Python code for MongoDB Create Database",
-    "java_desc": "Java equivalent for MongoDB Create Database",
-    "explanation": "<p>In this lesson we cover <b>MongoDB Create Database</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "MongoDB - Crear Base de Datos",
+    "intro": "Para crear una base de datos en MongoDB usando Python, necesitas crear un objeto MongoClient y luego especificar el nombre de la base de datos.",
+    "python_desc": "Conexión a la Base de Datos",
+    "java_desc": "Equivalencia en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Creando la Base de Datos",
+            "text": "A diferencia de MySQL, MongoDB no requiere que ejecutes una sentencia 'CREATE DATABASE'. Simplemente declaras que quieres usar una base de datos, y si no existe, MongoDB la creará por ti pero **solo** cuando insertes datos por primera vez.",
+            "notes": [
+                {"type": "note", "text": "Este comportamiento 'Perezoso' (Lazy Creation) es idéntico al utilizar el cliente de MongoDB en Java."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "mongo-createdb-1",
-            "python": "# MongoDB Create Database Python example\nprint('MongoDB Create Database')",
-            "java": "// MongoDB Create Database Java example\nSystem.out.println(\"MongoDB Create Database\");",
-            "explanation": "Basic example demonstrating MongoDB Create Database."
+            "section": "Creando la Base de Datos",
+            "python": "import pymongo\n\n# Crear la conexión\nmyclient = pymongo.MongoClient(\"mongodb://localhost:27017/\")\n\n# Acceder (o Crear) a la base de datos \"mibasededatos\"\nmydb = myclient[\"mibasededatos\"]\n\nprint(mydb)",
+            "java": "import com.mongodb.client.MongoClients;\nimport com.mongodb.client.MongoClient;\nimport com.mongodb.client.MongoDatabase;\n\npublic class Main {\n  public static void main(String[] args) {\n      MongoClient mongoClient = MongoClients.create(\"mongodb://localhost:27017\");\n      \n      // En Java llamamos al método getDatabase()\n      MongoDatabase database = mongoClient.getDatabase(\"mibasededatos\");\n      \n      System.out.println(database.getName());\n  }\n}",
+            "explanation": "El driver de Python usa un acceso de sintaxis de Diccionario `[\"nombre\"]` para referenciar la base de datos, mientras que en Java usamos un Factory Method Clásico `getDatabase(\"nombre\")`."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-mongo-createdb-1",
+            "type": "fill-blank",
+            "question": "Conéctate al servidor local de MongoDB usando el MongoClient de la librería pymongo.",
+            "template": "myclient = pymongo.____________(\"mongodb://localhost:27017/\")",
+            "template_html": "myclient = pymongo.<input type='text' class='exercise-input' data-answer='MongoClient' placeholder='____________'>(\"mongodb://localhost:27017/\")",
+            "python_code": "myclient = pymongo.MongoClient(\"mongodb://localhost:27017/\")",
+            "answer": "MongoClient"
         }
     ]
 }

@@ -1,17 +1,70 @@
 {
     "id": "py-comments",
-    "title": "Python Comments",
-    "intro": "Welcome to the Python Comments lesson.",
-    "python_desc": "Python code for Python Comments",
-    "java_desc": "Java equivalent for Python Comments",
-    "explanation": "<p>In this lesson we cover <b>Python Comments</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Comentarios en Python",
+    "intro": "Los comentarios se usan para explicar el código, hacerlo más legible, y evitar que ciertas líneas se ejecuten al hacer pruebas.",
+    "python_desc": "Código Python para Comentarios",
+    "java_desc": "Equivalente en Java para Comentarios",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Comentarios de Una Línea",
+            "text": "Los comentarios empiezan con <code>#</code>. Python ignorará todo lo que esté después del <code>#</code> en esa línea.",
+            "notes": [
+                {"type": "note", "text": "Java usa <code>//</code> para comentarios de una línea. Python usa <code>#</code>."}
+            ]
+        },
+        {
+            "title": "Comentarios Multilínea",
+            "text": "Python no tiene una sintaxis oficial para comentarios multilínea, pero puedes usar un string multilínea con triple comillas <code>\"\"\"...\"\"\"</code>.",
+            "notes": [
+                {"type": "tip", "text": "Java sí tiene comentarios multilínea oficiales: <code>/* ... */</code>. Los docstrings de Python (<code>\"\"\"...\"\"\"</code>) tienen un propósito adicional: documentar funciones."}
+            ]
+        },
+        {
+            "title": "Comentarios en Línea",
+            "text": "Un comentario puede colocarse al final de una línea de código. Se llaman <b>comentarios en línea</b> (inline comments).",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-comments-1",
-            "python": "# Python Comments Python example\nprint('Python Comments')",
-            "java": "// Python Comments Java example\nSystem.out.println(\"Python Comments\");",
-            "explanation": "Basic example demonstrating Python Comments."
+            "id": "py-comments-single",
+            "section": "Comentarios de Una Línea",
+            "python": "# Esto es un comentario\nprint(\"¡Hola!\")  # Esto también es un comentario\n# print(\"Esta línea no se ejecutará\")",
+            "java": "// Esto es un comentario\nSystem.out.println(\"¡Hola!\");  // Comentario\n// System.out.println(\"No se ejecuta\");",
+            "explanation": "Python: <code>#</code>. Java: <code>//</code>. Mismo concepto, diferente símbolo."
+        },
+        {
+            "id": "py-comments-multi",
+            "section": "Comentarios Multilínea",
+            "python": "\"\"\"\nEste es un comentario\nque ocupa varias\nlíneas de código.\n\"\"\"\nprint(\"¡Hola!\")",
+            "java": "/*\nEste es un comentario\nque ocupa varias\nlíneas de código.\n*/\nSystem.out.println(\"¡Hola!\");",
+            "explanation": "Python: <code>\"\"\"...\"\"\"</code> (triple comillas). Java: <code>/* ... */</code>."
+        },
+        {
+            "id": "py-comments-inline",
+            "section": "Comentarios en Línea",
+            "python": "x = 5  # variable x\ny = x + 2  # sumar 2 a x\nprint(y)  # resultado: 7",
+            "java": "int x = 5;  // variable x\nint y = x + 2;  // sumar 2 a x\nSystem.out.println(y);  // resultado: 7",
+            "explanation": "Los comentarios en línea funcionan igual en ambos lenguajes."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-comm-1",
+            "type": "fill-blank",
+            "question": "Inserta el carácter correcto para crear un comentario en Python.",
+            "template": "_____ Esto es un comentario",
+            "template_html": "<input type='text' class='exercise-input' data-answer='#' placeholder='___'> Esto es un comentario",
+            "python_code": "# Esto es un comentario",
+            "answer": "#"
+        },
+        {
+            "id": "ex-comm-2",
+            "type": "multiple-choice",
+            "question": "¿Cuál es la sintaxis de comentarios multilínea en Java?",
+            "options": ["# ... #", "// ... //", "/* ... */", "\"\"\" ... \"\"\""],
+            "correct": 2
         }
     ]
 }

@@ -1,17 +1,37 @@
 {
     "id": "np-ufunc-intro",
-    "title": "ufuncs Intro",
-    "intro": "Welcome to the ufuncs Intro lesson.",
-    "python_desc": "Python code for ufuncs Intro",
-    "java_desc": "Java equivalent for ufuncs Intro",
-    "explanation": "<p>In this lesson we cover <b>ufuncs Intro</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "NumPy - Introducción a ufuncs",
+    "intro": "ufuncs significa 'Universal Functions' (Funciones Universales) en NumPy. Son funciones clave para el rendimiento algorítmico extremo.",
+    "python_desc": "Ufuncs en Python",
+    "java_desc": "Vectorización en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "¿Qué son y para qué usarlas?",
+            "text": "Las ufuncs operan sobre objetos <code>ndarray</code>. En lugar de usar bucles <code>for</code> lentos de Python para procesar un millón de números, envías el Array entero a una Ufunc. La Ufunc se ejecuta en el lenguaje de bajo nivel C, procesando todo instantáneamente. A este proceso mágico se le llama **Vectorización**.",
+            "notes": [
+                {"type": "tip", "text": "Hasta hace poco, la JVM (Java) no tenía vectorización SIMD nativa expuesta. En Java 16+ se introdujo la API de Vector (Incubator) para poder realizar operaciones matemáticas sobre arrays utilizando registros especializados del Procesador (CPU)."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "np-ufunc-intro-1",
-            "python": "# ufuncs Intro Python example\nprint('ufuncs Intro')",
-            "java": "// ufuncs Intro Java example\nSystem.out.println(\"ufuncs Intro\");",
-            "explanation": "Basic example demonstrating ufuncs Intro."
+            "section": "¿Qué son y para qué usarlas?",
+            "python": "import numpy as np\n\nx = [1, 2, 3, 4]\ny = [4, 5, 6, 7]\n\n# La función universal add() de NumPy hace las 4 sumas en \n# milésimas de milisegundo sin iteraciones lentas de Python.\nz = np.add(x, y)\n\nprint(z)\n# Resultado: [ 5  7  9 11]",
+            "java": "import jdk.incubator.vector.IntVector;\nimport jdk.incubator.vector.VectorSpecies;\n\npublic class Optimizacion {\n  // Este código requiere Java 16+ y activar módulos incubadores\n  static final VectorSpecies<Integer> SPECIES = IntVector.SPECIES_PREFERRED;\n  \n  public static void main(String[] args) {\n      int[] x = {1, 2, 3, 4};\n      int[] y = {4, 5, 6, 7};\n      int[] z = new int[4];\n      \n      IntVector v1 = IntVector.fromArray(SPECIES, x, 0);\n      IntVector v2 = IntVector.fromArray(SPECIES, y, 0);\n      \n      v1.add(v2).intoArray(z, 0);\n      System.out.println(java.util.Arrays.toString(z));\n  }\n}",
+            "explanation": "Tanto Python (vía C y Ufuncs) como Java (vía la Vector API experimental SIMD) logran engañar al CPU para que ejecute múltiples sumas matemáticas en un solo Ciclo de Reloj. La gran ventaja de Python es que `np.add` oculta toda esta verbosidad al 100%."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-ufunc-intro-1",
+            "type": "fill-blank",
+            "question": "Escribe el nombre de la Ufunc (Función Universal) incorporada que toma dos listas y suma sus elementos simultáneamente a velocidades vertiginosas.",
+            "template": "z = np.____(x, y)",
+            "template_html": "z = np.<input type='text' class='exercise-input' data-answer='add' placeholder='____'>(x, y)",
+            "python_code": "z = np.add(x, y)",
+            "answer": "add"
         }
     ]
 }

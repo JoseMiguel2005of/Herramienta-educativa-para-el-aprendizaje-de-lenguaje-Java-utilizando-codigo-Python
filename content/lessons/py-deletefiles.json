@@ -1,17 +1,72 @@
 {
     "id": "py-deletefiles",
-    "title": "Python Delete Files",
-    "intro": "Welcome to the Python Delete Files lesson.",
-    "python_desc": "Python code for Python Delete Files",
-    "java_desc": "Java equivalent for Python Delete Files",
-    "explanation": "<p>In this lesson we cover <b>Python Delete Files</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Eliminar Archivos en Python",
+    "intro": "Para eliminar un archivo en Python, debes importar el módulo OS (Sistema Operativo) y usar su función os.remove().",
+    "python_desc": "Código Python para Eliminar",
+    "java_desc": "Equivalente en Java para Eliminar",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Eliminar un Archivo",
+            "text": "Importa <code>os</code> y llama a <code>os.remove(\"archivo.txt\")</code>. Es muy simple pero peligroso porque no hay papelera de reciclaje.",
+            "notes": [
+                {"type": "note", "text": "En Java usas la clase <code>File</code> y su método <code>.delete()</code>, o la forma más moderna con <code>Files.delete(Path)</code>."}
+            ]
+        },
+        {
+            "title": "Comprobar si el Archivo Existe",
+            "text": "Para evitar obtener un error, es posible que desees comprobar si el archivo existe antes de intentar eliminarlo.",
+            "notes": [
+                {"type": "tip", "text": "Python arroja un <code>FileNotFoundError</code> si intentas borrar algo que no existe. Es buena práctica usar <code>os.path.exists()</code>."}
+            ]
+        },
+        {
+            "title": "Eliminar Carpetas",
+            "text": "Para eliminar una carpeta completa (directorio), usa el método <code>os.rmdir()</code>.",
+            "notes": [
+                {"type": "warning", "text": "Importante: solo puedes eliminar carpetas que estén <b>vacías</b>, tanto en Python como en Java."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-deletefiles-1",
-            "python": "# Python Delete Files Python example\nprint('Python Delete Files')",
-            "java": "// Python Delete Files Java example\nSystem.out.println(\"Python Delete Files\");",
-            "explanation": "Basic example demonstrating Python Delete Files."
+            "id": "py-delete-file",
+            "section": "Eliminar un Archivo",
+            "python": "import os\n\n# Eliminar un archivo\nos.remove(\"demofile.txt\")",
+            "java": "import java.io.File;\n\npublic class Main {\n  public static void main(String[] args) {\n    File miArchivo = new File(\"demofile.txt\");\n    if (miArchivo.delete()) {\n      System.out.println(\"Archivo eliminado.\");\n    } else {\n      System.out.println(\"Fallo al eliminar.\");\n    }\n  }\n}",
+            "explanation": "Python usa <code>os.remove()</code> que arroja un error si falla. Java usa <code>.delete()</code> que simplemente devuelve <code>false</code> si falla."
+        },
+        {
+            "id": "py-delete-check",
+            "section": "Comprobar si el Archivo Existe",
+            "python": "import os\n\nif os.path.exists(\"demofile.txt\"):\n  os.remove(\"demofile.txt\")\n  print(\"Archivo eliminado\")\nelse:\n  print(\"El archivo no existe\")",
+            "java": "import java.io.File;\n\npublic class Main {\n  public static void main(String[] args) {\n    File miArchivo = new File(\"demofile.txt\");\n    if (miArchivo.exists()) {\n      miArchivo.delete();\n      System.out.println(\"Archivo eliminado\");\n    } else {\n      System.out.println(\"El archivo no existe\");\n    }\n  }\n}",
+            "explanation": "Ambos lenguajes recomiendan comprobar la existencia antes de operar (<code>os.path.exists()</code> en Python, <code>.exists()</code> en Java)."
+        },
+        {
+            "id": "py-delete-folder",
+            "section": "Eliminar Carpetas",
+            "python": "import os\n\n# Solo borra carpetas vacías\nos.rmdir(\"mi_carpeta\")",
+            "java": "import java.io.File;\n\npublic class Main {\n  public static void main(String[] args) {\n    File carpeta = new File(\"mi_carpeta\");\n    if (carpeta.delete()) {\n      System.out.println(\"Carpeta eliminada\");\n    }\n  }\n}",
+            "explanation": "Python tiene un método específico <code>rmdir()</code> para carpetas. Java usa el mismo <code>delete()</code> tanto para archivos como para carpetas vacías."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-delete-1",
+            "type": "fill-blank",
+            "question": "¿Qué módulo de Python debes importar para borrar archivos?",
+            "template": "import _____\n_____.remove(\"mi_archivo.txt\")",
+            "template_html": "import <input type='text' class='exercise-input' data-answer='os' placeholder='___'><br>os.remove(\"mi_archivo.txt\")",
+            "python_code": "import os\nos.remove(\"mi_archivo.txt\")",
+            "answer": "os"
+        },
+        {
+            "id": "ex-delete-2",
+            "type": "multiple-choice",
+            "question": "¿Qué devuelve os.path.exists()?",
+            "options": ["El archivo entero", "Un error", "Un Booleano (True/False)", "El tamaño del archivo"],
+            "correct": 2
         }
     ]
 }

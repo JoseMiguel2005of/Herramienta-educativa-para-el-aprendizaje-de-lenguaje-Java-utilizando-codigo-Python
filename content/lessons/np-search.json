@@ -1,17 +1,70 @@
 {
     "id": "np-search",
-    "title": "NumPy Array Search",
-    "intro": "Welcome to the NumPy Array Search lesson.",
-    "python_desc": "Python code for NumPy Array Search",
-    "java_desc": "Java equivalent for NumPy Array Search",
-    "explanation": "<p>In this lesson we cover <b>NumPy Array Search</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Búsqueda de Arrays (Search)",
+    "intro": "Puedes buscar un cierto valor en un array y obtener los índices en los que el resultado coincida.",
+    "python_desc": "Código Python para Buscar",
+    "java_desc": "Equivalente en Java para Búsqueda",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "La Función where()",
+            "text": "Para buscar en un array, usamos la función <code>where()</code>. Esta función devuelve una tupla con un array de los índices donde el valor coincide.",
+            "notes": [
+                {"type": "note", "text": "En Java, para encontrar todas las ocurrencias, debes iterar el array usando un bucle <code>for</code> e ir guardando los índices en una lista."}
+            ]
+        },
+        {
+            "title": "Búsqueda con Condiciones (Filtros)",
+            "text": "El método <code>where()</code> es súper potente porque no solo busca un valor exacto, sino que puede buscar en base a condiciones complejas de matemáticas booleanas (por ejemplo: buscar índices donde los valores sean pares).",
+            "notes": []
+        },
+        {
+            "title": "Búsqueda Binaria (searchsorted)",
+            "text": "Hay un método llamado <code>searchsorted()</code> que realiza una búsqueda binaria en el array, y devuelve el índice donde debería insertarse el valor especificado para mantener el orden de clasificación.",
+            "notes": [
+                {"type": "tip", "text": "El método <code>searchsorted()</code> asume que el array es utilizado en orden de menor a mayor. En Java, esto es equivalente a <code>Arrays.binarySearch()</code>."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "np-search-1",
-            "python": "# NumPy Array Search Python example\nprint('NumPy Array Search')",
-            "java": "// NumPy Array Search Java example\nSystem.out.println(\"NumPy Array Search\");",
-            "explanation": "Basic example demonstrating NumPy Array Search."
+            "id": "np-search-where",
+            "section": "La Función where()",
+            "python": "import numpy as np\n\narr = np.array([1, 2, 3, 4, 5, 4, 4])\n\n# Encontrar los índices donde el valor es 4:\nx = np.where(arr == 4)\n\nprint(x) # (array([3, 5, 6]),)",
+            "java": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n  public static void main(String[] args) {\n    int[] arr = {1, 2, 3, 4, 5, 4, 4};\n    List<Integer> x = new ArrayList<>();\n    \n    for(int i = 0; i < arr.length; i++) {\n        if (arr[i] == 4) x.add(i);\n    }\n    System.out.println(x);\n  }\n}",
+            "explanation": "Python devuelve una tupla de índices de inmediato. Java requiere iteración explícita para guardar los resultados."
+        },
+        {
+            "id": "np-search-cond",
+            "section": "Búsqueda con Condiciones (Filtros)",
+            "python": "import numpy as np\n\narr = np.array([1, 2, 3, 4, 5, 6, 7, 8])\n\n# Encontrar los índices donde los valores son pares:\nx = np.where(arr % 2 == 0)\n\nprint(x) # (array([1, 3, 5, 7]),)",
+            "java": "// En Java se usaría el mismo bucle For de antes,\n// pero evaluando (arr[i] % 2 == 0) en el condicional if.",
+            "explanation": "Poder pasar expresiones (<code>arr % 2 == 0</code>) a <code>where()</code> permite una búsqueda hiper-eficiente llamada 'operaciones vectoriales'."
+        },
+        {
+            "id": "np-search-sorted",
+            "section": "Búsqueda Binaria (searchsorted)",
+            "python": "import numpy as np\n\n# El array ya debe estar ordenado\narr = np.array([6, 7, 8, 9])\n\n# ¿En qué índice deberíamos insertar un 7 para mantener el orden?\nx = np.searchsorted(arr, 7)\n\nprint(x) # Imprime 1",
+            "java": "import java.util.Arrays;\n\npublic class Main {\n  public static void main(String[] args) {\n    int[] arr = {6, 7, 8, 9};\n    int x = Arrays.binarySearch(arr, 7);\n    System.out.println(x); // Imprime 1\n  }\n}",
+            "explanation": "Ambos lenguajes disponen de algoritmos de Búsqueda Binaria, los cuales son ultra-rápidos pero exigen arrays previamente ordenados."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-search-1",
+            "type": "fill-blank",
+            "question": "Usa el método correcto para encontrar todos los índices donde arr es 42.",
+            "template": "x = np._____(arr == 42)",
+            "template_html": "x = np.<input type='text' class='exercise-input' data-answer='where' placeholder='_____'>(arr == 42)",
+            "python_code": "x = np.where(arr == 42)",
+            "answer": "where"
+        },
+        {
+            "id": "ex-np-search-2",
+            "type": "multiple-choice",
+            "question": "¿Qué método debes utilizar si quieres hacer una Búsqueda Binaria sobre un array YA ordenado?",
+            "options": ["where()", "search()", "searchsorted()", "find()"],
+            "correct": 2
         }
     ]
 }

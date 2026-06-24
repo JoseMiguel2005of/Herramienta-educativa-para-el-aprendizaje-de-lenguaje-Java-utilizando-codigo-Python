@@ -1,17 +1,51 @@
 {
     "id": "np-intro",
-    "title": "NumPy Intro",
-    "intro": "Welcome to the NumPy Intro lesson.",
-    "python_desc": "Python code for NumPy Intro",
-    "java_desc": "Java equivalent for NumPy Intro",
-    "explanation": "<p>In this lesson we cover <b>NumPy Intro</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Introducción a NumPy",
+    "intro": "NumPy es una biblioteca de Python utilizada para trabajar con matrices (arrays). También tiene funciones para trabajar en el dominio del álgebra lineal, transformada de fourier y matrices.",
+    "python_desc": "Código Python para Intro a NumPy",
+    "java_desc": "Equivalente en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "¿Por qué usar NumPy?",
+            "text": "En Python tenemos listas que sirven el propósito de matrices (arrays), pero son lentas de procesar. NumPy busca proveer un objeto array que es hasta 50 veces más rápido que las listas tradicionales de Python.",
+            "notes": [
+                {"type": "note", "text": "En Java, los arrays nativos (<code>int[]</code>, <code>double[]</code>) ya son extremadamente rápidos porque están directamente apoyados por la memoria de la Máquina Virtual (JVM). NumPy acerca la velocidad de Python a la de Java o C."}
+            ]
+        },
+        {
+            "title": "El Objeto ndarray",
+            "text": "El objeto array en NumPy se llama <code>ndarray</code>. Provee un montón de funciones de soporte que hacen muy fácil trabajar con <code>ndarray</code>.",
+            "notes": [
+                {"type": "tip", "text": "NumPy es fundamental en la ciencia de datos en Python. Las librerías de Machine Learning como TensorFlow o scikit-learn esperan datos en formato NumPy."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "np-intro-1",
-            "python": "# NumPy Intro Python example\nprint('NumPy Intro')",
-            "java": "// NumPy Intro Java example\nSystem.out.println(\"NumPy Intro\");",
-            "explanation": "Basic example demonstrating NumPy Intro."
+            "section": "¿Por qué usar NumPy?",
+            "python": "import numpy as np\n\n# Crear un array de NumPy\narr = np.array([1, 2, 3, 4, 5])\n\nprint(arr)\nprint(type(arr)) # <class 'numpy.ndarray'>",
+            "java": "public class Main {\n  public static void main(String[] args) {\n    // Array nativo en Java (muy rápido por defecto)\n    int[] arr = {1, 2, 3, 4, 5};\n    \n    for(int i=0; i<arr.length; i++) {\n        System.out.print(arr[i] + \" \");\n    }\n  }\n}",
+            "explanation": "Python usa <code>np.array()</code> para envolver listas lentas en arreglos super rápidos de C (bajo el capó). Java usa su sintaxis nativa de arreglos."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-intro-1",
+            "type": "multiple-choice",
+            "question": "¿Qué significa NumPy?",
+            "options": ["Number Python", "Numerical Python", "New Python", "Normal Python"],
+            "correct": 1
+        },
+        {
+            "id": "ex-np-intro-2",
+            "type": "fill-blank",
+            "question": "¿Cómo se llama el objeto array principal en NumPy?",
+            "template": "_____array",
+            "template_html": "<input type='text' class='exercise-input' data-answer='nd' placeholder='__'>array",
+            "python_code": "ndarray",
+            "answer": "nd"
         }
     ]
 }

@@ -1,17 +1,58 @@
 {
     "id": "pd-emptycells",
-    "title": "Cleaning Empty Cells",
-    "intro": "Welcome to the Cleaning Empty Cells lesson.",
-    "python_desc": "Python code for Cleaning Empty Cells",
-    "java_desc": "Java equivalent for Cleaning Empty Cells",
-    "explanation": "<p>In this lesson we cover <b>Cleaning Empty Cells</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Celdas Vacías",
+    "intro": "Las celdas vacías pueden dar un resultado incorrecto al momento de analizar tus datos. Una de las formas de lidiar con esto es remover las filas enteras que tengan alguna celda vacía o reemplazar su valor.",
+    "python_desc": "Soluciones en Python",
+    "java_desc": "Equivalente en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Remover Filas",
+            "text": "Puedes usar <code>dropna()</code>. Por defecto, este método devuelve un nuevo DataFrame y no alterará el original. Si quieres cambiar el DataFrame original, debes usar el argumento <code>inplace = True</code>.",
+            "notes": [
+                {"type": "tip", "text": "En Java, para remover objetos con campos nulos de una lista, usarías <code>lista.removeIf(obj -> obj.getCampo() == null)</code>."}
+            ]
+        },
+        {
+            "title": "Rellenar Valores Vacíos",
+            "text": "A menudo eliminar filas enteras no es ideal porque pierdes otros datos valiosos de esa fila. Otra forma es insertar un valor de reemplazo para la celda vacía usando <code>fillna(valor, inplace = True)</code>.",
+            "notes": [
+                {"type": "note", "text": "Pandas es tan avanzado que puedes calcular la media (Mean), la mediana o la moda de una columna e inyectarla automáticamente en las celdas vacías de esa columna."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "pd-emptycells-1",
-            "python": "# Cleaning Empty Cells Python example\nprint('Cleaning Empty Cells')",
-            "java": "// Cleaning Empty Cells Java example\nSystem.out.println(\"Cleaning Empty Cells\");",
-            "explanation": "Basic example demonstrating Cleaning Empty Cells."
+            "section": "Remover Filas",
+            "python": "import pandas as pd\n\ndf = pd.read_csv('data.csv')\n\n# Modificamos el DataFrame original quitando filas corruptas\ndf.dropna(inplace = True)\nprint(df.to_string())",
+            "java": "import java.util.List;\n\npublic class Main {\n  public static void main(String[] args) {\n      List<Registro> tabla = obtenerDatos();\n      \n      // En Java purgarías la lista mediante mutación:\n      tabla.removeIf(r -> r.getDato() == null);\n      \n      System.out.println(tabla);\n  }\n}",
+            "explanation": "<code>dropna()</code> es extremadamente poderoso porque chequea todas las columnas de la fila instantáneamente, mientras que en Java tendrías que chequear cada propiedad individualmente (<code>r.getDato1() == null || r.getDato2() == null ...</code>)."
+        },
+        {
+            "id": "pd-emptycells-2",
+            "section": "Rellenar Valores Vacíos",
+            "python": "import pandas as pd\n\ndf = pd.read_csv('data.csv')\n\n# Calcular la media (promedio) de la columna 'Calorias':\nx = df[\"Calorias\"].mean()\n\n# Llenar las celdas vacías de ESA columna con el promedio:\ndf[\"Calorias\"].fillna(x, inplace = True)",
+            "java": "// En Java tendrías que iterar la lista dos veces:\n// 1. Calcular el promedio de 'Calorias' ignorando nulos.\n// 2. Iterar nuevamente y asignar el promedio a los nulos.\n\ndouble suma = 0;\nint conteo = 0;\nfor (Registro r : tabla) {\n    if (r.getCalorias() != null) {\n       suma += r.getCalorias();\n       conteo++;\n    }\n}\ndouble prom = suma / conteo;\nfor (Registro r : tabla) {\n    if (r.getCalorias() == null) r.setCalorias(prom);\n}",
+            "explanation": "La operación de relleno estadístico toma apenas 2 líneas en Python gracias a la vectorización abstracta de Pandas."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-pd-emptycells-1",
+            "type": "fill-blank",
+            "question": "Usa la función correcta para eliminar (drop) todas las filas que contengan celdas vacías nulas (NaN).",
+            "template": "df.______(inplace = True)",
+            "template_html": "df.<input type='text' class='exercise-input' data-answer='dropna' placeholder='______'>(inplace = True)",
+            "python_code": "df.dropna(inplace = True)",
+            "answer": "dropna"
+        },
+        {
+            "id": "ex-pd-emptycells-2",
+            "type": "multiple-choice",
+            "question": "¿Qué argumento debes pasarle a dropna() o fillna() para que modifique el DataFrame original en vez de crear una copia?",
+            "options": ["mod = True", "inplace = True", "overwrite = True", "update = True"],
+            "correct": 1
         }
     ]
 }

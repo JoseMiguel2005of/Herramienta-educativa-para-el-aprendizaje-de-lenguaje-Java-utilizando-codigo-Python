@@ -1,17 +1,72 @@
 {
     "id": "py-dates",
-    "title": "Python Dates",
-    "intro": "Welcome to the Python Dates lesson.",
-    "python_desc": "Python code for Python Dates",
-    "java_desc": "Java equivalent for Python Dates",
-    "explanation": "<p>In this lesson we cover <b>Python Dates</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Fechas en Python",
+    "intro": "Las fechas no son un tipo de dato en sí en Python, pero podemos importar el módulo datetime para trabajar con fechas y horas como objetos.",
+    "python_desc": "Código Python para Fechas",
+    "java_desc": "Equivalente en Java para Fechas",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "El Módulo datetime",
+            "text": "Importa el módulo <code>datetime</code> y usa <code>datetime.datetime.now()</code> para mostrar la fecha y hora actuales.",
+            "notes": [
+                {"type": "note", "text": "En Java moderno (Java 8+), usas <code>java.time.LocalDateTime.now()</code>. Ambos lenguajes usan módulos/paquetes dedicados porque el manejo de fechas es complejo."}
+            ]
+        },
+        {
+            "title": "Crear Objetos de Fecha",
+            "text": "Para crear una fecha, podemos usar la clase <code>datetime()</code> del módulo. Requiere tres parámetros obligatorios: año, mes y día.",
+            "notes": []
+        },
+        {
+            "title": "El Método strftime()",
+            "text": "El objeto datetime tiene un método para formatear los objetos de fecha y convertirlos en cadenas de texto leíbles (strings) usando códigos de formato como <code>%Y</code> (año) y <code>%B</code> (mes).",
+            "notes": [
+                {"type": "tip", "text": "Java usa <code>DateTimeFormatter</code> con patrones como <code>yyyy-MM-dd</code>. Python usa <code>strftime</code> (string format time) heredado del lenguaje C."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-dates-1",
-            "python": "# Python Dates Python example\nprint('Python Dates')",
-            "java": "// Python Dates Java example\nSystem.out.println(\"Python Dates\");",
-            "explanation": "Basic example demonstrating Python Dates."
+            "id": "py-date-now",
+            "section": "El Módulo datetime",
+            "python": "import datetime\n\nx = datetime.datetime.now()\nprint(x)",
+            "java": "import java.time.LocalDateTime;\n\nLocalDateTime x = LocalDateTime.now();\nSystem.out.println(x);",
+            "explanation": "Python importa <code>datetime</code>. Java importa <code>java.time.LocalDateTime</code>."
+        },
+        {
+            "id": "py-date-create",
+            "section": "Crear Objetos de Fecha",
+            "python": "import datetime\n\nx = datetime.datetime(2020, 5, 17)\nprint(x)",
+            "java": "import java.time.LocalDate;\n\nLocalDate x = LocalDate.of(2020, 5, 17);\nSystem.out.println(x);",
+            "explanation": "Ambos permiten instanciar fechas específicas pasando (Año, Mes, Día)."
+        },
+        {
+            "id": "py-date-format",
+            "section": "El Método strftime()",
+            "python": "import datetime\nx = datetime.datetime(2018, 6, 1)\n\nprint(x.strftime(\"%Y-%m-%d\")) # 2018-06-01\nprint(x.strftime(\"%B\"))       # June\nprint(x.strftime(\"%A\"))       # Friday",
+            "java": "import java.time.LocalDate;\nimport java.time.format.DateTimeFormatter;\n\nLocalDate x = LocalDate.of(2018, 6, 1);\nDateTimeFormatter f1 = DateTimeFormatter.ofPattern(\"yyyy-MM-dd\");\nDateTimeFormatter f2 = DateTimeFormatter.ofPattern(\"MMMM\"); // Mes\nSystem.out.println(x.format(f1));",
+            "explanation": "Python: <code>strftime(\"%formato\")</code>. Java: <code>.format(DateTimeFormatter)</code>."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-date-1",
+            "type": "fill-blank",
+            "question": "Importa el módulo necesario para trabajar con fechas en Python.",
+            "template": "_____ datetime",
+            "template_html": "<input type='text' class='exercise-input' data-answer='import' placeholder='___'> datetime",
+            "python_code": "import datetime",
+            "answer": "import"
+        },
+        {
+            "id": "ex-date-2",
+            "type": "fill-blank",
+            "question": "Obtén la fecha y hora actual.",
+            "template": "x = datetime.datetime._____()",
+            "template_html": "x = datetime.datetime.<input type='text' class='exercise-input' data-answer='now' placeholder='___'>()",
+            "python_code": "x = datetime.datetime.now()",
+            "answer": "now"
         }
     ]
 }

@@ -1,17 +1,96 @@
 {
     "id": "py-numbers",
-    "title": "Python Numbers",
-    "intro": "Welcome to the Python Numbers lesson.",
-    "python_desc": "Python code for Python Numbers",
-    "java_desc": "Java equivalent for Python Numbers",
-    "explanation": "<p>In this lesson we cover <b>Python Numbers</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Números en Python",
+    "intro": "Python tiene tres tipos numéricos: enteros (int), decimales (float) y complejos (complex). Se crean automáticamente al asignar un valor numérico.",
+    "python_desc": "Código Python para Números",
+    "java_desc": "Equivalente en Java para Números",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Tipos Numéricos",
+            "text": "Python tiene tres tipos numéricos: <code>int</code> (enteros sin límite de tamaño), <code>float</code> (decimales con punto flotante) y <code>complex</code> (números complejos con parte imaginaria).",
+            "notes": [
+                {"type": "note", "text": "Java tiene más tipos numéricos: <code>byte</code>, <code>short</code>, <code>int</code>, <code>long</code>, <code>float</code>, <code>double</code>. Python simplifica esto con solo <code>int</code> y <code>float</code>."}
+            ]
+        },
+        {
+            "title": "Enteros (int)",
+            "text": "Los enteros en Python pueden ser de cualquier longitud — no tienen límite de tamaño (a diferencia de Java donde <code>int</code> tiene un máximo de ~2 mil millones).",
+            "notes": [
+                {"type": "tip", "text": "Para números muy grandes en Java, necesitas <code>long</code> o <code>BigInteger</code>. En Python, simplemente funciona."}
+            ]
+        },
+        {
+            "title": "Decimales (float)",
+            "text": "Los float son números con punto decimal o en notación científica usando <code>e</code> para indicar potencias de 10.",
+            "notes": []
+        },
+        {
+            "title": "Conversión entre Tipos",
+            "text": "Puedes convertir entre tipos numéricos usando <code>int()</code>, <code>float()</code> y <code>complex()</code>.",
+            "notes": [
+                {"type": "warning", "text": "No puedes convertir un número complejo a int o float. Hacerlo generará un <code>TypeError</code>."}
+            ]
+        },
+        {
+            "title": "Números Aleatorios",
+            "text": "Python tiene un módulo integrado llamado <code>random</code> para generar números aleatorios.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-numbers-1",
-            "python": "# Python Numbers Python example\nprint('Python Numbers')",
-            "java": "// Python Numbers Java example\nSystem.out.println(\"Python Numbers\");",
-            "explanation": "Basic example demonstrating Python Numbers."
+            "id": "py-num-types",
+            "section": "Tipos Numéricos",
+            "python": "x = 1      # int\ny = 2.8    # float\nz = 1j     # complex\nprint(type(x), type(y), type(z))",
+            "java": "int x = 1;\ndouble y = 2.8;\n// Java no tiene tipo complex nativo\nSystem.out.println(\"int, double\");",
+            "explanation": "Python tiene <code>complex</code> nativo. Java no tiene soporte para números complejos sin librerías externas."
+        },
+        {
+            "id": "py-num-int",
+            "section": "Enteros (int)",
+            "python": "x = 1\ny = 35656222554887711\nz = -3255522\nprint(x, y, z)\nprint(type(x))",
+            "java": "int x = 1;\nlong y = 35656222554887711L;  // necesita 'long'\nint z = -3255522;\nSystem.out.println(x + \" \" + y + \" \" + z);",
+            "explanation": "Python: los enteros no tienen límite. Java: <code>int</code> tiene máximo ~2.1 billones, <code>long</code> para más."
+        },
+        {
+            "id": "py-num-float",
+            "section": "Decimales (float)",
+            "python": "x = 1.10\ny = 1.0\nz = -35.59\nw = 35e3    # notación científica = 35000.0\nprint(x, y, z, w)",
+            "java": "double x = 1.10;\ndouble y = 1.0;\ndouble z = -35.59;\ndouble w = 35e3;  // 35000.0\nSystem.out.println(x + \" \" + y + \" \" + z + \" \" + w);",
+            "explanation": "Ambos soportan notación científica. Python usa <code>float</code>, Java diferencia entre <code>float</code> y <code>double</code>."
+        },
+        {
+            "id": "py-num-convert",
+            "section": "Conversión entre Tipos",
+            "python": "x = 1      # int\ny = 2.8    # float\n\na = float(x)  # 1.0\nb = int(y)    # 2 (trunca)\nprint(a, b)",
+            "java": "int x = 1;\ndouble y = 2.8;\n\ndouble a = (double) x;  // 1.0\nint b = (int) y;        // 2 (trunca)\nSystem.out.println(a + \" \" + b);",
+            "explanation": "Python: <code>float()</code>, <code>int()</code>. Java: casting con <code>(double)</code>, <code>(int)</code>. Ambos truncan decimales."
+        },
+        {
+            "id": "py-num-random",
+            "section": "Números Aleatorios",
+            "python": "import random\nprint(random.randrange(1, 10))  # número entre 1 y 9\nprint(random.random())          # float entre 0.0 y 1.0",
+            "java": "import java.util.Random;\nRandom rand = new Random();\nSystem.out.println(rand.nextInt(9) + 1);  // 1-9\nSystem.out.println(rand.nextDouble());    // 0.0-1.0",
+            "explanation": "Python: módulo <code>random</code>. Java: clase <code>java.util.Random</code>."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-num-1",
+            "type": "multiple-choice",
+            "question": "¿Cuál es el tipo de <code>x = 3.14</code> en Python?",
+            "options": ["int", "float", "double", "decimal"],
+            "correct": 1
+        },
+        {
+            "id": "ex-num-2",
+            "type": "fill-blank",
+            "question": "Convierte el float <code>2.8</code> a un entero.",
+            "template": "x = _____(2.8)",
+            "template_html": "x = <input type='text' class='exercise-input' data-answer='int' placeholder='___'>(2.8)",
+            "python_code": "x = int(2.8)",
+            "answer": "int"
         }
     ]
 }

@@ -1,17 +1,40 @@
 {
     "id": "sql-insert",
-    "title": "MySQL Insert",
-    "intro": "Welcome to the MySQL Insert lesson.",
-    "python_desc": "Python code for MySQL Insert",
-    "java_desc": "Java equivalent for MySQL Insert",
-    "explanation": "<p>In this lesson we cover <b>MySQL Insert</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "MySQL - Insertar Datos",
+    "intro": "Para llenar una tabla en MySQL, usa la instrucción 'INSERT INTO'.",
+    "python_desc": "Insertar en Python",
+    "java_desc": "Insertar en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Insertar un Registro",
+            "text": "Es una buena práctica de seguridad usar 'marcadores de posición' (es decir, el signo <code>%s</code>) en lugar de inyectar las variables de Python directamente en el texto. Esto previene la inyección SQL.",
+            "notes": [
+                {"type": "note", "text": "En Java usamos la clase `PreparedStatement` con el marcador `?` por la misma razón de seguridad."}
+            ]
+        },
+        {
+            "title": "Hacer Commit",
+            "text": "¡Importante! Debes llamar a <code>mydb.commit()</code> después de ejecutar una sentencia que altere la base de datos (Insert, Update, Delete). Si no lo haces, los cambios no se guardarán en la base de datos real.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
             "id": "sql-insert-1",
-            "python": "# MySQL Insert Python example\nprint('MySQL Insert')",
-            "java": "// MySQL Insert Java example\nSystem.out.println(\"MySQL Insert\");",
-            "explanation": "Basic example demonstrating MySQL Insert."
+            "section": "Insertar un Registro",
+            "python": "import mysql.connector\n\nmydb = mysql.connector.connect(host=\"localhost\", user=\"tuusuario\", password=\"tucontraseña\", database=\"mibase\")\nmicursor = mydb.cursor()\n\n# La consulta sql con marcadores de posición (%s)\nsql = \"INSERT INTO clientes (nombre, direccion) VALUES (%s, %s)\"\n\n# Los valores en una tupla de Python\nval = (\"John\", \"Highway 21\")\n\nmicursor.execute(sql, val)\nmydb.commit()\n\nprint(micursor.rowcount, \"registro insertado.\")",
+            "java": "import java.sql.Connection;\nimport java.sql.DriverManager;\nimport java.sql.PreparedStatement;\n\npublic class Main {\n  public static void main(String[] args) throws Exception {\n      Connection conn = DriverManager.getConnection(\"jdbc:mysql://localhost/mibase\", \"tuusuario\", \"tucontraseña\");\n      \n      // En Java usamos '?' como placeholder\n      String sql = \"INSERT INTO clientes (nombre, direccion) VALUES (?, ?)\";\n      PreparedStatement pstmt = conn.prepareStatement(sql);\n      \n      pstmt.setString(1, \"John\");\n      pstmt.setString(2, \"Highway 21\");\n      \n      int afectadas = pstmt.executeUpdate();\n      System.out.println(afectadas + \" registro insertado.\");\n  }\n}",
+            "explanation": "El `PreparedStatement` de Java requiere fijar el tipo de dato manualmente (`setString`, `setInt`) y está indexado en base 1. Python inyecta la tupla directamente de forma dinámica sin importar el tipo subyacente."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-sql-insert-1",
+            "type": "multiple-choice",
+            "question": "¿Por qué debemos usar marcadores de posición (%s en Python o ? en Java) en las consultas SQL?",
+            "options": ["Para que la base de datos sepa el tipo de datos", "Para hacer el código más corto", "Para prevenir ataques de inyección SQL (SQL Injection)", "Para evitar usar la función commit()"],
+            "correct": 2
         }
     ]
 }

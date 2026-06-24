@@ -1,17 +1,37 @@
 {
     "id": "np-uniform",
-    "title": "Uniform Distribution",
-    "intro": "Welcome to the Uniform Distribution lesson.",
-    "python_desc": "Python code for Uniform Distribution",
-    "java_desc": "Java equivalent for Uniform Distribution",
-    "explanation": "<p>In this lesson we cover <b>Uniform Distribution</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "NumPy - Distribución Uniforme",
+    "intro": "La Distribución Uniforme se utiliza para describir la probabilidad donde todos los eventos o resultados tienen exactamente las mismas chances de ocurrir.",
+    "python_desc": "Modelo Uniforme en NumPy",
+    "java_desc": "Equivalente Uniforme en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "¿Qué es la Distribución Uniforme?",
+            "text": "Toma tres parámetros: el Límite Inferior (por defecto 0), el Límite Superior (por defecto 1), y la Forma del array (size). Es excelente para generar ruido de datos donde cada número, sin importar cuál sea, tiene el 100% de la misma probabilidad equitativa de ser sorteado.",
+            "notes": [
+                {"type": "note", "text": "Al ser continua, los resultados contendrán fracciones (números de coma flotante o doubles)."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "np-uniform-1",
-            "python": "# Uniform Distribution Python example\nprint('Uniform Distribution')",
-            "java": "// Uniform Distribution Java example\nSystem.out.println(\"Uniform Distribution\");",
-            "explanation": "Basic example demonstrating Uniform Distribution."
+            "section": "¿Qué es la Distribución Uniforme?",
+            "python": "from numpy import random\n\n# Genera un array (2x3) de floats donde cualquier número \n# del -1 al 0 tiene chances equitativas exactas\nx = random.uniform(low=-1, high=0, size=(2, 3))\n\nprint(x)",
+            "java": "import java.util.Random;\nimport java.util.Arrays;\n\npublic class Uniforme {\n  public static void main(String[] args) {\n      Random rand = new Random();\n      double[][] matriz = new double[2][3];\n      \n      double low = -1.0;\n      double high = 0.0;\n      \n      for (int i = 0; i < 2; i++) {\n          for (int j = 0; j < 3; j++) {\n              // En Java: minimo + (RandomFloat * (maximo - minimo))\n              matriz[i][j] = low + (rand.nextDouble() * (high - low));\n          }\n      }\n      System.out.println(Arrays.deepToString(matriz));\n  }\n}",
+            "explanation": "La clase Random de Java produce nativamente una distribución uniforme pura entre 0.0 y 1.0 (cuando se usa `nextDouble()`). Para forzar los límites, Java requiere un ajuste matemático manual."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-uniform-1",
+            "type": "fill-blank",
+            "question": "Escribe el nombre de la distribución donde cada número entre los límites configurados tiene probabilidades totalmente idénticas de ocurrir.",
+            "template": "x = random._______(low=-1, high=0, size=(2, 3))",
+            "template_html": "x = random.<input type='text' class='exercise-input' data-answer='uniform' placeholder='_______'>(low=-1, high=0, size=(2, 3))",
+            "python_code": "x = random.uniform(low=-1, high=0, size=(2, 3))",
+            "answer": "uniform"
         }
     ]
 }

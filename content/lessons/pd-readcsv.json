@@ -1,17 +1,42 @@
 {
     "id": "pd-readcsv",
-    "title": "Pandas Read CSV",
-    "intro": "Welcome to the Pandas Read CSV lesson.",
-    "python_desc": "Python code for Pandas Read CSV",
-    "java_desc": "Java equivalent for Pandas Read CSV",
-    "explanation": "<p>In this lesson we cover <b>Pandas Read CSV</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Leer CSV",
+    "intro": "Una forma sencilla de almacenar y compartir grandes conjuntos de datos es utilizando archivos CSV (Comma Separated Files). Pandas tiene funciones nativas de altísimo rendimiento para lidiar con ellos.",
+    "python_desc": "Lectura en Python (Pandas)",
+    "java_desc": "Lectura en Java Puro",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Cargando un Archivo CSV",
+            "text": "Puedes cargar el contenido de un archivo CSV en un DataFrame con la simple función <code>read_csv()</code>. Pandas detectará automáticamente los encabezados y separadores estándar.",
+            "notes": [
+                {"type": "note", "text": "En Java puro, leer un CSV implica usar `BufferedReader` para leer línea por línea, hacer `String.split(\",\")` y guardar el resultado. Librerías de terceros como OpenCSV simplifican esto."}
+            ]
+        },
+        {
+            "title": "Limitar las Filas a Imprimir",
+            "text": "Si tienes un CSV muy grande con millones de filas, al imprimir el DataFrame solo se mostrarán las primeras y últimas 5 filas. Para forzar la impresión del documento entero puedes cambiar la opción <code>pd.options.display.max_rows</code>.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
             "id": "pd-readcsv-1",
-            "python": "# Pandas Read CSV Python example\nprint('Pandas Read CSV')",
-            "java": "// Pandas Read CSV Java example\nSystem.out.println(\"Pandas Read CSV\");",
-            "explanation": "Basic example demonstrating Pandas Read CSV."
+            "section": "Cargando un Archivo CSV",
+            "python": "import pandas as pd\n\n# Lee un archivo y lo convierte a un DataFrame:\ndf = pd.read_csv('data.csv')\n\nprint(df.to_string()) # to_string() fuerza la impresión completa",
+            "java": "import java.io.BufferedReader;\nimport java.io.FileReader;\nimport java.io.IOException;\n\npublic class Main {\n  public static void main(String[] args) {\n    String line;\n    try (BufferedReader br = new BufferedReader(new FileReader(\"data.csv\"))) {\n        while ((line = br.readLine()) != null) {\n            String[] values = line.split(\",\");\n            System.out.println(values[0]); // Imprimir columna\n        }\n    } catch (IOException e) {\n        e.printStackTrace();\n    }\n  }\n}",
+            "explanation": "El proceso de Parsing (Análisis Sintáctico) que realiza `read_csv` bajo el capó abstrae por completo el manejo de buffers, IOExceptions y división por comas que un programador de Java debe construir a mano."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-pd-readcsv-1",
+            "type": "fill-blank",
+            "question": "Usa la función correcta de Pandas para leer un archivo llamado 'data.csv'.",
+            "template": "df = pd.____('data.csv')",
+            "template_html": "df = pd.<input type='text' class='exercise-input' data-answer='read_csv' placeholder='________'>('data.csv')",
+            "python_code": "df = pd.read_csv('data.csv')",
+            "answer": "read_csv"
         }
     ]
 }

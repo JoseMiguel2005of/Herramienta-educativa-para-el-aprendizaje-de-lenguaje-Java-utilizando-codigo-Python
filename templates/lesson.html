@@ -15,6 +15,102 @@
         </div>
     </header>
 
+    {# ============================================================
+       ENRICHED FORMAT: Lessons with "sections" array
+       Each section gets its own H2, text, notes, and code examples
+       ============================================================ #}
+    {% if lesson.sections is defined and lesson.sections %}
+
+        {% for section in lesson.sections %}
+        <div class="lesson-section">
+            <h2 class="section-title">
+                <span class="section-index">{{ "%02d" | format(loop.index) }}</span>
+                {{ section.title }}
+            </h2>
+
+            {% if section.text %}
+            <div class="section-text">
+                {{ section.text | safe }}
+            </div>
+            {% endif %}
+
+            {# Notes / Tips / Warnings #}
+            {% if section.notes is defined and section.notes %}
+                {% for note in section.notes %}
+                <div class="lesson-note note-{{ note.type }}">
+                    <div class="note-header">
+                        {% if note.type == 'tip' %}
+                            <span class="note-icon">💡</span> <span class="note-label">TIP</span>
+                        {% elif note.type == 'warning' %}
+                            <span class="note-icon">⚠️</span> <span class="note-label">WARNING</span>
+                        {% else %}
+                            <span class="note-icon">📝</span> <span class="note-label">NOTE</span>
+                        {% endif %}
+                    </div>
+                    <div class="note-body">{{ note.text | safe }}</div>
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            {# Code mappings for this section #}
+            {% set section_mappings = lesson.code_mappings | selectattr('section', 'equalto', section.title) | list %}
+            {% if section_mappings %}
+                {% for mapping in section_mappings %}
+                <div class="w3-example section-example">
+                    {% if section_mappings | length > 1 %}
+                    <h3>{{ t.get('example_label', 'Example') }} {{ loop.index }}</h3>
+                    {% else %}
+                    <h3>{{ t.get('example_label', 'Example') }}</h3>
+                    {% endif %}
+                    <section class="code-comparison" {% if current_category == 'java2py' %}style="flex-direction: row-reverse;"{% endif %}>
+                        <div class="code-panel code-panel-python">
+                            <div class="code-panel-header">
+                                <span class="lang-badge python-badge">{{ t.python_label }}</span>
+                                <button class="btn-copy" data-target="py-{{ mapping.id }}" data-copied="{{ t.copied }}">
+                                    {{ t.copy_code }}
+                                </button>
+                            </div>
+                            <div class="code-block-interactive" id="py-{{ mapping.id }}">
+                                <div class="code-line interactive-line" data-mapping-id="{{ mapping.id }}" data-explanation="{{ mapping.explanation }}"><pre><code class="language-python">{{ mapping.python }}</code></pre></div>
+                            </div>
+                        </div>
+
+                        <div class="code-panel code-panel-java">
+                            <div class="code-panel-header">
+                                <span class="lang-badge java-badge">{{ t.java_label }}</span>
+                                <button class="btn-copy" data-target="java-{{ mapping.id }}" data-copied="{{ t.copied }}">
+                                    {{ t.copy_code }}
+                                </button>
+                            </div>
+                            <div class="code-block-interactive" id="java-{{ mapping.id }}">
+                                <div class="code-line interactive-line" data-mapping-id="{{ mapping.id }}" data-explanation="{{ mapping.explanation }}"><pre><code class="language-java">{{ mapping.java }}</code></pre></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {% if mapping.explanation %}
+                    <div class="w3-note">
+                        <p>{{ mapping.explanation | safe }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        {# Global explanation (if any, for enriched lessons) #}
+        {% if lesson.explanation %}
+        <div class="w3-note" style="margin-top: 2rem;">
+            <p>{{ lesson.explanation | safe }}</p>
+        </div>
+        {% endif %}
+
+    {% else %}
+    {# ============================================================
+       LEGACY FORMAT: Lessons without "sections" (flat layout)
+       Kept for backwards compatibility
+       ============================================================ #}
     <div class="w3-example">
         <h3>Example</h3>
         <section class="code-comparison" {% if current_category == 'java2py' %}style="flex-direction: row-reverse;"{% endif %}>
@@ -67,6 +163,7 @@
         </div>
         {% endif %}
     </div>
+    {% endif %}
 
     <section class="editor-section" id="translator-section">
         <h2>{{ t.try_editor }}</h2>
@@ -173,6 +270,132 @@
     </nav>
 
 </article>
+
+<style>
+/* ========== ENRICHED LESSON SECTIONS ========== */
+.lesson-section {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px dashed var(--border);
+}
+.lesson-section:last-of-type {
+    border-bottom: none;
+}
+
+.section-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.4rem;
+    color: #fff;
+    margin: 0 0 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.section-index {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--green);
+    background: rgba(0, 229, 255, 0.08);
+    border: 1px solid rgba(0, 229, 255, 0.2);
+    padding: 0.15rem 0.5rem;
+    border-radius: 2px;
+    letter-spacing: 0.05em;
+}
+
+.section-text {
+    font-size: 0.95rem;
+    color: var(--text);
+    line-height: 1.7;
+    margin-bottom: 1.25rem;
+}
+.section-text code {
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    padding: 0.1rem 0.4rem;
+    border-radius: 2px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85em;
+    color: var(--green);
+}
+
+/* ========== NOTE BOXES ========== */
+.lesson-note {
+    border-left: 3px solid;
+    background: var(--bg-secondary);
+    margin: 1rem 0 1.25rem 0;
+    padding: 0.75rem 1rem;
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.note-header {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.3rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.note-body {
+    color: var(--text);
+}
+.note-body code {
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    padding: 0.1rem 0.4rem;
+    border-radius: 2px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85em;
+    color: var(--green);
+}
+
+/* Tip: Cyan/Green */
+.note-tip {
+    border-color: var(--green);
+    background: rgba(0, 229, 255, 0.04);
+}
+.note-tip .note-header {
+    color: var(--green);
+}
+
+/* Warning: Orange */
+.note-warning {
+    border-color: #FF9800;
+    background: rgba(255, 152, 0, 0.04);
+}
+.note-warning .note-header {
+    color: #FF9800;
+}
+
+/* Note: Muted blue */
+.note-note {
+    border-color: #58A6FF;
+    background: rgba(88, 166, 255, 0.04);
+}
+.note-note .note-header {
+    color: #58A6FF;
+}
+
+/* Section examples spacing */
+.section-example {
+    margin-bottom: 1.5rem;
+}
+.section-example h3 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 0 0 0.5rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+</style>
+
 {% endblock %}
 
 {% block scripts %}

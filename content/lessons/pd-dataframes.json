@@ -1,17 +1,51 @@
 {
     "id": "pd-dataframes",
-    "title": "Pandas DataFrames",
-    "intro": "Welcome to the Pandas DataFrames lesson.",
-    "python_desc": "Python code for Pandas DataFrames",
-    "java_desc": "Java equivalent for Pandas DataFrames",
-    "explanation": "<p>In this lesson we cover <b>Pandas DataFrames</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "DataFrames de Pandas",
+    "intro": "Un DataFrame de Pandas es una estructura de datos bidimensional, como un array de dos dimensiones o una tabla de base de datos con filas y columnas.",
+    "python_desc": "Uso de DataFrames",
+    "java_desc": "Equivalente en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Series vs DataFrames",
+            "text": "Mientras que una Serie de Pandas es como una columna, un DataFrame es la tabla entera (compuesta por múltiples series/columnas).",
+            "notes": [
+                {"type": "note", "text": "En Java, el equivalente estructural sería una Lista de Listas (`List<List<Object>>`) o, preferiblemente, una Lista de objetos de clase personalizada (`List<MyDataRow>`)."}
+            ]
+        },
+        {
+            "title": "Localizar Fila (Loc)",
+            "text": "Pandas usa el atributo <code>loc</code> para retornar una o múltiples filas especificadas. Este atributo devuelve una 'Serie' (si pides una fila) o un nuevo DataFrame (si pides múltiples).",
+            "notes": [
+                {"type": "tip", "text": "Al buscar por índice de fila en Java haríamos `list.get(index)`."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "pd-dataframes-1",
-            "python": "# Pandas DataFrames Python example\nprint('Pandas DataFrames')",
-            "java": "// Pandas DataFrames Java example\nSystem.out.println(\"Pandas DataFrames\");",
-            "explanation": "Basic example demonstrating Pandas DataFrames."
+            "id": "pd-df-1",
+            "section": "Series vs DataFrames",
+            "python": "import pandas as pd\n\ndata = {\n  \"calorias\": [420, 380, 390],\n  \"duracion\": [50, 40, 45]\n}\n\ndf = pd.DataFrame(data)\n\nprint(df)\n#    calorias  duracion\n# 0       420        50\n# 1       380        40\n# 2       390        45",
+            "java": "import java.util.ArrayList;\nimport java.util.List;\n\nclass Registro {\n    int calorias;\n    int duracion;\n    public Registro(int c, int d) { calorias=c; duracion=d; }\n}\n\npublic class Main {\n  public static void main(String[] args) {\n      List<Registro> tabla = new ArrayList<>();\n      tabla.add(new Registro(420, 50));\n      tabla.add(new Registro(380, 40));\n  }\n}",
+            "explanation": "En Java las tablas comúnmente se modelan como Listas de objetos definidos (POJOs), lo que garantiza el tipado estricto. Pandas usa DataFrames que manejan tipos variables automáticamente y presentan formato visual tabular al imprimir."
+        },
+        {
+            "id": "pd-df-2",
+            "section": "Localizar Fila (Loc)",
+            "python": "import pandas as pd\n\ndata = {\n  \"calorias\": [420, 380, 390],\n  \"duracion\": [50, 40, 45]\n}\n\ndf = pd.DataFrame(data)\n\n# Devuelve la fila del índice 0 (una Serie)\nprint(df.loc[0])\n\n# Devuelve las filas 0 y 1 (un DataFrame)\nprint(df.loc[[0, 1]])",
+            "java": "// En Java accederíamos así:\nRegistro reg = tabla.get(0);\n\n// Para obtener un subconjunto (filas 0 y 1):\nList<Registro> subTabla = tabla.subList(0, 2);",
+            "explanation": "El atributo `loc` de Pandas puede extraer filas usando un entero o una lista de enteros. En Java, `List.get(index)` extrae objetos individuales."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-pd-df-1",
+            "type": "fill-blank",
+            "question": "Utiliza el atributo de Pandas para retornar la primera fila del DataFrame 'df'.",
+            "template": "x = df.____[0]",
+            "template_html": "x = df.<input type='text' class='exercise-input' data-answer='loc' placeholder='___'>[0]",
+            "python_code": "x = df.loc[0]",
+            "answer": "loc"
         }
     ]
 }

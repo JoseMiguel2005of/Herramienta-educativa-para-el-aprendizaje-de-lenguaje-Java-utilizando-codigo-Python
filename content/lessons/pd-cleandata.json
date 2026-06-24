@@ -1,17 +1,40 @@
 {
     "id": "pd-cleandata",
-    "title": "Cleaning Data",
-    "intro": "Welcome to the Cleaning Data lesson.",
-    "python_desc": "Python code for Cleaning Data",
-    "java_desc": "Java equivalent for Cleaning Data",
-    "explanation": "<p>In this lesson we cover <b>Cleaning Data</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Limpieza de Datos",
+    "intro": "Limpieza de datos significa arreglar los malos datos en un conjunto de datos (dataset). Los datos erróneos pueden ser celdas vacías, formato equivocado o duplicados.",
+    "python_desc": "Proceso en Python",
+    "java_desc": "Proceso equivalente en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Datos Sucios",
+            "text": "Los conjuntos de datos reales suelen ser enormes y estar llenos de errores generados por humanos o fallos de captura. Las celdas en blanco o los tipos incorrectos pueden arruinar los cálculos estadísticos o bloquear un programa informático.",
+            "notes": [
+                {"type": "note", "text": "En Java, procesar 'datos sucios' comúnmente lanza excepciones de tipo `NullPointerException` (por celdas vacías) o `NumberFormatException` (por formatos equivocados)."}
+            ]
+        },
+        {
+            "title": "Pasos para la Limpieza",
+            "text": "Pandas es líder mundial en Ciencia de Datos precisamente porque cuenta con funciones construidas específicamente para limpiar estas anomalías en millones de registros en tan solo unas milésimas de segundo.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
             "id": "pd-cleandata-1",
-            "python": "# Cleaning Data Python example\nprint('Cleaning Data')",
-            "java": "// Cleaning Data Java example\nSystem.out.println(\"Cleaning Data\");",
-            "explanation": "Basic example demonstrating Cleaning Data."
+            "section": "Datos Sucios",
+            "python": "# En Pandas, una celda vacía se representa comúnmente con NaN (Not a Number)\n# Pandas provee métodos rápidos para arreglarlo: df.dropna() o df.fillna()\n",
+            "java": "// En Java, procesar listas de objetos requiere mucho cuidado con Nulos:\nif (registro.getFecha() != null) {\n    // Proceder con el cálculo seguro\n} else {\n    // Lógica manual para manejar datos sucios\n}",
+            "explanation": "El ecosistema de Pandas es extremadamente indulgente, dándote herramientas para masajear y limpiar la data de manera vectorizada."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-pd-cleandata-1",
+            "type": "multiple-choice",
+            "question": "¿A qué excepción de Java suele equivaler una celda vacía en un análisis de datos si no se limpia previamente?",
+            "options": ["IndexOutOfBoundsException", "NullPointerException", "StackOverflowError", "IOException"],
+            "correct": 1
         }
     ]
 }

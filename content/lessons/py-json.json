@@ -1,17 +1,70 @@
 {
     "id": "py-json",
-    "title": "Python JSON",
-    "intro": "Welcome to the Python JSON lesson.",
-    "python_desc": "Python code for Python JSON",
-    "java_desc": "Java equivalent for Python JSON",
-    "explanation": "<p>In this lesson we cover <b>Python JSON</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "JSON en Python",
+    "intro": "JSON (JavaScript Object Notation) es una sintaxis para almacenar e intercambiar datos. Python tiene un paquete incorporado llamado json que se puede usar para trabajar con datos JSON.",
+    "python_desc": "Código Python para JSON",
+    "java_desc": "Equivalente en Java para JSON",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Parsear JSON (Convertir de JSON a Python)",
+            "text": "Si tienes una cadena JSON, puedes analizarla usando el método <code>json.loads()</code>. El resultado será un diccionario de Python.",
+            "notes": [
+                {"type": "note", "text": "En Java puro, trabajar con JSON requiere librerías de terceros (como Jackson o Gson). Python lo trae integrado en su biblioteca estándar."}
+            ]
+        },
+        {
+            "title": "Convertir de Python a JSON",
+            "text": "Si tienes un objeto Python (como un diccionario), puedes convertirlo en una cadena JSON usando el método <code>json.dumps()</code>.",
+            "notes": [
+                {"type": "tip", "text": "<code>loads()</code> significa 'load string' (cargar cadena a objeto). <code>dumps()</code> significa 'dump string' (volcar objeto a cadena)."}
+            ]
+        },
+        {
+            "title": "Formatear el Resultado",
+            "text": "El método <code>json.dumps()</code> tiene parámetros para facilitar la lectura del resultado, como <code>indent</code> para la indentación y <code>separators</code>.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-json-1",
-            "python": "# Python JSON Python example\nprint('Python JSON')",
-            "java": "// Python JSON Java example\nSystem.out.println(\"Python JSON\");",
-            "explanation": "Basic example demonstrating Python JSON."
+            "id": "py-json-loads",
+            "section": "Parsear JSON (Convertir de JSON a Python)",
+            "python": "import json\n\n# Cadena JSON:\nx =  '{ \"nombre\":\"Juan\", \"edad\":30, \"ciudad\":\"Madrid\" }'\n\n# parsear x:\ny = json.loads(x)\n\n# el resultado es un diccionario de Python:\nprint(y[\"edad\"])",
+            "java": "import com.fasterxml.jackson.databind.ObjectMapper;\nimport java.util.Map;\n\nString x = \"{ \\\"nombre\\\":\\\"Juan\\\", \\\"edad\\\":30, \\\"ciudad\\\":\\\"Madrid\\\" }\";\nObjectMapper mapper = new ObjectMapper();\n\n// Java requiere librerías como Jackson o Gson\nMap<String, Object> y = mapper.readValue(x, Map.class);\nSystem.out.println(y.get(\"edad\"));",
+            "explanation": "Python usa la librería estándar <code>json</code>. Java casi siempre depende de librerías externas para parsear JSON fácilmente."
+        },
+        {
+            "id": "py-json-dumps",
+            "section": "Convertir de Python a JSON",
+            "python": "import json\n\n# un diccionario Python:\nx = {\n  \"nombre\": \"Juan\",\n  \"edad\": 30,\n  \"ciudad\": \"Madrid\"\n}\n\n# convertir a JSON:\ny = json.dumps(x)\n\n# el resultado es un string JSON:\nprint(y)",
+            "java": "import com.fasterxml.jackson.databind.ObjectMapper;\nimport java.util.HashMap;\n\nHashMap<String, Object> x = new HashMap<>();\nx.put(\"nombre\", \"Juan\");\nx.put(\"edad\", 30);\n\nObjectMapper mapper = new ObjectMapper();\nString y = mapper.writeValueAsString(x);\nSystem.out.println(y);",
+            "explanation": "Python serializa cualquier diccionario de manera nativa con <code>json.dumps()</code>."
+        },
+        {
+            "id": "py-json-format",
+            "section": "Formatear el Resultado",
+            "python": "import json\n\nx = {\n  \"nombre\": \"Juan\",\n  \"edad\": 30\n}\n\n# Usa 4 espacios de indentación:\nprint(json.dumps(x, indent=4))",
+            "java": "import com.fasterxml.jackson.databind.ObjectMapper;\n\n// En Jackson, se habilita PrettyPrint:\nObjectMapper mapper = new ObjectMapper();\nString y = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(x);\nSystem.out.println(y);",
+            "explanation": "<code>indent=4</code> en Python hace que el JSON sea legible (pretty print). En Java, cada librería tiene su propia forma de configurarlo."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-json-1",
+            "type": "fill-blank",
+            "question": "Convierte la cadena JSON <code>x</code> en un diccionario Python.",
+            "template": "import json\nx = '{\"nombre\": \"Ana\"}'\ny = json._____(x)",
+            "template_html": "import json<br>x = '{\"nombre\": \"Ana\"}'<br>y = json.<input type='text' class='exercise-input' data-answer='loads' placeholder='___'>(x)",
+            "python_code": "y = json.loads(x)",
+            "answer": "loads"
+        },
+        {
+            "id": "ex-json-2",
+            "type": "multiple-choice",
+            "question": "¿Qué método se usa para convertir un diccionario de Python a un string JSON?",
+            "options": ["json.load()", "json.loads()", "json.dump()", "json.dumps()"],
+            "correct": 3
         }
     ]
 }

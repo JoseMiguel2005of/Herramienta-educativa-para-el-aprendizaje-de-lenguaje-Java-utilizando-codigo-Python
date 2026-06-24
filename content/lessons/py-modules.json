@@ -1,17 +1,86 @@
 {
     "id": "py-modules",
-    "title": "Python Modules",
-    "intro": "Welcome to the Python Modules lesson.",
-    "python_desc": "Python code for Python Modules",
-    "java_desc": "Java equivalent for Python Modules",
-    "explanation": "<p>In this lesson we cover <b>Python Modules</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Módulos en Python",
+    "intro": "Considera un módulo como si fuera una biblioteca de código (library). Un archivo que contiene un conjunto de funciones y variables que deseas incluir en tu aplicación.",
+    "python_desc": "Código Python para Módulos",
+    "java_desc": "Equivalente en Java para Módulos",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Crear un Módulo",
+            "text": "Para crear un módulo simplemente guarda el código que deseas en un archivo con la extensión de archivo <code>.py</code>.",
+            "notes": [
+                {"type": "note", "text": "En Java, agrupas clases relacionadas usando <b>paquetes</b> (<code>package</code>) y compilas varios archivos <code>.java</code>."}
+            ]
+        },
+        {
+            "title": "Usar un Módulo",
+            "text": "Podemos usar el módulo que acabamos de crear utilizando la declaración <code>import</code>.",
+            "notes": [
+                {"type": "tip", "text": "En Java usas la palabra clave <code>import</code> al inicio del archivo, exactamente igual que en Python."}
+            ]
+        },
+        {
+            "title": "Renombrar un Módulo",
+            "text": "Puedes crear un alias al importar un módulo utilizando la palabra clave <code>as</code>.",
+            "notes": [
+                {"type": "warning", "text": "Java no permite crear alias (renombrar) al hacer import. Siempre debes usar el nombre original de la clase."}
+            ]
+        },
+        {
+            "title": "Módulos Integrados",
+            "text": "Hay muchos módulos integrados en Python, que puedes importar siempre que quieras, como <code>math</code>, <code>random</code> o <code>datetime</code>.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-modules-1",
-            "python": "# Python Modules Python example\nprint('Python Modules')",
-            "java": "// Python Modules Java example\nSystem.out.println(\"Python Modules\");",
-            "explanation": "Basic example demonstrating Python Modules."
+            "id": "py-mod-create",
+            "section": "Crear un Módulo",
+            "python": "# Guardado en mimodulo.py\ndef saludar(nombre):\n    print(\"Hola, \" + nombre)\n\npersona1 = {\n    \"nombre\": \"Juan\",\n    \"edad\": 36\n}",
+            "java": "// Guardado en utilidades/MiModulo.java\npackage utilidades;\npublic class MiModulo {\n    public static void saludar(String nombre) {\n        System.out.println(\"Hola, \" + nombre);\n    }\n}",
+            "explanation": "Python: cualquier archivo <code>.py</code> es un módulo. Java: usas <code>package</code> y clases públicas."
+        },
+        {
+            "id": "py-mod-use",
+            "section": "Usar un Módulo",
+            "python": "import mimodulo\n\nmimodulo.saludar(\"Jonathan\")\n\nedad = mimodulo.persona1[\"edad\"]\nprint(edad)",
+            "java": "import utilidades.MiModulo;\n\npublic class Program {\n    public static void main(String[] args) {\n        MiModulo.saludar(\"Jonathan\");\n    }\n}",
+            "explanation": "Ambos usan <code>import</code>. En Python, accedes usando <code>nombre_modulo.funcion()</code>."
+        },
+        {
+            "id": "py-mod-alias",
+            "section": "Renombrar un Módulo",
+            "python": "import mimodulo as mx\n\nmx.saludar(\"Jonathan\")",
+            "java": "// Java no tiene 'import as'\nimport utilidades.MiModulo;\n\n// Debes usar MiModulo.saludar();\n// No hay forma de acortarlo a mx.",
+            "explanation": "El <code>import ... as</code> es una gran ventaja de Python para acortar nombres largos (ej. <code>import pandas as pd</code>)."
+        },
+        {
+            "id": "py-mod-built",
+            "section": "Módulos Integrados",
+            "python": "import platform\nimport math\n\nx = platform.system()\nprint(x)",
+            "java": "import java.lang.Math;\nimport java.util.Scanner;\n\n// Java también tiene paquetes integrados (java.*)",
+            "explanation": "Ambos lenguajes vienen con un rico ecosistema de utilidades integradas en sus bibliotecas estándar."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-mod-1",
+            "type": "fill-blank",
+            "question": "¿Cuál es la palabra clave para importar un módulo en Python?",
+            "template": "_____ mimodulo",
+            "template_html": "<input type='text' class='exercise-input' data-answer='import' placeholder='___'> mimodulo",
+            "python_code": "import mimodulo",
+            "answer": "import"
+        },
+        {
+            "id": "ex-mod-2",
+            "type": "fill-blank",
+            "question": "Crea un alias <code>mx</code> para el módulo <code>mimodulo</code>.",
+            "template": "import mimodulo _____ mx",
+            "template_html": "import mimodulo <input type='text' class='exercise-input' data-answer='as' placeholder='___'> mx",
+            "python_code": "import mimodulo as mx",
+            "answer": "as"
         }
     ]
 }

@@ -1,17 +1,42 @@
 {
     "id": "np-setops",
-    "title": "Set Operations",
-    "intro": "Welcome to the Set Operations lesson.",
-    "python_desc": "Python code for Set Operations",
-    "java_desc": "Java equivalent for Set Operations",
-    "explanation": "<p>In this lesson we cover <b>Set Operations</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "NumPy - Operaciones de Conjuntos (Sets)",
+    "intro": "Un Conjunto en matemáticas es una colección de elementos únicos, y las operaciones de conjuntos son la base del álgebra relacional.",
+    "python_desc": "SetOps en NumPy",
+    "java_desc": "SetOps en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Crear y Unir Conjuntos",
+            "text": "Puedes utilizar <code>np.unique()</code> para crear un conjunto único a partir de cualquier Array, eliminando los duplicados. Si quieres Unir dos sets y encontrar los elementos que existan en cualquiera de los dos, usas la ufunc <code>np.union1d()</code>.",
+            "notes": [
+                {"type": "note", "text": "En matemáticas esto se llama Teoría de Conjuntos. Unión, Intersección, Diferencia, etc."}
+            ]
+        },
+        {
+            "title": "Intersección y Diferencia",
+            "text": "Si solo quieres encontrar los valores que estén presentes en AMBOS arrays a la vez (Intersección), usas <code>np.intersect1d()</code>. Para encontrar solo los valores del primer array que NO existen en el segundo, usas <code>np.setdiff1d()</code>.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
             "id": "np-setops-1",
-            "python": "# Set Operations Python example\nprint('Set Operations')",
-            "java": "// Set Operations Java example\nSystem.out.println(\"Set Operations\");",
-            "explanation": "Basic example demonstrating Set Operations."
+            "section": "Intersección y Diferencia",
+            "python": "import numpy as np\n\narr1 = np.array([1, 2, 3, 4])\narr2 = np.array([3, 4, 5, 6])\n\n# Encontrar los que existen estrictamente en ambos:\nnewarr = np.intersect1d(arr1, arr2, assume_unique=True)\n\nprint(newarr)\n# Salida: [3 4]",
+            "java": "import java.util.HashSet;\nimport java.util.Set;\n\npublic class Conjuntos {\n  public static void main(String[] args) {\n      Set<Integer> s1 = new HashSet<>(java.util.Arrays.asList(1, 2, 3, 4));\n      Set<Integer> s2 = new HashSet<>(java.util.Arrays.asList(3, 4, 5, 6));\n      \n      // La intersección (retainAll) modifica el Set original en Java (Mutabilidad):\n      s1.retainAll(s2);\n      \n      System.out.println(s1); // [3, 4]\n  }\n}",
+            "explanation": "La teoría de conjuntos en Java es un pilar arquitectónico a través de la interfaz `Set`. Se maneja a nivel de Objetos (`HashSet`). En Numpy, los SetOps son puros análisis matemáticos operando mediante iteración veloz (`intersect1d`) que no modifican los Arrays originales y regresan uno nuevo inmutable."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-setops-1",
+            "type": "fill-blank",
+            "question": "Llama a la ufunc correcta para unir matemáticamente dos Arrays unidimensionales (Encontrar los elementos únicos de ambos).",
+            "template": "newarr = np.________(arr1, arr2)",
+            "template_html": "newarr = np.<input type='text' class='exercise-input' data-answer='union1d' placeholder='________'>(arr1, arr2)",
+            "python_code": "newarr = np.union1d(arr1, arr2)",
+            "answer": "union1d"
         }
     ]
 }

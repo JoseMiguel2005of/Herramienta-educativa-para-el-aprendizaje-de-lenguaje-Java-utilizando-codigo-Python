@@ -1,17 +1,37 @@
 {
     "id": "np-binomial",
-    "title": "Binomial Distribution",
-    "intro": "Welcome to the Binomial Distribution lesson.",
-    "python_desc": "Python code for Binomial Distribution",
-    "java_desc": "Java equivalent for Binomial Distribution",
-    "explanation": "<p>In this lesson we cover <b>Binomial Distribution</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "NumPy - Distribución Binomial",
+    "intro": "La Distribución Binomial es una distribución discreta. Modela eventos que tienen resultados de éxito o fracaso absolutos.",
+    "python_desc": "Módulo Random Binomial",
+    "java_desc": "Binomial en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "¿Qué es la Distribución Binomial?",
+            "text": "Se utiliza para modelar experimentos booleanos a nivel estadístico: como lanzar una moneda (cara o cruz) 100 veces. Los parámetros requeridos son <code>n</code> (número de ensayos/intentos) y <code>p</code> (probabilidad matemática de éxito de cada intento).",
+            "notes": [
+                {"type": "note", "text": "A diferencia de la Distribución Normal que es 'Continua' (admite números decimales), la Binomial es 'Discreta' (solo te devuelve números enteros perfectos, ya que no puedes tener 1.5 ensayos exitosos)."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "np-binomial-1",
-            "python": "# Binomial Distribution Python example\nprint('Binomial Distribution')",
-            "java": "// Binomial Distribution Java example\nSystem.out.println(\"Binomial Distribution\");",
-            "explanation": "Basic example demonstrating Binomial Distribution."
+            "section": "¿Qué es la Distribución Binomial?",
+            "python": "from numpy import random\n\n# Simula lanzar una moneda 10 veces (n=10), donde salir 'cara' \n# tiene 50% de prob (p=0.5). Repite este experimento completo 10 veces (size=10)\nx = random.binomial(n=10, p=0.5, size=10)\n\nprint(x)\n# Salida ej: [6 4 3 6 4 3 6 5 5 4]",
+            "java": "import org.apache.commons.math3.distribution.BinomialDistribution;\nimport java.util.Arrays;\n\npublic class Main {\n  public static void main(String[] args) {\n      // En Java corporativo se utilizaría un objeto modelador:\n      int ensayos = 10;\n      double probabilidad = 0.5;\n      \n      BinomialDistribution dist = new BinomialDistribution(ensayos, probabilidad);\n      \n      // Repetir experimento 10 veces\n      int[] resultados = dist.sample(10);\n      System.out.println(Arrays.toString(resultados));\n  }\n}",
+            "explanation": "El concepto subyacente es idéntico: defines un marco muestral de ensayos discretos y una probabilidad absoluta de éxito. NumPy facilita enormemente iterar y obtener un Array entero listo para ciencia de datos."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-binomial-1",
+            "type": "fill-blank",
+            "question": "Escribe el nombre correcto de la distribución estadística que simula eventos booleanos como el lanzamiento de una moneda.",
+            "template": "x = random.________(n=10, p=0.5)",
+            "template_html": "x = random.<input type='text' class='exercise-input' data-answer='binomial' placeholder='________'>(n=10, p=0.5)",
+            "python_code": "x = random.binomial(n=10, p=0.5)",
+            "answer": "binomial"
         }
     ]
 }

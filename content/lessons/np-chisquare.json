@@ -1,17 +1,37 @@
 {
     "id": "np-chisquare",
-    "title": "Chi Square Distribution",
-    "intro": "Welcome to the Chi Square Distribution lesson.",
-    "python_desc": "Python code for Chi Square Distribution",
-    "java_desc": "Java equivalent for Chi Square Distribution",
-    "explanation": "<p>In this lesson we cover <b>Chi Square Distribution</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "NumPy - Distribución Chi Cuadrado",
+    "intro": "La Distribución Chi Cuadrado (Chi Square) se usa como base para verificar la hipótesis estadística en las ciencias de datos.",
+    "python_desc": "Chi Cuadrado en NumPy",
+    "java_desc": "Chi Cuadrado en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "¿Qué es la Chi Cuadrado?",
+            "text": "Se utiliza para probar si lo que observas matemáticamente es lo que esperabas que pasara. Por ejemplo: si arrojas un dado 60 veces, 'esperas' que el número 1 caiga 10 veces. Si cae 50 veces, la prueba de Chi Cuadrado de SciPy/NumPy indicará que el dado está desequilibrado (trucado).",
+            "notes": [
+                {"type": "note", "text": "Requiere un argumento obligatorio, el Grado de Libertad (df)."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "np-chisquare-1",
-            "python": "# Chi Square Distribution Python example\nprint('Chi Square Distribution')",
-            "java": "// Chi Square Distribution Java example\nSystem.out.println(\"Chi Square Distribution\");",
-            "explanation": "Basic example demonstrating Chi Square Distribution."
+            "section": "¿Qué es la Chi Cuadrado?",
+            "python": "from numpy import random\n\n# Simulamos con Grados de Libertad (df) = 2\nx = random.chisquare(df=2, size=5)\n\nprint(x)",
+            "java": "import org.apache.commons.math3.distribution.ChiSquaredDistribution;\nimport java.util.Arrays;\n\npublic class Main {\n  public static void main(String[] args) {\n      double df = 2.0; // Grados de libertad\n      ChiSquaredDistribution dist = new ChiSquaredDistribution(df);\n      \n      double[] simulacion = dist.sample(5);\n      System.out.println(Arrays.toString(simulacion));\n  }\n}",
+            "explanation": "El ecosistema subyacente es muy robusto. Ambas herramientas nos permiten modelar estas hipótesis nulas para tomar decisiones científicas."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-chisquare-1",
+            "type": "fill-blank",
+            "question": "Escribe el nombre de la distribución estadística utilizada habitualmente para comprobar que las frecuencias esperadas coincidan con lo ocurrido.",
+            "template": "x = random._________(df=2, size=(2, 3))",
+            "template_html": "x = random.<input type='text' class='exercise-input' data-answer='chisquare' placeholder='_________'>(df=2, size=(2, 3))",
+            "python_code": "x = random.chisquare(df=2, size=(2, 3))",
+            "answer": "chisquare"
         }
     ]
 }

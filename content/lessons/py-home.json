@@ -1,17 +1,23 @@
 {
     "id": "py-home",
-    "title": "Python HOME",
-    "intro": "Welcome to the Python HOME lesson.",
-    "python_desc": "Python code for Python HOME",
-    "java_desc": "Java equivalent for Python HOME",
-    "explanation": "<p>In this lesson we cover <b>Python HOME</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "title": "¡Bienvenido a Py2Java Edu!",
+    "intro": "Tu plataforma interactiva para aprender Python y entender su equivalente en Java. Escribe código, tradúcelo al instante, y domina ambos lenguajes paso a paso.",
+    "python_desc": "En Python, tu primer programa es una sola línea. Así de simple y poderoso es este lenguaje.",
+    "java_desc": "En Java, necesitas una clase y un método <code>main</code>. Es más estructurado, pero igual de capaz.",
+    "explanation": "<p>🎯 <b>¿Qué es Py2Java Edu?</b></p><p>Esta plataforma te permite aprender <b>Python</b> y ver su equivalencia en <b>Java</b> lado a lado. Cada lección incluye ejemplos interactivos, un editor de práctica con ejecución en vivo, y ejercicios para poner a prueba tu conocimiento.</p><p>🚀 <b>¿Cómo empezar?</b></p><ul><li>📖 Navega por las lecciones en el menú lateral</li><li>✍️ Usa el editor de práctica para experimentar</li><li>🏆 Completa ejercicios para ganar XP y logros</li><li>🗺️ Consulta tu progreso en el Dashboard y el Roadmap</li></ul><p>¡Comienza con la siguiente lección: <b>Introducción a Python</b>!</p>",
     "exercises": [],
     "code_mappings": [
         {
-            "id": "py-home-1",
-            "python": "# Python HOME Python example\nprint('Python HOME')",
-            "java": "// Python HOME Java example\nSystem.out.println(\"Python HOME\");",
-            "explanation": "Basic example demonstrating Python HOME."
+            "id": "py-home-hello",
+            "python": "# ¡Tu primer programa en Python!\nprint(\"¡Hola Mundo!\")\nprint(\"Bienvenido a Py2Java Edu\")",
+            "java": "// ¡Tu primer programa en Java!\npublic class Program {\n    public static void main(String[] args) {\n        System.out.println(\"¡Hola Mundo!\");\n        System.out.println(\"Bienvenido a Py2Java Edu\");\n    }\n}",
+            "explanation": "print() en Python equivale a System.out.println() en Java. Python no necesita clases ni punto y coma."
+        },
+        {
+            "id": "py-home-variables",
+            "python": "# Variables: Python detecta el tipo automáticamente\nnombre = \"Estudiante\"\nedad = 20\nprint(f\"Hola {nombre}, tienes {edad} años\")",
+            "java": "// Variables: Java requiere declarar el tipo\nString nombre = \"Estudiante\";\nint edad = 20;\nSystem.out.println(\"Hola \" + nombre + \", tienes \" + edad + \" años\");",
+            "explanation": "Python usa tipado dinámico (no declaras tipos), mientras que Java usa tipado estático (debes especificar String, int, etc.)."
         }
     ]
 }

@@ -1,17 +1,79 @@
 {
     "id": "np-datatypes",
-    "title": "NumPy Data Types",
-    "intro": "Welcome to the NumPy Data Types lesson.",
-    "python_desc": "Python code for NumPy Data Types",
-    "java_desc": "Java equivalent for NumPy Data Types",
-    "explanation": "<p>In this lesson we cover <b>NumPy Data Types</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Tipos de Datos en NumPy",
+    "intro": "NumPy tiene algunos tipos de datos adicionales en comparación con Python, referenciándose a menudo con un solo carácter (como 'i' para enteros, 'f' para flotantes).",
+    "python_desc": "Tipos en NumPy",
+    "java_desc": "Equivalente en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Tipos de Datos",
+            "text": "Los tipos más comunes en NumPy son: <code>i</code> (integer), <code>b</code> (boolean), <code>u</code> (unsigned integer), <code>f</code> (float), <code>c</code> (complex float), <code>O</code> (object), <code>S</code> (string).",
+            "notes": [
+                {"type": "note", "text": "NumPy ofrece tipos numéricos de tamaño específico similares a Java, por ejemplo, int32 o int64, los cuales equivalen a <code>int</code> y <code>long</code> en Java respectivamente."}
+            ]
+        },
+        {
+            "title": "Comprobar el Tipo de Dato",
+            "text": "El objeto array de NumPy tiene una propiedad llamada <code>dtype</code> que devuelve el tipo de dato de ese array.",
+            "notes": []
+        },
+        {
+            "title": "Crear Arrays con un Tipo Definido",
+            "text": "Podemos usar el argumento <code>dtype</code> en la función <code>array()</code> para definir el tipo de datos esperado de los elementos del array.",
+            "notes": [
+                {"type": "tip", "text": "En Java, el tipo de dato se define estáticamente al crear el array: <code>double[] miArray</code>. En NumPy, si no lo defines, se infiere automáticamente."}
+            ]
+        },
+        {
+            "title": "Convertir Tipos de Datos (Casting)",
+            "text": "La mejor forma de cambiar el tipo de dato de un array existente es hacer una copia del array con el método <code>astype()</code>.",
+            "notes": [
+                {"type": "warning", "text": "En Java puedes hacer cast (ej. <code>(int)</code>) directamente en elementos escalares. Para castear un array completo en Java, tendrías que iterar sobre él."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "np-datatypes-1",
-            "python": "# NumPy Data Types Python example\nprint('NumPy Data Types')",
-            "java": "// NumPy Data Types Java example\nSystem.out.println(\"NumPy Data Types\");",
-            "explanation": "Basic example demonstrating NumPy Data Types."
+            "id": "np-dtype-check",
+            "section": "Comprobar el Tipo de Dato",
+            "python": "import numpy as np\n\narr = np.array([1, 2, 3, 4])\nprint(arr.dtype) # Salida: int64 (o int32)",
+            "java": "public class Main {\n  public static void main(String[] args) {\n    int[] arr = {1, 2, 3, 4};\n    // En Java el tipo se conoce en tiempo de compilación (int[])\n    System.out.println(arr.getClass().getSimpleName()); // int[]\n  }\n}",
+            "explanation": "NumPy almacena dinámicamente la información del tipo numérico interno de C en el atributo <code>dtype</code>."
+        },
+        {
+            "id": "np-dtype-set",
+            "section": "Crear Arrays con un Tipo Definido",
+            "python": "import numpy as np\n\n# Crear un array definiendo que sus datos serán strings ('S')\narr = np.array([1, 2, 3, 4], dtype='S')\nprint(arr)\nprint(arr.dtype)",
+            "java": "// En Java se declara explícitamente el tipo de dato\nString[] arr = {\"1\", \"2\", \"3\", \"4\"};\nSystem.out.println(java.util.Arrays.toString(arr));",
+            "explanation": "En Python, NumPy convertirá automáticamente los enteros 1,2,3 a formato String si le pasas el argumento <code>dtype='S'</code>."
+        },
+        {
+            "id": "np-dtype-cast",
+            "section": "Convertir Tipos de Datos (Casting)",
+            "python": "import numpy as np\n\narr = np.array([1.1, 2.1, 3.1])\n# Convertir float a entero (trunca los decimales)\nnuevoarr = arr.astype('i')\n\nprint(nuevoarr) # [1 2 3]",
+            "java": "double[] arr = {1.1, 2.1, 3.1};\nint[] nuevoarr = new int[arr.length];\n\n// Java obliga a iterar y castear elemento por elemento\nfor (int i = 0; i < arr.length; i++) {\n    nuevoarr[i] = (int) arr[i];\n}\nSystem.out.println(java.util.Arrays.toString(nuevoarr));",
+            "explanation": "La función <code>astype()</code> de NumPy abstrae el bucle interno y hace las conversiones tipo vectorialmente a gran velocidad."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-dtype-1",
+            "type": "fill-blank",
+            "question": "Imprime el tipo de datos (dtype) del array.",
+            "template": "print(arr._____)",
+            "template_html": "print(arr.<input type='text' class='exercise-input' data-answer='dtype' placeholder='_____'>)",
+            "python_code": "print(arr.dtype)",
+            "answer": "dtype"
+        },
+        {
+            "id": "ex-np-dtype-2",
+            "type": "fill-blank",
+            "question": "Convierte (castea) el array a tipo entero.",
+            "template": "nuevo = arr._____('i')",
+            "template_html": "nuevo = arr.<input type='text' class='exercise-input' data-answer='astype' placeholder='______'>('i')",
+            "python_code": "nuevo = arr.astype('i')",
+            "answer": "astype"
         }
     ]
 }

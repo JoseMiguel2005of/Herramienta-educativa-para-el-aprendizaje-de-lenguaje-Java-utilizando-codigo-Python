@@ -1,17 +1,86 @@
 {
     "id": "py-tryexcept",
-    "title": "Python Try...Except",
-    "intro": "Welcome to the Python Try...Except lesson.",
-    "python_desc": "Python code for Python Try...Except",
-    "java_desc": "Java equivalent for Python Try...Except",
-    "explanation": "<p>In this lesson we cover <b>Python Try...Except</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Manejo de Errores (Try...Except)",
+    "intro": "El bloque try te permite probar un bloque de código para detectar errores. El bloque except te permite manejar el error, para que el programa no se detenga de golpe (crash).",
+    "python_desc": "Código Python para Try...Except",
+    "java_desc": "Equivalente en Java para Try...Catch",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Manejo de Excepciones",
+            "text": "Cuando ocurre un error, o excepción, Python normalmente se detendrá y generará un mensaje de error. Estas excepciones pueden ser manejadas usando la sentencia <code>try</code>.",
+            "notes": [
+                {"type": "note", "text": "En Java se usa el bloque <code>try...catch</code>. Python usa la palabra <code>except</code> en lugar de <code>catch</code>, pero el concepto es idéntico."}
+            ]
+        },
+        {
+            "title": "Muchas Excepciones",
+            "text": "Puedes definir tantos bloques de excepción como quieras, por ejemplo, si quieres ejecutar un bloque de código especial para un tipo de error específico (como <code>NameError</code> o <code>ValueError</code>).",
+            "notes": [
+                {"type": "warning", "text": "En Java también puedes tener múltiples bloques catch. En ambos lenguajes, el orden importa: debes atrapar las excepciones específicas primero, y las generales al final."}
+            ]
+        },
+        {
+            "title": "Else y Finally",
+            "text": "Puedes usar <code>else</code> para definir un bloque de código a ejecutar si no se generaron errores. El bloque <code>finally</code>, si se especifica, se ejecutará independientemente de si el bloque try genera un error o no.",
+            "notes": [
+                {"type": "tip", "text": "Java tiene <code>finally</code>, pero <b>no</b> tiene el bloque <code>else</code> para las excepciones. Esa es una característica muy útil de Python."}
+            ]
+        },
+        {
+            "title": "Lanzar una Excepción (Raise)",
+            "text": "Como desarrollador, puedes optar por lanzar (throw) una excepción si ocurre una condición, usando la palabra clave <code>raise</code>.",
+            "notes": [
+                {"type": "note", "text": "En Java, la palabra clave para lanzar un error intencionalmente es <code>throw</code>. Python usa <code>raise</code>."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-tryexcept-1",
-            "python": "# Python Try...Except Python example\nprint('Python Try...Except')",
-            "java": "// Python Try...Except Java example\nSystem.out.println(\"Python Try...Except\");",
-            "explanation": "Basic example demonstrating Python Try...Except."
+            "id": "py-try-basic",
+            "section": "Manejo de Excepciones",
+            "python": "try:\n    # x no está definida\n    print(x)\nexcept:\n    print(\"Ocurrió un error (x no existe)\")",
+            "java": "try {\n    // Provocar error (ej. división por 0)\n    int x = 10 / 0;\n} catch (Exception e) {\n    System.out.println(\"Ocurrió un error\");\n}",
+            "explanation": "La estructura básica para atrapar errores y evitar que el programa falle por completo."
+        },
+        {
+            "id": "py-try-multi",
+            "section": "Muchas Excepciones",
+            "python": "try:\n    print(x)\nexcept NameError:\n    print(\"La variable x no está definida\")\nexcept:\n    print(\"Algo más salió mal\")",
+            "java": "try {\n    int[] arr = {1, 2};\n    System.out.println(arr[5]);\n} catch (ArrayIndexOutOfBoundsException e) {\n    System.out.println(\"Índice fuera de rango\");\n} catch (Exception e) {\n    System.out.println(\"Algo más salió mal\");\n}",
+            "explanation": "Atrapar errores específicos (NameError, ArrayIndexOutOfBounds) antes de los errores generales."
+        },
+        {
+            "id": "py-try-finally",
+            "section": "Else y Finally",
+            "python": "try:\n    print(\"Hola\")\nexcept:\n    print(\"Hubo error\")\nelse:\n    print(\"No hubo error. Todo bien.\")\nfinally:\n    print(\"Este bloque siempre se ejecuta\")",
+            "java": "try {\n    System.out.println(\"Hola\");\n} catch (Exception e) {\n    System.out.println(\"Hubo error\");\n} finally {\n    // Java no tiene 'else'\n    System.out.println(\"Este bloque siempre se ejecuta\");\n}",
+            "explanation": "El bloque <code>finally</code> es ideal para cerrar archivos o conexiones de red en ambos lenguajes."
+        },
+        {
+            "id": "py-try-raise",
+            "section": "Lanzar una Excepción (Raise)",
+            "python": "x = -1\nif x < 0:\n    raise Exception(\"Lo siento, no números bajo cero\")",
+            "java": "int x = -1;\nif (x < 0) {\n    throw new Exception(\"Lo siento, no números bajo cero\");\n}",
+            "explanation": "Python: <code>raise Exception(\"msg\")</code>. Java: <code>throw new Exception(\"msg\")</code>."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-try-1",
+            "type": "fill-blank",
+            "question": "Escribe la palabra clave para atrapar un error en Python.",
+            "template": "try:\n    x = 1/0\n_____: \n    print(\"Error matemático\")",
+            "template_html": "try:<br>&nbsp;&nbsp;&nbsp;&nbsp;x = 1/0<br><input type='text' class='exercise-input' data-answer='except' placeholder='___'>:<br>&nbsp;&nbsp;&nbsp;&nbsp;print(\"Error matemático\")",
+            "python_code": "try:\n    x = 1/0\nexcept:\n    print(\"Error matemático\")",
+            "answer": "except"
+        },
+        {
+            "id": "ex-try-2",
+            "type": "multiple-choice",
+            "question": "¿Qué palabra clave se usa para lanzar un error intencionalmente en Python?",
+            "options": ["throw", "raise", "error", "catch"],
+            "correct": 1
         }
     ]
 }

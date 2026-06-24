@@ -1,17 +1,44 @@
 {
     "id": "mongo-sort",
-    "title": "MongoDB Sort",
-    "intro": "Welcome to the MongoDB Sort lesson.",
-    "python_desc": "Python code for MongoDB Sort",
-    "java_desc": "Java equivalent for MongoDB Sort",
-    "explanation": "<p>In this lesson we cover <b>MongoDB Sort</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "MongoDB - Ordenar (Sort)",
+    "intro": "Para ordenar el resultado extraído en MongoDB, utiliza el método <code>sort()</code>.",
+    "python_desc": "Uso de sort en Python",
+    "java_desc": "Uso de sort en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Ordenar el Resultado",
+            "text": "El método <code>sort()</code> recibe un parámetro que especifica la columna o campo a ordenar, y un segundo parámetro opcional para indicar la dirección (Ascendente=1 o Descendente=-1).",
+            "notes": [
+                {"type": "note", "text": "A diferencia de SQL donde el ordenamiento se hace por palabras clave 'ORDER BY', en MongoDB se hace mediante funciones encadenadas directamente al cursor que devuelve `find()`."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "mongo-sort-1",
-            "python": "# MongoDB Sort Python example\nprint('MongoDB Sort')",
-            "java": "// MongoDB Sort Java example\nSystem.out.println(\"MongoDB Sort\");",
-            "explanation": "Basic example demonstrating MongoDB Sort."
+            "section": "Ordenar el Resultado",
+            "python": "import pymongo\n\nmyclient = pymongo.MongoClient(\"mongodb://localhost:27017/\")\nmycol = myclient[\"mibasededatos\"][\"clientes\"]\n\n# sort(\"nombre\", -1) significa orden descendente (Z a A)\nmydoc = mycol.find().sort(\"nombre\", -1)\n\nfor x in mydoc:\n  print(x)",
+            "java": "import com.mongodb.client.model.Sorts;\nimport org.bson.Document;\n\npublic class Main {\n  public static void main(String[] args) {\n      // En Java, el paquete Sorts provee los constructores nativos:\n      var cursor = collection.find()\n                             .sort(Sorts.descending(\"nombre\"))\n                             .iterator();\n                             \n      while (cursor.hasNext()) {\n          System.out.println(cursor.next());\n      }\n  }\n}",
+            "explanation": "El Patrón Builder/Encadenamiento es central para la filosofía MongoDB. En vez de escribir una cadena masiva (`\"SELECT * FROM t ORDER BY x DESC\"`), aplicas transformaciones sucesivas en tiempo de ejecución (`.find().sort().limit()`)."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-mongo-sort-1",
+            "type": "fill-blank",
+            "question": "Llama al método correcto del cursor devuelto por Mongo para ordenar el resultado.",
+            "template": "mydoc = mycol.find()._______(\"nombre\")",
+            "template_html": "mydoc = mycol.find().<input type='text' class='exercise-input' data-answer='sort' placeholder='_______'>(\"nombre\")",
+            "python_code": "mydoc = mycol.find().sort(\"nombre\")",
+            "answer": "sort"
+        },
+        {
+            "id": "ex-mongo-sort-2",
+            "type": "multiple-choice",
+            "question": "¿Qué número se utiliza en Python como segundo parámetro en la función sort() para indicar que el ordenamiento debe ser descendente (reverso)?",
+            "options": ["0", "-1", "2", "DESC"],
+            "correct": 1
         }
     ]
 }

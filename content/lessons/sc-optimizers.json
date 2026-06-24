@@ -1,17 +1,44 @@
 {
     "id": "sc-optimizers",
-    "title": "SciPy Optimizers",
-    "intro": "Welcome to the SciPy Optimizers lesson.",
-    "python_desc": "Python code for SciPy Optimizers",
-    "java_desc": "Java equivalent for SciPy Optimizers",
-    "explanation": "<p>In this lesson we cover <b>SciPy Optimizers</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "SciPy - Optimizadores (Optimizers)",
+    "intro": "Los optimizadores son una parte fundamental de los algoritmos de Machine Learning y Cálculo, y SciPy los implementa a la perfección.",
+    "python_desc": "SciPy Optimize",
+    "java_desc": "Optimización en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "¿Qué son los Optimizadores?",
+            "text": "Los optimizadores son un conjunto de procedimientos que buscan matemáticamente el valor más bajo o más alto de una función compleja (esto se llama hallar los 'Mínimos' o 'Máximos' de una curva). En Machine Learning, quieres minimizar el 'Error' o 'Pérdida' de la IA.",
+            "notes": [
+                {"type": "note", "text": "Al ser SciPy un envoltorio (wrapper) de rutinas de muy bajo nivel de Fortran/C, estos cálculos masivos suceden en fracciones de segundo."}
+            ]
+        },
+        {
+            "title": "Raíces de Ecuaciones",
+            "text": "SciPy nos permite usar el método <code>root()</code> para encontrar un punto donde la función sea igual a cero (la raíz).",
+            "notes": [
+                {"type": "tip", "text": "En Java puro, tendrías que programar el método de Newton-Raphson con un bucle while que calcule las derivadas manualmente."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "sc-optimizers-1",
-            "python": "# SciPy Optimizers Python example\nprint('SciPy Optimizers')",
-            "java": "// SciPy Optimizers Java example\nSystem.out.println(\"SciPy Optimizers\");",
-            "explanation": "Basic example demonstrating SciPy Optimizers."
+            "section": "Raíces de Ecuaciones",
+            "python": "from scipy.optimize import root\nfrom math import cos\n\n# Ecuación matemática: x + cos(x)\ndef eqn(x):\n  return x + cos(x)\n\n# Resolver iterativamente usando SciPy (el cero se asume cerca de 0)\nmyroot = root(eqn, 0)\n\nprint(myroot.x)",
+            "java": "public class NewtonRaphson {\n  // Para Java, programarías la lógica matemática de derivada de Newton:\n  public static double eqn(double x) { return x + Math.cos(x); }\n  public static double deriv(double x) { return 1 - Math.sin(x); }\n  \n  public static void main(String[] args) {\n      double h = 0;\n      double x = 0;\n      // Iterar para encontrar la convergencia:\n      for (int i = 0; i < 50; i++) {\n          h = eqn(x) / deriv(x);\n          x = x - h;\n      }\n      System.out.println(x);\n  }\n}",
+            "explanation": "El ecosistema Python permite delegar la matemática superior a algoritmos sumamente robustos ya empaquetados (`root()`). En lenguajes corporativos (Java, C#) tendrías que diseñar o copiar los bucles iterativos matemáticos como el de Newton-Raphson."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-sc-optimizers-1",
+            "type": "fill-blank",
+            "question": "Llama al método de optimización correcto de scipy para encontrar la RAÍZ de una ecuación (el punto donde es cero).",
+            "template": "myroot = ____(eqn, 0)",
+            "template_html": "myroot = <input type='text' class='exercise-input' data-answer='root' placeholder='____'>(eqn, 0)",
+            "python_code": "myroot = root(eqn, 0)",
+            "answer": "root"
         }
     ]
 }

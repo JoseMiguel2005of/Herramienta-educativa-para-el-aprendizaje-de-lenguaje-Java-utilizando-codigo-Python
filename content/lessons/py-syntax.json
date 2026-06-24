@@ -1,17 +1,70 @@
 {
     "id": "py-syntax",
-    "title": "Python Syntax",
-    "intro": "Welcome to the Python Syntax lesson.",
-    "python_desc": "Python code for Python Syntax",
-    "java_desc": "Java equivalent for Python Syntax",
-    "explanation": "<p>In this lesson we cover <b>Python Syntax</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Sintaxis de Python",
+    "intro": "La sintaxis de Python fue diseñada para ser legible y limpia. Usa indentación en lugar de llaves para definir bloques de código.",
+    "python_desc": "Código Python para Sintaxis",
+    "java_desc": "Equivalente en Java para Sintaxis",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Indentación",
+            "text": "Python usa la <b>indentación</b> (espacios al inicio de la línea) para definir bloques de código. Es obligatoria — no es solo un estilo visual.",
+            "notes": [
+                {"type": "warning", "text": "Mezclar tabs y espacios causa errores. Se recomienda usar <b>4 espacios</b> por nivel de indentación. Java usa llaves <code>{}</code> y la indentación es opcional."}
+            ]
+        },
+        {
+            "title": "Punto y Coma",
+            "text": "Python <b>no</b> requiere punto y coma al final de cada línea. El fin de línea es suficiente para terminar una sentencia.",
+            "notes": [
+                {"type": "note", "text": "En Java, el punto y coma <code>;</code> es <b>obligatorio</b> al final de cada sentencia. Olvidarlo causa un error de compilación."}
+            ]
+        },
+        {
+            "title": "Ejecutar Python",
+            "text": "Python se ejecuta directamente desde la línea de comandos. También puedes usar el modo interactivo escribiendo <code>python</code> en la terminal.",
+            "notes": [
+                {"type": "tip", "text": "Java requiere dos pasos: <b>compilar</b> (<code>javac archivo.java</code>) y luego <b>ejecutar</b> (<code>java Archivo</code>). Python solo necesita un paso: <code>python archivo.py</code>."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-syntax-1",
-            "python": "# Python Syntax Python example\nprint('Python Syntax')",
-            "java": "// Python Syntax Java example\nSystem.out.println(\"Python Syntax\");",
-            "explanation": "Basic example demonstrating Python Syntax."
+            "id": "py-syntax-indent",
+            "section": "Indentación",
+            "python": "if 5 > 2:\n    print(\"Cinco es mayor que dos\")\n    print(\"Esto también está dentro del if\")\nprint(\"Esto está fuera del if\")",
+            "java": "if (5 > 2) {\n    System.out.println(\"Cinco es mayor que dos\");\n    System.out.println(\"Esto también está dentro\");\n}\nSystem.out.println(\"Esto está fuera del if\");",
+            "explanation": "Python: indentación define el bloque. Java: llaves <code>{}</code> definen el bloque."
+        },
+        {
+            "id": "py-syntax-semicolon",
+            "section": "Punto y Coma",
+            "python": "x = 5\ny = \"Hola\"\nprint(x)\nprint(y)",
+            "java": "int x = 5;\nString y = \"Hola\";\nSystem.out.println(x);\nSystem.out.println(y);",
+            "explanation": "Python: sin punto y coma. Java: punto y coma obligatorio al final de cada línea."
+        },
+        {
+            "id": "py-syntax-run",
+            "section": "Ejecutar Python",
+            "python": "# Guardar como hola.py\nprint(\"¡Hola Mundo!\")\n\n# Ejecutar: python hola.py",
+            "java": "// Guardar como Hola.java\npublic class Hola {\n    public static void main(String[] args) {\n        System.out.println(\"¡Hola Mundo!\");\n    }\n}\n// Compilar: javac Hola.java\n// Ejecutar: java Hola",
+            "explanation": "Python: 1 paso (<code>python hola.py</code>). Java: 2 pasos (compilar + ejecutar)."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-syntax-1",
+            "type": "multiple-choice",
+            "question": "¿Qué usa Python para definir bloques de código?",
+            "options": ["Llaves {}", "Indentación (espacios)", "Paréntesis ()", "Punto y coma ;"],
+            "correct": 1
+        },
+        {
+            "id": "ex-syntax-2",
+            "type": "multiple-choice",
+            "question": "¿Cuántos pasos necesita Java para ejecutar un programa?",
+            "options": ["1 (ejecutar)", "2 (compilar y ejecutar)", "3 (escribir, compilar, ejecutar)", "0 (se ejecuta solo)"],
+            "correct": 1
         }
     ]
 }

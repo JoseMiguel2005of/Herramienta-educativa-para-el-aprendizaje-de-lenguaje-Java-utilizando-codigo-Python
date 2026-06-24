@@ -1,17 +1,70 @@
 {
     "id": "py-lambda",
-    "title": "Python Lambda",
-    "intro": "Welcome to the Python Lambda lesson.",
-    "python_desc": "Python code for Python Lambda",
-    "java_desc": "Java equivalent for Python Lambda",
-    "explanation": "<p>In this lesson we cover <b>Python Lambda</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Funciones Lambda en Python",
+    "intro": "Una función lambda es una pequeña función anónima. Puede tener cualquier cantidad de argumentos, pero solo una expresión.",
+    "python_desc": "Código Python para Lambda",
+    "java_desc": "Equivalente en Java para Lambda",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Sintaxis Lambda",
+            "text": "La sintaxis es <code>lambda argumentos : expresión</code>. La expresión se ejecuta y su resultado se devuelve automáticamente.",
+            "notes": [
+                {"type": "tip", "text": "Las funciones lambda son ideales para funciones pequeñas y de una sola línea. Para lógica compleja, usa <code>def</code>."}
+            ]
+        },
+        {
+            "title": "Lambda con Múltiples Argumentos",
+            "text": "Las funciones lambda pueden recibir cualquier cantidad de argumentos separados por comas.",
+            "notes": []
+        },
+        {
+            "title": "Lambda como Argumento",
+            "text": "El verdadero poder de las lambda se muestra cuando las usas como argumentos dentro de otras funciones.",
+            "notes": [
+                {"type": "note", "text": "Java también tiene expresiones lambda desde Java 8: <code>(x) -> x * 2</code>. Se usan con interfaces funcionales."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-lambda-1",
-            "python": "# Python Lambda Python example\nprint('Python Lambda')",
-            "java": "// Python Lambda Java example\nSystem.out.println(\"Python Lambda\");",
-            "explanation": "Basic example demonstrating Python Lambda."
+            "id": "py-lambda-basic",
+            "section": "Sintaxis Lambda",
+            "python": "x = lambda a : a + 10\nprint(x(5))  # 15",
+            "java": "// Java 8+ con interface funcional\nimport java.util.function.Function;\nFunction<Integer, Integer> x = a -> a + 10;\nSystem.out.println(x.apply(5));  // 15",
+            "explanation": "Python: <code>lambda a : expr</code>. Java: <code>a -> expr</code> con <code>Function</code> interface."
+        },
+        {
+            "id": "py-lambda-multi",
+            "section": "Lambda con Múltiples Argumentos",
+            "python": "sumar = lambda a, b : a + b\nprint(sumar(5, 3))  # 8\n\nmultiplicar = lambda a, b, c : a * b * c\nprint(multiplicar(2, 3, 4))  # 24",
+            "java": "import java.util.function.BiFunction;\nBiFunction<Integer, Integer, Integer> sumar = (a, b) -> a + b;\nSystem.out.println(sumar.apply(5, 3));  // 8",
+            "explanation": "Python: <code>lambda a, b : expr</code>. Java: <code>(a, b) -> expr</code> con <code>BiFunction</code>."
+        },
+        {
+            "id": "py-lambda-arg",
+            "section": "Lambda como Argumento",
+            "python": "def hacer_doble(n):\n    return lambda a : a * n\n\ndoblar = hacer_doble(2)\ntriplicar = hacer_doble(3)\nprint(doblar(11))     # 22\nprint(triplicar(11))  # 33",
+            "java": "import java.util.function.Function;\n\nstatic Function<Integer, Integer> hacerDoble(int n) {\n    return a -> a * n;\n}\n// En main:\nFunction<Integer, Integer> doblar = hacerDoble(2);\nSystem.out.println(doblar.apply(11));  // 22",
+            "explanation": "Las lambda permiten crear funciones que generan otras funciones. Mismo concepto en ambos lenguajes."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-lambda-1",
+            "type": "fill-blank",
+            "question": "Crea una función lambda que sume 5 al argumento <code>a</code>.",
+            "template": "x = _____ a : a + 5",
+            "template_html": "x = <input type='text' class='exercise-input' data-answer='lambda' placeholder='___'> a : a + 5",
+            "python_code": "x = lambda a : a + 5",
+            "answer": "lambda"
+        },
+        {
+            "id": "ex-lambda-2",
+            "type": "multiple-choice",
+            "question": "¿Cuántas expresiones puede tener una función lambda?",
+            "options": ["Ninguna", "Una", "Ilimitadas", "Dos"],
+            "correct": 1
         }
     ]
 }

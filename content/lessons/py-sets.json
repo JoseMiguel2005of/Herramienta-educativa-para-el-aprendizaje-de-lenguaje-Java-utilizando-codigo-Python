@@ -1,17 +1,93 @@
 {
     "id": "py-sets",
-    "title": "Python Sets",
-    "intro": "Welcome to the Python Sets lesson.",
-    "python_desc": "Python code for Python Sets",
-    "java_desc": "Java equivalent for Python Sets",
-    "explanation": "<p>In this lesson we cover <b>Python Sets</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Sets (Conjuntos) en Python",
+    "intro": "Los sets se utilizan para almacenar múltiples elementos únicos. Un set es una colección no ordenada, no indexada y que no permite elementos duplicados.",
+    "python_desc": "Código Python para Sets",
+    "java_desc": "Equivalente en Java para Sets",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Crear un Set",
+            "text": "Los sets se escriben con llaves <code>{}</code>. Los elementos aparecen en un orden aleatorio cada vez que los usas, por lo que no puedes acceder a ellos por índice.",
+            "notes": [
+                {"type": "note", "text": "En Java, el equivalente principal es <code>HashSet</code>. Ambos lenguajes usan llaves para representar conjuntos matemáticos lógicos de elementos únicos."}
+            ]
+        },
+        {
+            "title": "Elementos Únicos",
+            "text": "Los sets no pueden tener dos elementos con el mismo valor. Los valores duplicados serán ignorados automáticamente al crear o actualizar el set.",
+            "notes": [
+                {"type": "tip", "text": "Un truco común en Python para eliminar duplicados de una lista es convertirla a set y luego volver a lista: <code>list(set(mi_lista))</code>."}
+            ]
+        },
+        {
+            "title": "Agregar Elementos",
+            "text": "Una vez creado, no puedes cambiar sus elementos, pero puedes agregar nuevos elementos usando el método <code>add()</code> o combinar sets con <code>update()</code>.",
+            "notes": []
+        },
+        {
+            "title": "Eliminar Elementos",
+            "text": "Para eliminar un elemento, usa <code>remove()</code> o <code>discard()</code>.",
+            "notes": [
+                {"type": "warning", "text": "Si el elemento no existe, <code>remove()</code> lanzará un error, mientras que <code>discard()</code> no lanzará ningún error."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-sets-1",
-            "python": "# Python Sets Python example\nprint('Python Sets')",
-            "java": "// Python Sets Java example\nSystem.out.println(\"Python Sets\");",
-            "explanation": "Basic example demonstrating Python Sets."
+            "id": "py-set-create",
+            "section": "Crear un Set",
+            "python": "frutas = {\"manzana\", \"banana\", \"cereza\"}\nprint(frutas)",
+            "java": "import java.util.HashSet;\nimport java.util.Arrays;\n\nHashSet<String> frutas = new HashSet<>(Arrays.asList(\"manzana\", \"banana\", \"cereza\"));\nSystem.out.println(frutas);",
+            "explanation": "Python usa <code>{}</code> para sets literales. Java requiere instanciar un <code>HashSet</code>."
+        },
+        {
+            "id": "py-set-unique",
+            "section": "Elementos Únicos",
+            "python": "frutas = {\"manzana\", \"banana\", \"manzana\"}\n# El duplicado es ignorado\nprint(frutas)",
+            "java": "HashSet<String> frutas = new HashSet<>();\nfrutas.add(\"manzana\");\nfrutas.add(\"banana\");\nfrutas.add(\"manzana\"); // Es ignorado\nSystem.out.println(frutas);",
+            "explanation": "Ambos ignoran inserciones duplicadas silenciosamente."
+        },
+        {
+            "id": "py-set-add",
+            "section": "Agregar Elementos",
+            "python": "frutas = {\"manzana\", \"banana\"}\nfrutas.add(\"naranja\")\nprint(frutas)",
+            "java": "HashSet<String> frutas = new HashSet<>();\nfrutas.add(\"manzana\");\nfrutas.add(\"banana\");\nfrutas.add(\"naranja\");\nSystem.out.println(frutas);",
+            "explanation": "Ambos usan el método <code>add()</code> para insertar nuevos elementos en el conjunto."
+        },
+        {
+            "id": "py-set-remove",
+            "section": "Eliminar Elementos",
+            "python": "frutas = {\"manzana\", \"banana\", \"cereza\"}\nfrutas.remove(\"banana\")\n# frutas.discard(\"banana\")  # Alternativa segura\nprint(frutas)",
+            "java": "HashSet<String> frutas = new HashSet<>(Arrays.asList(\"manzana\", \"banana\", \"cereza\"));\nfrutas.remove(\"banana\");\nSystem.out.println(frutas);",
+            "explanation": "Ambos usan <code>remove()</code>, pero Python ofrece <code>discard()</code> que no arroja excepciones si no se encuentra el elemento."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-set-1",
+            "type": "multiple-choice",
+            "question": "¿Cuál es una característica principal de los Sets?",
+            "options": ["Están ordenados", "Se acceden por índice", "No permiten duplicados", "Son inmutables"],
+            "correct": 2
+        },
+        {
+            "id": "ex-set-2",
+            "type": "fill-blank",
+            "question": "Agrega <code>\"naranja\"</code> al set <code>frutas</code>.",
+            "template": "frutas._____(\"naranja\")",
+            "template_html": "frutas.<input type='text' class='exercise-input' data-answer='add' placeholder='___'>(\"naranja\")",
+            "python_code": "frutas.add(\"naranja\")",
+            "answer": "add"
+        },
+        {
+            "id": "ex-set-3",
+            "type": "fill-blank",
+            "question": "Usa el método seguro para eliminar <code>\"banana\"</code> (sin error si no existe).",
+            "template": "frutas._____(\"banana\")",
+            "template_html": "frutas.<input type='text' class='exercise-input' data-answer='discard' placeholder='___'>(\"banana\")",
+            "python_code": "frutas.discard(\"banana\")",
+            "answer": "discard"
         }
     ]
 }

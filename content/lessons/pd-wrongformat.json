@@ -1,17 +1,42 @@
 {
     "id": "pd-wrongformat",
-    "title": "Cleaning Wrong Format",
-    "intro": "Welcome to the Cleaning Wrong Format lesson.",
-    "python_desc": "Python code for Cleaning Wrong Format",
-    "java_desc": "Java equivalent for Cleaning Wrong Format",
-    "explanation": "<p>In this lesson we cover <b>Cleaning Wrong Format</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Datos con Formato Incorrecto",
+    "intro": "Las celdas con el formato incorrecto dificultan o imposibilitan el análisis. Hay dos opciones para lidiar con esto: remover las filas o convertir todas las celdas de las columnas al mismo formato.",
+    "python_desc": "Proceso en Python",
+    "java_desc": "Proceso en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Convertir al Formato Correcto",
+            "text": "Imagina que tienes una columna de fechas donde alguien escribió '2020/12/26' pero otro escribió '20201226'. Pandas tiene la función <code>to_datetime()</code> que intenta unificar todo al formato estándar de fecha.",
+            "notes": [
+                {"type": "note", "text": "En Java usaríamos `SimpleDateFormat` o `DateTimeFormatter` para intentar parsear Strings en objetos `LocalDate`. Si falla, saltaría un `DateTimeParseException`."}
+            ]
+        },
+        {
+            "title": "Remover las Filas Intratables",
+            "text": "Si durante la conversión ocurre un error (por ejemplo, el dato era un texto 'ayer' en vez de una fecha parseable), Pandas arrojará un valor NaT (Not a Time). Puedes entonces usar el ya conocido <code>dropna()</code> para borrar la fila defectuosa.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
             "id": "pd-wrongformat-1",
-            "python": "# Cleaning Wrong Format Python example\nprint('Cleaning Wrong Format')",
-            "java": "// Cleaning Wrong Format Java example\nSystem.out.println(\"Cleaning Wrong Format\");",
-            "explanation": "Basic example demonstrating Cleaning Wrong Format."
+            "section": "Convertir al Formato Correcto",
+            "python": "import pandas as pd\n\ndf = pd.read_csv('data.csv')\n\n# Intenta forzar el formato de fecha en la columna 'Date'\ndf['Date'] = pd.to_datetime(df['Date'])\n\n# Luego removemos cualquier registro que haya fallado (NaT)\ndf.dropna(subset=['Date'], inplace = True)",
+            "java": "import java.time.LocalDate;\nimport java.time.format.DateTimeParseException;\nimport java.util.Iterator;\n\npublic class Main {\n  public static void main(String[] args) {\n      // En Java, el parseo y filtrado requiere un bloque Try-Catch:\n      Iterator<Registro> iter = tabla.iterator();\n      while (iter.hasNext()) {\n          Registro r = iter.next();\n          try {\n              r.setFechaParseada(LocalDate.parse(r.getFechaString()));\n          } catch (DateTimeParseException e) {\n              iter.remove(); // Fila intratable removida\n          }\n      }\n  }\n}",
+            "explanation": "El proceso en Python ignora excepciones ruidosas reemplazando el valor defectuoso por 'NaT', lo que permite depurar después con `dropna`. Java exige un `try/catch` para cada fila a evaluar."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-pd-wrongformat-1",
+            "type": "fill-blank",
+            "question": "Pasa la columna 'Date' a formato de tiempo usando el método especializado de Pandas.",
+            "template": "df['Date'] = pd._________(df['Date'])",
+            "template_html": "df['Date'] = pd.<input type='text' class='exercise-input' data-answer='to_datetime' placeholder='___________'>(df['Date'])",
+            "python_code": "df['Date'] = pd.to_datetime(df['Date'])",
+            "answer": "to_datetime"
         }
     ]
 }

@@ -1,17 +1,42 @@
 {
     "id": "sc-intro",
-    "title": "SciPy Intro",
-    "intro": "Welcome to the SciPy Intro lesson.",
-    "python_desc": "Python code for SciPy Intro",
-    "java_desc": "Java equivalent for SciPy Intro",
-    "explanation": "<p>In this lesson we cover <b>SciPy Intro</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Introducción a SciPy",
+    "intro": "SciPy es una librería de computación científica que utiliza NumPy por debajo.",
+    "python_desc": "SciPy en Python",
+    "java_desc": "Ecosistema en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "¿Qué es SciPy?",
+            "text": "SciPy significa 'Scientific Python'. Proporciona funciones de utilidad para optimización, estadísticas y procesamiento de señales. Al igual que NumPy, SciPy es de código abierto.",
+            "notes": [
+                {"type": "note", "text": "En Java no hay una única librería estándar dominante como SciPy. Para computación científica los desarrolladores suelen usar bibliotecas de terceros como <code>Apache Commons Math</code> o <code>JTransforms</code> (para señales)."}
+            ]
+        },
+        {
+            "title": "¿Por qué usar SciPy?",
+            "text": "Si NumPy ya existe, ¿por qué SciPy? SciPy contiene implementaciones completamente optimizadas y dedicadas de algoritmos que frecuentemente usamos en cálculo y estadística, las cuales están escritas principalmente en lenguaje C para extrema velocidad.",
+            "notes": [
+                {"type": "tip", "text": "La velocidad del código C es algo que las bibliotecas nativas de Java (código JVM puro) rara vez logran empatar sin el uso extensivo de JNI (Java Native Interface)."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "sc-intro-1",
-            "python": "# SciPy Intro Python example\nprint('SciPy Intro')",
-            "java": "// SciPy Intro Java example\nSystem.out.println(\"SciPy Intro\");",
-            "explanation": "Basic example demonstrating SciPy Intro."
+            "section": "¿Por qué usar SciPy?",
+            "python": "import scipy\n\n# Puedes ver la versión de scipy que tienes instalada\nprint(scipy.__version__)",
+            "java": "// En Java, si usas Maven:\n/*\n<dependency>\n    <groupId>org.apache.commons</groupId>\n    <artifactId>commons-math3</artifactId>\n    <version>3.6.1</version>\n</dependency>\n*/",
+            "explanation": "Mientras Python centraliza gran parte de su análisis científico bajo el paraguas de SciPy/NumPy, el ecosistema Java reparte estas responsabilidades en módulos corporativos como Apache Commons Math."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-sc-intro-1",
+            "type": "multiple-choice",
+            "question": "¿En qué librería base de Python se fundamenta fuertemente SciPy?",
+            "options": ["Pandas", "Matplotlib", "NumPy", "Django"],
+            "correct": 2
         }
     ]
 }

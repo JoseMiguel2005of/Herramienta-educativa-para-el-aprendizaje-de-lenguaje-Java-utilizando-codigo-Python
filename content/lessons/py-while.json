@@ -1,17 +1,82 @@
 {
     "id": "py-while",
-    "title": "Python While Loops",
-    "intro": "Welcome to the Python While Loops lesson.",
-    "python_desc": "Python code for Python While Loops",
-    "java_desc": "Java equivalent for Python While Loops",
-    "explanation": "<p>In this lesson we cover <b>Python While Loops</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Bucle While en Python",
+    "intro": "El bucle while ejecuta un bloque de código repetidamente mientras una condición sea verdadera.",
+    "python_desc": "Código Python para While",
+    "java_desc": "Equivalente en Java para While",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "While Básico",
+            "text": "El bucle <code>while</code> ejecuta su bloque de código mientras la condición sea <code>True</code>. Debes asegurarte de que la condición eventualmente sea <code>False</code>, o el bucle será infinito.",
+            "notes": [
+                {"type": "warning", "text": "Recuerda <b>incrementar la variable</b> del bucle, de lo contrario obtendrás un <b>bucle infinito</b> que nunca terminará."}
+            ]
+        },
+        {
+            "title": "Break",
+            "text": "La sentencia <code>break</code> permite terminar el bucle incluso si la condición sigue siendo verdadera.",
+            "notes": []
+        },
+        {
+            "title": "Continue",
+            "text": "La sentencia <code>continue</code> salta la iteración actual y pasa directamente a evaluar la condición de nuevo.",
+            "notes": []
+        },
+        {
+            "title": "While con Else",
+            "text": "Al igual que el <code>for</code>, Python permite un bloque <code>else</code> después del <code>while</code>. Se ejecuta cuando la condición se vuelve falsa (no cuando se usa <code>break</code>).",
+            "notes": [
+                {"type": "note", "text": "Java <b>no</b> tiene <code>while...else</code>. Esta es otra característica exclusiva de Python."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-while-1",
-            "python": "# Python While Loops Python example\nprint('Python While Loops')",
-            "java": "// Python While Loops Java example\nSystem.out.println(\"Python While Loops\");",
-            "explanation": "Basic example demonstrating Python While Loops."
+            "id": "py-while-basic",
+            "section": "While Básico",
+            "python": "i = 1\nwhile i < 6:\n    print(i)\n    i += 1",
+            "java": "int i = 1;\nwhile (i < 6) {\n    System.out.println(i);\n    i++;\n}",
+            "explanation": "Python: sin paréntesis, usa <code>:</code> e indentación. Java: paréntesis y llaves obligatorios."
+        },
+        {
+            "id": "py-while-break",
+            "section": "Break",
+            "python": "i = 1\nwhile i < 6:\n    print(i)\n    if i == 3:\n        break\n    i += 1",
+            "java": "int i = 1;\nwhile (i < 6) {\n    System.out.println(i);\n    if (i == 3) break;\n    i++;\n}",
+            "explanation": "<code>break</code> funciona igual en ambos lenguajes: sale del bucle inmediatamente."
+        },
+        {
+            "id": "py-while-continue",
+            "section": "Continue",
+            "python": "i = 0\nwhile i < 6:\n    i += 1\n    if i == 3:\n        continue\n    print(i)  # No imprime 3",
+            "java": "int i = 0;\nwhile (i < 6) {\n    i++;\n    if (i == 3) continue;\n    System.out.println(i);\n}",
+            "explanation": "<code>continue</code> salta al inicio del bucle. Igual en ambos lenguajes."
+        },
+        {
+            "id": "py-while-else",
+            "section": "While con Else",
+            "python": "i = 1\nwhile i < 6:\n    print(i)\n    i += 1\nelse:\n    print(\"i ya no es menor que 6\")",
+            "java": "// Java no tiene while...else\nint i = 1;\nwhile (i < 6) {\n    System.out.println(i);\n    i++;\n}\nSystem.out.println(\"i ya no es menor que 6\");",
+            "explanation": "Python: <code>while...else</code> ejecuta el else al terminar normalmente. Java no tiene esta característica."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-while-1",
+            "type": "fill-blank",
+            "question": "Completa el bucle para imprimir mientras <code>i</code> sea menor que 5.",
+            "template": "i = 0\n_____ i < 5:\n    print(i)\n    i += 1",
+            "template_html": "i = 0<br><input type='text' class='exercise-input' data-answer='while' placeholder='___'> i < 5:<br>&nbsp;&nbsp;&nbsp;&nbsp;print(i)<br>&nbsp;&nbsp;&nbsp;&nbsp;i += 1",
+            "python_code": "i = 0\nwhile i < 5:\n    print(i)\n    i += 1",
+            "answer": "while"
+        },
+        {
+            "id": "ex-while-2",
+            "type": "multiple-choice",
+            "question": "¿Qué pasa si olvidas incrementar la variable en un bucle while?",
+            "options": ["Error de sintaxis", "Bucle infinito", "El bucle no se ejecuta", "Se incrementa sola"],
+            "correct": 1
         }
     ]
 }

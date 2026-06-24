@@ -1,17 +1,40 @@
 {
     "id": "sql-createtable",
-    "title": "MySQL Create Table",
-    "intro": "Welcome to the MySQL Create Table lesson.",
-    "python_desc": "Python code for MySQL Create Table",
-    "java_desc": "Java equivalent for MySQL Create Table",
-    "explanation": "<p>In this lesson we cover <b>MySQL Create Table</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "MySQL - Crear Tablas",
+    "intro": "Para crear una tabla en MySQL, usa la instrucción 'CREATE TABLE'. Asegúrate de definir el nombre de la base de datos al momento de conectarte.",
+    "python_desc": "Crear Tabla en Python",
+    "java_desc": "Equivalente en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Definir la Base de Datos",
+            "text": "A partir de ahora, todas nuestras conexiones incluirán un nuevo parámetro llamado <code>database=\"mibase\"</code>, para asegurarnos de que la tabla se cree adentro de la base de datos correcta.",
+            "notes": [
+                {"type": "note", "text": "En Java haces esto añadiendo el nombre de la DB a la URL de conexión: `jdbc:mysql://localhost:3306/mibase`."}
+            ]
+        },
+        {
+            "title": "Llave Primaria (Primary Key)",
+            "text": "Cuando creas una tabla debes crear también una columna única de cada registro (Llave Primaria). Si usas la configuración 'INT AUTO_INCREMENT', MySQL asignará este número por ti.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
             "id": "sql-createtable-1",
-            "python": "# MySQL Create Table Python example\nprint('MySQL Create Table')",
-            "java": "// MySQL Create Table Java example\nSystem.out.println(\"MySQL Create Table\");",
-            "explanation": "Basic example demonstrating MySQL Create Table."
+            "section": "Definir la Base de Datos",
+            "python": "import mysql.connector\n\nmydb = mysql.connector.connect(\n  host=\"localhost\",\n  user=\"tuusuario\",\n  password=\"tucontraseña\",\n  database=\"mibase\" # <--- ¡Nuevo!\n)\n\nmicursor = mydb.cursor()\n\nmicursor.execute(\"CREATE TABLE clientes (nombre VARCHAR(255), direccion VARCHAR(255))\")",
+            "java": "import java.sql.Connection;\nimport java.sql.DriverManager;\nimport java.sql.Statement;\n\npublic class Main {\n  public static void main(String[] args) throws Exception {\n      // Nombre de DB en la URL\n      Connection conn = DriverManager.getConnection(\"jdbc:mysql://localhost/mibase\", \"tuusuario\", \"tucontraseña\");\n      \n      Statement stmt = conn.createStatement();\n      stmt.executeUpdate(\"CREATE TABLE clientes (nombre VARCHAR(255), direccion VARCHAR(255))\");\n  }\n}",
+            "explanation": "El proceso es análogo. Python toma la base de datos como un parámetro con nombre (keyword argument), mientras que Java la requiere como parte de la cadena de conexión."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-sql-createtable-1",
+            "type": "multiple-choice",
+            "question": "En Python (usando mysql-connector), ¿cómo especificas a qué base de datos quieres conectarte?",
+            "options": ["Añadiéndolo en la URL al estilo Java", "Pasando el parámetro 'database' a la función connect()", "Ejecutando USE database; después de conectarte", "Todas las opciones son válidas"],
+            "correct": 3
         }
     ]
 }

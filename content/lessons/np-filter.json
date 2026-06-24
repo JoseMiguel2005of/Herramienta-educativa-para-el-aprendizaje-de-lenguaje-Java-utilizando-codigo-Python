@@ -1,17 +1,63 @@
 {
     "id": "np-filter",
-    "title": "NumPy Array Filter",
-    "intro": "Welcome to the NumPy Array Filter lesson.",
-    "python_desc": "Python code for NumPy Array Filter",
-    "java_desc": "Java equivalent for NumPy Array Filter",
-    "explanation": "<p>In this lesson we cover <b>NumPy Array Filter</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Filtros en NumPy",
+    "intro": "Obtener algunos elementos de un array existente y crear un nuevo array con ellos se llama filtrado (filtering). En NumPy, filtras usando una lista de índices booleanos.",
+    "python_desc": "Código Python para Filtros",
+    "java_desc": "Equivalente en Java para Filtrar",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Filtrar Arrays Usando Booleanos",
+            "text": "Una lista de índices booleanos es una lista de booleanos correspondiente a índices del array. Si el valor es <code>True</code>, el elemento pasará al array filtrado. Si es <code>False</code>, el elemento será excluido.",
+            "notes": [
+                {"type": "note", "text": "En Java no tenemos este concepto de 'índices booleanos' directamente aplicados al array matriz. Normalmente iteraríamos y usaríamos condicionales <code>if</code>."}
+            ]
+        },
+        {
+            "title": "Creando la Matriz de Filtro",
+            "text": "En el ejemplo anterior codificamos los booleanos en crudo (<i>hard-coded</i>), pero lo común es crear la matriz de filtro (filter array) en base a condiciones en un bucle o mediante expresiones booleanas.",
+            "notes": [
+                {"type": "tip", "text": "En Java, algo más moderno y parecido a un 'filtro dinámico' sería usar la <code>Stream API</code> introducida en Java 8 (ej. <code>Arrays.stream(arr).filter(x -> x > 42)</code>)."}
+            ]
+        },
+        {
+            "title": "Filtros Vectorizados (La Forma Más Inteligente)",
+            "text": "Podemos sustituir los bucles para crear la matriz de filtro de manera extremadamente limpia. NumPy nos permite hacer la comprobación directamente en el array; por ejemplo: <code>filtro = arr > 42</code>.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
-            "id": "np-filter-1",
-            "python": "# NumPy Array Filter Python example\nprint('NumPy Array Filter')",
-            "java": "// NumPy Array Filter Java example\nSystem.out.println(\"NumPy Array Filter\");",
-            "explanation": "Basic example demonstrating NumPy Array Filter."
+            "id": "np-filter-bool",
+            "section": "Filtrar Arrays Usando Booleanos",
+            "python": "import numpy as np\n\narr = np.array([41, 42, 43, 44])\nx = [True, False, True, False]\n\n# Filtrar usando el array de booleanos\nnuevoarr = arr[x]\n\nprint(nuevoarr) # [41 43]",
+            "java": "// Forma rudimentaria en Java:\nint[] arr = {41, 42, 43, 44};\nboolean[] x = {true, false, true, false};\njava.util.List<Integer> list = new java.util.ArrayList<>();\n\nfor (int i = 0; i < arr.length; i++) {\n    if (x[i]) {\n        list.add(arr[i]);\n    }\n}",
+            "explanation": "Al inyectar un array booleano directamente dentro de los corchetes <code>[]</code> de un array NumPy, este actuará como una máscara automática."
+        },
+        {
+            "id": "np-filter-cond",
+            "section": "Filtros Vectorizados (La Forma Más Inteligente)",
+            "python": "import numpy as np\n\narr = np.array([41, 42, 43, 44])\n\n# NumPy procesa la condición sin bucles 'for' manuales\nfiltro = arr > 42\nnuevoarr = arr[filtro]\n\n# Incluso puedes acortarlo así:\n# nuevoarr = arr[arr > 42]\n\nprint(nuevoarr) # [43 44]",
+            "java": "import java.util.Arrays;\n\npublic class Main {\n  public static void main(String[] args) {\n    int[] arr = {41, 42, 43, 44};\n    \n    // Usando Streams en Java (versión moderna)\n    int[] nuevoarr = Arrays.stream(arr)\n                           .filter(n -> n > 42)\n                           .toArray();\n                           \n    System.out.println(Arrays.toString(nuevoarr));\n  }\n}",
+            "explanation": "La condición vectorizada <code>arr > 42</code> en Python genera una máscara mágica por debajo de la mesa. En Java, se logra algo equivalente usando <code>Stream.filter()</code>."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-filter-1",
+            "type": "fill-blank",
+            "question": "Escribe la condición limpia de NumPy para filtrar e incluir solo los elementos PARES (pares significa divisibles por 2).",
+            "template": "nuevoarr = arr[_____ % 2 == 0]",
+            "template_html": "nuevoarr = arr[<input type='text' class='exercise-input' data-answer='arr' placeholder='___'> % 2 == 0]",
+            "python_code": "nuevoarr = arr[arr % 2 == 0]",
+            "answer": "arr"
+        },
+        {
+            "id": "ex-np-filter-2",
+            "type": "multiple-choice",
+            "question": "¿Qué pasa si pasas una lista [True, False] como índice de un array en NumPy?",
+            "options": ["Da error", "El array se ordena", "Mantiene solo el elemento del índice donde hubo un 'True'", "Convierte el array a tipo Boolean"],
+            "correct": 2
         }
     ]
 }

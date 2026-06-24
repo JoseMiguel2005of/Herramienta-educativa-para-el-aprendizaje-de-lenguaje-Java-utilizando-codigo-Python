@@ -1,17 +1,93 @@
 {
     "id": "py-tuples",
-    "title": "Python Tuples",
-    "intro": "Welcome to the Python Tuples lesson.",
-    "python_desc": "Python code for Python Tuples",
-    "java_desc": "Java equivalent for Python Tuples",
-    "explanation": "<p>In this lesson we cover <b>Python Tuples</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Tuplas en Python",
+    "intro": "Las tuplas se utilizan para almacenar múltiples elementos en una sola variable, al igual que las listas, pero con una diferencia clave: son inmutables.",
+    "python_desc": "Código Python para Tuplas",
+    "java_desc": "Equivalente en Java para Tuplas",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Crear una Tupla",
+            "text": "Las tuplas se escriben con paréntesis <code>()</code>. Una vez creada una tupla, no puedes cambiar, añadir o eliminar sus elementos.",
+            "notes": [
+                {"type": "note", "text": "Java no tiene un tipo 'Tupla' nativo en su biblioteca estándar. Se suele simular usando <code>List.of()</code> (que crea listas inmutables) o creando una clase personalizada (como <code>Record</code>)."}
+            ]
+        },
+        {
+            "title": "Acceder a Elementos",
+            "text": "Puedes acceder a los elementos de una tupla mediante su índice, de la misma manera que con las listas. El primer elemento es el índice 0.",
+            "notes": []
+        },
+        {
+            "title": "Inmutabilidad",
+            "text": "La característica principal de las tuplas es que son <b>inmutables</b>. Si intentas reasignar un elemento usando su índice, Python arrojará un <code>TypeError</code>.",
+            "notes": [
+                {"type": "warning", "text": "Si necesitas cambiar los datos, debes usar una <b>lista</b> en lugar de una tupla, o convertir la tupla a lista, cambiarla y volver a convertirla a tupla."}
+            ]
+        },
+        {
+            "title": "Desempaquetado (Unpacking)",
+            "text": "Python permite extraer los valores de una tupla en variables individuales en una sola línea de código, lo que se conoce como 'desempaquetado'.",
+            "notes": [
+                {"type": "tip", "text": "El desempaquetado de tuplas es una característica muy potente de Python que Java no soporta de forma nativa con una sintaxis tan sencilla."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-tuples-1",
-            "python": "# Python Tuples Python example\nprint('Python Tuples')",
-            "java": "// Python Tuples Java example\nSystem.out.println(\"Python Tuples\");",
-            "explanation": "Basic example demonstrating Python Tuples."
+            "id": "py-tuple-create",
+            "section": "Crear una Tupla",
+            "python": "frutas = (\"manzana\", \"banana\", \"cereza\")\nprint(frutas)",
+            "java": "import java.util.List;\n\n// Java 9+ permite List.of para listas inmutables\nList<String> frutas = List.of(\"manzana\", \"banana\", \"cereza\");\nSystem.out.println(frutas);",
+            "explanation": "Python usa <code>()</code>. Java requiere estructuras como <code>List.of()</code> para simular colecciones inmutables rápidas."
+        },
+        {
+            "id": "py-tuple-access",
+            "section": "Acceder a Elementos",
+            "python": "frutas = (\"manzana\", \"banana\", \"cereza\")\nprint(frutas[1])   # banana\nprint(frutas[-1])  # cereza",
+            "java": "List<String> frutas = List.of(\"manzana\", \"banana\", \"cereza\");\nSystem.out.println(frutas.get(1));\nSystem.out.println(frutas.get(frutas.size() - 1));",
+            "explanation": "Igual que las listas: Python usa <code>[]</code> e índices negativos. Java usa <code>.get()</code>."
+        },
+        {
+            "id": "py-tuple-immutable",
+            "section": "Inmutabilidad",
+            "python": "frutas = (\"manzana\", \"banana\", \"cereza\")\n# frutas[1] = \"kiwi\"  # ESTO CAUSA ERROR\n\n# Truco para modificar:\ntemp = list(frutas)\ntemp[1] = \"kiwi\"\nfrutas = tuple(temp)\nprint(frutas)",
+            "java": "List<String> frutas = List.of(\"manzana\", \"banana\", \"cereza\");\n// frutas.set(1, \"kiwi\"); // ESTO LANZA UnsupportedOperationException\n\n// Para modificar, crear una nueva ArrayList\nList<String> temp = new java.util.ArrayList<>(frutas);\ntemp.set(1, \"kiwi\");\nSystem.out.println(temp);",
+            "explanation": "Ambos lenguajes protegen las estructuras inmutables y requieren crear una versión mutable temporal para hacer cambios."
+        },
+        {
+            "id": "py-tuple-unpacking",
+            "section": "Desempaquetado (Unpacking)",
+            "python": "frutas = (\"manzana\", \"banana\", \"cereza\")\n\n(verde, amarilla, roja) = frutas\n\nprint(verde)     # manzana\nprint(amarilla)  # banana",
+            "java": "List<String> frutas = List.of(\"manzana\", \"banana\", \"cereza\");\n\n// Java requiere extracción manual\nString verde = frutas.get(0);\nString amarilla = frutas.get(1);\nString roja = frutas.get(2);\n\nSystem.out.println(verde);",
+            "explanation": "Python permite asignar múltiples variables a la vez <code>(a, b) = tupla</code>. En Java se hace línea por línea."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-tuple-1",
+            "type": "fill-blank",
+            "question": "Imprime el primer elemento de la tupla <code>frutas</code>.",
+            "template": "print(frutas[_____])",
+            "template_html": "print(frutas[<input type='text' class='exercise-input' data-answer='0' placeholder='___'>])",
+            "python_code": "print(frutas[0])",
+            "answer": "0"
+        },
+        {
+            "id": "ex-tuple-2",
+            "type": "multiple-choice",
+            "question": "¿Cuál es la principal diferencia entre una lista y una tupla en Python?",
+            "options": ["Las tuplas son más lentas", "Las listas usan paréntesis", "Las tuplas son inmutables", "Las tuplas solo almacenan strings"],
+            "correct": 2
+        },
+        {
+            "id": "ex-tuple-3",
+            "type": "fill-blank",
+            "question": "Completa el desempaquetado de la tupla.",
+            "template": "x = (1, 2)\n(a, _____) = x",
+            "template_html": "x = (1, 2)<br>(a, <input type='text' class='exercise-input' data-answer='b' placeholder='___'>) = x",
+            "python_code": "(a, b) = x",
+            "answer": "b"
         }
     ]
 }

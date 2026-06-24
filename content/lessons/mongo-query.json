@@ -1,17 +1,42 @@
 {
     "id": "mongo-query",
-    "title": "MongoDB Query",
-    "intro": "Welcome to the MongoDB Query lesson.",
-    "python_desc": "Python code for MongoDB Query",
-    "java_desc": "Java equivalent for MongoDB Query",
-    "explanation": "<p>In this lesson we cover <b>MongoDB Query</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "MongoDB - Consultas (Query)",
+    "intro": "Cuando usamos el método <code>find()</code>, podemos pasar un objeto de consulta para filtrar los resultados de forma precisa. Esto equivale a la cláusula WHERE de SQL.",
+    "python_desc": "Consultas en Python",
+    "java_desc": "Consultas en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Filtrar los Resultados",
+            "text": "Para filtrar, le pasas un Diccionario al método `find`. Por ejemplo, <code>{ \"direccion\": \"Park Lane 38\" }</code>. Mongo retornará solo los documentos que contengan exactamente esa propiedad con ese valor.",
+            "notes": [
+                {"type": "note", "text": "Al basarse puramente en estructuras JSON (Diccionarios), MongoDB elimina por completo el riesgo de Inyección SQL (SQL Injection), haciéndolo altamente seguro por defecto."}
+            ]
+        },
+        {
+            "title": "Consultas Avanzadas y Expresiones Regulares",
+            "text": "Puedes usar operadores avanzados como Modificadores (empezando con <code>$</code>). Por ejemplo, <code>{ \"direccion\": { \"$gt\": \"S\" } }</code> encontrará las direcciones que empiecen con letras mayores (alfabéticamente) que la S. O también puedes usar expresiones regulares de Python.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
             "id": "mongo-query-1",
-            "python": "# MongoDB Query Python example\nprint('MongoDB Query')",
-            "java": "// MongoDB Query Java example\nSystem.out.println(\"MongoDB Query\");",
-            "explanation": "Basic example demonstrating MongoDB Query."
+            "section": "Consultas Avanzadas y Expresiones Regulares",
+            "python": "import pymongo\n\nmyclient = pymongo.MongoClient(\"mongodb://localhost:27017/\")\nmycol = myclient[\"mibasededatos\"][\"clientes\"]\n\n# Expresión regular: La dirección debe empezar con una 'S' o superior\nmi_consulta = { \"direccion\": { \"$regex\": \"^S\" } }\n\n# Realizamos la búsqueda iterando el cursor devuelto\nfor x in mycol.find(mi_consulta):\n  print(x)",
+            "java": "import com.mongodb.client.model.Filters;\nimport java.util.regex.Pattern;\n\npublic class Main {\n  public static void main(String[] args) {\n      // En Java, el driver de Mongo provee builders tipados y seguros:\n      \n      // Filtrar usando Expresiones Regulares (^S):\n      Pattern regex = Pattern.compile(\"^S\");\n      var cursor = collection.find(Filters.regex(\"direccion\", regex)).iterator();\n      \n      while (cursor.hasNext()) {\n          System.out.println(cursor.next());\n      }\n  }\n}",
+            "explanation": "El ecosistema MongoDB brilla en Node.js y Python porque su ADN (JSON) concuerda 1:1 con diccionarios literales. Java se ha adaptado mediante el poderoso paquete estático `Filters`, permitiendo al desarrollador autocompletar operadores como `.regex()`, `.eq()`, `.gt()`."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-mongo-query-1",
+            "type": "fill-blank",
+            "question": "Escribe el objeto/diccionario correcto de consulta para buscar en la colección documentos con la dirección igual a 'Valley 345'.",
+            "template": "myquery = { \"direccion\": ___________ }\n\nmydoc = mycol.find(myquery)",
+            "template_html": "myquery = { \"direccion\": <input type='text' class='exercise-input' data-answer='\"Valley 345\"' placeholder='____________'> }<br><br>mydoc = mycol.find(myquery)",
+            "python_code": "myquery = { \"direccion\": \"Valley 345\" }",
+            "answer": "\"Valley 345\""
         }
     ]
 }

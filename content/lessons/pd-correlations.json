@@ -1,17 +1,51 @@
 {
     "id": "pd-correlations",
-    "title": "Data Correlations",
-    "intro": "Welcome to the Data Correlations lesson.",
-    "python_desc": "Python code for Data Correlations",
-    "java_desc": "Java equivalent for Data Correlations",
-    "explanation": "<p>In this lesson we cover <b>Data Correlations</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Correlaciones en Pandas",
+    "intro": "Un aspecto crucial de la ciencia de datos es encontrar relaciones estadísticas entre las columnas de tus datos. Pandas provee una función increíblemente veloz para calcular estas correlaciones.",
+    "python_desc": "Proceso Vectorizado en Python",
+    "java_desc": "Proceso Analítico en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Encontrar Relaciones (corr)",
+            "text": "El método <code>corr()</code> calcula la relación estadística entre todas y cada una de las columnas numéricas de tu conjunto de datos.",
+            "notes": [
+                {"type": "note", "text": "En Java no existe una función integrada para esto; tendrías que implementar algoritmos estadísticos manualmente (como la correlación de Pearson) o usar librerías externas pesadas."}
+            ]
+        },
+        {
+            "title": "Entendiendo el Resultado",
+            "text": "El resultado de <code>corr()</code> es un número que varía entre -1 y 1.\n- <b>1.0</b> significa una relación perfecta. Si una variable sube, la otra también.\n- <b>0.9</b> también es una buena correlación. Indica que si una sube, la otra *probablemente* suba.\n- <b>-0.9</b> es una correlación inversa. Si una variable sube, la otra bajará.\n- <b>0.0</b> a <b>0.2</b> significa que las columnas NO tienen relación matemática.",
+            "notes": [
+                {"type": "tip", "text": "Pandas ignora automáticamente las columnas que no son numéricas para evitar que el programa se rompa al intentar hacer matemáticas con texto."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "pd-correlations-1",
-            "python": "# Data Correlations Python example\nprint('Data Correlations')",
-            "java": "// Data Correlations Java example\nSystem.out.println(\"Data Correlations\");",
-            "explanation": "Basic example demonstrating Data Correlations."
+            "section": "Encontrar Relaciones (corr)",
+            "python": "import pandas as pd\n\ndf = pd.read_csv('data.csv')\n\n# Pandas calcula la correlación de Pearson de todas las columnas a la vez:\nmatriz_corr = df.corr()\nprint(matriz_corr)",
+            "java": "// En Java tendrías que usar una librería externa como Apache Commons Math:\n// PearsonsCorrelation pearson = new PearsonsCorrelation();\n// double corr = pearson.correlation(columna1, columna2);\n\n// E iterar esto para todas las posibles combinaciones de columnas manualmente.",
+            "explanation": "Pandas genera una Matriz de Correlación cruzando cada columna con cada otra columna en una sola invocación (esfuerzo cero). En lenguajes de propósito general, hacer estadísticas a escala requiere diseñar una arquitectura matricial compleja."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-pd-correlations-1",
+            "type": "fill-blank",
+            "question": "Llama al método correcto de Pandas para mostrar las correlaciones matemáticas del dataset.",
+            "template": "df.____()",
+            "template_html": "df.<input type='text' class='exercise-input' data-answer='corr' placeholder='____'>()",
+            "python_code": "df.corr()",
+            "answer": "corr"
+        },
+        {
+            "id": "ex-pd-correlations-2",
+            "type": "multiple-choice",
+            "question": "En el resultado del método de correlación, ¿qué indica un número cercano a -1.0?",
+            "options": ["Una buena relación inversa (si A sube, B baja)", "Una buena relación directa (si A sube, B sube)", "Ninguna relación", "Un error en el cálculo"],
+            "correct": 0
         }
     ]
 }

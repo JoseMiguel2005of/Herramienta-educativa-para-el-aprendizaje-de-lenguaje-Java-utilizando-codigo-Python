@@ -1,17 +1,70 @@
 {
     "id": "np-sort",
-    "title": "NumPy Array Sort",
-    "intro": "Welcome to the NumPy Array Sort lesson.",
-    "python_desc": "Python code for NumPy Array Sort",
-    "java_desc": "Java equivalent for NumPy Array Sort",
-    "explanation": "<p>In this lesson we cover <b>NumPy Array Sort</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Ordenar Arrays (Sort)",
+    "intro": "Ordenar significa colocar los elementos en una secuencia ordenada. Las secuencias ordenadas son cualquier secuencia que tiene un orden correspondiente a los elementos, como numérico o alfabético, ascendente o descendente.",
+    "python_desc": "Código Python para Ordenar",
+    "java_desc": "Equivalente en Java para Ordenar",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "La Función sort()",
+            "text": "El objeto ndarray de NumPy tiene una función llamada <code>sort()</code>, que ordena un array especificado.",
+            "notes": [
+                {"type": "note", "text": "Este método devuelve una copia del array, dejando el array original inalterado. En Java, el método estándar <code>Arrays.sort()</code> ordena el array original (es decir, lo muta)."}
+            ]
+        },
+        {
+            "title": "Ordenar Diferentes Tipos",
+            "text": "Puedes ordenar arrays tanto de números como de cadenas de texto (strings) u otros tipos de datos compatibles. La función <code>sort()</code> deduce automáticamente el formato.",
+            "notes": []
+        },
+        {
+            "title": "Ordenar Arrays 2-D",
+            "text": "Si usas el método de ordenar (sort) en un array de 2 dimensiones, ambos arrays se ordenarán de forma interna.",
+            "notes": [
+                {"type": "tip", "text": "Para ordenar un array de forma 'descendente' puedes simplemente ordenarlo primero de manera ascendente con <code>sort()</code>, y luego usar notación negativa (<code>[::-1]</code>) para revertirlo."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "np-sort-1",
-            "python": "# NumPy Array Sort Python example\nprint('NumPy Array Sort')",
-            "java": "// NumPy Array Sort Java example\nSystem.out.println(\"NumPy Array Sort\");",
-            "explanation": "Basic example demonstrating NumPy Array Sort."
+            "id": "np-sort-num",
+            "section": "La Función sort()",
+            "python": "import numpy as np\n\narr = np.array([3, 2, 0, 1])\n\n# Obtiene un array nuevo ordenado\nprint(np.sort(arr)) # [0 1 2 3]\n\n# El original se mantiene igual:\nprint(arr)          # [3 2 0 1]",
+            "java": "import java.util.Arrays;\n\npublic class Main {\n  public static void main(String[] args) {\n    int[] arr = {3, 2, 0, 1};\n    \n    // Java muta y sobreescribe el array original\n    Arrays.sort(arr);\n    \n    System.out.println(Arrays.toString(arr)); // [0 1 2 3]\n  }\n}",
+            "explanation": "<code>np.sort()</code> en Python es 'no-mutativo' (retorna copia). <code>Arrays.sort()</code> en Java es 'mutativo' (modifica in-situ)."
+        },
+        {
+            "id": "np-sort-text",
+            "section": "Ordenar Diferentes Tipos",
+            "python": "import numpy as np\n\narr = np.array(['plátano', 'cereza', 'manzana'])\n\nprint(np.sort(arr))\n# ['cereza' 'manzana' 'plátano']",
+            "java": "import java.util.Arrays;\n\npublic class Main {\n  public static void main(String[] args) {\n    String[] arr = {\"plátano\", \"cereza\", \"manzana\"};\n    Arrays.sort(arr);\n    System.out.println(Arrays.toString(arr));\n  }\n}",
+            "explanation": "Ambos lenguajes utilizan el orden alfabético por defecto (ASCII-lexicográfico) para los strings."
+        },
+        {
+            "id": "np-sort-2d",
+            "section": "Ordenar Arrays 2-D",
+            "python": "import numpy as np\n\narr = np.array([[3, 2, 4], [5, 0, 1]])\n\n# Ordena las filas internamente\nprint(np.sort(arr))\n# [[2 3 4]\n#  [0 1 5]]",
+            "java": "// En Java tendrías que iterar cada fila y ordenarla:\nint[][] arr = {{3, 2, 4}, {5, 0, 1}};\nfor(int i = 0; i < arr.length; i++) {\n    java.util.Arrays.sort(arr[i]);\n}",
+            "explanation": "La asombrosa abstracción de NumPy hace que <code>np.sort()</code> se aplique a nivel multidimensional de forma automática."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-sort-1",
+            "type": "fill-blank",
+            "question": "Ordena este array de menor a mayor usando NumPy.",
+            "template": "print(np._____(arr))",
+            "template_html": "print(np.<input type='text' class='exercise-input' data-answer='sort' placeholder='____'>(arr))",
+            "python_code": "print(np.sort(arr))",
+            "answer": "sort"
+        },
+        {
+            "id": "ex-np-sort-2",
+            "type": "multiple-choice",
+            "question": "A diferencia de Java, ¿qué le ocurre al array original cuando aplicas np.sort() en NumPy?",
+            "options": ["Se reescribe completamente", "Se mantiene inalterado (inmutable)", "Produce un error si no lo guardas en una variable", "Se borra de memoria"],
+            "correct": 1
         }
     ]
 }

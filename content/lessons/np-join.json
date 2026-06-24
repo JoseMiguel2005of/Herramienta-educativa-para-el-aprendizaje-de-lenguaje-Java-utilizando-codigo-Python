@@ -1,17 +1,58 @@
 {
     "id": "np-join",
-    "title": "NumPy Array Join",
-    "intro": "Welcome to the NumPy Array Join lesson.",
-    "python_desc": "Python code for NumPy Array Join",
-    "java_desc": "Java equivalent for NumPy Array Join",
-    "explanation": "<p>In this lesson we cover <b>NumPy Array Join</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Unir Arrays (Join)",
+    "intro": "Unir (Joining) significa poner el contenido de dos o más arrays en un solo array.",
+    "python_desc": "Código Python para Unir Arrays",
+    "java_desc": "Equivalente en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "La Función concatenate()",
+            "text": "Pasamos una secuencia de arrays que queremos unir a la función <code>concatenate()</code>, junto con el eje (axis). Si no se pasa explícitamente, el eje se toma como 0.",
+            "notes": [
+                {"type": "note", "text": "En Java no existe una forma incorporada de unir matrices, necesitas instanciar una nueva de tamaño equivalente a la suma de ambas, e iterarlas copiando los datos."}
+            ]
+        },
+        {
+            "title": "Unir Arrays Usando Funciones de Pila (Stack)",
+            "text": "El apilamiento o stacking es similar a la concatenación, la única diferencia es que se hace sobre un nuevo eje. Por ejemplo, si apilamos dos arrays 1-D, el resultado será un array 2-D.",
+            "notes": [
+                {"type": "tip", "text": "NumPy tiene funciones ayudantes como <code>hstack()</code> para apilar a lo largo de las filas, o <code>vstack()</code> para apilar a lo largo de las columnas."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "np-join-1",
-            "python": "# NumPy Array Join Python example\nprint('NumPy Array Join')",
-            "java": "// NumPy Array Join Java example\nSystem.out.println(\"NumPy Array Join\");",
-            "explanation": "Basic example demonstrating NumPy Array Join."
+            "id": "np-join-concat",
+            "section": "La Función concatenate()",
+            "python": "import numpy as np\n\narr1 = np.array([1, 2, 3])\narr2 = np.array([4, 5, 6])\n\n# Unir por el eje 0 (axis=0 por defecto)\narr = np.concatenate((arr1, arr2))\n\nprint(arr) # [1 2 3 4 5 6]",
+            "java": "import java.util.Arrays;\n\npublic class Main {\n  public static void main(String[] args) {\n    int[] arr1 = {1, 2, 3};\n    int[] arr2 = {4, 5, 6};\n    \n    int[] res = new int[arr1.length + arr2.length];\n    System.arraycopy(arr1, 0, res, 0, arr1.length);\n    System.arraycopy(arr2, 0, res, arr1.length, arr2.length);\n    \n    System.out.println(Arrays.toString(res));\n  }\n}",
+            "explanation": "Python permite unir de inmediato pasándolos como tupla. En Java la mejor forma de hacerlo es usando <code>System.arraycopy</code> sobre un nuevo arreglo."
+        },
+        {
+            "id": "np-join-stack",
+            "section": "Unir Arrays Usando Funciones de Pila (Stack)",
+            "python": "import numpy as np\n\narr1 = np.array([1, 2, 3])\narr2 = np.array([4, 5, 6])\n\n# Crea una matriz 2D apilándolos uno arriba del otro:\narr = np.stack((arr1, arr2), axis=0)\n\nprint(arr)\n# [[1 2 3]\n#  [4 5 6]]",
+            "java": "// Para hacer esto en Java, crearías el 2D directamente\nint[] arr1 = {1, 2, 3};\nint[] arr2 = {4, 5, 6};\n\nint[][] arr = new int[2][];\narr[0] = arr1; \narr[1] = arr2;",
+            "explanation": "La función <code>stack</code> crea dimensiones nuevas, a diferencia de <code>concatenate</code> que pone todo de corrido en la misma dimensión."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-join-1",
+            "type": "fill-blank",
+            "question": "Concadena (une) el array 1 y el array 2 en un solo array de una dimensión.",
+            "template": "arr = np._____( (arr1, arr2) )",
+            "template_html": "arr = np.<input type='text' class='exercise-input' data-answer='concatenate' placeholder='___________'>( (arr1, arr2) )",
+            "python_code": "arr = np.concatenate( (arr1, arr2) )",
+            "answer": "concatenate"
+        },
+        {
+            "id": "ex-np-join-2",
+            "type": "multiple-choice",
+            "question": "¿Cuál es la principal diferencia entre concatenate y stack?",
+            "options": ["stack crea una nueva dimensión", "concatenate es más rápido", "stack elimina duplicados", "No hay diferencia"],
+            "correct": 0
         }
     ]
 }

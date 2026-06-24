@@ -1,17 +1,49 @@
 {
     "id": "pd-plotting",
-    "title": "Plotting",
-    "intro": "Welcome to the Plotting lesson.",
-    "python_desc": "Python code for Plotting",
-    "java_desc": "Java equivalent for Plotting",
-    "explanation": "<p>In this lesson we cover <b>Plotting</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Gráficos en Pandas",
+    "intro": "Pandas no solo sirve para limpiar tablas matemáticas, sino que también tiene un módulo de visualización rápida construido encima de la famosa librería de gráficas Matplotlib.",
+    "python_desc": "Gráficos en Python",
+    "java_desc": "Gráficos en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Graficando Datos (Plotting)",
+            "text": "Pandas tiene un método <code>plot()</code> nativo para crear representaciones visuales que te permitan entender tus datos al instante sin tener que leer miles de números en la consola.",
+            "notes": [
+                {"type": "note", "text": "Al igual que Pandas requiere Matplotlib bajo la mesa, en Java normalmente requerirías importar librerías GUI complejas (como JavaFX) o librerías de terceros (como JFreeChart) para generar gráficos estadísticos."}
+            ]
+        },
+        {
+            "title": "Tipos de Gráficos",
+            "text": "Por defecto Pandas genera un gráfico de líneas conectadas. Puedes crear gráficas de Dispersión (Scatter) o Histogramas (Hist) pasándole el tipo como un string a la función: <code>plot(kind='scatter')</code>.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
             "id": "pd-plotting-1",
-            "python": "# Plotting Python example\nprint('Plotting')",
-            "java": "// Plotting Java example\nSystem.out.println(\"Plotting\");",
-            "explanation": "Basic example demonstrating Plotting."
+            "section": "Graficando Datos (Plotting)",
+            "python": "import pandas as pd\nimport matplotlib.pyplot as plt\n\ndf = pd.read_csv('data.csv')\n\n# Esto genera los cálculos geométricos del gráfico automáticamente:\ndf.plot(kind='scatter', x='Duracion', y='Calorias')\n\n# Esto lanza la ventana visual interactiva:\nplt.show()",
+            "java": "import org.jfree.chart.ChartFactory;\nimport org.jfree.chart.JFreeChart;\nimport org.jfree.data.xy.XYSeries;\n// + 30 líneas de configuración de la ventana (JFrame)\n\npublic class Main {\n  public static void main(String[] args) {\n      XYSeries series = new XYSeries(\"Relación\");\n      for (Registro r : tabla) {\n          series.add(r.getDuracion(), r.getCalorias());\n      }\n      // Generación del chart y setup de UI Swing omitido por brevedad...\n  }\n}",
+            "explanation": "El proceso en Python permite hacer análisis exploratorio visual en menos de 5 líneas de código de preparación nula. Las herramientas de Java orientadas a GUI necesitan configuraciones pesadas para lograr pintar un solo punto."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-pd-plotting-1",
+            "type": "fill-blank",
+            "question": "Usa la función de trazado (plot) para generar un gráfico a partir del DataFrame.",
+            "template": "df.____()",
+            "template_html": "df.<input type='text' class='exercise-input' data-answer='plot' placeholder='____'>()",
+            "python_code": "df.plot()",
+            "answer": "plot"
+        },
+        {
+            "id": "ex-pd-plotting-2",
+            "type": "multiple-choice",
+            "question": "¿Qué módulo de Python se usa en conjunto con la función plot de Pandas para poder revelar e interactuar con la ventana del gráfico generado?",
+            "options": ["pygame", "JFreeChart", "matplotlib.pyplot", "turtle"],
+            "correct": 2
         }
     ]
 }

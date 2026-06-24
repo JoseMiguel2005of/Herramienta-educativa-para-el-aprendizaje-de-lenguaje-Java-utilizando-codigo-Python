@@ -1,17 +1,93 @@
 {
     "id": "py-ifelse",
-    "title": "Python If...Else",
-    "intro": "Welcome to the Python If...Else lesson.",
-    "python_desc": "Python code for Python If...Else",
-    "java_desc": "Java equivalent for Python If...Else",
-    "explanation": "<p>In this lesson we cover <b>Python If...Else</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "If...Else en Python",
+    "intro": "Python usa las sentencias if, elif y else para tomar decisiones en el código basándose en condiciones.",
+    "python_desc": "Código Python para If/Else",
+    "java_desc": "Equivalente en Java para If/Else",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "La Sentencia If",
+            "text": "La sentencia <code>if</code> ejecuta un bloque de código solo si la condición es verdadera. Python usa la <b>indentación</b> (espacios) para definir el bloque, no llaves <code>{}</code>.",
+            "notes": [
+                {"type": "warning", "text": "La indentación es <b>obligatoria</b> en Python. Si no indentas el bloque del <code>if</code>, obtendrás un <code>IndentationError</code>. Java usa llaves <code>{}</code> y la indentación es opcional (pero recomendada)."}
+            ]
+        },
+        {
+            "title": "Elif",
+            "text": "La palabra clave <code>elif</code> (abreviación de 'else if') permite verificar múltiples condiciones en secuencia.",
+            "notes": [
+                {"type": "note", "text": "Java usa <code>else if</code> (dos palabras). Python lo abrevia como <code>elif</code> (una sola palabra)."}
+            ]
+        },
+        {
+            "title": "Else",
+            "text": "La sentencia <code>else</code> captura todo lo que no fue capturado por las condiciones anteriores.",
+            "notes": []
+        },
+        {
+            "title": "If en Una Línea",
+            "text": "Python permite escribir sentencias <code>if</code> cortas en una sola línea, conocido como <b>operador ternario</b>.",
+            "notes": [
+                {"type": "tip", "text": "Java también tiene operador ternario: <code>condición ? valor1 : valor2</code>. La sintaxis de Python es más legible: <code>valor1 if condición else valor2</code>."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-ifelse-1",
-            "python": "# Python If...Else Python example\nprint('Python If...Else')",
-            "java": "// Python If...Else Java example\nSystem.out.println(\"Python If...Else\");",
-            "explanation": "Basic example demonstrating Python If...Else."
+            "id": "py-if-basic",
+            "section": "La Sentencia If",
+            "python": "a = 33\nb = 200\nif b > a:\n    print(\"b es mayor que a\")",
+            "java": "int a = 33;\nint b = 200;\nif (b > a) {\n    System.out.println(\"b es mayor que a\");\n}",
+            "explanation": "Python: sin paréntesis en la condición, usa <code>:</code> y indentación. Java: paréntesis obligatorios y llaves <code>{}</code>."
+        },
+        {
+            "id": "py-if-elif",
+            "section": "Elif",
+            "python": "a = 33\nb = 33\nif b > a:\n    print(\"b es mayor\")\nelif a == b:\n    print(\"a y b son iguales\")",
+            "java": "int a = 33;\nint b = 33;\nif (b > a) {\n    System.out.println(\"b es mayor\");\n} else if (a == b) {\n    System.out.println(\"a y b son iguales\");\n}",
+            "explanation": "Python: <code>elif</code>. Java: <code>else if</code>. Misma lógica, diferente sintaxis."
+        },
+        {
+            "id": "py-if-else",
+            "section": "Else",
+            "python": "a = 200\nb = 33\nif b > a:\n    print(\"b es mayor\")\nelif a == b:\n    print(\"son iguales\")\nelse:\n    print(\"a es mayor\")",
+            "java": "int a = 200;\nint b = 33;\nif (b > a) {\n    System.out.println(\"b es mayor\");\n} else if (a == b) {\n    System.out.println(\"son iguales\");\n} else {\n    System.out.println(\"a es mayor\");\n}",
+            "explanation": "El <code>else</code> funciona igual en ambos lenguajes: captura todo lo demás."
+        },
+        {
+            "id": "py-if-oneline",
+            "section": "If en Una Línea",
+            "python": "a = 2\nb = 330\nresultado = \"A\" if a > b else \"B\"\nprint(resultado)  # B",
+            "java": "int a = 2;\nint b = 330;\nString resultado = (a > b) ? \"A\" : \"B\";\nSystem.out.println(resultado);  // B",
+            "explanation": "Python: <code>valor if condición else otro</code>. Java: <code>condición ? valor : otro</code>."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-if-1",
+            "type": "fill-blank",
+            "question": "Completa la sentencia para imprimir \"Hola\" si <code>x</code> es mayor que <code>y</code>.",
+            "template": "_____ x > y:\n    print(\"Hola\")",
+            "template_html": "<input type='text' class='exercise-input' data-answer='if' placeholder='___'> x > y:<br>&nbsp;&nbsp;&nbsp;&nbsp;print(\"Hola\")",
+            "python_code": "if x > y:\n    print(\"Hola\")",
+            "answer": "if"
+        },
+        {
+            "id": "ex-if-2",
+            "type": "multiple-choice",
+            "question": "¿Cuál es la palabra clave de Python equivalente a <code>else if</code> de Java?",
+            "options": ["elseif", "elif", "else if", "elsif"],
+            "correct": 1
+        },
+        {
+            "id": "ex-if-3",
+            "type": "fill-blank",
+            "question": "Escribe un operador ternario que devuelva <code>\"par\"</code> si <code>x</code> es par, de lo contrario <code>\"impar\"</code>.",
+            "template": "resultado = \"par\" _____ x % 2 == 0 else \"impar\"",
+            "template_html": "resultado = \"par\" <input type='text' class='exercise-input' data-answer='if' placeholder='___'> x % 2 == 0 else \"impar\"",
+            "python_code": "resultado = \"par\" if x % 2 == 0 else \"impar\"",
+            "answer": "if"
         }
     ]
 }

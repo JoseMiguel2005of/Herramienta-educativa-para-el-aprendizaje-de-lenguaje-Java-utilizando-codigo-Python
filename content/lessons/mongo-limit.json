@@ -1,17 +1,37 @@
 {
     "id": "mongo-limit",
-    "title": "MongoDB Limit",
-    "intro": "Welcome to the MongoDB Limit lesson.",
-    "python_desc": "Python code for MongoDB Limit",
-    "java_desc": "Java equivalent for MongoDB Limit",
-    "explanation": "<p>In this lesson we cover <b>MongoDB Limit</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "MongoDB - Limitar Resultados (Limit)",
+    "intro": "Para limitar el número de documentos extraídos en MongoDB, utilizamos el método <code>limit()</code>.",
+    "python_desc": "Uso de limit en Python",
+    "java_desc": "Uso de limit en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Limitar el Resultado",
+            "text": "Al igual que MySQL tiene su cláusula <code>LIMIT</code>, MongoDB provee una función que se acopla dinámicamente al final del Cursor de resultados devuelto por el método <code>find()</code>.",
+            "notes": [
+                {"type": "note", "text": "Este enfoque por encadenamiento te permite construir filtros dinámicamente en tiempo de ejecución, en vez de concatenar texto SQL rígidamente."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "mongo-limit-1",
-            "python": "# MongoDB Limit Python example\nprint('MongoDB Limit')",
-            "java": "// MongoDB Limit Java example\nSystem.out.println(\"MongoDB Limit\");",
-            "explanation": "Basic example demonstrating MongoDB Limit."
+            "section": "Limitar el Resultado",
+            "python": "import pymongo\n\nmyclient = pymongo.MongoClient(\"mongodb://localhost:27017/\")\nmycol = myclient[\"mibasededatos\"][\"clientes\"]\n\n# Solo obtendrá y volcará a la memoria los primeros 5 documentos\nmydoc = mycol.find().limit(5)\n\nfor x in mydoc:\n  print(x)",
+            "java": "import com.mongodb.client.MongoClients;\nimport com.mongodb.client.MongoCollection;\nimport org.bson.Document;\n\npublic class Main {\n  public static void main(String[] args) {\n      MongoCollection<Document> collection = db.getCollection(\"clientes\");\n      \n      // El patrón de encadenamiento (Builder Pattern) brilla aquí:\n      var cursor = collection.find().limit(5).iterator();\n      \n      while (cursor.hasNext()) {\n          System.out.println(cursor.next().toJson());\n      }\n  }\n}",
+            "explanation": "Puesto que LIMIT restringe la extracción a nivel Base de Datos y Motor Físico (y no dentro del lenguaje), previene activamente las fallas de Memoria RAM."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-mongo-limit-1",
+            "type": "fill-blank",
+            "question": "Concluye el comando adecuadamente para que la base de datos devuelva únicamente 5 registros.",
+            "template": "mydoc = mycol.find()._____(5)",
+            "template_html": "mydoc = mycol.find().<input type='text' class='exercise-input' data-answer='limit' placeholder='_____'>(5)",
+            "python_code": "mydoc = mycol.find().limit(5)",
+            "answer": "limit"
         }
     ]
 }

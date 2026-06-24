@@ -1,17 +1,77 @@
 {
     "id": "np-create",
-    "title": "NumPy Creating Arrays",
-    "intro": "Welcome to the NumPy Creating Arrays lesson.",
-    "python_desc": "Python code for NumPy Creating Arrays",
-    "java_desc": "Java equivalent for NumPy Creating Arrays",
-    "explanation": "<p>In this lesson we cover <b>NumPy Creating Arrays</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Creación de Arrays en NumPy",
+    "intro": "El objeto array de NumPy se llama ndarray. Podemos crear un objeto ndarray usando la función array().",
+    "python_desc": "Código Python para Crear Arrays",
+    "java_desc": "Equivalente en Java para Arrays Multidimensionales",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Crear un ndarray",
+            "text": "Para crear un <code>ndarray</code>, pasamos una lista, tupla o cualquier objeto tipo array a la función <code>np.array()</code>, y éste se convertirá en un ndarray.",
+            "notes": [
+                {"type": "note", "text": "En Java los arreglos (<code>arrays</code>) se declaran usando corchetes <code>[]</code> y debes especificar un tamaño fijo en memoria al crearlos."}
+            ]
+        },
+        {
+            "title": "Dimensiones (Dimensions)",
+            "text": "Un array puede tener cualquier número de dimensiones. A esto se le conoce como el <i>rango</i> (rank) del array.",
+            "notes": []
+        },
+        {
+            "title": "Arrays 0-D y 1-D",
+            "text": "Los arrays de dimensión cero (0-D) son escalares, como un simple número. Los arrays 1-D tienen escalares como elementos y son el array más común.",
+            "notes": [
+                {"type": "tip", "text": "En Java, un array 1-D es lo típico: <code>int[] arr = {1, 2, 3};</code>"}
+            ]
+        },
+        {
+            "title": "Arrays 2-D y 3-D",
+            "text": "Un array 2-D tiene arrays 1-D como elementos (útil para matrices matemáticas). Un array 3-D contiene arrays 2-D (útil para representar imágenes en color, etc).",
+            "notes": [
+                {"type": "note", "text": "En Java, puedes crear arrays multidimensionales anidando corchetes, por ejemplo: <code>int[][] matriz2D</code>."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "np-create-1",
-            "python": "# NumPy Creating Arrays Python example\nprint('NumPy Creating Arrays')",
-            "java": "// NumPy Creating Arrays Java example\nSystem.out.println(\"NumPy Creating Arrays\");",
-            "explanation": "Basic example demonstrating NumPy Creating Arrays."
+            "id": "np-create-1d",
+            "section": "Arrays 0-D y 1-D",
+            "python": "import numpy as np\n\n# Array de 0-D (Escalar)\na = np.array(42)\nprint(a)\n\n# Array de 1-D\nb = np.array([1, 2, 3, 4, 5])\nprint(b)",
+            "java": "public class Main {\n  public static void main(String[] args) {\n    // 0-D Escalar\n    int a = 42;\n    \n    // 1-D Array\n    int[] b = {1, 2, 3, 4, 5};\n  }\n}",
+            "explanation": "NumPy abstrae todo (incluso escalares) como objetos <code>ndarray</code>."
+        },
+        {
+            "id": "np-create-2d",
+            "section": "Arrays 2-D y 3-D",
+            "python": "import numpy as np\n\n# Array 2-D (Matriz)\nc = np.array([[1, 2, 3], [4, 5, 6]])\nprint(c)",
+            "java": "public class Main {\n  public static void main(String[] args) {\n    // Array 2-D (Matriz)\n    int[][] c = {\n        {1, 2, 3}, \n        {4, 5, 6}\n    };\n  }\n}",
+            "explanation": "Ambos lenguajes usan arrays anidados para representar dimensiones múltiples, pero NumPy facilita cálculos directos sobre toda la matriz."
+        },
+        {
+            "id": "np-create-ndim",
+            "section": "Dimensiones (Dimensions)",
+            "python": "import numpy as np\n\nc = np.array([[1, 2, 3], [4, 5, 6]])\n# Comprobar cuántas dimensiones tiene:\nprint(c.ndim) # Imprime 2",
+            "java": "// En Java no hay un atributo '.ndim' directo.\n// Tienes que deducirlo por el tipo (int[][]) \n// o revisar la clase por reflexión.",
+            "explanation": "NumPy tiene un atributo <code>ndim</code> que devuelve instantáneamente la cantidad de dimensiones del array."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-create-1",
+            "type": "fill-blank",
+            "question": "Crea un array de NumPy a partir de una lista.",
+            "template": "x = np._____([1, 2, 3])",
+            "template_html": "x = np.<input type='text' class='exercise-input' data-answer='array' placeholder='_____'>([1, 2, 3])",
+            "python_code": "x = np.array([1, 2, 3])",
+            "answer": "array"
+        },
+        {
+            "id": "ex-np-create-2",
+            "type": "multiple-choice",
+            "question": "¿Qué atributo de NumPy te dice cuántas dimensiones (ndim) tiene un array?",
+            "options": ["length", "size", "ndim", "shape"],
+            "correct": 2
         }
     ]
 }

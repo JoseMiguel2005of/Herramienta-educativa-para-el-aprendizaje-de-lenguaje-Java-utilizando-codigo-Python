@@ -1,17 +1,107 @@
 {
     "id": "py-classes",
-    "title": "Classes/Objects",
-    "intro": "Welcome to the Classes/Objects lesson.",
-    "python_desc": "Python code for Classes/Objects",
-    "java_desc": "Java equivalent for Classes/Objects",
-    "explanation": "<p>In this lesson we cover <b>Classes/Objects</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Clases y Objetos en Python",
+    "intro": "Python es un lenguaje orientado a objetos. Casi todo en Python es un objeto, con sus propiedades y métodos. Una clase es como un 'plano' para crear objetos.",
+    "python_desc": "Código Python para Clases",
+    "java_desc": "Equivalente en Java para Clases",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Crear una Clase",
+            "text": "Para crear una clase usa la palabra clave <code>class</code>. Las clases son plantillas para crear objetos.",
+            "notes": [
+                {"type": "note", "text": "En Java, <b>todo</b> el código debe estar dentro de una clase. En Python, las clases son opcionales — puedes escribir código sin clases."}
+            ]
+        },
+        {
+            "title": "Crear un Objeto",
+            "text": "Un objeto es una instancia de una clase. Se crea llamando a la clase como si fuera una función.",
+            "notes": [
+                {"type": "tip", "text": "Python no usa la palabra <code>new</code>. En Java sí: <code>Persona p = new Persona()</code>."}
+            ]
+        },
+        {
+            "title": "El Método __init__",
+            "text": "El método <code>__init__()</code> es el <b>constructor</b>. Se ejecuta automáticamente cuando se crea un nuevo objeto y se usa para inicializar las propiedades.",
+            "notes": [
+                {"type": "note", "text": "En Java, el constructor tiene el <b>mismo nombre que la clase</b>. En Python siempre se llama <code>__init__</code>."}
+            ]
+        },
+        {
+            "title": "El Parámetro self",
+            "text": "El parámetro <code>self</code> es una referencia a la instancia actual de la clase. Se usa para acceder a las variables y métodos del objeto.",
+            "notes": [
+                {"type": "warning", "text": "<code>self</code> debe ser el <b>primer parámetro</b> de todos los métodos de la clase. En Java, el equivalente es <code>this</code> y es implícito (no se declara como parámetro)."}
+            ]
+        },
+        {
+            "title": "Métodos de la Clase",
+            "text": "Los objetos pueden contener métodos. Los métodos son funciones definidas dentro de la clase.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-classes-1",
-            "python": "# Classes/Objects Python example\nprint('Classes/Objects')",
-            "java": "// Classes/Objects Java example\nSystem.out.println(\"Classes/Objects\");",
-            "explanation": "Basic example demonstrating Classes/Objects."
+            "id": "py-class-create",
+            "section": "Crear una Clase",
+            "python": "class Persona:\n    nombre = \"Ana\"",
+            "java": "public class Persona {\n    String nombre = \"Ana\";\n}",
+            "explanation": "Python: <code>class Nombre:</code>. Java: <code>public class Nombre { }</code>."
+        },
+        {
+            "id": "py-class-object",
+            "section": "Crear un Objeto",
+            "python": "class Persona:\n    nombre = \"Ana\"\n\np1 = Persona()\nprint(p1.nombre)  # Ana",
+            "java": "Persona p1 = new Persona();\nSystem.out.println(p1.nombre);  // Ana",
+            "explanation": "Python: <code>p1 = Persona()</code> (sin <code>new</code>). Java: <code>p1 = new Persona()</code>."
+        },
+        {
+            "id": "py-class-init",
+            "section": "El Método __init__",
+            "python": "class Persona:\n    def __init__(self, nombre, edad):\n        self.nombre = nombre\n        self.edad = edad\n\np1 = Persona(\"Ana\", 25)\nprint(p1.nombre, p1.edad)",
+            "java": "public class Persona {\n    String nombre;\n    int edad;\n    \n    public Persona(String nombre, int edad) {\n        this.nombre = nombre;\n        this.edad = edad;\n    }\n}\n// Persona p1 = new Persona(\"Ana\", 25);",
+            "explanation": "Python: <code>__init__(self)</code>. Java: constructor con nombre de la clase y <code>this</code>."
+        },
+        {
+            "id": "py-class-self",
+            "section": "El Parámetro self",
+            "python": "class Persona:\n    def __init__(self, nombre):\n        self.nombre = nombre\n\n    def saludar(self):\n        print(\"Hola, soy \" + self.nombre)\n\np1 = Persona(\"Carlos\")\np1.saludar()",
+            "java": "public class Persona {\n    String nombre;\n    public Persona(String nombre) {\n        this.nombre = nombre;\n    }\n    public void saludar() {\n        System.out.println(\"Hola, soy \" + this.nombre);\n    }\n}",
+            "explanation": "Python: <code>self</code> explícito como primer parámetro. Java: <code>this</code> implícito."
+        },
+        {
+            "id": "py-class-methods",
+            "section": "Métodos de la Clase",
+            "python": "class Calculadora:\n    def sumar(self, a, b):\n        return a + b\n    \n    def restar(self, a, b):\n        return a - b\n\ncalc = Calculadora()\nprint(calc.sumar(5, 3))   # 8\nprint(calc.restar(10, 4)) # 6",
+            "java": "public class Calculadora {\n    public int sumar(int a, int b) {\n        return a + b;\n    }\n    public int restar(int a, int b) {\n        return a - b;\n    }\n}\n// Calculadora calc = new Calculadora();\n// System.out.println(calc.sumar(5, 3));",
+            "explanation": "Los métodos se definen igual conceptualmente. Java requiere tipos de retorno y parámetros."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-class-1",
+            "type": "fill-blank",
+            "question": "Crea una clase llamada <code>Carro</code>.",
+            "template": "_____ Carro:\n    color = \"rojo\"",
+            "template_html": "<input type='text' class='exercise-input' data-answer='class' placeholder='___'> Carro:<br>&nbsp;&nbsp;&nbsp;&nbsp;color = \"rojo\"",
+            "python_code": "class Carro:\n    color = \"rojo\"",
+            "answer": "class"
+        },
+        {
+            "id": "ex-class-2",
+            "type": "multiple-choice",
+            "question": "¿Cuál es el equivalente de <code>self</code> en Java?",
+            "options": ["self", "this", "me", "my"],
+            "correct": 1
+        },
+        {
+            "id": "ex-class-3",
+            "type": "fill-blank",
+            "question": "Completa el constructor de la clase.",
+            "template": "class Persona:\n    def _____(self, nombre):\n        self.nombre = nombre",
+            "template_html": "class Persona:<br>&nbsp;&nbsp;&nbsp;&nbsp;def <input type='text' class='exercise-input' data-answer='__init__' placeholder='___'>(self, nombre):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.nombre = nombre",
+            "python_code": "class Persona:\n    def __init__(self, nombre):\n        self.nombre = nombre",
+            "answer": "__init__"
         }
     ]
 }

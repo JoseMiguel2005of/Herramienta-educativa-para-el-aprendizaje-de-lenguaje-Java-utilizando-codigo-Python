@@ -1,17 +1,49 @@
 {
     "id": "np-shape",
-    "title": "NumPy Array Shape",
-    "intro": "Welcome to the NumPy Array Shape lesson.",
-    "python_desc": "Python code for NumPy Array Shape",
-    "java_desc": "Java equivalent for NumPy Array Shape",
-    "explanation": "<p>In this lesson we cover <b>NumPy Array Shape</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Forma (Shape) del Array",
+    "intro": "La forma de un array es el número de elementos en cada dimensión.",
+    "python_desc": "Código Python para Shape",
+    "java_desc": "Equivalente en Java para Dimensiones",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Obtener la Forma",
+            "text": "Los arrays de NumPy tienen un atributo llamado <code>shape</code> que devuelve una tupla, en la cual cada índice contiene el número de elementos de la dimensión correspondiente.",
+            "notes": [
+                {"type": "note", "text": "En Java no hay un equivalente nativo de una sola llamada que te devuelva la forma (<code>shape</code>) completa de una matriz multidimensional. Tienes que leer la longitud (<code>length</code>) de cada sub-array individualmente."}
+            ]
+        },
+        {
+            "title": "Entendiendo la Tupla Resultante",
+            "text": "Si el resultado de <code>shape</code> es <code>(2, 4)</code>, significa que el array tiene 2 dimensiones, y la primera dimensión tiene 2 elementos mientras que la segunda tiene 4.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
-            "id": "np-shape-1",
-            "python": "# NumPy Array Shape Python example\nprint('NumPy Array Shape')",
-            "java": "// NumPy Array Shape Java example\nSystem.out.println(\"NumPy Array Shape\");",
-            "explanation": "Basic example demonstrating NumPy Array Shape."
+            "id": "np-shape-2d",
+            "section": "Obtener la Forma",
+            "python": "import numpy as np\n\narr = np.array([[1, 2, 3, 4], [5, 6, 7, 8]])\n\nprint(arr.shape) # Salida: (2, 4)",
+            "java": "public class Main {\n  public static void main(String[] args) {\n    int[][] arr = {{1, 2, 3, 4}, {5, 6, 7, 8}};\n    \n    // Tienes que conseguir las partes manualmente\n    int filas = arr.length;       // 2\n    int cols = arr[0].length;     // 4\n    \n    System.out.println(\"(\" + filas + \", \" + cols + \")\");\n  }\n}",
+            "explanation": "El atributo <code>shape</code> hace muy sencillo en Python entender las proporciones del set de datos sin bucles."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-shape-1",
+            "type": "fill-blank",
+            "question": "Usa el atributo correcto para obtener la forma del array.",
+            "template": "arr = np.array([1, 2, 3])\nprint(arr._____)",
+            "template_html": "arr = np.array([1, 2, 3])<br>print(arr.<input type='text' class='exercise-input' data-answer='shape' placeholder='_____'>)",
+            "python_code": "arr = np.array([1, 2, 3])\nprint(arr.shape)",
+            "answer": "shape"
+        },
+        {
+            "id": "ex-np-shape-2",
+            "type": "multiple-choice",
+            "question": "Si la forma de un array es (3, 5), ¿cuántas filas y columnas tiene?",
+            "options": ["5 filas, 3 columnas", "3 dimensiones y 5 elementos", "3 filas, 5 columnas", "15 elementos en una fila"],
+            "correct": 2
         }
     ]
 }

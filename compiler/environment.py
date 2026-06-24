@@ -1,7 +1,8 @@
 from typing import Dict, Optional, Any, List
 
+
 class Type:
-    def __init__(self, name: str, generic_args: List['Type'] = None):
+    def __init__(self, name: str, generic_args: List["Type"] = None):
         self.name = name
         self.generic_args = generic_args or []
 
@@ -11,14 +12,15 @@ class Type:
             return f"{self.name}<{args_str}>"
         return self.name
 
+
 class Scope:
-    def __init__(self, parent: Optional['Scope'] = None, name: str = "global"):
+    def __init__(self, parent: Optional["Scope"] = None, name: str = "global"):
         self.parent = parent
         self.name = name
         self.variables: Dict[str, Type] = {}
         self.functions: Dict[str, Any] = {}
         self.classes: Dict[str, Any] = {}
-    
+
     def define_var(self, name: str, var_type: Type):
         self.variables[name] = var_type
 
@@ -29,6 +31,7 @@ class Scope:
             return self.parent.get_var(name)
         return None
 
+
 class Environment:
     def __init__(self):
         self.global_scope = Scope()
@@ -36,7 +39,7 @@ class Environment:
         self.errors: List[str] = []
         self.warnings: List[str] = []
         self.needs_scanner = False
-        
+
         # Built-in types
         self.type_object = Type("Object")
         self.type_int = Type("int")

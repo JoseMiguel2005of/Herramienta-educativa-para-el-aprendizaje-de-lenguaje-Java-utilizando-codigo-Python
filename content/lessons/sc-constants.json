@@ -1,17 +1,42 @@
 {
     "id": "sc-constants",
-    "title": "SciPy Constants",
-    "intro": "Welcome to the SciPy Constants lesson.",
-    "python_desc": "Python code for SciPy Constants",
-    "java_desc": "Java equivalent for SciPy Constants",
-    "explanation": "<p>In this lesson we cover <b>SciPy Constants</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "SciPy - Constantes (Constants)",
+    "intro": "Como SciPy se centra más en implementaciones científicas, proporciona un módulo interno <code>constants</code> lleno de constantes útiles.",
+    "python_desc": "Módulo constants de SciPy",
+    "java_desc": "Equivalencia en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Física y Matemáticas",
+            "text": "El módulo contiene fórmulas exactas que los ingenieros usan todo el tiempo. Por ejemplo, te permite consultar directamente en código cuántos minutos tiene una semana, o a cuánto equivale la masa de un electrón.",
+            "notes": [
+                {"type": "note", "text": "Java (en su paquete <code>java.lang.Math</code>) sólo incluye <code>Math.PI</code> y <code>Math.E</code>. Para valores de física o unidades del sistema internacional, debes buscarlos en Google y declararlos como `public static final double GRAVEDAD = 9.80665;` manualmente."}
+            ]
+        },
+        {
+            "title": "Ejemplo: Constantes de Velocidad",
+            "text": "SciPy provee utilidades como la velocidad de la luz en el vacío, o la velocidad del sonido. Estos valores pueden usarse directamente en ecuaciones de arrays para acelerar cálculos.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
             "id": "sc-constants-1",
-            "python": "# SciPy Constants Python example\nprint('SciPy Constants')",
-            "java": "// SciPy Constants Java example\nSystem.out.println(\"SciPy Constants\");",
-            "explanation": "Basic example demonstrating SciPy Constants."
+            "section": "Física y Matemáticas",
+            "python": "from scipy import constants\n\n# La velocidad de la luz (c)\nprint(constants.speed_of_light)\n# Imprime: 299792458.0\n\n# Masa de un electrón (kg)\nprint(constants.electron_mass)\n# Imprime: 9.1093837015e-31",
+            "java": "public class ConstantesUniversales {\n    // En Java, el programador debe definir estas físicas a mano:\n    public static final double VELOCIDAD_LUZ = 299792458.0;\n    public static final double MASA_ELECTRON = 9.1093837015e-31;\n    \n    public static void main(String[] args) {\n        System.out.println(VELOCIDAD_LUZ);\n    }\n}",
+            "explanation": "El ecosistema Python ha estandarizado los diccionarios científicos. Java es un lenguaje genérico (empresarial, web) por lo que prefiere que cada proyecto defina sus propias constantes matemáticas según sea necesario."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-sc-constants-1",
+            "type": "fill-blank",
+            "question": "Escribe el nombre del submódulo de scipy que contiene valores como la masa del electrón o la velocidad de la luz.",
+            "template": "from scipy import _________",
+            "template_html": "from scipy import <input type='text' class='exercise-input' data-answer='constants' placeholder='_________'>",
+            "python_code": "from scipy import constants",
+            "answer": "constants"
         }
     ]
 }

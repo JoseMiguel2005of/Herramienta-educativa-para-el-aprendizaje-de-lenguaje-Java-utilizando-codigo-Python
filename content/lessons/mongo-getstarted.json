@@ -1,17 +1,40 @@
 {
     "id": "mongo-getstarted",
-    "title": "MongoDB Get Started",
-    "intro": "Welcome to the MongoDB Get Started lesson.",
-    "python_desc": "Python code for MongoDB Get Started",
-    "java_desc": "Java equivalent for MongoDB Get Started",
-    "explanation": "<p>In this lesson we cover <b>MongoDB Get Started</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "MongoDB - Primeros Pasos",
+    "intro": "Python se puede utilizar en aplicaciones de bases de datos. Una de las bases de datos NoSQL más populares es MongoDB.",
+    "python_desc": "Instalación e Importación",
+    "java_desc": "Equivalencia en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Instalar el Driver MongoDB",
+            "text": "Python necesita un controlador (driver) de MongoDB para acceder a la base de datos de documentos. Recomendamos usar PIP para instalar 'pymongo': <code>pip install pymongo</code>.",
+            "notes": [
+                {"type": "note", "text": "En Java, agregarías la dependencia <code>org.mongodb:mongodb-driver-sync</code> a tu pom.xml (Maven) o build.gradle (Gradle)."}
+            ]
+        },
+        {
+            "title": "Importar el Módulo",
+            "text": "Una vez instalado el driver, puedes importar el paquete <code>pymongo</code> a tu aplicación y empezar a utilizarlo de inmediato.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
             "id": "mongo-getstarted-1",
-            "python": "# MongoDB Get Started Python example\nprint('MongoDB Get Started')",
-            "java": "// MongoDB Get Started Java example\nSystem.out.println(\"MongoDB Get Started\");",
-            "explanation": "Basic example demonstrating MongoDB Get Started."
+            "section": "Importar el Módulo",
+            "python": "import pymongo\n\n# Probar que la importación funciona\nprint(dir(pymongo))",
+            "java": "import com.mongodb.client.MongoClients;\nimport com.mongodb.client.MongoClient;\n\npublic class Main {\n  public static void main(String[] args) {\n      // En Java, la instanciación de clases inicia el ciclo de vida del Driver\n      MongoClient mongoClient = MongoClients.create(\"mongodb://localhost:27017\");\n      System.out.println(mongoClient);\n  }\n}",
+            "explanation": "El ecosistema de importaciones es análogo. Python usa paquetes (módulos) y Java importa Paquetes de Clases específicas para acceder al cliente."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-mongo-getstarted-1",
+            "type": "multiple-choice",
+            "question": "¿Cuál es el comando estándar para instalar el controlador oficial de MongoDB en Python?",
+            "options": ["npm install mongodb", "pip install pymongo", "apt-get install mongodb-python", "python-install mongo"],
+            "correct": 1
         }
     ]
 }

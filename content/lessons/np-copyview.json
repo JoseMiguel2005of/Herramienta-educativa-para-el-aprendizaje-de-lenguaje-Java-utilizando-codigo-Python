@@ -1,17 +1,75 @@
 {
     "id": "np-copyview",
-    "title": "NumPy Copy vs View",
-    "intro": "Welcome to the NumPy Copy vs View lesson.",
-    "python_desc": "Python code for NumPy Copy vs View",
-    "java_desc": "Java equivalent for NumPy Copy vs View",
-    "explanation": "<p>In this lesson we cover <b>NumPy Copy vs View</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Copia y Vista (Copy & View)",
+    "intro": "La principal diferencia entre una copia (copy) y una vista (view) de un array es que la copia es un nuevo array, y la vista es solo una vista del array original.",
+    "python_desc": "Código Python para Copia y Vista",
+    "java_desc": "Equivalente en Java para Arrays",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "La Diferencia Principal",
+            "text": "La copia posee los datos y cualquier cambio en la copia no afectará al array original. La vista NO posee los datos y los cambios hechos a la vista afectarán al array original, y viceversa.",
+            "notes": [
+                {"type": "note", "text": "En Java, cuando asignas un array a otra variable (<code>int[] b = a</code>), siempre estás creando una <b>vista</b> (una referencia a la memoria). Para copiar, necesitas explícitamente clonarlo o usar <code>Arrays.copyOf()</code>."}
+            ]
+        },
+        {
+            "title": "Hacer una Copia (Copy)",
+            "text": "Usa el método <code>copy()</code> para hacer una copia dura e independiente de un array.",
+            "notes": []
+        },
+        {
+            "title": "Hacer una Vista (View)",
+            "text": "Usa el método <code>view()</code> para crear una vista del array original.",
+            "notes": [
+                {"type": "tip", "text": "Hacer <i>slicing</i> (ej. <code>arr[1:5]</code>) en NumPy también devuelve una <b>vista</b> por defecto, no una copia, para ahorrar muchísima memoria RAM. ¡Ten cuidado al modificar slices!"}
+            ]
+        },
+        {
+            "title": "Comprobar si el Array Posee los Datos",
+            "text": "Todo array de NumPy tiene el atributo <code>base</code> que devuelve <code>None</code> si el array posee sus datos. De lo contrario, el atributo <code>base</code> se refiere al objeto original.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
-            "id": "np-copyview-1",
-            "python": "# NumPy Copy vs View Python example\nprint('NumPy Copy vs View')",
-            "java": "// NumPy Copy vs View Java example\nSystem.out.println(\"NumPy Copy vs View\");",
-            "explanation": "Basic example demonstrating NumPy Copy vs View."
+            "id": "np-copy-ex",
+            "section": "Hacer una Copia (Copy)",
+            "python": "import numpy as np\n\narr = np.array([1, 2, 3, 4, 5])\nx = arr.copy()\n\narr[0] = 42\n\nprint(arr) # [42 2 3 4 5]\nprint(x)   # [1 2 3 4 5]",
+            "java": "import java.util.Arrays;\n\npublic class Main {\n  public static void main(String[] args) {\n    int[] arr = {1, 2, 3, 4, 5};\n    // Java requiere usar clone() o copyOf() para copias duras\n    int[] x = arr.clone();\n    \n    arr[0] = 42;\n    System.out.println(Arrays.toString(arr)); // [42, ...]\n    System.out.println(Arrays.toString(x));   // [1, ...]\n  }\n}",
+            "explanation": "Tanto <code>.copy()</code> en Python como <code>.clone()</code> en Java crean bloques de memoria completamente independientes."
+        },
+        {
+            "id": "np-view-ex",
+            "section": "Hacer una Vista (View)",
+            "python": "import numpy as np\n\narr = np.array([1, 2, 3, 4, 5])\nx = arr.view()\n\narr[0] = 42\n\nprint(arr) # [42 2 3 4 5]\nprint(x)   # [42 2 3 4 5]",
+            "java": "import java.util.Arrays;\n\npublic class Main {\n  public static void main(String[] args) {\n    int[] arr = {1, 2, 3, 4, 5};\n    // En Java, asignar variables siempre pasa por referencia (Vista)\n    int[] x = arr;\n    \n    arr[0] = 42;\n    System.out.println(Arrays.toString(arr)); // [42, ...]\n    System.out.println(Arrays.toString(x));   // [42, ...]\n  }\n}",
+            "explanation": "El método <code>.view()</code> de NumPy crea explícitamente lo que Java hace implícitamente al asignar <code>x = arr</code>."
+        },
+        {
+            "id": "np-base-check",
+            "section": "Comprobar si el Array Posee los Datos",
+            "python": "import numpy as np\n\narr = np.array([1, 2, 3, 4, 5])\nx = arr.copy()\ny = arr.view()\n\nprint(x.base) # Devuelve None\nprint(y.base) # Devuelve [1 2 3 4 5] (el array original)",
+            "java": "// En Java no existe una forma incorporada sencilla para\n// preguntar a un array quién es el dueño de su memoria.",
+            "explanation": "El atributo <code>base</code> en NumPy es muy útil para depurar si estás trabajando sobre los datos originales o sobre una copia."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-copy-1",
+            "type": "fill-blank",
+            "question": "Haz una copia dura de <code>arr</code> que no se vea afectada por los cambios en el original.",
+            "template": "x = arr._____()",
+            "template_html": "x = arr.<input type='text' class='exercise-input' data-answer='copy' placeholder='____'>()",
+            "python_code": "x = arr.copy()",
+            "answer": "copy"
+        },
+        {
+            "id": "ex-np-copy-2",
+            "type": "multiple-choice",
+            "question": "¿Qué devuelve la propiedad 'base' si el array es el dueño de sus propios datos (una copia o array original)?",
+            "options": ["El array original", "False", "None", "True"],
+            "correct": 2
         }
     ]
 }

@@ -1,17 +1,37 @@
 {
     "id": "np-logs",
-    "title": "Logs",
-    "intro": "Welcome to the Logs lesson.",
-    "python_desc": "Python code for Logs",
-    "java_desc": "Java equivalent for Logs",
-    "explanation": "<p>In this lesson we cover <b>Logs</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "NumPy - Logaritmos (Logs)",
+    "intro": "NumPy provee una serie de funciones universales de alto rendimiento para el cálculo de logaritmos en base 2, base 10 y logaritmos naturales (base e).",
+    "python_desc": "Logaritmos Vectoriales",
+    "java_desc": "Logaritmos en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Cálculo Logarítmico",
+            "text": "Para calcular logs, debes invocar funciones como <code>np.log2()</code>, <code>np.log10()</code> o <code>np.log()</code> (que asume la base 'e' - Euler natural).",
+            "notes": [
+                {"type": "note", "text": "Al ser Ufuncs, puedes mandarle un Array entero de datos a estas funciones y retornarán el array resuelto paralelamente."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "np-logs-1",
-            "python": "# Logs Python example\nprint('Logs')",
-            "java": "// Logs Java example\nSystem.out.println(\"Logs\");",
-            "explanation": "Basic example demonstrating Logs."
+            "section": "Cálculo Logarítmico",
+            "python": "import numpy as np\n\narr = np.arange(1, 10)\n\n# Ejecutar el logaritmo de Base 2 a TODO el array de un solo golpe\nprint(np.log2(arr))",
+            "java": "public class Logs {\n  public static void main(String[] args) {\n      double[] arr = {1, 2, 3, 4, 5, 6, 7, 8, 9};\n      double[] logs = new double[arr.length];\n      \n      for (int i = 0; i < arr.length; i++) {\n          // En Java solo existe Log10 y Log natural (Math.log).\n          // Para base 2, se requiere la fórmula de cambio de base (log(x) / log(2))\n          logs[i] = Math.log(arr[i]) / Math.log(2);\n      }\n      System.out.println(java.util.Arrays.toString(logs));\n  }\n}",
+            "explanation": "La API de matemáticas puras de Python es muchísimo más extensa para Data Science. NumPy provee funciones especializadas (`log2`), mientras que Java (siendo minimalista) asume que puedes derivarlo usando matemáticas básicas en un bucle FOR."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-logs-1",
+            "type": "fill-blank",
+            "question": "Llama a la ufunc correcta para calcular los logaritmos en Base 10 de todo el array.",
+            "template": "x = np.______(arr)",
+            "template_html": "x = np.<input type='text' class='exercise-input' data-answer='log10' placeholder='______'>(arr)",
+            "python_code": "x = np.log10(arr)",
+            "answer": "log10"
         }
     ]
 }

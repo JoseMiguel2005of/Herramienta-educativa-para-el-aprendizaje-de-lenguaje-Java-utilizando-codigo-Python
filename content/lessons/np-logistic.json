@@ -1,17 +1,37 @@
 {
     "id": "np-logistic",
-    "title": "Logistic Distribution",
-    "intro": "Welcome to the Logistic Distribution lesson.",
-    "python_desc": "Python code for Logistic Distribution",
-    "java_desc": "Java equivalent for Logistic Distribution",
-    "explanation": "<p>In this lesson we cover <b>Logistic Distribution</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "NumPy - Distribución Logística",
+    "intro": "La Distribución Logística se usa extensivamente en Machine Learning para la 'Regresión Logística' y en Redes Neuronales.",
+    "python_desc": "Logística en NumPy",
+    "java_desc": "Logística en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "¿Qué es la Distribución Logística?",
+            "text": "Se asemeja mucho a la Distribución Normal (Campana de Gauss), pero tiene 'colas' más pesadas o gruesas, lo que significa que representa una mayor probabilidad de que ocurran eventos extremos o atípicos más lejos de la media.",
+            "notes": [
+                {"type": "note", "text": "Al ser continua, los resultados devuelven números decimales/fracciones."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "np-logistic-1",
-            "python": "# Logistic Distribution Python example\nprint('Logistic Distribution')",
-            "java": "// Logistic Distribution Java example\nSystem.out.println(\"Logistic Distribution\");",
-            "explanation": "Basic example demonstrating Logistic Distribution."
+            "section": "¿Qué es la Distribución Logística?",
+            "python": "from numpy import random\n\n# loc es la media (donde se centra el pico)\n# scale es la dispersión (cuán aplastada es la campana)\nx = random.logistic(loc=1, scale=2, size=(2, 3))\n\nprint(x)",
+            "java": "import org.apache.commons.math3.distribution.LogisticDistribution;\nimport java.util.Arrays;\n\npublic class Logistica {\n  public static void main(String[] args) {\n      // Instanciar la distribución Logística con Media(1.0) y Escala(2.0)\n      LogisticDistribution dist = new LogisticDistribution(1.0, 2.0);\n      \n      double[][] matriz = new double[2][3];\n      for (int i = 0; i < 2; i++) {\n          for (int j = 0; j < 3; j++) {\n              matriz[i][j] = dist.sample();\n          }\n      }\n      System.out.println(Arrays.deepToString(matriz));\n  }\n}",
+            "explanation": "La regresión logística es la puerta de entrada a funciones de activación como Sigmoide en Redes Neuronales. Tanto el ecosistema NumPy como Commons Math lo soportan de forma prístina."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-logistic-1",
+            "type": "fill-blank",
+            "question": "Llama a la función que modela distribuciones con colas matemáticas más pesadas (usadas en Machine Learning).",
+            "template": "x = random.________(loc=1, scale=2, size=(2, 3))",
+            "template_html": "x = random.<input type='text' class='exercise-input' data-answer='logistic' placeholder='________'>(loc=1, scale=2, size=(2, 3))",
+            "python_code": "x = random.logistic(loc=1, scale=2, size=(2, 3))",
+            "answer": "logistic"
         }
     ]
 }

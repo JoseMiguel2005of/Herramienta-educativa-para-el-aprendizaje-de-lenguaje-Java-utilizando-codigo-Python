@@ -1,17 +1,37 @@
 {
     "id": "np-trig",
-    "title": "Trigonometric",
-    "intro": "Welcome to the Trigonometric lesson.",
-    "python_desc": "Python code for Trigonometric",
-    "java_desc": "Java equivalent for Trigonometric",
-    "explanation": "<p>In this lesson we cover <b>Trigonometric</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "NumPy - Funciones Trigonométricas",
+    "intro": "NumPy provee las ufuncs tradicionales (sin, cos y tan) para calcular los valores trigonométricos de forma supervectorizada.",
+    "python_desc": "Trigonometría Array",
+    "java_desc": "Math Trigonométrica Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Seno, Coseno y Tangente",
+            "text": "Mientras la librería Math normal de Python procesa un número a la vez, <code>np.sin()</code>, <code>np.cos()</code> y <code>np.tan()</code> toman un Array NumPy gigantesco y devuelven todas las identidades trigonométricas calculadas masivamente. Estos valores ingresados siempre se calculan tomando Radiantes (Radianes).",
+            "notes": [
+                {"type": "note", "text": "Si tienes los ángulos en Grados y no en Radianes, NumPy expone funciones utilitarias rápidas <code>np.deg2rad()</code> o <code>np.rad2deg()</code> para la conversión."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "np-trig-1",
-            "python": "# Trigonometric Python example\nprint('Trigonometric')",
-            "java": "// Trigonometric Java example\nSystem.out.println(\"Trigonometric\");",
-            "explanation": "Basic example demonstrating Trigonometric."
+            "section": "Seno, Coseno y Tangente",
+            "python": "import numpy as np\n\n# Array con valores angulares de PI y PI/2 (Radiantes)\narr = np.array([np.pi/2, np.pi/3, np.pi/4, np.pi/5])\n\n# Calculamos el Seno simultáneamente de todos:\nx = np.sin(arr)\n\nprint(x)",
+            "java": "public class Trigonom {\n  public static void main(String[] args) {\n      double[] arr = {Math.PI/2, Math.PI/3, Math.PI/4, Math.PI/5};\n      double[] senos = new double[4];\n      \n      // La API Math de Java está diseñada de manera escalar (Uno por uno)\n      for(int i = 0; i < arr.length; i++) {\n          senos[i] = Math.sin(arr[i]);\n      }\n      \n      System.out.println(java.util.Arrays.toString(senos));\n  }\n}",
+            "explanation": "La escalabilidad (escalar vs vectorial) de las APIs estándar es la razón de que NumPy sea preferido para Machine Learning. Ejecutar Math.sin 10 millones de veces en Java es sumamente costoso en ciclos JNI (si usa bibliotecas C nativas) a diferencia de enviar todo el bloque de memoria de una vez como hace NumPy."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-trig-1",
+            "type": "fill-blank",
+            "question": "Llama a la ufunc correcta para convertir un Array que tiene Grados y volverlos Radianes.",
+            "template": "arr = np.array([90, 180, 270, 360])\nx = np._______(arr)",
+            "template_html": "arr = np.array([90, 180, 270, 360])<br>x = np.<input type='text' class='exercise-input' data-answer='deg2rad' placeholder='_______'>(arr)",
+            "python_code": "arr = np.array([90, 180, 270, 360])\nx = np.deg2rad(arr)",
+            "answer": "deg2rad"
         }
     ]
 }

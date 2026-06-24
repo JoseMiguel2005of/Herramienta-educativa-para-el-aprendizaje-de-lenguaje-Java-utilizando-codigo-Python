@@ -2,6 +2,7 @@
 Cargador de contenido modular para Py2Java Edu.
 Lee archivos JSON desde content/ y los expone al resto de la aplicación.
 """
+
 import json
 import os
 from functools import lru_cache

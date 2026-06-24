@@ -1,17 +1,65 @@
 {
     "id": "py-writefiles",
-    "title": "Python Write/Create Files",
-    "intro": "Welcome to the Python Write/Create Files lesson.",
-    "python_desc": "Python code for Python Write/Create Files",
-    "java_desc": "Java equivalent for Python Write/Create Files",
-    "explanation": "<p>In this lesson we cover <b>Python Write/Create Files</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Escribir Archivos en Python",
+    "intro": "Para escribir en un archivo existente o crear uno nuevo, debes abrir el archivo usando los modos de escritura correspondientes.",
+    "python_desc": "Código Python para Escribir Archivos",
+    "java_desc": "Equivalente en Java para Escribir Archivos",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Escribir en un Archivo Existente",
+            "text": "Para agregar contenido a un archivo, usa el modo <code>\"a\"</code> (Append - añadir al final del archivo). Para sobrescribir un archivo completo, usa el modo <code>\"w\"</code> (Write - sobrescribir todo el contenido existente).",
+            "notes": [
+                {"type": "note", "text": "En Java, el equivalente moderno es usar <code>Files.writeString()</code> y pasarle opciones como <code>StandardOpenOption.APPEND</code>."}
+            ]
+        },
+        {
+            "title": "Crear un Nuevo Archivo",
+            "text": "Para crear un nuevo archivo, usa <code>open()</code> con uno de estos modos: <code>\"x\"</code> (Crea archivo, devuelve error si ya existe), <code>\"a\"</code> (Añade archivo, lo crea si no existe), <code>\"w\"</code> (Sobrescribe, lo crea si no existe).",
+            "notes": [
+                {"type": "tip", "text": "Normalmente se usa el modo <code>\"w\"</code> o <code>\"a\"</code> porque se encargan de crear el archivo automáticamente si no lo encuentran."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-writefiles-1",
-            "python": "# Python Write/Create Files Python example\nprint('Python Write/Create Files')",
-            "java": "// Python Write/Create Files Java example\nSystem.out.println(\"Python Write/Create Files\");",
-            "explanation": "Basic example demonstrating Python Write/Create Files."
+            "id": "py-write-append",
+            "section": "Escribir en un Archivo Existente",
+            "python": "# Abre en modo 'append' (añadir)\nwith open(\"demofile2.txt\", \"a\") as f:\n    f.write(\"\\nAhora agregamos más contenido!\")\n\n# Abrir y leer para comprobar:\nwith open(\"demofile2.txt\", \"r\") as f:\n    print(f.read())",
+            "java": "import java.nio.file.Files;\nimport java.nio.file.Path;\nimport java.nio.file.StandardOpenOption;\n\npublic class Main {\n  public static void main(String[] args) throws Exception {\n    // Añadir al final (Append) en Java\n    Path ruta = Path.of(\"demofile2.txt\");\n    Files.writeString(ruta, \"\\nAhora agregamos más contenido!\", StandardOpenOption.APPEND);\n  }\n}",
+            "explanation": "Python: abre en modo <code>\"a\"</code> y usa <code>write()</code>. Java usa la constante <code>APPEND</code>."
+        },
+        {
+            "id": "py-write-overwrite",
+            "section": "Escribir en un Archivo Existente",
+            "python": "# Abre en modo 'write' (sobrescribir)\nwith open(\"demofile3.txt\", \"w\") as f:\n    f.write(\"Vaya, he borrado el contenido anterior.\")\n\nwith open(\"demofile3.txt\", \"r\") as f:\n    print(f.read())",
+            "java": "import java.nio.file.Files;\nimport java.nio.file.Path;\n\npublic class Main {\n  public static void main(String[] args) throws Exception {\n    // Por defecto, writeString sobrescribe (modo \"w\")\n    Path ruta = Path.of(\"demofile3.txt\");\n    Files.writeString(ruta, \"Vaya, he borrado el contenido anterior.\");\n  }\n}",
+            "explanation": "Tanto el modo <code>\"w\"</code> en Python como <code>Files.writeString()</code> en Java sobrescriben completamente el archivo por defecto."
+        },
+        {
+            "id": "py-write-create",
+            "section": "Crear un Nuevo Archivo",
+            "python": "try:\n    # La 'x' falla si myfile.txt ya existe\n    f = open(\"myfile.txt\", \"x\")\n    f.close()\nexcept FileExistsError:\n    print(\"El archivo ya existía\")",
+            "java": "import java.io.File;\nimport java.io.IOException;\n\npublic class Main {\n  public static void main(String[] args) {\n    try {\n      File miArchivo = new File(\"myfile.txt\");\n      if (miArchivo.createNewFile()) {\n        System.out.println(\"Archivo creado: \" + miArchivo.getName());\n      } else {\n        System.out.println(\"El archivo ya existía.\");\n      }\n    } catch (IOException e) {\n      System.out.println(\"Ocurrió un error.\");\n    }\n  }\n}",
+            "explanation": "El modo <code>\"x\"</code> de Python lanza un error si el archivo ya existe. <code>createNewFile()</code> de Java devuelve <code>false</code> si ya existe, sin lanzar excepción por ello."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-write-1",
+            "type": "fill-blank",
+            "question": "¿Qué letra debes usar como modo si quieres AÑADIR texto al final de un archivo sin borrar lo anterior?",
+            "template": "f = open(\"test.txt\", \"_____\")\nf.write(\"Hola!\")",
+            "template_html": "f = open(\"test.txt\", \"<input type='text' class='exercise-input' data-answer='a' placeholder='_'>\")<br>f.write(\"Hola!\")",
+            "python_code": "f = open(\"test.txt\", \"a\")",
+            "answer": "a"
+        },
+        {
+            "id": "ex-write-2",
+            "type": "multiple-choice",
+            "question": "¿Qué método se usa para introducir texto dentro de un archivo?",
+            "options": ["add()", "write()", "append()", "insert()"],
+            "correct": 1
         }
     ]
 }

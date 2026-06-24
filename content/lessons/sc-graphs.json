@@ -1,17 +1,44 @@
 {
     "id": "sc-graphs",
-    "title": "SciPy Graphs",
-    "intro": "Welcome to the SciPy Graphs lesson.",
-    "python_desc": "Python code for SciPy Graphs",
-    "java_desc": "Java equivalent for SciPy Graphs",
-    "explanation": "<p>In this lesson we cover <b>SciPy Graphs</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "SciPy - Grafos (Graphs)",
+    "intro": "Los grafos (Nodos conectados por Aristas) son una estructura de datos esencial. SciPy nos provee un submódulo csgraph para el procesamiento de rutas.",
+    "python_desc": "SciPy CSGraph",
+    "java_desc": "Estructuras en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "¿Qué son los Grafos?",
+            "text": "Los grafos se utilizan típicamente para crear modelos de relaciones (como las Redes Sociales o mapas GPS). SciPy usa matrices dispersas (Sparse) para representar eficientemente grandes laberintos o grafos de conexiones.",
+            "notes": [
+                {"type": "note", "text": "SciPy usa una técnica llamada Matriz de Adyacencia para procesarlos sin usar memoria extra."}
+            ]
+        },
+        {
+            "title": "Ruta más Corta (Dijkstra)",
+            "text": "SciPy incluye algoritmos célebres ya empaquetados. El método <code>dijkstra</code> permite encontrar el camino (ruta) más rápido o corto desde un nodo (ciudad/persona) inicial al resto de elementos de la red.",
+            "notes": [
+                {"type": "tip", "text": "El algoritmo Dijkstra suele enseñarse en el segundo o tercer año de ciencias de la computación. En Java es común escribir sus 50 líneas de lógica manualmente para superar una entrevista de trabajo."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "sc-graphs-1",
-            "python": "# SciPy Graphs Python example\nprint('SciPy Graphs')",
-            "java": "// SciPy Graphs Java example\nSystem.out.println(\"SciPy Graphs\");",
-            "explanation": "Basic example demonstrating SciPy Graphs."
+            "section": "Ruta más Corta (Dijkstra)",
+            "python": "import numpy as np\nfrom scipy.sparse.csgraph import dijkstra\nfrom scipy.sparse import csr_matrix\n\n# La matriz de las conexiones del grafo\narr = np.array([\n  [0, 1, 2],\n  [1, 0, 0],\n  [2, 0, 0]\n])\n\nnewarr = csr_matrix(arr)\n\n# Retorna la ruta más corta desde cada elemento a cada otro elemento\nprint(dijkstra(newarr, return_predecessors=True, indices=0))",
+            "java": "public class AlgoritmoDijkstra {\n    // Fragmento de Java omitido debido a su longitud.\n    // Un algoritmo Dijkstra en Java requeriría construir:\n    // 1. Una clase Nodo (Node)\n    // 2. Una clase Arista (Edge o Link)\n    // 3. Una PriorityQueue (Min-Heap)\n    // 4. Múltiples bucles while y arrays de rastreo para marcar nodos como 'Visitados'\n}",
+            "explanation": "La complejidad de SciPy radica en que, en lugar de requerir complejas clases orientadas a objetos, el algoritmo se resuelve inyectándole matrices algebraicas puras en una sola línea de invocación. Java requiere una arquitectura de clases OO clásica."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-sc-graphs-1",
+            "type": "fill-blank",
+            "question": "Escribe el nombre del famoso algoritmo incluido en SciPy que busca la ruta más corta en un sistema de conexiones.",
+            "template": "print(________(newarr))",
+            "template_html": "print(<input type='text' class='exercise-input' data-answer='dijkstra' placeholder='________'>(newarr))",
+            "python_code": "print(dijkstra(newarr))",
+            "answer": "dijkstra"
         }
     ]
 }

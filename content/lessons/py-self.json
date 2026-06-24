@@ -1,17 +1,51 @@
 {
     "id": "py-self",
-    "title": "The self Parameter",
-    "intro": "Welcome to the The self Parameter lesson.",
-    "python_desc": "Python code for The self Parameter",
-    "java_desc": "Java equivalent for The self Parameter",
-    "explanation": "<p>In this lesson we cover <b>The self Parameter</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "El Parámetro self",
+    "intro": "El parámetro self es una referencia a la instancia actual de la clase y se utiliza para acceder a las variables que pertenecen a la clase.",
+    "python_desc": "Código Python para self",
+    "java_desc": "Equivalente en Java para this",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Obligatorio en Python",
+            "text": "Debe ser el <b>primer parámetro</b> de cualquier función en la clase. Si no lo pones, Python arrojará un error.",
+            "notes": [
+                {"type": "note", "text": "En Java, el equivalente es la palabra clave <code>this</code>. A diferencia de Python, no tienes que pasar <code>this</code> explícitamente como parámetro en los métodos."}
+            ]
+        },
+        {
+            "title": "Puedes Llamarlo Como Quieras",
+            "text": "No tiene que llamarse 'self', puedes llamarlo como quieras (ej. <code>mi_objeto</code>), pero TIENE que ser el primer parámetro de cualquier método en la clase.",
+            "notes": [
+                {"type": "tip", "text": "Aunque puedes llamarlo como quieras, usar <code>self</code> es una convención estricta en Python. ¡Cambiarlo confundirá a otros programadores!"}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-self-1",
-            "python": "# The self Parameter Python example\nprint('The self Parameter')",
-            "java": "// The self Parameter Java example\nSystem.out.println(\"The self Parameter\");",
-            "explanation": "Basic example demonstrating The self Parameter."
+            "id": "py-self-usage",
+            "section": "Obligatorio en Python",
+            "python": "class Persona:\n    def __init__(self, nombre, edad):\n        self.nombre = nombre\n        self.edad = edad\n\n    # 'self' DEBE ir aquí:\n    def saludar(self):\n        print(\"Hola, soy \" + self.nombre)",
+            "java": "public class Persona {\n    String nombre;\n    int edad;\n    \n    public Persona(String nombre, int edad) {\n        this.nombre = nombre;\n        this.edad = edad;\n    }\n    \n    // Java asume 'this' implícitamente, no va en los parámetros\n    public void saludar() {\n        System.out.println(\"Hola, soy \" + this.nombre);\n    }\n}",
+            "explanation": "Python exige declarar <code>self</code> y usarlo para acceder a propiedades. Java permite usar <code>this</code> o incluso omitirlo si no hay ambigüedad."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-self-1",
+            "type": "fill-blank",
+            "question": "Añade el parámetro correcto para referenciar el objeto dentro de una clase.",
+            "template": "class MiClase:\n    def my_method(_____):",
+            "template_html": "class MiClase:<br>&nbsp;&nbsp;&nbsp;&nbsp;def my_method(<input type='text' class='exercise-input' data-answer='self' placeholder='____'>):",
+            "python_code": "class MiClase:\n    def my_method(self):",
+            "answer": "self"
+        },
+        {
+            "id": "ex-self-2",
+            "type": "multiple-choice",
+            "question": "¿Cuál es la palabra clave en Java que es equivalente al 'self' de Python?",
+            "options": ["that", "object", "this", "super"],
+            "correct": 2
         }
     ]
 }

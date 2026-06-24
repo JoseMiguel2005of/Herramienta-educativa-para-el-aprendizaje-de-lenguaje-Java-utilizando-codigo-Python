@@ -1,17 +1,37 @@
 {
     "id": "np-pareto",
-    "title": "Pareto Distribution",
-    "intro": "Welcome to the Pareto Distribution lesson.",
-    "python_desc": "Python code for Pareto Distribution",
-    "java_desc": "Java equivalent for Pareto Distribution",
-    "explanation": "<p>In this lesson we cover <b>Pareto Distribution</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "NumPy - Distribución de Pareto",
+    "intro": "Una distribución probabilística nombrada por Vilfredo Pareto que forma la base de la regla del 80-20.",
+    "python_desc": "Pareto en NumPy",
+    "java_desc": "Pareto en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "¿Qué es la regla de Pareto (80-20)?",
+            "text": "La distribución de Pareto modela el principio matemático de que el 20% de los factores producen el 80% de las consecuencias. (Ejemplo: el 20% de los clientes genera el 80% de tus ventas, o el 20% de los programadores escribe el 80% del código).",
+            "notes": [
+                {"type": "tip", "text": "En Machine Learning, esta distribución es la piedra angular para simular la concentración de riquezas (economía) y la distribución del tamaño de archivos en el tráfico de Internet."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "np-pareto-1",
-            "python": "# Pareto Distribution Python example\nprint('Pareto Distribution')",
-            "java": "// Pareto Distribution Java example\nSystem.out.println(\"Pareto Distribution\");",
-            "explanation": "Basic example demonstrating Pareto Distribution."
+            "section": "¿Qué es la regla de Pareto (80-20)?",
+            "python": "from numpy import random\n\n# Simulamos el modelado usando el parámetro a (la forma de la curva)\nx = random.pareto(a=2, size=(2, 3))\n\nprint(x)",
+            "java": "import org.apache.commons.math3.distribution.ParetoDistribution;\nimport java.util.Arrays;\n\npublic class Economia {\n  public static void main(String[] args) {\n      // Parámetros: Escala y Forma(a)\n      ParetoDistribution dist = new ParetoDistribution(1.0, 2.0);\n      \n      double[] riquezas = dist.sample(6);\n      System.out.println(Arrays.toString(riquezas));\n  }\n}",
+            "explanation": "La distribución de Pareto está soportada tanto de forma estática pura por NumPy, como por el Modelador Empresarial Commons Math de Java."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-pareto-1",
+            "type": "fill-blank",
+            "question": "Escribe el nombre de la distribución probabilística que describe el modelo en el que 'El 20% de las causas genera el 80% de los efectos'.",
+            "template": "x = random.______(a=2, size=(2, 3))",
+            "template_html": "x = random.<input type='text' class='exercise-input' data-answer='pareto' placeholder='______'>(a=2, size=(2, 3))",
+            "python_code": "x = random.pareto(a=2, size=(2, 3))",
+            "answer": "pareto"
         }
     ]
 }

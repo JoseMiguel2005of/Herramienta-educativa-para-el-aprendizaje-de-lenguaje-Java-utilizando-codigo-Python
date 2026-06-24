@@ -1,0 +1,40 @@
+{
+    "id": "sc-significance",
+    "title": "SciPy - Pruebas de Significación",
+    "intro": "En estadística científica, una Prueba de Significación (Significance Test) evalúa si un resultado numérico fue producto de la casualidad o de un factor real (Hipótesis).",
+    "python_desc": "SciPy Statistics",
+    "java_desc": "Evaluación en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "¿Qué son las Pruebas de Significación?",
+            "text": "Se usan en la Inteligencia Artificial moderna para determinar si los datos descubiertos están listos para ser creídos (apoyar la Hipótesis) o deben ser desechados porque ocurrieron por azar (Hipótesis Nula).",
+            "notes": [
+                {"type": "note", "text": "Si en la vida real 2 de cada 3 personas prefieren el chocolate, pero tú encuestas a 3 personas en la calle y a todas les gusta la vainilla, una Prueba de Significación matemática te diría que tu resultado es un 'Golpe de Suerte' probabilístico y descartaría el estudio."}
+            ]
+        },
+        {
+            "title": "Valor-P (P-Value)",
+            "text": "El núcleo estadístico de esto es el 'P-Value', el número de probabilidad de que la data haya ocurrido aleatoriamente. SciPy incluye el módulo <code>scipy.stats</code> con la función de T-Test (Prueba T) para extraer automáticamente dicho valor (<code>pvalue</code>).",
+            "notes": []
+        }
+    ],
+    "code_mappings": [
+        {
+            "id": "sc-significance-1",
+            "section": "Valor-P (P-Value)",
+            "python": "import numpy as np\nfrom scipy.stats import ttest_ind\n\nv1 = np.random.normal(size=100)\nv2 = np.random.normal(size=100)\n\n# ttest_ind devuelve el pvalue inmediatamente cruzando ambas curvas:\nres = ttest_ind(v1, v2)\n\nprint(\"Probabilidad P-Value:\", res.pvalue)",
+            "java": "import org.apache.commons.math3.stat.inference.TTest;\n\npublic class Main {\n  public static void main(String[] args) {\n      double[] muestra1 = { /* 100 números */ };\n      double[] muestra2 = { /* 100 números */ };\n      \n      // En Java, el ecosistema de Commons Math empaqueta el TTest\n      TTest test = new TTest();\n      double pValue = test.tTest(muestra1, muestra2);\n      \n      System.out.println(\"Probabilidad P-Value: \" + pValue);\n  }\n}",
+            "explanation": "La Prueba-T independiente es fundamental para la validación de software a nivel científico. Al igual que en Python con `scipy.stats.ttest_ind`, las librerías corporativas serias en Java implementan objetos `TTest`."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-sc-significance-1",
+            "type": "multiple-choice",
+            "question": "¿Qué número o variable subyacente nos indica la probabilidad matemática de que un resultado en nuestro Data Science haya sido simplemente producto del azar o la suerte?",
+            "options": ["El valor T-Test", "El T-Value", "El P-Value", "El T-Matrix"],
+            "correct": 2
+        }
+    ]
+}

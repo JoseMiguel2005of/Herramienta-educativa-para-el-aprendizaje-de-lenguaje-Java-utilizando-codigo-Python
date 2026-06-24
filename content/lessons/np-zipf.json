@@ -1,17 +1,37 @@
 {
     "id": "np-zipf",
-    "title": "Zipf Distribution",
-    "intro": "Welcome to the Zipf Distribution lesson.",
-    "python_desc": "Python code for Zipf Distribution",
-    "java_desc": "Java equivalent for Zipf Distribution",
-    "explanation": "<p>In this lesson we cover <b>Zipf Distribution</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "NumPy - Distribución de Zipf",
+    "intro": "Las Distribuciones de Zipf se utilizan para hacer muestreos matemáticos basados en la famosa Ley de Zipf.",
+    "python_desc": "Zipf en NumPy",
+    "java_desc": "Zipf en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "¿Qué es la Ley de Zipf?",
+            "text": "En una colección matemática, el n-ésimo (ene-ésimo) elemento común equivale a '1 dividido en n' veces el elemento más común. Si vemos un idioma, la palabra más común aparece el doble de veces que la segunda más común, el triple que la tercera, etc. Esto se usa muchísimo en Procesamiento de Lenguaje Natural (Inteligencia Artificial).",
+            "notes": [
+                {"type": "note", "text": "En NumPy, le pasamos el argumento <code>a</code> (el parámetro de distribución estadístico) y el atributo <code>size</code>."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "np-zipf-1",
-            "python": "# Zipf Distribution Python example\nprint('Zipf Distribution')",
-            "java": "// Zipf Distribution Java example\nSystem.out.println(\"Zipf Distribution\");",
-            "explanation": "Basic example demonstrating Zipf Distribution."
+            "section": "¿Qué es la Ley de Zipf?",
+            "python": "from numpy import random\n\n# Obtener una distribución de Zipf probabilística para PNL:\nx = random.zipf(a=2, size=(2, 3))\n\nprint(x)",
+            "java": "import org.apache.commons.math3.distribution.ZipfDistribution;\n\npublic class PNL_IA {\n  public static void main(String[] args) {\n      // En Java, la Distribución Zipf de Commons Math asume que el \n      // conjunto de datos es finito (N elementos)\n      int elementos = 10000;\n      double a = 2.0;\n      \n      ZipfDistribution dist = new ZipfDistribution(elementos, a);\n      System.out.println(dist.sample());\n  }\n}",
+            "explanation": "La Ley de Zipf en NumPy asume inherentemente que los datos (elementos a estudiar) son infinitos, ideal para la IA pura. La distribución Zipf en Java estático exige definir el universo absoluto de elementos `N`, lo cual lo hace ligeramente diferente."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-zipf-1",
+            "type": "fill-blank",
+            "question": "Llama al método que permite generar arrays matemáticos modelados sobre la famosa Ley de Lenguaje de Zipf.",
+            "template": "x = random.____(a=2, size=(2, 3))",
+            "template_html": "x = random.<input type='text' class='exercise-input' data-answer='zipf' placeholder='____'>(a=2, size=(2, 3))",
+            "python_code": "x = random.zipf(a=2, size=(2, 3))",
+            "answer": "zipf"
         }
     ]
 }

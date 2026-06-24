@@ -4,6 +4,7 @@ from .environment import Environment
 from .analyzer import Analyzer
 from .generator import Generator
 
+
 def translate(python_code: str, class_name: str = "Program") -> Dict[str, Any]:
     """
     Main entry point for translating Python code to Java.
@@ -13,7 +14,7 @@ def translate(python_code: str, class_name: str = "Program") -> Dict[str, Any]:
         return {"java": "", "errors": [], "warnings": []}
 
     env = Environment()
-    
+
     try:
         tree = ast.parse(code)
     except SyntaxError as exc:

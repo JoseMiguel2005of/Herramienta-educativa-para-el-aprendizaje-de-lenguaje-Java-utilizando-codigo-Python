@@ -1182,13 +1182,17 @@ body::before {
    RESPONSIVE & PWA (Fase 6)
    ============================================= */
 
+.hide-desktop {
+    display: none;
+}
+
 /* Tablet & Smaller Desktop */
 @media (max-width: 1024px) {
     .code-comparison {
-        flex-direction: column !important;
+        grid-template-columns: 1fr !important;
     }
     .translator-panels {
-        flex-direction: column;
+        grid-template-columns: 1fr !important;
     }
 }
 
@@ -1201,10 +1205,10 @@ body::before {
     .sidebar {
         position: fixed;
         left: -300px;
-        top: 0;
-        height: 100vh;
+        top: 60px;
+        height: calc(100vh - 60px);
         width: 280px;
-        z-index: 100;
+        z-index: 101;
         transition: left 0.3s ease;
         box-shadow: 2px 0 10px rgba(0,0,0,0.5);
     }

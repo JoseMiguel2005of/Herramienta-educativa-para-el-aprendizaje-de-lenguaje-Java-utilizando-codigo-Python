@@ -1,17 +1,72 @@
 {
     "id": "py-polymorphism",
-    "title": "Python Polymorphism",
-    "intro": "Welcome to the Python Polymorphism lesson.",
-    "python_desc": "Python code for Python Polymorphism",
-    "java_desc": "Java equivalent for Python Polymorphism",
-    "explanation": "<p>In this lesson we cover <b>Python Polymorphism</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Polimorfismo en Python",
+    "intro": "La palabra 'polimorfismo' significa 'muchas formas', y en programación se refiere a métodos/funciones/operadores con el mismo nombre que pueden ser ejecutados en muchos objetos o clases.",
+    "python_desc": "Código Python para Polimorfismo",
+    "java_desc": "Equivalente en Java para Polimorfismo",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Función Polymórfica",
+            "text": "Un ejemplo del polimorfismo básico es la función integrada <code>len()</code>. Puede usarse en diferentes tipos de datos (strings, listas, tuplas, diccionarios).",
+            "notes": [
+                {"type": "note", "text": "En Java no existe una única función <code>len()</code>. Se usa <code>.length()</code> para Strings, <code>.length</code> para arrays, y <code>.size()</code> para Colecciones."}
+            ]
+        },
+        {
+            "title": "Polimorfismo de Clases",
+            "text": "El polimorfismo de clases ocurre cuando múltiples clases tienen métodos con el mismo nombre. Por ejemplo, varias clases diferentes podrían tener un método llamado <code>moverse()</code>.",
+            "notes": [
+                {"type": "tip", "text": "En Python, debido a su <b>tipado dinámico</b> (Duck Typing), no necesitas que las clases hereden de la misma clase padre para aprovechar el polimorfismo."}
+            ]
+        },
+        {
+            "title": "Polimorfismo con Herencia",
+            "text": "Frecuentemente el polimorfismo se usa en la herencia. Si las clases hijas sobreescriben un método de la clase padre, puedes iterar sobre objetos de diferentes clases y llamar al mismo método sin importar el tipo de objeto exacto.",
+            "notes": [
+                {"type": "warning", "text": "En Java, el polimorfismo es estricto: los objetos <b>deben</b> compartir una superclase o interfaz común para ser tratados de la misma forma en una lista."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-polymorphism-1",
-            "python": "# Python Polymorphism Python example\nprint('Python Polymorphism')",
-            "java": "// Python Polymorphism Java example\nSystem.out.println(\"Python Polymorphism\");",
-            "explanation": "Basic example demonstrating Python Polymorphism."
+            "id": "py-poly-basic",
+            "section": "Función Polymórfica",
+            "python": "texto = \"Hola Mundo!\"\nlista = [1, 2, 3]\ndict = {\"marca\": \"Ford\", \"modelo\": \"Mustang\"}\n\nprint(len(texto)) # 11\nprint(len(lista)) # 3\nprint(len(dict))  # 2",
+            "java": "String texto = \"Hola Mundo!\";\nint[] lista = {1, 2, 3};\njava.util.HashMap<String, String> dict = new java.util.HashMap<>();\ndict.put(\"marca\", \"Ford\"); dict.put(\"modelo\", \"Mustang\");\n\nSystem.out.println(texto.length()); // 11\nSystem.out.println(lista.length);   // 3\nSystem.out.println(dict.size());    // 2",
+            "explanation": "Python tiene polimorfismo en funciones integradas como <code>len()</code>. Java requiere métodos específicos para cada tipo de estructura."
+        },
+        {
+            "id": "py-poly-class",
+            "section": "Polimorfismo de Clases",
+            "python": "class Auto:\n    def moverse(self):\n        print(\"Conduciendo!\")\n\nclass Bote:\n    def moverse(self):\n        print(\"Navegando!\")\n\nvehiculos = [Auto(), Bote()]\n\nfor v in vehiculos:\n    v.moverse()",
+            "java": "// En Java, Auto y Bote deben implementar una \n// interfaz Vehiculo para agruparse en la lista.\ninterface Vehiculo { void moverse(); }\nclass Auto implements Vehiculo {\n    public void moverse() { System.out.println(\"Conduciendo!\"); }\n}\nclass Bote implements Vehiculo {\n    public void moverse() { System.out.println(\"Navegando!\"); }\n}",
+            "explanation": "El 'Duck Typing' de Python permite agrupar objetos completamente diferentes en una lista si comparten nombres de métodos."
+        },
+        {
+            "id": "py-poly-inherit",
+            "section": "Polimorfismo con Herencia",
+            "python": "class Vehiculo:\n    def moverse(self):\n        print(\"Moviéndose...\")\n\nclass Avion(Vehiculo):\n    def moverse(self):\n        print(\"Volando!\")\n\nclass Tren(Vehiculo):\n    pass  # Usa el método del padre\n\nflota = [Avion(), Tren()]\nfor f in flota:\n    f.moverse()",
+            "java": "class Vehiculo {\n    public void moverse() { System.out.println(\"Moviéndose...\"); }\n}\nclass Avion extends Vehiculo {\n    @Override\n    public void moverse() { System.out.println(\"Volando!\"); }\n}\nclass Tren extends Vehiculo { }\n\n// Vehiculo[] flota = {new Avion(), new Tren()};\n// for(Vehiculo v : flota) { v.moverse(); }",
+            "explanation": "El polimorfismo por herencia funciona exactamente igual en ambos lenguajes."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-poly-1",
+            "type": "multiple-choice",
+            "question": "¿Qué significa Polimorfismo?",
+            "options": ["Muchos datos", "Muchas funciones", "Muchas formas", "Muchos errores"],
+            "correct": 2
+        },
+        {
+            "id": "ex-poly-2",
+            "type": "fill-blank",
+            "question": "Usa la función polimórfica adecuada para obtener el tamaño de la cadena <code>x</code>.",
+            "template": "x = \"Python\"\nprint(_____(x))",
+            "template_html": "x = \"Python\"<br>print(<input type='text' class='exercise-input' data-answer='len' placeholder='___'>(x))",
+            "python_code": "x = \"Python\"\nprint(len(x))",
+            "answer": "len"
         }
     ]
 }

@@ -1,17 +1,58 @@
 {
     "id": "py-userinput",
-    "title": "Python User Input",
-    "intro": "Welcome to the Python User Input lesson.",
-    "python_desc": "Python code for Python User Input",
-    "java_desc": "Java equivalent for Python User Input",
-    "explanation": "<p>In this lesson we cover <b>Python User Input</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Entrada de Usuario",
+    "intro": "Python permite recibir entrada del usuario, lo que significa que el programa puede detenerse, pedirle al usuario que introduzca algo y continuar con esa información.",
+    "python_desc": "Código Python para Input",
+    "java_desc": "Equivalente en Java para Input",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "La Función input()",
+            "text": "Python usa la función <code>input()</code> para pedirle datos al usuario. El programa se detiene y espera a que el usuario escriba algo y presione Enter.",
+            "notes": [
+                {"type": "note", "text": "En Java, leer entrada del usuario es más verboso. Generalmente necesitas importar y usar la clase <code>java.util.Scanner</code>."}
+            ]
+        },
+        {
+            "title": "El Tipo de Dato Devuelto",
+            "text": "La función <code>input()</code> <b>siempre devuelve un String</b> (texto), sin importar lo que el usuario haya escrito.",
+            "notes": [
+                {"type": "warning", "text": "Si necesitas un número, debes hacer un casting al resultado: <code>int(input())</code>. En Java, Scanner tiene métodos como <code>nextInt()</code> para leer números directamente."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-userinput-1",
-            "python": "# Python User Input Python example\nprint('Python User Input')",
-            "java": "// Python User Input Java example\nSystem.out.println(\"Python User Input\");",
-            "explanation": "Basic example demonstrating Python User Input."
+            "id": "py-input-basic",
+            "section": "La Función input()",
+            "python": "nombre = input(\"Ingresa tu nombre: \")\nprint(\"Hola, \" + nombre)",
+            "java": "import java.util.Scanner;\n\npublic class Main {\n  public static void main(String[] args) {\n    Scanner obj = new Scanner(System.in);\n    System.out.print(\"Ingresa tu nombre: \");\n    \n    String nombre = obj.nextLine();\n    System.out.println(\"Hola, \" + nombre);\n  }\n}",
+            "explanation": "Python: <code>input(\"mensaje\")</code> lo hace todo. Java: necesitas <code>Scanner</code>, imprimir el mensaje y luego <code>nextLine()</code>."
+        },
+        {
+            "id": "py-input-numbers",
+            "section": "El Tipo de Dato Devuelto",
+            "python": "edad_str = input(\"Ingresa tu edad: \")\nedad_num = int(edad_str)\n\nprint(\"En 5 años tendrás:\", edad_num + 5)",
+            "java": "import java.util.Scanner;\n\npublic class Main {\n  public static void main(String[] args) {\n    Scanner obj = new Scanner(System.in);\n    System.out.print(\"Ingresa tu edad: \");\n    \n    // Java lee el int directamente\n    int edadNum = obj.nextInt();\n    System.out.println(\"En 5 años: \" + (edadNum + 5));\n  }\n}",
+            "explanation": "Como <code>input()</code> devuelve un string en Python, debes convertirlo con <code>int()</code> si quieres hacer operaciones matemáticas."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-input-1",
+            "type": "fill-blank",
+            "question": "Escribe la función para pedirle al usuario su color favorito.",
+            "template": "color = _____(\"Color: \")",
+            "template_html": "color = <input type='text' class='exercise-input' data-answer='input' placeholder='___'>(\"Color: \")",
+            "python_code": "color = input(\"Color: \")",
+            "answer": "input"
+        },
+        {
+            "id": "ex-input-2",
+            "type": "multiple-choice",
+            "question": "¿Qué tipo de dato devuelve siempre la función input()?",
+            "options": ["int", "float", "String (str)", "Depende de lo que se escriba"],
+            "correct": 2
         }
     ]
 }

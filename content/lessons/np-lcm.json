@@ -1,17 +1,37 @@
 {
     "id": "np-lcm",
-    "title": "LCM",
-    "intro": "Welcome to the LCM lesson.",
-    "python_desc": "Python code for LCM",
-    "java_desc": "Java equivalent for LCM",
-    "explanation": "<p>In this lesson we cover <b>LCM</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "NumPy - Mínimo Común Múltiplo (LCM)",
+    "intro": "El Mínimo Común Múltiplo es el número más pequeño que es múltiplo común a dos o más números diferentes.",
+    "python_desc": "LCM en NumPy",
+    "java_desc": "Matemáticas en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Encontrar el LCM",
+            "text": "Si tienes el 4 y el 6, el número más bajo que puede ser dividido por ambos de forma perfecta es el 12. NumPy ofrece la ufunc <code>lcm()</code> para resolver esto.",
+            "notes": [
+                {"type": "note", "text": "Puedes mandar un Array completo a la función <code>lcm.reduce()</code> para calcular el Mínimo Común Múltiplo de decenas o cientos de números simultáneamente."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "np-lcm-1",
-            "python": "# LCM Python example\nprint('LCM')",
-            "java": "// LCM Java example\nSystem.out.println(\"LCM\");",
-            "explanation": "Basic example demonstrating LCM."
+            "section": "Encontrar el LCM",
+            "python": "import numpy as np\n\n# Arrays de números \narr = np.array([3, 6, 9])\n\n# La función .reduce() tomará todos los valores adentro y los colapsará a 1\nx = np.lcm.reduce(arr)\n\nprint(x)\n# Salida: 18 (Es el múltiplo común más bajo entre 3, 6 y 9)",
+            "java": "import org.apache.commons.math3.util.ArithmeticUtils;\n\npublic class MCM {\n  public static void main(String[] args) {\n      int[] arr = {3, 6, 9};\n      \n      // En Java Commons Math se usa LCM, pero no soporta Arrays (Reducción).\n      // El programador debe calcular recursivamente en un bucle:\n      int mcm_actual = arr[0];\n      for (int i = 1; i < arr.length; i++) {\n          mcm_actual = ArithmeticUtils.lcm(mcm_actual, arr[i]);\n      }\n      \n      System.out.println(mcm_actual);\n  }\n}",
+            "explanation": "El ecosistema NumPy brilla por su capacidad de Reducción (`.reduce()`), abstrayendo operaciones de Arrays donde en lenguajes como Java es forzoso mantener rastros de variables temporales recursivas."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-lcm-1",
+            "type": "fill-blank",
+            "question": "Escribe la función matemática de NumPy que averigua cuál es el Mínimo Común Múltiplo (LCM) entre los números de un Array.",
+            "template": "x = np.____.reduce(arr)",
+            "template_html": "x = np.<input type='text' class='exercise-input' data-answer='lcm' placeholder='____'>.reduce(arr)",
+            "python_code": "x = np.lcm.reduce(arr)",
+            "answer": "lcm"
         }
     ]
 }

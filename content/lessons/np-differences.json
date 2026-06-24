@@ -1,17 +1,37 @@
 {
     "id": "np-differences",
-    "title": "Differences",
-    "intro": "Welcome to the Differences lesson.",
-    "python_desc": "Python code for Differences",
-    "java_desc": "Java equivalent for Differences",
-    "explanation": "<p>In this lesson we cover <b>Differences</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "NumPy - Diferencias (Differences)",
+    "intro": "Una Diferencia Discreta significa restar dos elementos matemáticos sucesivos.",
+    "python_desc": "Diferencia Diferencial",
+    "java_desc": "Diferencia For-Loop",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "¿Qué hace diff()?",
+            "text": "La función <code>diff()</code> recorre cada valor del Array y lo resta con el elemento que estaba en el índice anterior. Por ejemplo para <code>[10, 15, 25, 5]</code> calculará (15-10 = 5), luego (25-15 = 10) y luego (5-25 = -20). Devolviendo el array resultante: <code>[5, 10, -20]</code>.",
+            "notes": [
+                {"type": "note", "text": "Puedes realizar esta acción recursivamente múltiples veces pasándole el argumento <code>n</code> (Por ejemplo n=2 para que corra el diff dos veces sobre el resultado)."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "np-differences-1",
-            "python": "# Differences Python example\nprint('Differences')",
-            "java": "// Differences Java example\nSystem.out.println(\"Differences\");",
-            "explanation": "Basic example demonstrating Differences."
+            "section": "¿Qué hace diff()?",
+            "python": "import numpy as np\n\narr = np.array([10, 15, 25, 5])\n\n# Obtener las diferencias discretas (Saltos o Steps)\nnewarr = np.diff(arr)\n\nprint(newarr)\n# Salida: [  5  10 -20 ]",
+            "java": "public class Diferencias {\n  public static void main(String[] args) {\n      int[] arr = {10, 15, 25, 5};\n      // El array resultante será 1 elemento más pequeño que el original\n      int[] newarr = new int[arr.length - 1];\n      \n      // Diferencia discreta (N - N-1) en código Java manual:\n      for (int i = 1; i < arr.length; i++) {\n          newarr[i-1] = arr[i] - arr[i-1];\n      }\n      \n      System.out.println(java.util.Arrays.toString(newarr));\n  }\n}",
+            "explanation": "El análisis de saltos/diferenciales entre un arreglo de señales es común en la ciencia algorítmica. NumPy abstrae el bucle interno con `np.diff()`, que resulta en un array cuya longitud siempre será (LongitudOriginal - N)."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-differences-1",
+            "type": "fill-blank",
+            "question": "Escribe el nombre de la ufunc que calcula los saltos (o diferencias discretas matemáticas) entre cada par de elementos del array.",
+            "template": "newarr = np.____(arr)",
+            "template_html": "newarr = np.<input type='text' class='exercise-input' data-answer='diff' placeholder='____'>(arr)",
+            "python_code": "newarr = np.diff(arr)",
+            "answer": "diff"
         }
     ]
 }

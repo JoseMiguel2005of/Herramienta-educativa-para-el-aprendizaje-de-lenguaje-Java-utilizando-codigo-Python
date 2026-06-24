@@ -69,29 +69,80 @@
             </div>
         </div>
 
-        <!-- Badges -->
-        <div class="data-module module-badges span-2">
+
+
+        <!-- Achievements Section -->
+        {% set completed_count = summary.completed_lessons | length %}
+        {% set total_xp = summary.total_xp %}
+        {% set total_lessons = lessons | length %}
+        
+        {# Check for special category completions #}
+        {% set numpy_ids = [] %}
+        {% set pandas_ids = [] %}
+        {% set scipy_ids = [] %}
+        {% set sql_ids = [] %}
+        {% set mongo_ids = [] %}
+        {% for cat in categories %}
+            {% for sec in cat.sections %}
+                {% for lesson in sec.lessons %}
+                    {% if lesson.id.startswith('np-') %}
+                        {% if numpy_ids.append(lesson.id) %}{% endif %}
+                    {% elif lesson.id.startswith('pd-') %}
+                        {% if pandas_ids.append(lesson.id) %}{% endif %}
+                    {% elif lesson.id.startswith('sc-') %}
+                        {% if scipy_ids.append(lesson.id) %}{% endif %}
+                    {% elif lesson.id.startswith('sql-') %}
+                        {% if sql_ids.append(lesson.id) %}{% endif %}
+                    {% elif lesson.id.startswith('mongo-') %}
+                        {% if mongo_ids.append(lesson.id) %}{% endif %}
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+        {% endfor %}
+        
+        {% set has_science = (numpy_ids | select("in", summary.completed_lessons) | list | length > 0) or (pandas_ids | select("in", summary.completed_lessons) | list | length > 0) or (scipy_ids | select("in", summary.completed_lessons) | list | length > 0) %}
+        {% set has_db = (sql_ids | select("in", summary.completed_lessons) | list | length > 0) or (mongo_ids | select("in", summary.completed_lessons) | list | length > 0) %}
+        {% set has_exercises = completed_count >= 1 %}
+        
+        {# Define all achievements #}
+        {% set achievements = [
+            {"id": "01", "name": "Primer Paso", "desc": "Gana tu primer XP", "unlocked": total_xp > 0, "progress": (1 if total_xp > 0 else 0), "max": 1},
+            {"id": "02", "name": "Estudiante", "desc": "Completa 1 lección", "unlocked": completed_count >= 1, "progress": ([completed_count, 1] | min), "max": 1},
+            {"id": "03", "name": "En Racha", "desc": "Completa 5 lecciones", "unlocked": completed_count >= 5, "progress": ([completed_count, 5] | min), "max": 5},
+            {"id": "04", "name": "Explorador", "desc": "Completa 10 lecciones", "unlocked": completed_count >= 10, "progress": ([completed_count, 10] | min), "max": 10},
+            {"id": "05", "name": "Imparable", "desc": "Completa 25 lecciones", "unlocked": completed_count >= 25, "progress": ([completed_count, 25] | min), "max": 25},
+            {"id": "06", "name": "Medio Camino", "desc": "Completa 50 lecciones", "unlocked": completed_count >= 50, "progress": ([completed_count, 50] | min), "max": 50},
+            {"id": "07", "name": "Maestro", "desc": "Completa 100 lecciones", "unlocked": completed_count >= 100, "progress": ([completed_count, 100] | min), "max": 100},
+            {"id": "08", "name": "Completista", "desc": "Completa TODAS las lecciones", "unlocked": completed_count >= total_lessons, "progress": completed_count, "max": total_lessons},
+            {"id": "09", "name": "Nivel 5", "desc": "Alcanza nivel 5", "unlocked": total_xp >= 400, "progress": ([total_xp, 400] | min), "max": 400},
+            {"id": "10", "name": "Nivel 10", "desc": "Alcanza nivel 10", "unlocked": total_xp >= 900, "progress": ([total_xp, 900] | min), "max": 900},
+            {"id": "11", "name": "Científico", "desc": "Explora NumPy, Pandas o SciPy", "unlocked": has_science, "progress": (1 if has_science else 0), "max": 1},
+            {"id": "12", "name": "DBA Junior", "desc": "Explora SQL o MongoDB", "unlocked": has_db, "progress": (1 if has_db else 0), "max": 1}
+        ] %}
+        
+        <div class="data-module module-achievements span-full">
             <div class="module-header">
-                <span>// ACHIEVEMENTS_UNLOCKED</span>
+                <span>// ACHIEVEMENTS_SYSTEM</span>
+                <span>{{ achievements | selectattr("unlocked") | list | length }} / {{ achievements | length }} UNLOCKED</span>
             </div>
-            <div class="module-body badges-container">
-                {% if summary.total_xp > 0 %}
-                <div class="badge-item">
-                    <span class="badge-icon">01</span>
-                    <span class="badge-label">PRIMER_PASO</span>
+            <div class="module-body achievements-grid">
+                {% for ach in achievements %}
+                <div class="achievement-card {{ 'unlocked' if ach.unlocked else 'locked' }}">
+                    <div class="achievement-icon">{{ ach.id }}</div>
+                    <div class="achievement-info">
+                        <span class="achievement-name">{{ ach.name }}</span>
+                        <span class="achievement-desc">{{ ach.desc }}</span>
+                    </div>
+                    <div class="achievement-progress-bar">
+                        {% set pct = (ach.progress / ach.max * 100) | round %}
+                        <div class="achievement-fill {{ 'complete' if ach.unlocked else '' }}" style="width: {{ pct }}%;"></div>
+                    </div>
+                    <span class="achievement-ratio">{{ ach.progress }}/{{ ach.max }}</span>
+                    {% if not ach.unlocked %}
+                    <div class="achievement-lock">🔒</div>
+                    {% endif %}
                 </div>
-                {% else %}
-                <div class="empty-state">
-                    [ NO_ACHIEVEMENTS_DETECTED : EXECUTE_LESSON_01 ]
-                </div>
-                {% endif %}
-                
-                {% if summary.completed_lessons | length >= 10 %}
-                <div class="badge-item">
-                    <span class="badge-icon">10</span>
-                    <span class="badge-label">EXPLORADOR</span>
-                </div>
-                {% endif %}
+                {% endfor %}
             </div>
         </div>
 
@@ -170,10 +221,16 @@
 
 .telemetry-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 1px;
     background: var(--border); /* Borders formed by grid gap */
     border: 1px solid var(--border);
+}
+
+@media (max-width: 900px) {
+    .telemetry-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .data-module {
@@ -333,36 +390,127 @@
     background: rgba(255, 152, 0, 0.05);
 }
 
-/* Badges */
-.badges-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    align-items: center;
+/* ========== ACHIEVEMENTS ========== */
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 0.75rem;
+    padding: 1rem;
 }
 
-.badge-item {
+.achievement-card {
+    position: relative;
     display: flex;
     align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
     border: 1px solid var(--border);
     background: var(--bg-secondary);
-    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    overflow: hidden;
 }
 
-.badge-icon {
-    color: var(--green);
+.achievement-card.unlocked {
+    border-color: var(--green);
+    background: rgba(0, 229, 255, 0.04);
+    animation: achieveGlow 3s ease-in-out infinite alternate;
+}
+
+.achievement-card.locked {
+    opacity: 0.5;
+    filter: grayscale(70%);
+}
+
+.achievement-card.locked:hover {
+    opacity: 0.75;
+    filter: grayscale(40%);
+}
+
+.achievement-card.unlocked:hover {
+    border-color: #00e5ff;
+    background: rgba(0, 229, 255, 0.08);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 229, 255, 0.15);
+}
+
+@keyframes achieveGlow {
+    0% { box-shadow: 0 0 0 rgba(0, 229, 255, 0); }
+    100% { box-shadow: 0 0 8px rgba(0, 229, 255, 0.1); }
+}
+
+.achievement-icon {
+    font-size: 1.25rem;
     font-weight: 700;
-    margin-right: 0.75rem;
+    min-width: 2.5rem;
+    text-align: center;
+    line-height: 1;
+    color: var(--text-muted);
+    font-family: "Space Grotesk", sans-serif;
+    letter-spacing: -0.05em;
+    position: relative;
+}
+.achievement-card.unlocked .achievement-icon {
+    color: var(--green);
+    text-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
 }
 
-.badge-label {
-    font-size: 0.85rem;
+.achievement-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.achievement-name {
     color: #fff;
+    font-size: 0.85rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.empty-state {
-    color: #666;
-    font-size: 0.85rem;
+.achievement-desc {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.achievement-progress-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.achievement-fill {
+    height: 100%;
+    background: var(--python-color);
+    transition: width 0.5s ease;
+}
+
+.achievement-fill.complete {
+    background: var(--green);
+}
+
+.achievement-ratio {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    min-width: 40px;
+    text-align: right;
+}
+
+.achievement-lock {
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    font-size: 0.65rem;
+    opacity: 0.6;
 }
 
 /* Sections */
@@ -430,6 +578,9 @@
     }
     .section-info, .section-tracker {
         width: 100%;
+    }
+    .achievements-grid {
+        grid-template-columns: 1fr;
     }
 }
 </style>

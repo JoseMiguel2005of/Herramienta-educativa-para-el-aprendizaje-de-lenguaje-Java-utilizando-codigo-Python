@@ -1,17 +1,37 @@
 {
     "id": "sql-droptable",
-    "title": "MySQL Drop Table",
-    "intro": "Welcome to the MySQL Drop Table lesson.",
-    "python_desc": "Python code for MySQL Drop Table",
-    "java_desc": "Java equivalent for MySQL Drop Table",
-    "explanation": "<p>In this lesson we cover <b>MySQL Drop Table</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "MySQL - Destruir Tablas (Drop)",
+    "intro": "Puedes destruir una tabla completa de MySQL utilizando la sentencia 'DROP TABLE'.",
+    "python_desc": "Proceso Drop en Python",
+    "java_desc": "Proceso Drop en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Eliminar Tabla Existente",
+            "text": "La sentencia <code>DROP TABLE nombre_tabla</code> destruye por completo tanto la estructura como todos los datos almacenados en esa tabla. Es una operación crítica irrecuperable.",
+            "notes": [
+                {"type": "tip", "text": "Si no estás seguro de que la tabla ya exista o te asustan los errores de caída del programa (crashes), puedes usar <code>DROP TABLE IF EXISTS nombre_tabla</code>."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "sql-droptable-1",
-            "python": "# MySQL Drop Table Python example\nprint('MySQL Drop Table')",
-            "java": "// MySQL Drop Table Java example\nSystem.out.println(\"MySQL Drop Table\");",
-            "explanation": "Basic example demonstrating MySQL Drop Table."
+            "section": "Eliminar Tabla Existente",
+            "python": "import mysql.connector\n\nmydb = mysql.connector.connect(host=\"localhost\", user=\"user\", password=\"pass\", database=\"mibase\")\nmicursor = mydb.cursor()\n\nsql = \"DROP TABLE IF EXISTS clientes\"\n\nmicursor.execute(sql)\nprint(\"La tabla fue destruida exitosamente, si es que existía.\")",
+            "java": "import java.sql.Connection;\nimport java.sql.DriverManager;\nimport java.sql.Statement;\n\npublic class Main {\n  public static void main(String[] args) throws Exception {\n      Connection conn = DriverManager.getConnection(\"jdbc:mysql://localhost/mibase\", \"user\", \"pass\");\n      \n      Statement stmt = conn.createStatement();\n      String sql = \"DROP TABLE IF EXISTS clientes\";\n      \n      // No se requiere 'commit()' para sentencias DDL (Data Definition Language) en MySQL\n      stmt.executeUpdate(sql);\n      System.out.println(\"La tabla fue destruida.\");\n  }\n}",
+            "explanation": "Curiosamente, operaciones extremas que destruyen las tablas completas (DDL) como CREATE o DROP a menudo se confirman solas sin necesidad explícita de `commit()` en muchos motores SQL, pero la ejecución de la orden funciona igual."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-sql-droptable-1",
+            "type": "fill-blank",
+            "question": "Escribe la instrucción correcta para eliminar una tabla llamaba 'clientes'.",
+            "template": "sql = \"__________ clientes\"",
+            "template_html": "sql = \"<input type='text' class='exercise-input' data-answer='DROP TABLE' placeholder='__________'> clientes\"",
+            "python_code": "sql = \"DROP TABLE clientes\"",
+            "answer": "DROP TABLE"
         }
     ]
 }

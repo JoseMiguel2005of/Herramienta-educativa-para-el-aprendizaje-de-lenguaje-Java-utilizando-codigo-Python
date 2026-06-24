@@ -1,17 +1,70 @@
 {
     "id": "np-slicing",
-    "title": "NumPy Array Slicing",
-    "intro": "Welcome to the NumPy Array Slicing lesson.",
-    "python_desc": "Python code for NumPy Array Slicing",
-    "java_desc": "Java equivalent for NumPy Array Slicing",
-    "explanation": "<p>In this lesson we cover <b>NumPy Array Slicing</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Slicing (Rebanado) en NumPy",
+    "intro": "Slicing en Python significa llevar elementos de un índice dado a otro índice dado. Pasamos un rango de índices en lugar de un solo índice como este: [inicio:fin].",
+    "python_desc": "Código Python para Slicing",
+    "java_desc": "Equivalente en Java para Slicing",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Slicing Básico",
+            "text": "La sintaxis es <code>[inicio:fin]</code>. Si no pasas inicio se considera 0. Si no pasas fin, se considera la longitud del array.",
+            "notes": [
+                {"type": "note", "text": "El resultado de un slice incluye el índice de 'inicio', pero excluye el índice de 'fin'."}
+            ]
+        },
+        {
+            "title": "Slicing con Saltos (Step)",
+            "text": "Podemos definir un tercer parámetro llamado 'step' (paso), así: <code>[inicio:fin:paso]</code>, para saltar elementos al extraerlos.",
+            "notes": [
+                {"type": "warning", "text": "En Java no existe una sintaxis de slicing nativa en los arrays. Para replicar esto, tendrías que usar bucles <code>for</code> o métodos como <code>Arrays.copyOfRange()</code>."}
+            ]
+        },
+        {
+            "title": "Slicing en Arrays 2-D",
+            "text": "Puedes realizar rebanados en múltiples dimensiones. Por ejemplo, desde la segunda dimensión de todas las filas, rebana los elementos del índice 1 al 4.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
-            "id": "np-slicing-1",
-            "python": "# NumPy Array Slicing Python example\nprint('NumPy Array Slicing')",
-            "java": "// NumPy Array Slicing Java example\nSystem.out.println(\"NumPy Array Slicing\");",
-            "explanation": "Basic example demonstrating NumPy Array Slicing."
+            "id": "np-slice-1d",
+            "section": "Slicing Básico",
+            "python": "import numpy as np\n\narr = np.array([1, 2, 3, 4, 5, 6, 7])\n\n# Elementos desde índice 1 al 5 (excluye el 5)\nprint(arr[1:5]) \n# Salida: [2 3 4 5]",
+            "java": "import java.util.Arrays;\n\npublic class Main {\n  public static void main(String[] args) {\n    int[] arr = {1, 2, 3, 4, 5, 6, 7};\n    \n    // Java usa copyOfRange(arreglo, desde, hasta_exclusivo)\n    int[] sub = Arrays.copyOfRange(arr, 1, 5);\n    System.out.println(Arrays.toString(sub));\n  }\n}",
+            "explanation": "La sintaxis de slicing <code>[:]</code> en Python es increíblemente concisa. Java depende de funciones de utilidad estáticas."
+        },
+        {
+            "id": "np-slice-step",
+            "section": "Slicing con Saltos (Step)",
+            "python": "import numpy as np\n\narr = np.array([1, 2, 3, 4, 5, 6, 7])\n\n# Devuelve todos los demás elementos del array entero:\nprint(arr[::2])\n# Salida: [1 3 5 7]",
+            "java": "// En Java tendrías que iterar tú mismo:\nint[] arr = {1, 2, 3, 4, 5, 6, 7};\nint[] res = new int[(arr.length + 1) / 2];\n\nfor(int i=0, j=0; i<arr.length; i+=2, j++) {\n    res[j] = arr[i];\n}",
+            "explanation": "El parámetro <i>step</i> en Python <code>[::2]</code> elimina por completo la necesidad de escribir bucles for manuales para estas operaciones."
+        },
+        {
+            "id": "np-slice-2d",
+            "section": "Slicing en Arrays 2-D",
+            "python": "import numpy as np\n\narr = np.array([[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]])\n\n# De ambas filas (0:2), devuelve el índice 2:\nprint(arr[0:2, 2])\n# Salida: [3 8]",
+            "java": "int[][] arr = {{1, 2, 3, 4, 5}, {6, 7, 8, 9, 10}};\nint[] res = new int[2];\n\nfor(int i = 0; i < 2; i++) {\n    res[i] = arr[i][2];\n}\nSystem.out.println(java.util.Arrays.toString(res));",
+            "explanation": "NumPy permite hacer slicing multidimensional de manera vectorial. En Java, el código se vuelve rápidamente complejo con bucles anidados."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-slice-1",
+            "type": "fill-blank",
+            "question": "Rebana los elementos desde el índice 2 hasta el 4 (exclusivo).",
+            "template": "print(arr[_____:_____])",
+            "template_html": "print(arr[<input type='text' class='exercise-input' data-answer='2' placeholder='_'>:<input type='text' class='exercise-input' data-answer='4' placeholder='_'>])",
+            "python_code": "print(arr[2:4])",
+            "answer": "2,4"
+        },
+        {
+            "id": "ex-np-slice-2",
+            "type": "multiple-choice",
+            "question": "¿Qué devuelve el slicing arr[1:5:2]?",
+            "options": ["Elementos 1 al 5 saltando de a 2", "Elementos 1, 5 y 2", "Un error", "Elementos de 1 a 2"],
+            "correct": 0
         }
     ]
 }

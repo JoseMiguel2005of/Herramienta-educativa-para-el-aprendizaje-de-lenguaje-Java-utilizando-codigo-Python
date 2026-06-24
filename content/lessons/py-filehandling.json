@@ -1,17 +1,63 @@
 {
     "id": "py-filehandling",
-    "title": "Python File Handling",
-    "intro": "Welcome to the Python File Handling lesson.",
-    "python_desc": "Python code for Python File Handling",
-    "java_desc": "Java equivalent for Python File Handling",
-    "explanation": "<p>In this lesson we cover <b>Python File Handling</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Manejo de Archivos en Python",
+    "intro": "El manejo de archivos es una parte importante de cualquier aplicación web o de escritorio. Python tiene varias funciones para crear, leer, actualizar y eliminar archivos.",
+    "python_desc": "Código Python para Archivos",
+    "java_desc": "Equivalente en Java para Archivos",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "La Función open()",
+            "text": "La función clave para trabajar con archivos en Python es la función <code>open()</code>. Esta función toma dos parámetros principales: nombre de archivo y modo.",
+            "notes": [
+                {"type": "note", "text": "En Java, el manejo de archivos solía ser muy complejo (<code>FileReader</code>, <code>BufferedReader</code>, etc.). Java NIO mejoró esto, pero Python sigue siendo más directo."}
+            ]
+        },
+        {
+            "title": "Modos de Archivo",
+            "text": "Hay cuatro métodos (modos) diferentes para abrir un archivo: <code>\"r\"</code> (Lectura - predeterminado), <code>\"a\"</code> (Añadir), <code>\"w\"</code> (Escribir - sobreescribe), <code>\"x\"</code> (Crear).",
+            "notes": []
+        },
+        {
+            "title": "Manejo Seguro (El bloque with)",
+            "text": "Es una buena práctica cerrar siempre el archivo cuando terminas con él. La sentencia <code>with</code> se encarga de cerrar el archivo automáticamente, incluso si ocurre un error.",
+            "notes": [
+                {"type": "tip", "text": "En Java existe un equivalente directo llamado <b>Try-with-resources</b> (<code>try (Scanner s = new Scanner(file)) { ... }</code>)."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-filehandling-1",
-            "python": "# Python File Handling Python example\nprint('Python File Handling')",
-            "java": "// Python File Handling Java example\nSystem.out.println(\"Python File Handling\");",
-            "explanation": "Basic example demonstrating Python File Handling."
+            "id": "py-file-open",
+            "section": "La Función open()",
+            "python": "# Abre el archivo en modo lectura (\"r\" es por defecto)\nf = open(\"demofile.txt\", \"r\")\nprint(f.read())\nf.close()",
+            "java": "import java.io.File;\nimport java.util.Scanner;\n\npublic class Main {\n  public static void main(String[] args) throws Exception {\n    File f = new File(\"demofile.txt\");\n    Scanner myReader = new Scanner(f);\n    while (myReader.hasNextLine()) {\n      System.out.println(myReader.nextLine());\n    }\n    myReader.close();\n  }\n}",
+            "explanation": "Python: abre el archivo, lee todo con <code>read()</code> y cierra. Java: requiere crear un <code>File</code>, pasarlo a un <code>Scanner</code>, y leer línea por línea."
+        },
+        {
+            "id": "py-file-with",
+            "section": "Manejo Seguro (El bloque with)",
+            "python": "# El archivo se cierra automáticamente al salir del bloque with\nwith open(\"demofile.txt\") as f:\n    contenido = f.read()\n    print(contenido)",
+            "java": "import java.io.File;\nimport java.util.Scanner;\n\npublic class Main {\n  public static void main(String[] args) {\n    File f = new File(\"demofile.txt\");\n    // Try-with-resources cierra el Scanner automáticamente\n    try (Scanner myReader = new Scanner(f)) {\n      while (myReader.hasNextLine()) {\n        System.out.println(myReader.nextLine());\n      }\n    } catch (Exception e) {\n        System.out.println(\"Error al leer\");\n    }\n  }\n}",
+            "explanation": "Ambos lenguajes tienen mecanismos para cerrar recursos automáticamente: <code>with open()</code> en Python y <code>try(recurso)</code> en Java."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-fileh-1",
+            "type": "multiple-choice",
+            "question": "¿Qué letra representa el modo 'Lectura' (Read) al abrir un archivo?",
+            "options": ["\"x\"", "\"a\"", "\"r\"", "\"w\""],
+            "correct": 2
+        },
+        {
+            "id": "ex-fileh-2",
+            "type": "fill-blank",
+            "question": "Completa el código para abrir un archivo llamado <code>\"test.txt\"</code>.",
+            "template": "f = _____(\"test.txt\")",
+            "template_html": "f = <input type='text' class='exercise-input' data-answer='open' placeholder='___'>(\"test.txt\")",
+            "python_code": "f = open(\"test.txt\")",
+            "answer": "open"
         }
     ]
 }

@@ -1,17 +1,49 @@
 {
     "id": "pd-readjson",
-    "title": "Pandas Read JSON",
-    "intro": "Welcome to the Pandas Read JSON lesson.",
-    "python_desc": "Python code for Pandas Read JSON",
-    "java_desc": "Java equivalent for Pandas Read JSON",
-    "explanation": "<p>In this lesson we cover <b>Pandas Read JSON</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Leer JSON en Pandas",
+    "intro": "Los grandes conjuntos de datos a menudo se almacenan o se extraen como JSON. Al ser puro texto, JSON tiene el mismo formato que los diccionarios de Python.",
+    "python_desc": "Lectura en Python",
+    "java_desc": "Lectura en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Cargando un Archivo JSON",
+            "text": "Pandas nos proporciona la función <code>read_json()</code>, la cual toma la ruta del archivo y lo mapea automáticamente a un DataFrame relacional si el JSON contiene estructuras ordenadas o arrays de objetos.",
+            "notes": [
+                {"type": "note", "text": "En Java no existe una herramienta en la librería estándar (JDK) para hacer un análisis de JSON a Objetos. Se requiere utilizar el ecosistema (por ejemplo Jackson, Gson o JSON-B) para deserializar los datos en Clases Java (POJOs)."}
+            ]
+        },
+        {
+            "title": "DataFrames vs Diccionarios",
+            "text": "Los objetos JSON tienen el mismo formato que los diccionarios de Python. Si tu código JSON no está en un archivo, sino en un Diccionario de Python, puedes cargarlo directamente al DataFrame como aprendimos anteriormente usando <code>pd.DataFrame(mi_diccionario)</code>.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
             "id": "pd-readjson-1",
-            "python": "# Pandas Read JSON Python example\nprint('Pandas Read JSON')",
-            "java": "// Pandas Read JSON Java example\nSystem.out.println(\"Pandas Read JSON\");",
-            "explanation": "Basic example demonstrating Pandas Read JSON."
+            "section": "Cargando un Archivo JSON",
+            "python": "import pandas as pd\n\n# Lee el JSON estructurado:\ndf = pd.read_json('data.json')\n\nprint(df.to_string())",
+            "java": "import com.fasterxml.jackson.databind.ObjectMapper;\nimport java.io.File;\nimport java.util.Map;\n\npublic class Main {\n  public static void main(String[] args) throws Exception {\n      // Usando la librería Jackson de Java\n      ObjectMapper mapper = new ObjectMapper();\n      Map<?, ?> map = mapper.readValue(new File(\"data.json\"), Map.class);\n      System.out.println(map);\n  }\n}",
+            "explanation": "Mientras que Pandas lee el JSON y asume que es información tabular para análisis de datos, las herramientas de Java como Jackson son Serializadores Generales que mapean el JSON a Mapas u Objetos con Tipado Estricto."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-pd-readjson-1",
+            "type": "fill-blank",
+            "question": "Lee de forma automática un archivo JSON en un DataFrame de Pandas.",
+            "template": "df = pd.____('data.json')",
+            "template_html": "df = pd.<input type='text' class='exercise-input' data-answer='read_json' placeholder='_________'>('data.json')",
+            "python_code": "df = pd.read_json('data.json')",
+            "answer": "read_json"
+        },
+        {
+            "id": "ex-pd-readjson-2",
+            "type": "multiple-choice",
+            "question": "¿Qué estructura de la librería estándar de Java se requiere para cargar un JSON directamente de un archivo, equivalente a read_json() de Pandas?",
+            "options": ["BufferedReader", "JSONReader", "Java.JSON", "Ninguna, Java usa librerías de terceros (como Jackson/Gson)"],
+            "correct": 3
         }
     ]
 }

@@ -1,17 +1,42 @@
 {
     "id": "np-rounding",
-    "title": "Rounding Decimals",
-    "intro": "Welcome to the Rounding Decimals lesson.",
-    "python_desc": "Python code for Rounding Decimals",
-    "java_desc": "Java equivalent for Rounding Decimals",
-    "explanation": "<p>In this lesson we cover <b>Rounding Decimals</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "NumPy - Redondeo de Decimales",
+    "intro": "Existen 5 formas principales para aproximar y redondear números de punto flotante en la aritmética de NumPy.",
+    "python_desc": "Redondeos en NumPy",
+    "java_desc": "Redondeos en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Truncamiento",
+            "text": "Puedes usar <code>trunc()</code> o <code>fix()</code>. Estos métodos simplemente le 'arrancan' los decimales al número, dejándolo en su parte puramente entera.",
+            "notes": [
+                {"type": "note", "text": "Si truncas `3.1416`, el resultado puro es `3.0`."}
+            ]
+        },
+        {
+            "title": "Redondeo (Around, Floor, Ceil)",
+            "text": "La función <code>around()</code> redondea estadísticamente, <code>floor()</code> redondea obligatoriamente al entero más bajo, y <code>ceil()</code> redondea forzosamente hacia el entero más alto, aplicando este comportamiento sobre Arrays multidimensionales enteros.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
             "id": "np-rounding-1",
-            "python": "# Rounding Decimals Python example\nprint('Rounding Decimals')",
-            "java": "// Rounding Decimals Java example\nSystem.out.println(\"Rounding Decimals\");",
-            "explanation": "Basic example demonstrating Rounding Decimals."
+            "section": "Redondeo (Around, Floor, Ceil)",
+            "python": "import numpy as np\n\n# Redondeo estadístico alrededor de (1 decimal)\narr = np.around(3.1666, 2)\nprint(arr) # 3.17\n\n# Techo forzado en un array entero\narr2 = np.ceil([-3.1666, 3.6667])\nprint(arr2) # [-3.  4.]",
+            "java": "public class Redondeos {\n  public static void main(String[] args) {\n      // En Java, el Truncado se hace mediante Casting simple (int)\n      double pi = 3.1416;\n      int truncado = (int) pi; // 3\n      \n      // El Techo y el Piso existen de forma idéntica en Math\n      double piso = Math.floor(3.1666);\n      double techo = Math.ceil(-3.1666);\n      \n      System.out.println(piso);\n  }\n}",
+            "explanation": "Los motores matemáticos base son similares (Math vs np), pero NumPy permite enviar arreglos masivos `np.ceil(MI_ARRAY_GIGANTE)` y devuelve todo procesado en C; mientras que `Math.ceil` de Java solo acepta un simple `double` a la vez."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-rounding-1",
+            "type": "fill-blank",
+            "question": "Escribe el nombre de la ufunc estadística de NumPy empleada para 'forzar el redondeo hacia arriba' de los números dentro de un Array.",
+            "template": "arr = np.____([-3.1666, 3.6667])",
+            "template_html": "arr = np.<input type='text' class='exercise-input' data-answer='ceil' placeholder='____'>([-3.1666, 3.6667])",
+            "python_code": "arr = np.ceil([-3.1666, 3.6667])",
+            "answer": "ceil"
         }
     ]
 }

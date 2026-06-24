@@ -1,17 +1,77 @@
 {
     "id": "py-casting",
-    "title": "Python Casting",
-    "intro": "Welcome to the Python Casting lesson.",
-    "python_desc": "Python code for Python Casting",
-    "java_desc": "Java equivalent for Python Casting",
-    "explanation": "<p>In this lesson we cover <b>Python Casting</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Casting en Python",
+    "intro": "Casting es el proceso de convertir una variable de un tipo de dato a otro. Python usa funciones constructoras para hacerlo.",
+    "python_desc": "Código Python para Casting",
+    "java_desc": "Equivalente en Java para Casting",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "¿Qué es Casting?",
+            "text": "Hay momentos en que necesitas especificar o cambiar el tipo de dato de una variable. Python es un lenguaje orientado a objetos y usa funciones constructoras para el casting.",
+            "notes": [
+                {"type": "note", "text": "Java distingue entre <b>casting implícito</b> (widening: int → double) y <b>casting explícito</b> (narrowing: double → int). Python siempre usa funciones explícitas."}
+            ]
+        },
+        {
+            "title": "Convertir a Entero",
+            "text": "La función <code>int()</code> convierte a entero. Puede recibir un float (trunca los decimales) o un string que represente un número entero.",
+            "notes": [
+                {"type": "warning", "text": "<code>int(\"3.14\")</code> causará error. Para convertir un string decimal a entero, primero conviértelo a float: <code>int(float(\"3.14\"))</code>."}
+            ]
+        },
+        {
+            "title": "Convertir a Float",
+            "text": "La función <code>float()</code> convierte a decimal. Puede recibir un entero o un string numérico.",
+            "notes": []
+        },
+        {
+            "title": "Convertir a String",
+            "text": "La función <code>str()</code> convierte cualquier valor a su representación como texto.",
+            "notes": [
+                {"type": "tip", "text": "Esto es especialmente útil cuando necesitas concatenar números con texto usando <code>+</code>."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-casting-1",
-            "python": "# Python Casting Python example\nprint('Python Casting')",
-            "java": "// Python Casting Java example\nSystem.out.println(\"Python Casting\");",
-            "explanation": "Basic example demonstrating Python Casting."
+            "id": "py-cast-int",
+            "section": "Convertir a Entero",
+            "python": "x = int(1)       # 1\ny = int(2.8)     # 2 (trunca)\nz = int(\"3\")     # 3\nprint(x, y, z)",
+            "java": "int x = 1;\nint y = (int) 2.8;              // 2\nint z = Integer.parseInt(\"3\");  // 3\nSystem.out.println(x + \" \" + y + \" \" + z);",
+            "explanation": "Python: <code>int()</code> para todo. Java: casting <code>(int)</code> para números, <code>Integer.parseInt()</code> para strings."
+        },
+        {
+            "id": "py-cast-float",
+            "section": "Convertir a Float",
+            "python": "x = float(1)       # 1.0\ny = float(2.8)     # 2.8\nz = float(\"3\")     # 3.0\nw = float(\"4.2\")   # 4.2\nprint(x, y, z, w)",
+            "java": "double x = (double) 1;                // 1.0\ndouble y = 2.8;                       // 2.8\ndouble z = Double.parseDouble(\"3\");   // 3.0\ndouble w = Double.parseDouble(\"4.2\"); // 4.2\nSystem.out.println(x + \" \" + y + \" \" + z + \" \" + w);",
+            "explanation": "Python: <code>float()</code>. Java: casting <code>(double)</code> o <code>Double.parseDouble()</code>."
+        },
+        {
+            "id": "py-cast-str",
+            "section": "Convertir a String",
+            "python": "x = str(\"s1\")   # 's1'\ny = str(2)      # '2'\nz = str(3.0)    # '3.0'\nprint(x, y, z)",
+            "java": "String x = \"s1\";\nString y = String.valueOf(2);    // \"2\"\nString z = String.valueOf(3.0);  // \"3.0\"\nSystem.out.println(x + \" \" + y + \" \" + z);",
+            "explanation": "Python: <code>str()</code>. Java: <code>String.valueOf()</code> o concatenación con <code>\"\" + valor</code>."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-cast-1",
+            "type": "fill-blank",
+            "question": "Convierte el string <code>\"5\"</code> a un entero.",
+            "template": "x = _____(\"5\")",
+            "template_html": "x = <input type='text' class='exercise-input' data-answer='int' placeholder='___'>(\"5\")",
+            "python_code": "x = int(\"5\")",
+            "answer": "int"
+        },
+        {
+            "id": "ex-cast-2",
+            "type": "multiple-choice",
+            "question": "¿Cuál es el resultado de <code>int(2.9)</code>?",
+            "options": ["3", "2", "2.9", "Error"],
+            "correct": 1
         }
     ]
 }

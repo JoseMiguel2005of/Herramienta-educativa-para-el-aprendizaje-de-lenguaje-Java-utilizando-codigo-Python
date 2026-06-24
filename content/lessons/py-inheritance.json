@@ -1,17 +1,84 @@
 {
     "id": "py-inheritance",
-    "title": "Python Inheritance",
-    "intro": "Welcome to the Python Inheritance lesson.",
-    "python_desc": "Python code for Python Inheritance",
-    "java_desc": "Java equivalent for Python Inheritance",
-    "explanation": "<p>In this lesson we cover <b>Python Inheritance</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Herencia en Python",
+    "intro": "La herencia permite crear una clase que 'hereda' todos los métodos y propiedades de otra clase. La clase padre es la que se hereda, la clase hija es la que hereda.",
+    "python_desc": "Código Python para Herencia",
+    "java_desc": "Equivalente en Java para Herencia",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Clase Padre",
+            "text": "Cualquier clase puede ser una clase padre. Se crea igual que cualquier otra clase.",
+            "notes": []
+        },
+        {
+            "title": "Clase Hija",
+            "text": "Para crear una clase que hereda de otra, pasa el nombre de la clase padre como parámetro entre paréntesis.",
+            "notes": [
+                {"type": "note", "text": "Python: <code>class Hija(Padre)</code>. Java: <code>class Hija extends Padre</code>. Misma idea, diferente sintaxis."}
+            ]
+        },
+        {
+            "title": "La Función super()",
+            "text": "<code>super()</code> permite a la clase hija acceder a los métodos y propiedades de la clase padre. Es especialmente útil en el constructor.",
+            "notes": [
+                {"type": "tip", "text": "En Java, <code>super()</code> funciona igual. Debe ser la <b>primera línea</b> del constructor de la clase hija."}
+            ]
+        },
+        {
+            "title": "Sobreescribir Métodos",
+            "text": "La clase hija puede <b>sobreescribir</b> (override) métodos de la clase padre definiendo un método con el mismo nombre.",
+            "notes": [
+                {"type": "note", "text": "Java usa la anotación <code>@Override</code> para indicar que un método sobreescribe al del padre. Python no necesita anotaciones."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-inheritance-1",
-            "python": "# Python Inheritance Python example\nprint('Python Inheritance')",
-            "java": "// Python Inheritance Java example\nSystem.out.println(\"Python Inheritance\");",
-            "explanation": "Basic example demonstrating Python Inheritance."
+            "id": "py-inherit-parent",
+            "section": "Clase Padre",
+            "python": "class Persona:\n    def __init__(self, nombre, edad):\n        self.nombre = nombre\n        self.edad = edad\n\n    def presentarse(self):\n        print(f\"Soy {self.nombre}, {self.edad} años\")\n\np = Persona(\"Ana\", 30)\np.presentarse()",
+            "java": "public class Persona {\n    String nombre;\n    int edad;\n    public Persona(String nombre, int edad) {\n        this.nombre = nombre;\n        this.edad = edad;\n    }\n    public void presentarse() {\n        System.out.println(\"Soy \" + nombre + \", \" + edad + \" años\");\n    }\n}",
+            "explanation": "La clase padre se crea normalmente en ambos lenguajes."
+        },
+        {
+            "id": "py-inherit-child",
+            "section": "Clase Hija",
+            "python": "class Estudiante(Persona):\n    pass  # Hereda todo de Persona\n\ne = Estudiante(\"Carlos\", 20)\ne.presentarse()  # Funciona heredado",
+            "java": "public class Estudiante extends Persona {\n    public Estudiante(String nombre, int edad) {\n        super(nombre, edad);\n    }\n}\n// Estudiante e = new Estudiante(\"Carlos\", 20);",
+            "explanation": "Python: <code>class Hija(Padre)</code>. Java: <code>class Hija extends Padre</code>."
+        },
+        {
+            "id": "py-inherit-super",
+            "section": "La Función super()",
+            "python": "class Estudiante(Persona):\n    def __init__(self, nombre, edad, carrera):\n        super().__init__(nombre, edad)\n        self.carrera = carrera\n\ne = Estudiante(\"Luis\", 22, \"Informática\")\nprint(e.nombre, e.carrera)",
+            "java": "public class Estudiante extends Persona {\n    String carrera;\n    public Estudiante(String nombre, int edad, String carrera) {\n        super(nombre, edad);  // Llama al constructor padre\n        this.carrera = carrera;\n    }\n}",
+            "explanation": "<code>super().__init__()</code> en Python = <code>super()</code> en Java. Ambos llaman al constructor padre."
+        },
+        {
+            "id": "py-inherit-override",
+            "section": "Sobreescribir Métodos",
+            "python": "class Estudiante(Persona):\n    def __init__(self, nombre, edad, carrera):\n        super().__init__(nombre, edad)\n        self.carrera = carrera\n\n    def presentarse(self):  # Override\n        print(f\"Soy {self.nombre}, estudio {self.carrera}\")\n\ne = Estudiante(\"María\", 21, \"Medicina\")\ne.presentarse()",
+            "java": "public class Estudiante extends Persona {\n    String carrera;\n    public Estudiante(String nombre, int edad, String carrera) {\n        super(nombre, edad);\n        this.carrera = carrera;\n    }\n    @Override\n    public void presentarse() {\n        System.out.println(\"Soy \" + nombre + \", estudio \" + carrera);\n    }\n}",
+            "explanation": "Python: solo define el método con el mismo nombre. Java: usa <code>@Override</code> como buena práctica."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-inherit-1",
+            "type": "fill-blank",
+            "question": "Crea la clase <code>Estudiante</code> que herede de <code>Persona</code>.",
+            "template": "class Estudiante(_____):\n    pass",
+            "template_html": "class Estudiante(<input type='text' class='exercise-input' data-answer='Persona' placeholder='___'>):<br>&nbsp;&nbsp;&nbsp;&nbsp;pass",
+            "python_code": "class Estudiante(Persona):\n    pass",
+            "answer": "Persona"
+        },
+        {
+            "id": "ex-inherit-2",
+            "type": "multiple-choice",
+            "question": "¿Cuál palabra clave usa Java para la herencia?",
+            "options": ["inherits", "extends", "implements", "super"],
+            "correct": 1
         }
     ]
 }

@@ -1,17 +1,107 @@
 {
     "id": "py-strings",
-    "title": "Python Strings",
-    "intro": "Welcome to the Python Strings lesson.",
-    "python_desc": "Python code for Python Strings",
-    "java_desc": "Java equivalent for Python Strings",
-    "explanation": "<p>In this lesson we cover <b>Python Strings</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Strings en Python",
+    "intro": "Los strings (cadenas de texto) en Python se usan para almacenar texto. Pueden definirse con comillas simples o dobles.",
+    "python_desc": "Código Python para Strings",
+    "java_desc": "Equivalente en Java para Strings",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Definir Strings",
+            "text": "Los strings en Python se definen usando comillas simples <code>'...'</code> o comillas dobles <code>\"...\"</code>. Ambas son equivalentes.",
+            "notes": [
+                {"type": "note", "text": "En Java, solo se usan comillas dobles <code>\"...\"</code> para strings. Las comillas simples <code>'c'</code> son exclusivas para el tipo <code>char</code> (un solo carácter)."}
+            ]
+        },
+        {
+            "title": "Strings Multilínea",
+            "text": "Puedes crear strings que ocupen varias líneas usando triple comillas: <code>'''...'''</code> o <code>\"\"\"...\"\"\"</code>.",
+            "notes": [
+                {"type": "tip", "text": "Los strings multilínea también se usan como <b>docstrings</b> para documentar funciones y clases en Python."}
+            ]
+        },
+        {
+            "title": "Acceder a Caracteres",
+            "text": "Los strings en Python son <b>arrays de caracteres</b>. Puedes acceder a cada carácter usando su índice entre corchetes <code>[]</code>. El primer carácter tiene índice <code>0</code>.",
+            "notes": [
+                {"type": "warning", "text": "En Java se usa el método <code>.charAt(index)</code> en lugar de corchetes. Usar <code>[]</code> en un String de Java causa error."}
+            ]
+        },
+        {
+            "title": "Longitud de un String",
+            "text": "Para obtener la longitud de un string, usa la función <code>len()</code> en Python.",
+            "notes": []
+        },
+        {
+            "title": "Verificar Contenido",
+            "text": "Puedes verificar si una palabra o frase existe dentro de un string usando las palabras clave <code>in</code> y <code>not in</code>.",
+            "notes": [
+                {"type": "note", "text": "En Java se usa el método <code>.contains()</code> del objeto String para lograr lo mismo."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-strings-1",
-            "python": "# Python Strings Python example\nprint('Python Strings')",
-            "java": "// Python Strings Java example\nSystem.out.println(\"Python Strings\");",
-            "explanation": "Basic example demonstrating Python Strings."
+            "id": "py-strings-define",
+            "section": "Definir Strings",
+            "python": "a = \"Hola\"\nb = 'Mundo'\nprint(a)\nprint(b)",
+            "java": "String a = \"Hola\";\nString b = \"Mundo\";\nSystem.out.println(a);\nSystem.out.println(b);",
+            "explanation": "Python permite comillas simples o dobles. Java solo usa comillas dobles para <code>String</code>."
+        },
+        {
+            "id": "py-strings-multiline",
+            "section": "Strings Multilínea",
+            "python": "texto = \"\"\"Este es un\nstring que ocupa\nvarias líneas.\"\"\"\nprint(texto)",
+            "java": "String texto = \"Este es un\\n\" +\n    \"string que ocupa\\n\" +\n    \"varias líneas.\";\nSystem.out.println(texto);",
+            "explanation": "Python usa triple comillas para multilínea. En Java debes concatenar con <code>+</code> y usar <code>\\n</code>."
+        },
+        {
+            "id": "py-strings-index",
+            "section": "Acceder a Caracteres",
+            "python": "a = \"Hola Mundo\"\nprint(a[0])   # H\nprint(a[5])   # M\nprint(a[-1])  # o (último)",
+            "java": "String a = \"Hola Mundo\";\nSystem.out.println(a.charAt(0));   // H\nSystem.out.println(a.charAt(5));   // M\nSystem.out.println(a.charAt(a.length()-1)); // o",
+            "explanation": "Python usa <code>[]</code> con índices (incluyendo negativos). Java usa <code>.charAt()</code>."
+        },
+        {
+            "id": "py-strings-len",
+            "section": "Longitud de un String",
+            "python": "a = \"Hola Mundo\"\nprint(len(a))  # 10",
+            "java": "String a = \"Hola Mundo\";\nSystem.out.println(a.length());  // 10",
+            "explanation": "Python usa <code>len()</code> como función global. Java usa el método <code>.length()</code> del objeto."
+        },
+        {
+            "id": "py-strings-in",
+            "section": "Verificar Contenido",
+            "python": "txt = \"Python es genial\"\nprint(\"genial\" in txt)      # True\nprint(\"Java\" not in txt)    # True",
+            "java": "String txt = \"Python es genial\";\nSystem.out.println(txt.contains(\"genial\"));  // true\nSystem.out.println(!txt.contains(\"Java\"));   // true",
+            "explanation": "Python usa <code>in</code> / <code>not in</code> como operadores. Java usa <code>.contains()</code>."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-str-1",
+            "type": "fill-blank",
+            "question": "Obtén el carácter en la posición 0 del string <code>\"Hola\"</code>.",
+            "template": "txt = \"Hola\"\nprint(txt[_____])",
+            "template_html": "txt = \"Hola\"<br>print(txt[<input type='text' class='exercise-input' data-answer='0' placeholder='___'>])",
+            "python_code": "txt = \"Hola\"\nprint(txt[0])",
+            "answer": "0"
+        },
+        {
+            "id": "ex-str-2",
+            "type": "multiple-choice",
+            "question": "¿Cuál función devuelve la longitud de un string en Python?",
+            "options": ["length()", "len()", "size()", "count()"],
+            "correct": 1
+        },
+        {
+            "id": "ex-str-3",
+            "type": "fill-blank",
+            "question": "Verifica si <code>\"mundo\"</code> está presente en el string <code>txt</code>.",
+            "template": "print(\"mundo\" _____ txt)",
+            "template_html": "print(\"mundo\" <input type='text' class='exercise-input' data-answer='in' placeholder='___'> txt)",
+            "python_code": "print(\"mundo\" in txt)",
+            "answer": "in"
         }
     ]
 }

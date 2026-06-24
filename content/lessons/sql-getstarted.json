@@ -1,17 +1,42 @@
 {
     "id": "sql-getstarted",
-    "title": "MySQL Get Started",
-    "intro": "Welcome to the MySQL Get Started lesson.",
-    "python_desc": "Python code for MySQL Get Started",
-    "java_desc": "Java equivalent for MySQL Get Started",
-    "explanation": "<p>In this lesson we cover <b>MySQL Get Started</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "MySQL - Primeros Pasos",
+    "intro": "Python se puede usar en aplicaciones de bases de datos. Una de las bases de datos más populares es MySQL.",
+    "python_desc": "Conexión Python",
+    "java_desc": "Conexión Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Instalar el Driver MySQL",
+            "text": "Python necesita un controlador (driver) de MySQL para acceder a la base de datos. Recomendamos usar PIP para instalar 'mysql-connector-python'.",
+            "notes": [
+                {"type": "note", "text": "En Java esto equivale a descargar el JAR de 'MySQL Connector/J' y añadirlo al CLASSPATH o dependencias de Maven/Gradle."}
+            ]
+        },
+        {
+            "title": "Crear Conexión",
+            "text": "Una vez instalado, importas el módulo e inicias una conexión especificando el host, el usuario y la contraseña.",
+            "notes": [
+                {"type": "tip", "text": "La estructura DB-API de Python es muy similar a la estructura JDBC de Java. Ambas requieren conectarse, crear un Cursor/Statement, ejecutar la query y cerrarla."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "sql-getstarted-1",
-            "python": "# MySQL Get Started Python example\nprint('MySQL Get Started')",
-            "java": "// MySQL Get Started Java example\nSystem.out.println(\"MySQL Get Started\");",
-            "explanation": "Basic example demonstrating MySQL Get Started."
+            "section": "Crear Conexión",
+            "python": "import mysql.connector\n\n# Crear la conexión\nmydb = mysql.connector.connect(\n  host=\"localhost\",\n  user=\"tuusuario\",\n  password=\"tucontraseña\"\n)\n\nprint(mydb)",
+            "java": "import java.sql.Connection;\nimport java.sql.DriverManager;\nimport java.sql.SQLException;\n\npublic class Main {\n  public static void main(String[] args) {\n      try {\n          Connection conn = DriverManager.getConnection(\n              \"jdbc:mysql://localhost:3306/\", \n              \"tuusuario\", \"tucontraseña\");\n          System.out.println(conn);\n      } catch (SQLException e) {\n          e.printStackTrace();\n      }\n  }\n}",
+            "explanation": "El proceso en Python es más limpio porque no requiere manejo explícito y verboso de excepciones checked (`try/catch`) para instanciar la conexión."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-sql-getstarted-1",
+            "type": "multiple-choice",
+            "question": "¿Cómo se llama el equivalente del DB-API de Python en Java para conectarse a bases de datos relacionales?",
+            "options": ["Hibernate", "JDBC (Java Database Connectivity)", "JPA", "Spring Data"],
+            "correct": 1
         }
     ]
 }

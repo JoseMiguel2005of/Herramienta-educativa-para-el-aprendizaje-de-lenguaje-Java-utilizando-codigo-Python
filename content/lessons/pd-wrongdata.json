@@ -1,17 +1,42 @@
 {
     "id": "pd-wrongdata",
-    "title": "Cleaning Wrong Data",
-    "intro": "Welcome to the Cleaning Wrong Data lesson.",
-    "python_desc": "Python code for Cleaning Wrong Data",
-    "java_desc": "Java equivalent for Cleaning Wrong Data",
-    "explanation": "<p>In this lesson we cover <b>Cleaning Wrong Data</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Corregir Datos Equivocados",
+    "intro": "Los 'Datos Equivocados' (Wrong Data) no necesariamente significan celdas vacías o con mal formato. A veces, simplemente es un dato irracional o imposible. Por ejemplo, que alguien haya registrado que corrió durante '199' horas en vez de '1.99'.",
+    "python_desc": "Corrección en Python",
+    "java_desc": "Corrección en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Reemplazo Manual de Valores",
+            "text": "Una forma directa de arreglar un valor erróneo es reemplazarlo por algo lógico si sabes qué debía ir allí. Puedes acceder a esa fila específica usando <code>loc</code> y simplemente sobrescribirla.",
+            "notes": [
+                {"type": "note", "text": "En Java usamos `lista.get(index).setDuracion(valor)`."}
+            ]
+        },
+        {
+            "title": "Corrección usando Condiciones",
+            "text": "Para un conjunto de datos enorme, no puedes buscar los errores uno por uno. Una mejor forma es crear reglas que iteren los datos. Por ejemplo: si la duración del ejercicio fue superior a 120, fijarla en 120 (el límite de resistencia esperado).",
+            "notes": [
+                {"type": "tip", "text": "Puedes realizar un for-loop en Pandas accediendo al atributo <code>df.index</code>."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "pd-wrongdata-1",
-            "python": "# Cleaning Wrong Data Python example\nprint('Cleaning Wrong Data')",
-            "java": "// Cleaning Wrong Data Java example\nSystem.out.println(\"Cleaning Wrong Data\");",
-            "explanation": "Basic example demonstrating Cleaning Wrong Data."
+            "section": "Corrección usando Condiciones",
+            "python": "import pandas as pd\n\ndf = pd.read_csv('data.csv')\n\n# Recorrer todos los índices aplicando la regla de negocio:\nfor x in df.index:\n  if df.loc[x, \"Duracion\"] > 120:\n    df.loc[x, \"Duracion\"] = 120\n    \nprint(df.to_string())",
+            "java": "import java.util.List;\n\npublic class Main {\n  public static void main(String[] args) {\n      List<Registro> tabla = obtenerDatos();\n      \n      for (Registro r : tabla) {\n          if (r.getDuracion() > 120) {\n              r.setDuracion(120);\n          }\n      }\n  }\n}",
+            "explanation": "El proceso lógico condicional es casi idéntico. Iteramos toda la colección validando una regla de negocio y fijando un límite si un registro la incumple."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-pd-wrongdata-1",
+            "type": "multiple-choice",
+            "question": "¿Qué atributo de Pandas puedes iterar en un bucle for para repasar todos los registros fila por fila?",
+            "options": ["df.keys", "df.rows", "df.index", "df.columns"],
+            "correct": 2
         }
     ]
 }

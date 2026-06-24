@@ -1,17 +1,49 @@
 {
     "id": "sql-where",
-    "title": "MySQL Where",
-    "intro": "Welcome to the MySQL Where lesson.",
-    "python_desc": "Python code for MySQL Where",
-    "java_desc": "Java equivalent for MySQL Where",
-    "explanation": "<p>In this lesson we cover <b>MySQL Where</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "MySQL - Filtros (Where)",
+    "intro": "Para filtrar información o seleccionar registros con condiciones específicas en MySQL, utilizamos la cláusula 'WHERE'.",
+    "python_desc": "Uso de WHERE en Python",
+    "java_desc": "Uso de WHERE en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Filtrar por Condiciones",
+            "text": "Se agrega al texto de la consulta. Al igual que al insertar registros, cuando inyectas valores dentro de tu sentencia WHERE para buscar, debes usar marcadores de posición <code>%s</code> para prevenir inyecciones SQL.",
+            "notes": [
+                {"type": "note", "text": "Al igual que antes, Java usa el signo `?` para el `PreparedStatement`."}
+            ]
+        },
+        {
+            "title": "Caracteres Comodín (Wildcards)",
+            "text": "A menudo los desarrolladores usan el caracter de porcentaje <code>%</code> como un comodín (wildcard). La sintaxis <code>%way%</code> significa 'contiene la palabra way en cualquier lado'.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
             "id": "sql-where-1",
-            "python": "# MySQL Where Python example\nprint('MySQL Where')",
-            "java": "// MySQL Where Java example\nSystem.out.println(\"MySQL Where\");",
-            "explanation": "Basic example demonstrating MySQL Where."
+            "section": "Filtrar por Condiciones",
+            "python": "import mysql.connector\n\nmydb = mysql.connector.connect(host=\"localhost\", user=\"user\", password=\"pass\", database=\"mibase\")\nmicursor = mydb.cursor()\n\n# La consulta con el parámetro protegido\nsql = \"SELECT * FROM clientes WHERE direccion = %s\"\n\n# El parámetro se pasa como una tupla\nadr = (\"Park Lane 38\", )\n\nmicursor.execute(sql, adr)\nresultado = micursor.fetchall()\n\nfor fila in resultado:\n  print(fila)",
+            "java": "import java.sql.Connection;\nimport java.sql.DriverManager;\nimport java.sql.PreparedStatement;\nimport java.sql.ResultSet;\n\npublic class Main {\n  public static void main(String[] args) throws Exception {\n      Connection conn = DriverManager.getConnection(\"jdbc:mysql://localhost/mibase\", \"user\", \"pass\");\n      \n      String sql = \"SELECT * FROM clientes WHERE direccion = ?\";\n      PreparedStatement pstmt = conn.prepareStatement(sql);\n      pstmt.setString(1, \"Park Lane 38\");\n      \n      ResultSet rs = pstmt.executeQuery();\n      while (rs.next()) {\n          System.out.println(rs.getString(\"nombre\"));\n      }\n  }\n}",
+            "explanation": "El `PreparedStatement` nos permite rellenar los comodines. En Python basta con pasar la tupla a la función `execute(sql, parametros)` en vez de hacer set a cada propiedad."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-sql-where-1",
+            "type": "fill-blank",
+            "question": "Escribe la palabra clave SQL para indicar la condición/filtro.",
+            "template": "sql = \"SELECT * FROM clientes _____ direccion = 'Park Lane 38'\"",
+            "template_html": "sql = \"SELECT * FROM clientes <input type='text' class='exercise-input' data-answer='WHERE' placeholder='_____'> direccion = 'Park Lane 38'\"",
+            "python_code": "sql = \"SELECT * FROM clientes WHERE direccion = 'Park Lane 38'\"",
+            "answer": "WHERE"
+        },
+        {
+            "id": "ex-sql-where-2",
+            "type": "multiple-choice",
+            "question": "¿Por qué la variable `adr` del código de Python tiene una coma final al crearse: adr = ('Park Lane 38', )?",
+            "options": ["Es un error tipográfico", "Porque la función execute siempre pide más de dos valores", "Para que Python la reconozca como Tupla y no como un String envuelto en paréntesis", "Porque MySQL requiere comas al final"],
+            "correct": 2
         }
     ]
 }

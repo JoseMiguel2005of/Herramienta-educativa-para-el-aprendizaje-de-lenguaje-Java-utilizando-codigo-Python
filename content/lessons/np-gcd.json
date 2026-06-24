@@ -1,17 +1,37 @@
 {
     "id": "np-gcd",
-    "title": "GCD",
-    "intro": "Welcome to the GCD lesson.",
-    "python_desc": "Python code for GCD",
-    "java_desc": "Java equivalent for GCD",
-    "explanation": "<p>In this lesson we cover <b>GCD</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "NumPy - Máximo Común Divisor (GCD)",
+    "intro": "El Máximo Común Divisor (Greatest Common Denominator) es el número más alto por el que se pueden dividir dos o más cifras sin que sobre ningún residuo.",
+    "python_desc": "GCD en NumPy",
+    "java_desc": "Algoritmo Euclides en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Encontrar el GCD",
+            "text": "Si tienes los números 6 y 9, el número más alto que puede dividir a ambos perfectamente dejando cero de residuo es el 3. En NumPy utilizamos la ufunc <code>gcd()</code>.",
+            "notes": [
+                {"type": "tip", "text": "Al igual que con LCM, si usas la sub-función <code>reduce()</code> puedes pasarle un Array inmenso para encontrar el divisor universal en un milisegundo."}
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "np-gcd-1",
-            "python": "# GCD Python example\nprint('GCD')",
-            "java": "// GCD Java example\nSystem.out.println(\"GCD\");",
-            "explanation": "Basic example demonstrating GCD."
+            "section": "Encontrar el GCD",
+            "python": "import numpy as np\n\n# Buscar el Divisor Común Máximo de todo el array\narr = np.array([20, 8, 32, 36, 16])\n\nx = np.gcd.reduce(arr)\n\nprint(x)\n# Salida: 4 (El 4 es el máximo que divide limpiamente a todos ellos)",
+            "java": "import org.apache.commons.math3.util.ArithmeticUtils;\n\npublic class MCD {\n  public static void main(String[] args) {\n      int[] arr = {20, 8, 32, 36, 16};\n      \n      // El mismo patrón que LCM aplica. Reducción recursiva manual requerida:\n      int mcd_actual = arr[0];\n      for (int i = 1; i < arr.length; i++) {\n          mcd_actual = ArithmeticUtils.gcd(mcd_actual, arr[i]);\n      }\n      \n      System.out.println(mcd_actual);\n  }\n}",
+            "explanation": "El patrón subyacente estadístico es el mismo. Lo que diferencia a Python de Java es la presencia de una 'API Fluida Vectorial', donde métodos como reduce() perdonan horas de lógica manual en bucles o Streams complejos."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-np-gcd-1",
+            "type": "fill-blank",
+            "question": "Escribe las siglas de la ufunc capaz de descubrir cuál es el Máximo Común Divisor de una colección de cifras.",
+            "template": "x = np.____.reduce(arr)",
+            "template_html": "x = np.<input type='text' class='exercise-input' data-answer='gcd' placeholder='____'>.reduce(arr)",
+            "python_code": "x = np.gcd.reduce(arr)",
+            "answer": "gcd"
         }
     ]
 }

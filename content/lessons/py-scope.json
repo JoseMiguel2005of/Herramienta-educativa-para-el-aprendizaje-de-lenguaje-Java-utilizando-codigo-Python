@@ -1,17 +1,84 @@
 {
     "id": "py-scope",
-    "title": "Python Scope",
-    "intro": "Welcome to the Python Scope lesson.",
-    "python_desc": "Python code for Python Scope",
-    "java_desc": "Java equivalent for Python Scope",
-    "explanation": "<p>In this lesson we cover <b>Python Scope</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Alcance (Scope) en Python",
+    "intro": "Una variable solo está disponible dentro de la región en la que se crea. A esto se le llama el alcance o 'scope'.",
+    "python_desc": "Código Python para Scope",
+    "java_desc": "Equivalente en Java para Scope",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Scope Local",
+            "text": "Una variable creada dentro de una función pertenece al alcance <b>local</b> de esa función y solo puede ser utilizada en ella.",
+            "notes": [
+                {"type": "note", "text": "El alcance local funciona de forma muy similar en Java. Las variables declaradas dentro de un método mueren al terminar el método."}
+            ]
+        },
+        {
+            "title": "Función dentro de Función",
+            "text": "El alcance local significa que la variable solo existe en la función donde se creó. Si creas una función anidada dentro de otra, la función interna también puede acceder a las variables de la externa.",
+            "notes": [
+                {"type": "tip", "text": "En Python, anidar funciones es muy común (para decoradores o closures). En Java no se pueden anidar métodos directamente (aunque existen clases anónimas o expresiones lambda que simulan algo parecido)."}
+            ]
+        },
+        {
+            "title": "Scope Global",
+            "text": "Una variable creada en el cuerpo principal del código es una variable <b>global</b> y pertenece al alcance global. Todos pueden leerla, tanto funciones internas como externas.",
+            "notes": [
+                {"type": "warning", "text": "Java no tiene verdaderas variables globales (fuera de las clases). Se utilizan variables estáticas (<code>public static</code>) para emular este comportamiento."}
+            ]
+        },
+        {
+            "title": "La Palabra Clave global",
+            "text": "Si necesitas crear una variable global, pero estás <b>dentro de una función</b>, puedes usar la palabra clave <code>global</code>.",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
-            "id": "py-scope-1",
-            "python": "# Python Scope Python example\nprint('Python Scope')",
-            "java": "// Python Scope Java example\nSystem.out.println(\"Python Scope\");",
-            "explanation": "Basic example demonstrating Python Scope."
+            "id": "py-scope-local",
+            "section": "Scope Local",
+            "python": "def mi_funcion():\n    x = 300\n    print(x)\n\nmi_funcion()\n# print(x)  # ¡Error! x no existe aquí",
+            "java": "public static void miFuncion() {\n    int x = 300;\n    System.out.println(x);\n}\n// main() { miFuncion(); }\n// System.out.println(x); // ¡Error!",
+            "explanation": "Tanto en Python como en Java, las variables dentro de funciones/métodos nacen y mueren ahí."
+        },
+        {
+            "id": "py-scope-nested",
+            "section": "Función dentro de Función",
+            "python": "def mi_funcion():\n    x = 300\n    def funcion_interna():\n        print(x)  # Puede leer x\n    funcion_interna()\n\nmi_funcion()",
+            "java": "// En Java no puedes declarar un método dentro de otro.\npublic static void miFuncion() {\n    final int x = 300;\n    Runnable interna = () -> System.out.println(x);\n    interna.run();\n}",
+            "explanation": "Python soporta funciones anidadas de forma nativa. En Java hay que usar lambdas o clases anónimas."
+        },
+        {
+            "id": "py-scope-global",
+            "section": "Scope Global",
+            "python": "x = 300  # Variable global\n\ndef mi_funcion():\n    print(x)  # Lee la global\n\nmi_funcion()\nprint(x)      # Sigue siendo 300",
+            "java": "public class Program {\n    static int x = 300; // \"Global\" emulada\n    \n    public static void miFuncion() {\n        System.out.println(x);\n    }\n    public static void main(String[] args) {\n        miFuncion(); System.out.println(x);\n    }\n}",
+            "explanation": "Python permite declarar variables fuera de toda estructura. Java exige que todo esté en clases, por lo que usa campos <code>static</code>."
+        },
+        {
+            "id": "py-scope-global-key",
+            "section": "La Palabra Clave global",
+            "python": "x = 300\n\ndef mi_funcion():\n    global x\n    x = 200  # Modifica la global\n\nmi_funcion()\nprint(x)     # Ahora es 200",
+            "java": "public class Program {\n    static int x = 300;\n    \n    public static void miFuncion() {\n        x = 200; // Modifica la estática\n    }\n    public static void main(String[] args) {\n        miFuncion(); System.out.println(x);\n    }\n}",
+            "explanation": "Para modificar una variable global en Python desde una función, debes declararla con <code>global</code>. En Java, las estáticas son siempre accesibles para modificar."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-scope-1",
+            "type": "fill-blank",
+            "question": "Usa la palabra clave que permite modificar una variable global desde dentro de una función.",
+            "template": "def mi_func():\n    _____ x\n    x = 200",
+            "template_html": "def mi_func():<br>&nbsp;&nbsp;&nbsp;&nbsp;<input type='text' class='exercise-input' data-answer='global' placeholder='___'> x<br>&nbsp;&nbsp;&nbsp;&nbsp;x = 200",
+            "python_code": "global x",
+            "answer": "global"
+        },
+        {
+            "id": "ex-scope-2",
+            "type": "multiple-choice",
+            "question": "¿Puedes acceder a una variable local (creada dentro de una función) desde fuera de esa función?",
+            "options": ["Sí, siempre", "Sí, con la palabra global", "No, causa error", "Solo en Python"],
+            "correct": 2
         }
     ]
 }
