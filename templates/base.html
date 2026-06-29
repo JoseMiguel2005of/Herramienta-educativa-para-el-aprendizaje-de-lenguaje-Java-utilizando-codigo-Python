@@ -106,8 +106,18 @@
                             <ul class="nav-list term-nav-list">
                                 {% for lesson in section.lessons %}
                                 <li>
-                                    <a href="{{ url_for('lesson', lesson_id=lesson.id) }}"
-                                        class="nav-link term-nav-link {% if page == 'lesson' and current_lesson == lesson.id %}active{% endif %}"
+                                    {% if lesson.type == 'quiz' %}
+                                        <a href="{{ url_for('quiz', topic=lesson.id) }}"
+                                    {% elif lesson.type == 'examples' %}
+                                        <a href="{{ url_for('examples') }}"
+                                    {% elif lesson.type == 'practice' %}
+                                        <a href="{{ url_for('practice') }}"
+                                    {% elif lesson.id.startswith('ex-') %}
+                                        <a href="{{ url_for('exercise_topic', topic=lesson.id) }}"
+                                    {% else %}
+                                        <a href="{{ url_for('lesson', lesson_id=lesson.id) }}"
+                                    {% endif %}
+                                        class="nav-link term-nav-link {% if (page == 'lesson' and current_lesson == lesson.id) or (page == 'exercises' and topic == lesson.id) or (page == 'quiz' and quiz_data and quiz_data.id == lesson.id) %}active{% endif %}"
                                         data-title="{{ t['lesson_' ~ lesson.id ~ '_title'] | lower }}">
                                         <span class="tree-file">│ └─</span>
                                         <span class="file-name">{{ t['lesson_' ~ lesson.id ~ '_title'] }}</span>

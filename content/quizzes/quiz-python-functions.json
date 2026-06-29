@@ -1,0 +1,188 @@
+{
+    "id": "quiz-python-functions",
+    "title": "Cuestionario de Funciones de Python",
+    "description": "Pon a prueba tus conocimientos sobre funciones y lambdas en Python.",
+    "time_limit": null,
+    "questions": [
+        {
+            "id": "qf1",
+            "question": "¿Qué palabra clave se usa para definir una función en Python?",
+            "options": [
+                "function",
+                "func",
+                "def",
+                "define"
+            ],
+            "correct": 2,
+            "explanation": "La palabra clave 'def' se usa para definir una función."
+        },
+        {
+            "id": "qf2",
+            "question": "¿Cuál es la forma correcta de llamar a una función llamada 'my_func'?",
+            "options": [
+                "call my_func()",
+                "my_func()",
+                "my_func[]",
+                "exec my_func()"
+            ],
+            "correct": 1,
+            "explanation": "Se llama a una función por su nombre seguido de paréntesis."
+        },
+        {
+            "id": "qf3",
+            "question": "¿Qué palabra clave se usa para devolver un valor de una función?",
+            "options": [
+                "send",
+                "yield",
+                "return",
+                "output"
+            ],
+            "correct": 2,
+            "explanation": "La palabra clave 'return' devuelve un valor de una función."
+        },
+        {
+            "id": "qf4",
+            "question": "¿Qué es una función lambda?",
+            "options": [
+                "Una función sin nombre",
+                "Una pequeña función anónima",
+                "Una función dentro de una clase",
+                "Una función recursiva"
+            ],
+            "correct": 1,
+            "explanation": "Una función lambda es una pequeña función anónima definida con la palabra clave lambda."
+        },
+        {
+            "id": "qf5",
+            "question": "¿Qué prefijo permite a una función aceptar cualquier número de argumentos?",
+            "options": [
+                "&args",
+                "...args",
+                "*args",
+                "**args"
+            ],
+            "correct": 2,
+            "explanation": "*args permite a una función aceptar cualquier número de argumentos posicionales."
+        },
+        {
+            "id": "qf6",
+            "question": "¿Qué prefijo permite a una función aceptar cualquier número de argumentos de palabra clave?",
+            "options": [
+                "*kwargs",
+                "**kwargs",
+                "&kwargs",
+                "...kwargs"
+            ],
+            "correct": 1,
+            "explanation": "**kwargs permite a una función aceptar cualquier número de argumentos de palabra clave."
+        },
+        {
+            "id": "qf7",
+            "question": "¿Qué es un valor de parámetro predeterminado?",
+            "options": [
+                "Un valor que no se puede cambiar",
+                "Un valor usado si no se pasa ningún argumento",
+                "El primer argumento",
+                "Una variable global"
+            ],
+            "correct": 1,
+            "explanation": "Los valores de parámetros predeterminados se usan cuando no se proporciona ningún argumento."
+        },
+        {
+            "id": "qf8",
+            "question": "¿Qué es la recursión?",
+            "options": [
+                "Un bucle dentro de una función",
+                "Una función que se llama a sí misma",
+                "Múltiples funciones llamándose entre sí",
+                "Una función con valores predeterminados"
+            ],
+            "correct": 1,
+            "explanation": "La recursión es cuando una función se llama a sí misma."
+        },
+        {
+            "id": "qf9",
+            "question": "¿Cuál es la salida de: (lambda x: x * 2)(5)?",
+            "options": [
+                "25",
+                "10",
+                "Error",
+                "lambda"
+            ],
+            "correct": 1,
+            "explanation": "La lambda toma x y devuelve x * 2, por lo que 5 * 2 = 10."
+        },
+        {
+            "id": "qf10",
+            "question": "¿Qué hace la declaración 'pass' dentro de una función?",
+            "options": [
+                "Devuelve None",
+                "Omite la función",
+                "Actúa como un marcador de posición",
+                "Genera un error"
+            ],
+            "correct": 2,
+            "explanation": "Pass se usa como un marcador de posición para cuerpos de función vacíos."
+        },
+        {
+            "id": "qf11",
+            "question": "¿Puede una función devolver múltiples valores en Python?",
+            "options": [
+                "No",
+                "Sí, como una tupla",
+                "Sí, como una lista",
+                "Ambas B y C son correctas"
+            ],
+            "correct": 3,
+            "explanation": "Las funciones pueden devolver múltiples valores, típicamente como una tupla o cualquier colección."
+        },
+        {
+            "id": "qf12",
+            "question": "¿Qué es un docstring?",
+            "options": [
+                "Un comentario en el código",
+                "Un literal de cadena para documentar una función",
+                "Un nombre de variable",
+                "Un tipo de formato de cadena"
+            ],
+            "correct": 1,
+            "explanation": "Los docstrings documentan lo que hace una función, colocados como la primera declaración."
+        },
+        {
+            "id": "qf13",
+            "question": "¿Qué alcance tiene una variable declarada dentro de una función?",
+            "options": [
+                "Alcance global",
+                "Alcance local",
+                "Alcance del módulo",
+                "Sin alcance"
+            ],
+            "correct": 1,
+            "explanation": "Las variables dentro de una función tienen alcance local."
+        },
+        {
+            "id": "qf14",
+            "question": "¿Qué función incorporada devuelve el valor absoluto de un número?",
+            "options": [
+                "absolute()",
+                "abs()",
+                "math.abs()",
+                "fabs()"
+            ],
+            "correct": 1,
+            "explanation": "La función abs() devuelve el valor absoluto."
+        },
+        {
+            "id": "qf15",
+            "question": "¿Cuál es la sintaxis lambda correcta para sumar 10 a un número?",
+            "options": [
+                "lambda x => x + 10",
+                "lambda x: x + 10",
+                "lambda(x) { x + 10 }",
+                "x -> x + 10"
+            ],
+            "correct": 1,
+            "explanation": "Sintaxis lambda: lambda parámetros: expresión"
+        }
+    ]
+}

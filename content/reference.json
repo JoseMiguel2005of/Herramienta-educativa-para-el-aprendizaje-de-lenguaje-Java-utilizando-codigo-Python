@@ -118,5 +118,71 @@
       "java": "import paquete.Clase;",
       "desc": "Importar dependencias."
     }
+  ],
+  "orientado_objetos": [
+    {
+      "python": "class Clase(Padre):",
+      "java": "class Clase extends Padre { }",
+      "desc": "Definición de clase y herencia."
+    },
+    {
+      "python": "def __init__(self, val):",
+      "java": "public Clase(Tipo val) { }",
+      "desc": "Constructor de la clase."
+    },
+    {
+      "python": "self.propiedad",
+      "java": "this.propiedad",
+      "desc": "Referencia a la instancia actual."
+    },
+    {
+      "python": "obj = Clase()",
+      "java": "Clase obj = new Clase();",
+      "desc": "Instanciación de objetos."
+    }
+  ],
+  "manejo_errores": [
+    {
+      "python": "try:",
+      "java": "try { }",
+      "desc": "Bloque de código protegido."
+    },
+    {
+      "python": "except Exception as e:",
+      "java": "catch (Exception e) { }",
+      "desc": "Captura de excepciones."
+    },
+    {
+      "python": "finally:",
+      "java": "finally { }",
+      "desc": "Ejecución garantizada post-error."
+    },
+    {
+      "python": "raise ValueError()",
+      "java": "throw new Exception();",
+      "desc": "Lanzar una excepción explícitamente."
+    }
+  ],
+  "manipulacion_datos": [
+    {
+      "python": "texto.lower() / upper()",
+      "java": "texto.toLowerCase() / toUpperCase()",
+      "desc": "Cambiar mayúsculas/minúsculas en un String."
+    },
+    {
+      "python": "texto.replace('a', 'b')",
+      "java": "texto.replace(\"a\", \"b\")",
+      "desc": "Reemplazar subcadenas."
+    },
+    {
+      "python": "lista.append(x)",
+      "java": "lista.add(x);",
+      "desc": "Agregar elemento al final de la lista."
+    },
+    {
+      "python": "diccionario.get(clave)",
+      "java": "mapa.get(clave);",
+      "desc": "Obtener valor por clave de forma segura."
+    }
   ]
 }

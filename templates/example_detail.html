@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}{{ example.title }} — Ejemplos — {{ t.site_title }}{% endblock %}
+
+{% block content %}
+<article class="example-detail-page">
+    <header class="example-detail-header">
+        <a href="{{ url_for('examples') }}" class="breadcrumb-link">← Volver a Ejemplos</a>
+        <h1 class="example-detail-title">{{ example.title }}</h1>
+        <p class="example-detail-desc">{{ example.description }}</p>
+    </header>
+
+    <section class="example-detail-body">
+        <div class="example-code-section">
+            <div class="example-code-header">
+                <span class="lang-badge python-badge">Python</span>
+                <span class="example-label">Código de Ejemplo</span>
+            </div>
+            <pre class="example-code-block"><code class="language-python" id="example-code">{{ example.python_code }}</code></pre>
+        </div>
+
+        <div class="example-tryit-section">
+            <button class="btn-tryit-run" id="btn-run-example">▶ Ejecutar Código</button>
+            <div class="example-output-wrapper" id="example-output-wrapper" hidden>
+                <div class="example-output-header">Salida (Consola):</div>
+                <pre class="example-output"><code id="example-output"></code></pre>
+            </div>
+        </div>
+
+        <div class="example-tryit-editor">
+            <h3 class="tryit-title">Pruébalo tú mismo</h3>
+            <p class="tryit-hint">Modifica el código abajo y ejecútalo para ver el resultado.</p>
+            <textarea id="tryit-editor" class="tryit-textarea" spellcheck="false">{{ example.python_code }}</textarea>
+            <div class="tryit-actions">
+                <button class="btn-tryit-run" id="btn-run-tryit">▶ Ejecutar Editor</button>
+                <button class="btn-tryit-reset" id="btn-reset-tryit">↺ Reiniciar Código</button>
+            </div>
+            <div class="tryit-output-wrapper" id="tryit-output-wrapper" hidden>
+                <div class="example-output-header">Resultado:</div>
+                <pre class="example-output"><code id="tryit-output"></code></pre>
+            </div>
+        </div>
+    </section>
+
+    {% if example.related_lesson %}
+    <div class="example-related">
+        <h3 class="example-label">Lección Relacionada</h3>
+        <p>Aprende más en: <a href="{{ url_for('lesson', lesson_id=example.related_lesson) }}" class="btn-related-lesson">{{ example.category }}</a></p>
+    </div>
+    {% endif %}
+</article>
+{% endblock %}
+
+{% block scripts %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/examples-page.css') }}">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+<script src="{{ url_for('static', filename='js/pyodide-runner.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const originalCode = {{ example.python_code | tojson }};
+
+    async function runPythonCode(code, outputEl) {
+        outputEl.textContent = 'Running...';
+        outputEl.closest('[id$="-wrapper"]').hidden = false;
+        try {
+            if (!window.pyodideReady) {
+                if (!window.pyodideLoading) {
+                    window.pyodideLoading = true;
+                    window.pyodide = await loadPyodide();
+                    window.pyodideReady = true;
+                }
+            }
+            window.pyodide.runPython(`
+import sys, io
+sys.stdout = io.StringIO()
+`);
+            window.pyodide.runPython(code);
+            const output = window.pyodide.runPython('sys.stdout.getvalue()');
+            outputEl.textContent = output || '(No output)';
+        } catch (e) {
+            outputEl.textContent = 'Error: ' + e.message;
+        }
+    }
+
+    document.getElementById('btn-run-example')?.addEventListener('click', () => {
+        runPythonCode(originalCode, document.getElementById('example-output'));
+    });
+
+    document.getElementById('btn-run-tryit')?.addEventListener('click', () => {
+        const code = document.getElementById('tryit-editor').value;
+        runPythonCode(code, document.getElementById('tryit-output'));
+    });
+
+    document.getElementById('btn-reset-tryit')?.addEventListener('click', () => {
+        document.getElementById('tryit-editor').value = originalCode;
+        document.getElementById('tryit-output-wrapper').hidden = true;
+    });
+});
+</script>
+{% endblock %}

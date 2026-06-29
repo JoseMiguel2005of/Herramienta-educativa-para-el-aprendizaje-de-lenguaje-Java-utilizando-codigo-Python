@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Python Examples — {{ t.site_title }}{% endblock %}
+
+{% block content %}
+<article class="examples-page">
+    <header class="examples-header">
+        <h1 class="examples-title">
+            <span class="examples-icon">📋</span> Ejemplos de Python
+        </h1>
+        <p class="examples-desc">Aprende Python viendo ejemplos prácticos. Cada ejemplo incluye código que puedes ejecutar y modificar.</p>
+    </header>
+
+    {% for category in example_categories %}
+    <section class="examples-category" id="cat-{{ category.id }}">
+        <h2 class="examples-category-title">
+            <span class="category-marker"></span>
+            {{ category.title }}
+        </h2>
+        <div class="examples-grid">
+            {% for ex in category.examples %}
+            <a href="{{ url_for('example_detail', example_id=ex.id) }}" class="example-card">
+                <div class="example-card-header">
+                    <span class="example-card-title">{{ ex.title }}</span>
+                </div>
+                <p class="example-card-desc">{{ ex.description }}</p>
+                <span class="example-card-cta">Pruébalo tú mismo ❯</span>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endfor %}
+</article>
+{% endblock %}
+
+{% block scripts %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/examples-page.css') }}">
+{% endblock %}

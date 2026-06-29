@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}{{ exercise_data.title }} — {{ t.site_title }}{% endblock %}
+
+{% block content %}
+<article class="exercise-hub">
+    <header class="exercise-hub-header">
+        <h1 class="exercise-hub-title">
+            <span class="exercise-hub-icon">📝</span>
+            {{ exercise_data.title }}
+        </h1>
+        <p class="exercise-hub-desc">{{ exercise_data.explanation | safe }}</p>
+        <div class="exercise-hub-stats">
+            <span class="stat-badge">{{ exercises | length }} Exercises</span>
+            <span class="stat-badge stat-completed" id="stat-completed">{{ completed_count }} Completed</span>
+        </div>
+    </header>
+
+    <section class="exercise-list">
+        {% for ex in exercises %}
+        <a href="{{ url_for('exercise_page', topic=topic, exercise_num=loop.index) }}" class="exercise-list-item {% if (topic ~ '-' ~ loop.index) in completed_exercises %}completed{% endif %}">
+            <span class="exercise-list-number">{{ loop.index }}</span>
+            <span class="exercise-list-question">{{ ex.question | truncate(80) }}</span>
+            <span class="exercise-list-status">
+                {% if (topic ~ '-' ~ loop.index) in completed_exercises %}
+                    ✅
+                {% else %}
+                    ○
+                {% endif %}
+            </span>
+        </a>
+        {% endfor %}
+    </section>
+
+    <div class="exercise-hub-cta">
+        <a href="{{ url_for('exercise_page', topic=topic, exercise_num=1) }}" class="btn-start-exercises">
+            Start Exercises ❯
+        </a>
+    </div>
+</article>
+{% endblock %}
+
+{% block scripts %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/exercise-page.css') }}">
+{% endblock %}

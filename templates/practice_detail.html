@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}{{ problem.title }} — Práctica — {{ t.site_title }}{% endblock %}
+
+{% block content %}
+<article class="practice-detail-page" data-problem-id="{{ problem.id }}">
+    <header class="practice-detail-header">
+        <a href="{{ url_for('practice') }}" class="breadcrumb-link">← Problemas de Práctica</a>
+        <div class="practice-detail-title-row">
+            <h1 class="practice-detail-title">{{ problem.title }}</h1>
+            <span class="practice-difficulty-badge practice-{{ problem.difficulty }}">
+                {% if problem.difficulty == 'easy' %}Fácil{% elif problem.difficulty == 'medium' %}Medio{% else %}Difícil{% endif %}
+            </span>
+        </div>
+        <p class="practice-detail-desc">{{ problem.description | safe }}</p>
+        <span class="practice-detail-category">Categoría: {{ problem.category }}</span>
+    </header>
+
+    <section class="practice-workspace">
+        <div class="practice-editor-section">
+            <div class="practice-editor-header">
+                <span class="lang-badge python-badge">Python</span>
+                <div class="practice-editor-actions">
+                    <button class="btn-practice-run" id="btn-run-code">▶ Ejecutar Código</button>
+                    <button class="btn-practice-submit" id="btn-submit-code">✓ Enviar</button>
+                    <button class="btn-practice-reset" id="btn-reset-code">↺ Reiniciar</button>
+                </div>
+            </div>
+            <textarea id="practice-editor" class="practice-editor-textarea" spellcheck="false">{{ problem.starter_code }}</textarea>
+        </div>
+
+        <div class="practice-results-section">
+            <div class="practice-output" id="practice-output-wrapper" hidden>
+                <div class="practice-output-header">Salida (Consola):</div>
+                <pre class="practice-output-pre"><code id="practice-output"></code></pre>
+            </div>
+
+            <div class="practice-tests" id="practice-tests-wrapper" hidden>
+                <div class="practice-tests-header">
+                    <span>Resultados de Pruebas</span>
+                    <span class="practice-tests-score" id="tests-score"></span>
+                </div>
+                <div class="practice-tests-list" id="tests-list"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="practice-hints-section">
+        {% for hint in problem.hints %}
+        <button class="btn-practice-hint" data-hint-index="{{ loop.index0 }}">
+            💡 Pista {{ loop.index }}
+        </button>
+        {% endfor %}
+        <div class="practice-hint-content" id="hint-content" hidden></div>
+    </section>
+
+    <div class="practice-solution-section" id="solution-section" hidden>
+        <button class="btn-show-solution" id="btn-show-solution">👁 Mostrar Solución</button>
+        <div class="practice-solution-code" id="solution-code" hidden>
+            <pre><code class="language-python">{{ problem.solution }}</code></pre>
+        </div>
+    </div>
+</article>
+{% endblock %}
+
+{% block scripts %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/practice-page.css') }}">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+<script>
+window.PRACTICE_DATA = {
+    problemId: {{ problem.id | tojson }},
+    starterCode: {{ problem.starter_code | tojson }},
+    testCases: {{ problem.test_cases | tojson }},
+    hints: {{ problem.hints | tojson }},
+    solution: {{ problem.solution | tojson }}
+};
+</script>
+<script src="{{ url_for('static', filename='js/practice-runner.js') }}"></script>
+{% endblock %}

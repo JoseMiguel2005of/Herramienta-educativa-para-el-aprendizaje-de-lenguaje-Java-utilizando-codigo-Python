@@ -1,0 +1,188 @@
+{
+    "id": "quiz-python-strings",
+    "title": "Cuestionario de Cadenas de Python",
+    "description": "Pon a prueba tus conocimientos sobre cadenas de texto en Python: métodos, slicing, formateo.",
+    "time_limit": null,
+    "questions": [
+        {
+            "id": "qs1",
+            "question": "¿Qué método se puede usar para devolver una cadena en letras mayúsculas?",
+            "options": [
+                "uppercase()",
+                "toUpperCase()",
+                "upper()",
+                "capitalize()"
+            ],
+            "correct": 2,
+            "explanation": "El método upper() devuelve la cadena en mayúsculas."
+        },
+        {
+            "id": "qs2",
+            "question": "¿Qué método se puede usar para eliminar espacios en blanco del principio y del final de una cadena?",
+            "options": [
+                "trim()",
+                "strip()",
+                "len()",
+                "remove()"
+            ],
+            "correct": 1,
+            "explanation": "El método strip() elimina los espacios en blanco iniciales y finales."
+        },
+        {
+            "id": "qs3",
+            "question": "¿Qué método se puede usar para reemplazar partes de una cadena?",
+            "options": [
+                "switch()",
+                "replace()",
+                "repl()",
+                "swap()"
+            ],
+            "correct": 1,
+            "explanation": "El método replace() reemplaza una frase especificada por otra."
+        },
+        {
+            "id": "qs4",
+            "question": "¿Cuál es la sintaxis correcta para devolver la longitud de una cadena?",
+            "options": [
+                "x.length()",
+                "len(x)",
+                "x.len()",
+                "length(x)"
+            ],
+            "correct": 1,
+            "explanation": "La función len() devuelve la longitud de una cadena."
+        },
+        {
+            "id": "qs5",
+            "question": "¿Cuál será la salida de: print('Hello'[1])?",
+            "options": [
+                "H",
+                "e",
+                "l",
+                "Error"
+            ],
+            "correct": 1,
+            "explanation": "La indexación de cadenas comienza en 0, por lo que el índice 1 devuelve 'e'."
+        },
+        {
+            "id": "qs6",
+            "question": "¿Cuál es el resultado de 'Hello' + ' ' + 'World'?",
+            "options": [
+                "HelloWorld",
+                "Hello World",
+                "Error",
+                "Hello+World"
+            ],
+            "correct": 1,
+            "explanation": "El operador + concatena cadenas."
+        },
+        {
+            "id": "qs7",
+            "question": "¿Cómo se obtiene el carácter en la posición 0 de la cadena 'Hello'?",
+            "options": [
+                "'Hello'.charAt(0)",
+                "'Hello'[0]",
+                "'Hello'.sub(0)",
+                "'Hello'.get(0)"
+            ],
+            "correct": 1,
+            "explanation": "Usa corchetes con el índice para obtener un carácter."
+        },
+        {
+            "id": "qs8",
+            "question": "¿Qué método divide una cadena en una lista?",
+            "options": [
+                "split()",
+                "break()",
+                "divide()",
+                "separate()"
+            ],
+            "correct": 0,
+            "explanation": "El método split() divide una cadena en una lista de subcadenas."
+        },
+        {
+            "id": "qs9",
+            "question": "¿Cómo puedes comprobar si una cadena contiene una palabra específica?",
+            "options": [
+                "x.contains('word')",
+                "'word' in x",
+                "x.has('word')",
+                "x.includes('word')"
+            ],
+            "correct": 1,
+            "explanation": "Usa la palabra clave 'in' para comprobar si existe una subcadena."
+        },
+        {
+            "id": "qs10",
+            "question": "¿Cuál es la salida de: print('Hello'[2:4])?",
+            "options": [
+                "He",
+                "ll",
+                "lo",
+                "llo"
+            ],
+            "correct": 1,
+            "explanation": "El slicing [2:4] devuelve los caracteres en los índices 2 y 3, que es 'll'."
+        },
+        {
+            "id": "qs11",
+            "question": "¿Qué método convierte una cadena a minúsculas?",
+            "options": [
+                "toLowerCase()",
+                "lower()",
+                "down()",
+                "lcase()"
+            ],
+            "correct": 1,
+            "explanation": "El método lower() devuelve la cadena en minúsculas."
+        },
+        {
+            "id": "qs12",
+            "question": "¿Cuál es la forma correcta de formatear una cadena con variables en Python 3.6+?",
+            "options": [
+                "'Hello {}'.format(name)",
+                "f'Hello {name}'",
+                "'Hello' + name",
+                "Todas las anteriores"
+            ],
+            "correct": 3,
+            "explanation": "Los tres métodos funcionan, pero las f-strings son los más modernos y recomendados."
+        },
+        {
+            "id": "qs13",
+            "question": "¿Cómo se convierte un número a una cadena?",
+            "options": [
+                "string(x)",
+                "str(x)",
+                "toString(x)",
+                "x.str()"
+            ],
+            "correct": 1,
+            "explanation": "La función str() convierte un valor a una cadena."
+        },
+        {
+            "id": "qs14",
+            "question": "¿Cuál es el carácter de escape para una nueva línea en Python?",
+            "options": [
+                "\\r",
+                "\\n",
+                "\\t",
+                "\\b"
+            ],
+            "correct": 1,
+            "explanation": "\\n es el carácter de escape para una nueva línea."
+        },
+        {
+            "id": "qs15",
+            "question": "¿Qué método devuelve True si todos los caracteres de la cadena son dígitos?",
+            "options": [
+                "isnum()",
+                "isdigit()",
+                "isnumber()",
+                "digit()"
+            ],
+            "correct": 1,
+            "explanation": "El método isdigit() devuelve True si todos los caracteres son dígitos."
+        }
+    ]
+}

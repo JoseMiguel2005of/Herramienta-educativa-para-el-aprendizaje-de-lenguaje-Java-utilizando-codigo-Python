@@ -1,0 +1,297 @@
+/* =============================================
+   EXAMPLES PAGE — Catalog & Detail
+   ============================================= */
+
+.examples-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.examples-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.examples-icon {
+    font-size: 2rem;
+}
+
+.examples-title {
+    font-size: 1.8rem;
+    color: #fff;
+    margin: 0.5rem 0;
+}
+
+.examples-desc {
+    color: var(--text-muted);
+    font-size: 1rem;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* Category */
+.examples-category {
+    margin-bottom: 2.5rem;
+}
+
+.examples-category-title {
+    font-size: 1.3rem;
+    color: #fff;
+    margin: 0 0 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.category-marker {
+    width: 4px;
+    height: 1.2em;
+    background: var(--green);
+    border-radius: 2px;
+}
+
+/* Grid */
+.examples-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 0.75rem;
+}
+
+.example-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+}
+
+.example-card:hover {
+    border-color: var(--green);
+    background: rgba(0, 229, 255, 0.03);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.example-card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+}
+
+.example-card-desc {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    margin: 0.5rem 0;
+    flex: 1;
+    line-height: 1.5;
+}
+
+.example-card-cta {
+    font-size: 0.85rem;
+    color: var(--green);
+    font-weight: 600;
+    margin-top: auto;
+}
+
+/* =============================================
+   EXAMPLE DETAIL PAGE
+   ============================================= */
+
+.example-detail-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.example-detail-header {
+    margin-bottom: 2rem;
+}
+
+.example-detail-title {
+    font-size: 1.6rem;
+    color: #fff;
+    margin: 0.75rem 0 0.5rem 0;
+}
+
+.example-detail-desc {
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+/* Code Section */
+.example-code-section {
+    margin-bottom: 1.5rem;
+}
+
+.example-code-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.example-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.example-code-block {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.25rem;
+    overflow-x: auto;
+    font-size: 0.95rem;
+}
+
+/* Try It Section */
+.example-tryit-section {
+    margin-bottom: 2rem;
+}
+
+.btn-tryit-run {
+    background: var(--green);
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1.25rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 0.75rem;
+}
+
+.btn-tryit-run:hover {
+    filter: brightness(1.15);
+}
+
+.example-output-wrapper {
+    margin-top: 0.75rem;
+    animation: fadeIn 0.3s ease;
+}
+
+.example-output-header {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 0.3rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.example-output {
+    background: #000;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--green);
+    border-radius: 4px;
+    padding: 1rem;
+    color: #e0e0e0;
+    font-size: 0.95rem;
+    min-height: 40px;
+    margin: 0;
+}
+
+/* Try It Editor */
+.example-tryit-editor {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.tryit-title {
+    font-size: 1.1rem;
+    color: var(--green);
+    margin: 0 0 0.25rem 0;
+}
+
+.tryit-hint {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+}
+
+.tryit-textarea {
+    width: 100%;
+    min-height: 150px;
+    background: #0a0a0a;
+    border: 1px solid var(--border);
+    color: #e0e0e0;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 1rem;
+    padding: 1rem;
+    border-radius: 4px;
+    resize: vertical;
+    outline: none;
+    margin-bottom: 0.75rem;
+}
+
+.tryit-textarea:focus {
+    border-color: var(--green);
+}
+
+.tryit-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.btn-tryit-reset {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    padding: 0.6rem 1.25rem;
+    font-size: 0.95rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-tryit-reset:hover {
+    color: #fff;
+}
+
+/* Related Lesson */
+.example-related {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed var(--border);
+}
+
+.btn-related-lesson {
+    display: inline-block;
+    background: rgba(0, 229, 255, 0.06);
+    border: 1px solid rgba(0, 229, 255, 0.2);
+    color: var(--green);
+    padding: 0.75rem 1.25rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+.btn-related-lesson:hover {
+    background: rgba(0, 229, 255, 0.12);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@media (max-width: 600px) {
+    .examples-grid {
+        grid-template-columns: 1fr;
+    }
+}

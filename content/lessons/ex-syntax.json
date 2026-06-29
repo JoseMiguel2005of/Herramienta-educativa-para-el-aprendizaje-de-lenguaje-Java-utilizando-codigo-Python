@@ -1,25 +1,33 @@
 {
     "id": "ex-syntax",
-    "title": "Syntax Exercises",
-    "intro": "Welcome to the Syntax Exercises.",
+    "title": "Ejercicios de Sintaxis",
+    "intro": "Bienvenido a los Ejercicios de Sintaxis.",
     "python_desc": "Ejercicios sobre Syntax",
     "java_desc": "Práctica equivalente en Java",
-    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>Syntax</b> resolviendo estos ejercicios.</p>",
+    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>Syntax</b> resolviendo estos ejercicios de código interactivos.</p>",
     "exercises": [
         {
-            "question": "Insert the missing part of the code below to output 'Hello World'.",
+            "id": "ex-syntax-1",
+            "question": "Inserta la parte que falta del código a continuación para mostrar 'Hello World'.",
+            "template_html": "<input type='text' class='exercise-input' data-answer='print' size='5'>('Hello World')",
+            "hint": "La función utilizada para imprimir texto en Python comienza con 'p'.",
+            "difficulty": "fácil",
             "expected_output": "print('Hello World')"
         },
         {
-            "question": "This example misses indentations to be correct. Insert missing indent.",
+            "id": "ex-syntax-2",
+            "question": "Python usa la indentación para indicar un bloque de código. Inserta la indentación que falta.",
+            "template_html": "if 5 > 2:<br><input type='text' class='exercise-input' data-answer='    ' size='4'>print('Five is greater than two!')",
+            "hint": "Usa 4 espacios para la indentación.",
+            "difficulty": "fácil",
             "expected_output": "if 5 > 2:\n    print('Five is greater than two!')"
         }
     ],
     "code_mappings": [
         {
             "id": "ex-syntax-1",
-            "python": "# Completa el ejercicio de Syntax\\n",
-            "java": "// Completa el ejercicio en Java\\n",
+            "python": "# Completa el ejercicio de Syntax\n",
+            "java": "// Completa el ejercicio en Java\n",
             "explanation": "Espacio de práctica para Syntax."
         }
     ]

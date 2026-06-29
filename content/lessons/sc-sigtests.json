@@ -4,11 +4,19 @@
     "intro": "Welcome to the SciPy Significance Tests lesson.",
     "python_desc": "Python code for SciPy Significance Tests",
     "java_desc": "Java equivalent for SciPy Significance Tests",
-    "explanation": "<p>In this lesson we cover <b>SciPy Significance Tests</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Significance Tests",
+            "text": "In this lesson we cover <b>SciPy Significance Tests</b>. Python simplifies this operation, whereas Java requires a more structured approach.",
+            "notes": []
+        }
+    ],
     "exercises": [],
     "code_mappings": [
         {
             "id": "sc-sigtests-1",
+            "section": "Significance Tests",
             "python": "# SciPy Significance Tests Python example\nprint('SciPy Significance Tests')",
             "java": "// SciPy Significance Tests Java example\nSystem.out.println(\"SciPy Significance Tests\");",
             "explanation": "Basic example demonstrating SciPy Significance Tests."

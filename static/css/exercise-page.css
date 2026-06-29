@@ -1,0 +1,448 @@
+/* =============================================
+   EXERCISE PAGE — Individual Exercise View
+   ============================================= */
+
+.exercise-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+/* Header */
+.exercise-page-header {
+    margin-bottom: 2rem;
+}
+
+.exercise-breadcrumb {
+    margin-bottom: 1rem;
+}
+
+.breadcrumb-link {
+    color: var(--green);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-family: 'JetBrains Mono', monospace;
+    transition: opacity 0.2s;
+}
+
+.breadcrumb-link:hover {
+    opacity: 0.8;
+}
+
+.exercise-page-title {
+    font-size: 1.6rem;
+    color: #fff;
+    margin: 0 0 1.25rem 0;
+}
+
+.exercise-topic-badge {
+    background: linear-gradient(135deg, rgba(0, 229, 255, 0.12), rgba(0, 229, 255, 0.04));
+    border: 1px solid rgba(0, 229, 255, 0.2);
+    color: var(--green);
+    padding: 0.3rem 0.8rem;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    letter-spacing: 0.03em;
+}
+
+/* Progress Bar */
+.exercise-progress-bar-wrapper {
+    margin-top: 1rem;
+}
+
+.exercise-counter {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.exercise-progress-track {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 100px;
+    overflow: hidden;
+}
+
+.exercise-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), #00e5ff);
+    border-radius: 100px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Exercise Body */
+.exercise-card-main {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2rem;
+}
+
+.exercise-question-text {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.exercise-code-block {
+    background: #000;
+    border-radius: 6px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid var(--green);
+    font-family: 'Source Code Pro', 'JetBrains Mono', monospace;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #e0e0e0;
+}
+
+.exercise-template-area .exercise-input {
+    background: #fff;
+    border: 2px solid transparent;
+    color: #000;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 1.05rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    outline: none;
+    transition: border 0.3s, box-shadow 0.3s;
+    min-width: 60px;
+}
+
+.exercise-template-area .exercise-input:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.15);
+}
+
+.exercise-template-area .exercise-input.input-correct {
+    background: #e8f5e9;
+    border-color: #66bb6a;
+    color: #2e7d32;
+}
+
+.exercise-template-area .exercise-input.input-incorrect {
+    background: #ffebee;
+    border-color: #ef5350;
+    color: #c62828;
+    animation: shake 0.4s ease;
+}
+
+.exercise-freeform-editor {
+    width: 100%;
+    min-height: 120px;
+    background: #0a0a0a;
+    border: 1px solid var(--border);
+    color: #e0e0e0;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 1.05rem;
+    padding: 1rem;
+    border-radius: 4px;
+    resize: vertical;
+    outline: none;
+}
+
+.exercise-freeform-editor:focus {
+    border-color: var(--green);
+}
+
+/* Actions */
+.exercise-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+.btn-exercise-submit {
+    background: var(--green);
+    color: #fff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-exercise-submit:hover {
+    filter: brightness(1.15);
+    transform: translateY(-1px);
+}
+
+.btn-exercise-hint {
+    background: transparent;
+    color: #ffc107;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    padding: 0.75rem 1.25rem;
+    font-size: 0.95rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-exercise-hint:hover {
+    background: rgba(255, 193, 7, 0.08);
+}
+
+.btn-exercise-show {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    padding: 0.75rem 1.25rem;
+    font-size: 0.95rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-exercise-show:hover {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Feedback */
+.exercise-feedback {
+    margin-top: 1rem;
+    padding: 1rem 1.25rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 1.05rem;
+    animation: fadeIn 0.3s ease;
+}
+
+.exercise-feedback.feedback-correct {
+    background: rgba(4, 170, 109, 0.15);
+    color: #66bb6a;
+    border-left: 4px solid #66bb6a;
+}
+
+.exercise-feedback.feedback-incorrect {
+    background: rgba(239, 83, 80, 0.15);
+    color: #ef5350;
+    border-left: 4px solid #ef5350;
+}
+
+/* Hint Box */
+.exercise-hint-box {
+    margin-top: 1rem;
+    background: rgba(255, 193, 7, 0.06);
+    border: 1px solid rgba(255, 193, 7, 0.2);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    animation: fadeIn 0.3s ease;
+}
+
+.hint-header {
+    font-weight: 700;
+    color: #ffc107;
+    margin-bottom: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.hint-text {
+    color: var(--text);
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+/* Navigation */
+.exercise-navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed var(--border);
+}
+
+.exercise-nav-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.exercise-nav-prev {
+    background: var(--bg-code);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+}
+
+.exercise-nav-prev:hover {
+    color: #fff;
+    border-color: var(--green);
+}
+
+.exercise-nav-next {
+    background: rgba(0, 229, 255, 0.08);
+    color: var(--green);
+    border: 1px solid rgba(0, 229, 255, 0.3);
+}
+
+.exercise-nav-next:hover {
+    background: rgba(0, 229, 255, 0.15);
+}
+
+.exercise-nav-complete {
+    background: var(--green);
+    color: #fff;
+    border: none;
+}
+
+/* =============================================
+   EXERCISE HUB — Topic Overview
+   ============================================= */
+
+.exercise-hub {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.exercise-hub-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.exercise-hub-icon {
+    font-size: 2.5rem;
+}
+
+.exercise-hub-title {
+    font-size: 1.8rem;
+    color: #fff;
+    margin: 0.5rem 0;
+}
+
+.exercise-hub-desc {
+    color: var(--text-muted);
+    font-size: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.exercise-hub-stats {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+}
+
+.stat-badge {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    padding: 0.3rem 0.8rem;
+    border-radius: 100px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.stat-completed {
+    color: var(--green);
+    border-color: rgba(0, 229, 255, 0.2);
+}
+
+/* Exercise List */
+.exercise-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.exercise-list-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    padding: 1rem 1.25rem;
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.2s;
+}
+
+.exercise-list-item:hover {
+    border-color: var(--green);
+    background: rgba(0, 229, 255, 0.03);
+    transform: translateX(4px);
+}
+
+.exercise-list-item.completed {
+    border-left: 3px solid var(--green);
+}
+
+.exercise-list-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--green);
+    min-width: 2rem;
+    text-align: center;
+}
+
+.exercise-list-question {
+    flex: 1;
+    font-size: 0.95rem;
+}
+
+.exercise-list-status {
+    font-size: 1.1rem;
+}
+
+/* CTA */
+.exercise-hub-cta {
+    text-align: center;
+}
+
+.btn-start-exercises {
+    display: inline-block;
+    background: var(--green);
+    color: #fff;
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.btn-start-exercises:hover {
+    filter: brightness(1.15);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 229, 255, 0.2);
+}
+
+/* Animations */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .exercise-card-main {
+        padding: 1.25rem;
+    }
+    .exercise-actions {
+        flex-direction: column;
+    }
+    .exercise-actions button {
+        width: 100%;
+    }
+}

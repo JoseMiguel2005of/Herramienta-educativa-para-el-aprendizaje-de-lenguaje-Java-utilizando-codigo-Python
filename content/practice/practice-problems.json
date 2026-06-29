@@ -1,0 +1,301 @@
+{
+    "problems": [
+        {
+            "id": "pr-hello-name",
+            "title": "Saludar",
+            "description": "Escribe una función llamada <code>greet</code> que reciba un nombre y retorne <code>'Hello, {name}!'</code>.",
+            "difficulty": "fácil",
+            "category": "Funciones",
+            "starter_code": "def greet(name):\n    # Tu código aquí\n    pass",
+            "test_cases": [
+                {
+                    "input": "greet('World')",
+                    "expected": "'Hello, World!'"
+                },
+                {
+                    "input": "greet('Python')",
+                    "expected": "'Hello, Python!'"
+                },
+                {
+                    "input": "greet('Alice')",
+                    "expected": "'Hello, Alice!'"
+                }
+            ],
+            "solution": "def greet(name):\n    return f'Hello, {name}!'",
+            "hints": [
+                "Usa f-strings para formatear la cadena",
+                "Recuerda usar 'return' para devolver el resultado"
+            ]
+        },
+        {
+            "id": "pr-sum-list",
+            "title": "Suma de Lista",
+            "description": "Escribe una función <code>sum_list</code> que reciba una lista de números y retorne la suma de todos los elementos.",
+            "difficulty": "fácil",
+            "category": "Listas",
+            "starter_code": "def sum_list(numbers):\n    # Tu código aquí\n    pass",
+            "test_cases": [
+                {
+                    "input": "sum_list([1, 2, 3])",
+                    "expected": "6"
+                },
+                {
+                    "input": "sum_list([10, 20, 30])",
+                    "expected": "60"
+                },
+                {
+                    "input": "sum_list([])",
+                    "expected": "0"
+                }
+            ],
+            "solution": "def sum_list(numbers):\n    return sum(numbers)",
+            "hints": [
+                "Puedes usar la función built-in sum()",
+                "O puedes usar un bucle for para sumar manualmente"
+            ]
+        },
+        {
+            "id": "pr-even-odd",
+            "title": "Par o Impar",
+            "description": "Escribe una función <code>even_odd</code> que reciba un número y retorne <code>'Even'</code> si es par o <code>'Odd'</code> si es impar.",
+            "difficulty": "fácil",
+            "category": "Condiciones",
+            "starter_code": "def even_odd(n):\n    # Tu código aquí\n    pass",
+            "test_cases": [
+                {
+                    "input": "even_odd(4)",
+                    "expected": "'Even'"
+                },
+                {
+                    "input": "even_odd(7)",
+                    "expected": "'Odd'"
+                },
+                {
+                    "input": "even_odd(0)",
+                    "expected": "'Even'"
+                }
+            ],
+            "solution": "def even_odd(n):\n    return 'Even' if n % 2 == 0 else 'Odd'",
+            "hints": [
+                "Usa el operador módulo (%) para verificar si es divisible por 2",
+                "n % 2 == 0 significa que es par"
+            ]
+        },
+        {
+            "id": "pr-reverse-string",
+            "title": "Invertir una Cadena",
+            "description": "Escribe una función <code>reverse_string</code> que reciba una cadena y retorne la cadena invertida.",
+            "difficulty": "fácil",
+            "category": "Cadenas",
+            "starter_code": "def reverse_string(text):\n    # Tu código aquí\n    pass",
+            "test_cases": [
+                {
+                    "input": "reverse_string('Hello')",
+                    "expected": "'olleH'"
+                },
+                {
+                    "input": "reverse_string('Python')",
+                    "expected": "'nohtyP'"
+                },
+                {
+                    "input": "reverse_string('')",
+                    "expected": "''"
+                }
+            ],
+            "solution": "def reverse_string(text):\n    return text[::-1]",
+            "hints": [
+                "Puedes usar slicing con paso negativo: text[::-1]",
+                "O puedes usar un bucle for recorriendo la cadena al revés"
+            ]
+        },
+        {
+            "id": "pr-max-number",
+            "title": "Encontrar el Máximo",
+            "description": "Escribe una función <code>find_max</code> que reciba una lista de números y retorne el mayor sin usar <code>max()</code>.",
+            "difficulty": "medio",
+            "category": "Listas",
+            "starter_code": "def find_max(numbers):\n    # Tu código aquí (sin usar max())\n    pass",
+            "test_cases": [
+                {
+                    "input": "find_max([1, 5, 3, 9, 2])",
+                    "expected": "9"
+                },
+                {
+                    "input": "find_max([-1, -5, -3])",
+                    "expected": "-1"
+                },
+                {
+                    "input": "find_max([42])",
+                    "expected": "42"
+                }
+            ],
+            "solution": "def find_max(numbers):\n    biggest = numbers[0]\n    for n in numbers:\n        if n > biggest:\n            biggest = n\n    return biggest",
+            "hints": [
+                "Empieza con el primer elemento como el mayor",
+                "Recorre la lista comparando cada elemento"
+            ]
+        },
+        {
+            "id": "pr-count-vowels",
+            "title": "Contar Vocales",
+            "description": "Escribe una función <code>count_vowels</code> que cuente el número de vocales (a, e, i, o, u) en una cadena (case insensitive).",
+            "difficulty": "medio",
+            "category": "Cadenas",
+            "starter_code": "def count_vowels(text):\n    # Tu código aquí\n    pass",
+            "test_cases": [
+                {
+                    "input": "count_vowels('Hello World')",
+                    "expected": "3"
+                },
+                {
+                    "input": "count_vowels('Python')",
+                    "expected": "1"
+                },
+                {
+                    "input": "count_vowels('AEIOU')",
+                    "expected": "5"
+                }
+            ],
+            "solution": "def count_vowels(text):\n    return sum(1 for c in text.lower() if c in 'aeiou')",
+            "hints": [
+                "Convierte la cadena a minúsculas con .lower()",
+                "Verifica si cada carácter está en 'aeiou'"
+            ]
+        },
+        {
+            "id": "pr-fibonacci",
+            "title": "Secuencia de Fibonacci",
+            "description": "Escribe una función <code>fibonacci</code> que retorne los primeros <code>n</code> números de la secuencia de Fibonacci.",
+            "difficulty": "medio",
+            "category": "Funciones",
+            "starter_code": "def fibonacci(n):\n    # Tu código aquí\n    pass",
+            "test_cases": [
+                {
+                    "input": "fibonacci(5)",
+                    "expected": "[0, 1, 1, 2, 3]"
+                },
+                {
+                    "input": "fibonacci(1)",
+                    "expected": "[0]"
+                },
+                {
+                    "input": "fibonacci(8)",
+                    "expected": "[0, 1, 1, 2, 3, 5, 8, 13]"
+                }
+            ],
+            "solution": "def fibonacci(n):\n    if n <= 0: return []\n    if n == 1: return [0]\n    fib = [0, 1]\n    for i in range(2, n):\n        fib.append(fib[-1] + fib[-2])\n    return fib",
+            "hints": [
+                "Los dos primeros números son 0 y 1",
+                "Cada número siguiente es la suma de los dos anteriores"
+            ]
+        },
+        {
+            "id": "pr-palindrome",
+            "title": "Verificación de Palíndromo",
+            "description": "Escribe una función <code>is_palindrome</code> que retorne <code>True</code> si una cadena es palíndromo (se lee igual al derecho y al revés), ignorando mayúsculas.",
+            "difficulty": "medio",
+            "category": "Cadenas",
+            "starter_code": "def is_palindrome(text):\n    # Tu código aquí\n    pass",
+            "test_cases": [
+                {
+                    "input": "is_palindrome('racecar')",
+                    "expected": "True"
+                },
+                {
+                    "input": "is_palindrome('Hello')",
+                    "expected": "False"
+                },
+                {
+                    "input": "is_palindrome('Aba')",
+                    "expected": "True"
+                }
+            ],
+            "solution": "def is_palindrome(text):\n    text = text.lower()\n    return text == text[::-1]",
+            "hints": [
+                "Convierte a minúsculas primero",
+                "Compara la cadena con su reverso"
+            ]
+        },
+        {
+            "id": "pr-flatten-list",
+            "title": "Aplanar Lista Anidada",
+            "description": "Escribe una función <code>flatten</code> que tome una lista anidada y retorne una lista plana.",
+            "difficulty": "difícil",
+            "category": "Listas",
+            "starter_code": "def flatten(nested_list):\n    # Tu código aquí\n    pass",
+            "test_cases": [
+                {
+                    "input": "flatten([[1, 2], [3, 4], [5]])",
+                    "expected": "[1, 2, 3, 4, 5]"
+                },
+                {
+                    "input": "flatten([[1], [2, 3], [4, 5, 6]])",
+                    "expected": "[1, 2, 3, 4, 5, 6]"
+                },
+                {
+                    "input": "flatten([[], [1], []])",
+                    "expected": "[1]"
+                }
+            ],
+            "solution": "def flatten(nested_list):\n    result = []\n    for sublist in nested_list:\n        for item in sublist:\n            result.append(item)\n    return result",
+            "hints": [
+                "Usa un doble bucle for",
+                "O usa list comprehension: [item for sublist in nested for item in sublist]"
+            ]
+        },
+        {
+            "id": "pr-word-frequency",
+            "title": "Frecuencia de Palabras",
+            "description": "Escribe una función <code>word_count</code> que reciba un texto y retorne un diccionario con la frecuencia de cada palabra (en minúsculas).",
+            "difficulty": "difícil",
+            "category": "Diccionarios",
+            "starter_code": "def word_count(text):\n    # Tu código aquí\n    pass",
+            "test_cases": [
+                {
+                    "input": "word_count('hello hello world')",
+                    "expected": "{'hello': 2, 'world': 1}"
+                },
+                {
+                    "input": "word_count('a b a')",
+                    "expected": "{'a': 2, 'b': 1}"
+                },
+                {
+                    "input": "word_count('Python')",
+                    "expected": "{'python': 1}"
+                }
+            ],
+            "solution": "def word_count(text):\n    words = text.lower().split()\n    count = {}\n    for word in words:\n        count[word] = count.get(word, 0) + 1\n    return count",
+            "hints": [
+                "Usa .split() para separar las palabras",
+                "Usa un diccionario para contar las ocurrencias"
+            ]
+        },
+        {
+            "id": "pr-matrix-transpose",
+            "title": "Transpuesta de Matriz",
+            "description": "Escribe una función <code>transpose</code> que reciba una matriz (lista de listas) y retorne su transpuesta.",
+            "difficulty": "difícil",
+            "category": "Listas",
+            "starter_code": "def transpose(matrix):\n    # Tu código aquí\n    pass",
+            "test_cases": [
+                {
+                    "input": "transpose([[1, 2, 3], [4, 5, 6]])",
+                    "expected": "[[1, 4], [2, 5], [3, 6]]"
+                },
+                {
+                    "input": "transpose([[1, 2], [3, 4], [5, 6]])",
+                    "expected": "[[1, 3, 5], [2, 4, 6]]"
+                },
+                {
+                    "input": "transpose([[1]])",
+                    "expected": "[[1]]"
+                }
+            ],
+            "solution": "def transpose(matrix):\n    return [list(row) for row in zip(*matrix)]",
+            "hints": [
+                "Puedes usar la función zip() con unpacking (*)",
+                "La transpuesta intercambia filas por columnas"
+            ]
+        }
+    ]
+}

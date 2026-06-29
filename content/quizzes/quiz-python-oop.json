@@ -1,0 +1,188 @@
+{
+    "id": "quiz-python-oop",
+    "title": "Cuestionario de POO en Python",
+    "description": "Pon a prueba tus conocimientos sobre Programación Orientada a Objetos en Python: clases, herencia, polimorfismo.",
+    "time_limit": null,
+    "questions": [
+        {
+            "id": "qo1",
+            "question": "¿Qué palabra clave se usa para crear una clase en Python?",
+            "options": [
+                "struct",
+                "object",
+                "class",
+                "define"
+            ],
+            "correct": 2,
+            "explanation": "La palabra clave 'class' se usa para crear una clase."
+        },
+        {
+            "id": "qo2",
+            "question": "¿Qué es la función __init__()?",
+            "options": [
+                "Un destructor",
+                "Un constructor que inicializa las propiedades del objeto",
+                "Un método estático",
+                "Un método de clase"
+            ],
+            "correct": 1,
+            "explanation": "__init__() se llama cuando se crea un objeto, se usa para inicializar propiedades."
+        },
+        {
+            "id": "qo3",
+            "question": "¿A qué se refiere 'self' en un método de clase?",
+            "options": [
+                "La clase en sí",
+                "La instancia actual de la clase",
+                "La clase padre",
+                "Una variable global"
+            ],
+            "correct": 1,
+            "explanation": "'self' se refiere a la instancia actual de la clase."
+        },
+        {
+            "id": "qo4",
+            "question": "¿Qué es la herencia?",
+            "options": [
+                "Copiar código entre archivos",
+                "Una clase que deriva propiedades de otra clase",
+                "Crear múltiples objetos",
+                "Definir variables"
+            ],
+            "correct": 1,
+            "explanation": "La herencia permite que una clase herede propiedades y métodos de otra clase."
+        },
+        {
+            "id": "qo5",
+            "question": "¿Cómo se crea una clase hija que hereda de una clase padre?",
+            "options": [
+                "class Child extends Parent:",
+                "class Child(Parent):",
+                "class Child inherits Parent:",
+                "class Child : Parent:"
+            ],
+            "correct": 1,
+            "explanation": "Pon el nombre de la clase padre entre paréntesis: class Child(Parent):"
+        },
+        {
+            "id": "qo6",
+            "question": "¿Qué es el polimorfismo?",
+            "options": [
+                "Herencia múltiple",
+                "Métodos con el mismo nombre pero diferente comportamiento",
+                "Crear muchos objetos",
+                "Definir variables privadas"
+            ],
+            "correct": 1,
+            "explanation": "El polimorfismo permite que los métodos tengan el mismo nombre pero diferente comportamiento en diferentes clases."
+        },
+        {
+            "id": "qo7",
+            "question": "¿Qué función se usa para llamar al constructor de la clase padre?",
+            "options": [
+                "parent().__init__()",
+                "super().__init__()",
+                "base().__init__()",
+                "this.__init__()"
+            ],
+            "correct": 1,
+            "explanation": "super().__init__() llama al constructor de la clase padre."
+        },
+        {
+            "id": "qo8",
+            "question": "¿Cómo se elimina una propiedad de objeto?",
+            "options": [
+                "remove obj.property",
+                "delete obj.property",
+                "del obj.property",
+                "obj.property = None"
+            ],
+            "correct": 2,
+            "explanation": "Usa 'del' para eliminar una propiedad de objeto."
+        },
+        {
+            "id": "qo9",
+            "question": "¿Qué es la encapsulación?",
+            "options": [
+                "Hacer el código más rápido",
+                "Restringir el acceso a métodos y variables",
+                "Crear paquetes",
+                "Escribir documentación"
+            ],
+            "correct": 1,
+            "explanation": "La encapsulación restringe el acceso directo a algunos de los componentes de un objeto."
+        },
+        {
+            "id": "qo10",
+            "question": "¿Cómo se hace una propiedad privada en Python?",
+            "options": [
+                "private x",
+                "self.__x",
+                "self._x",
+                "Ambas B y C son convenciones"
+            ],
+            "correct": 3,
+            "explanation": "Doble guion bajo (__x) para la ofuscación de nombres, un solo guion bajo (_x) como convención."
+        },
+        {
+            "id": "qo11",
+            "question": "¿Pueden las clases de Python tener herencia múltiple?",
+            "options": [
+                "No",
+                "Sí",
+                "Solo con interfaces",
+                "Solo dos padres"
+            ],
+            "correct": 1,
+            "explanation": "Python soporta la herencia múltiple."
+        },
+        {
+            "id": "qo12",
+            "question": "¿Para qué se usa el método __str__()?",
+            "options": [
+                "Conversión de cadena",
+                "Devolver una representación de cadena imprimible",
+                "Comparar cadenas",
+                "Formatear la salida"
+            ],
+            "correct": 1,
+            "explanation": "__str__() devuelve una representación de cadena legible por humanos de un objeto."
+        },
+        {
+            "id": "qo13",
+            "question": "¿Qué es un iterador en Python?",
+            "options": [
+                "Un contador de bucle",
+                "Un objeto con métodos __iter__() y __next__()",
+                "Un índice de lista",
+                "Un argumento de función"
+            ],
+            "correct": 1,
+            "explanation": "Un iterador es un objeto que implementa los métodos __iter__() y __next__()."
+        },
+        {
+            "id": "qo14",
+            "question": "¿Qué devuelve isinstance(obj, ClassName)?",
+            "options": [
+                "El nombre de la clase",
+                "Verdadero/Falso si obj es una instancia de ClassName",
+                "El tipo de objeto",
+                "Una nueva instancia"
+            ],
+            "correct": 1,
+            "explanation": "isinstance() comprueba si un objeto es una instancia de una clase especificada."
+        },
+        {
+            "id": "qo15",
+            "question": "¿Con qué se decora un método de clase?",
+            "options": [
+                "@static",
+                "@classmethod",
+                "@method",
+                "@class"
+            ],
+            "correct": 1,
+            "explanation": "Usa el decorador @classmethod para definir un método de clase."
+        }
+    ]
+}

@@ -88,3 +88,70 @@ def invalidate_cache():
     load_reference_data.cache_clear()
     load_lesson.cache_clear()
     load_all_lesson_ids.cache_clear()
+
+
+# ===== QUIZ, EXAMPLES, PRACTICE LOADERS =====
+
+QUIZZES_DIR = os.path.join(CONTENT_DIR, "quizzes")
+EXAMPLES_DIR = os.path.join(CONTENT_DIR, "examples")
+PRACTICE_DIR = os.path.join(CONTENT_DIR, "practice")
+
+
+@lru_cache(maxsize=20)
+def load_quiz(quiz_id):
+    """Carga un quiz por su ID."""
+    path = os.path.join(QUIZZES_DIR, f"{quiz_id}.json")
+    if not os.path.exists(path):
+        return None
+    return _load_json(path)
+
+
+@lru_cache(maxsize=1)
+def load_all_quizzes():
+    """Devuelve lista de todos los quiz IDs disponibles."""
+    ids = []
+    if os.path.isdir(QUIZZES_DIR):
+        for fname in sorted(os.listdir(QUIZZES_DIR)):
+            if fname.endswith(".json"):
+                ids.append(fname[:-5])
+    return ids
+
+
+@lru_cache(maxsize=1)
+def load_examples_catalog():
+    """Carga el catálogo completo de examples."""
+    path = os.path.join(EXAMPLES_DIR, "examples-catalog.json")
+    if not os.path.exists(path):
+        return {"categories": []}
+    return _load_json(path)
+
+
+def get_example_by_id(example_id):
+    """Busca un ejemplo individual por su ID en el catálogo."""
+    catalog = load_examples_catalog()
+    for cat in catalog.get("categories", []):
+        for ex in cat.get("examples", []):
+            if ex["id"] == example_id:
+                ex["category"] = cat.get("title", "")
+                ex["related_lesson"] = cat.get("related_lesson", "")
+                return ex
+    return None
+
+
+@lru_cache(maxsize=1)
+def load_practice_problems():
+    """Carga todos los problemas de práctica."""
+    path = os.path.join(PRACTICE_DIR, "practice-problems.json")
+    if not os.path.exists(path):
+        return {"problems": []}
+    return _load_json(path)
+
+
+def get_practice_problem(problem_id):
+    """Obtiene un problema de práctica por su ID."""
+    data = load_practice_problems()
+    for p in data.get("problems", []):
+        if p["id"] == problem_id:
+            return p
+    return None
+

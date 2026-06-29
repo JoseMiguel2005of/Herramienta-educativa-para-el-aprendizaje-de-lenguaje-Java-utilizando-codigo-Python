@@ -1,0 +1,186 @@
+{
+    "id": "quiz-python-basics",
+    "title": "Cuestionario de Conceptos Básicos de Python",
+    "description": "Pon a prueba tus conocimientos sobre los fundamentos de Python: sintaxis, comentarios, variables y tipos de datos.",
+    "time_limit": null,
+    "questions": [
+        {
+            "id": "qb1",
+            "question": "¿Cuál es la sintaxis correcta para mostrar 'Hello World' en Python?",
+            "options": [
+                "echo('Hello World')",
+                "print('Hello World')",
+                "p('Hello World')",
+                "printf('Hello World')"
+            ],
+            "correct": 1,
+            "explanation": "La función print() se utiliza para mostrar texto en Python."
+        },
+        {
+            "id": "qb2",
+            "question": "¿Cómo se insertan COMENTARIOS en el código Python?",
+            "options": [
+                "//Esto es un comentario",
+                "#Esto es un comentario",
+                "/*Esto es un comentario*/",
+                "--Esto es un comentario"
+            ],
+            "correct": 1,
+            "explanation": "Los comentarios en Python comienzan con un #, y Python los ignorará."
+        },
+        {
+            "id": "qb3",
+            "question": "¿Qué nombre de variable es ilegal en Python?",
+            "options": [
+                "_myvar",
+                "my-var",
+                "myVar",
+                "_my_var"
+            ],
+            "correct": 1,
+            "explanation": "Los nombres de variables no pueden contener guiones. Pueden comenzar con una letra o un guion bajo."
+        },
+        {
+            "id": "qb4",
+            "question": "¿Cómo se crea una variable con el valor numérico 5?",
+            "options": [
+                "x = int(5)",
+                "x = 5",
+                "Ambas son correctas",
+                "Ninguna es correcta"
+            ],
+            "correct": 2,
+            "explanation": "Tanto x = 5 como x = int(5) crearán una variable entera con el valor 5."
+        },
+        {
+            "id": "qb5",
+            "question": "¿Cuál es la extensión de archivo correcta para los archivos Python?",
+            "options": [
+                ".pyth",
+                ".pt",
+                ".pyt",
+                ".py"
+            ],
+            "correct": 3,
+            "explanation": "Los archivos Python tienen la extensión .py."
+        },
+        {
+            "id": "qb6",
+            "question": "¿Cómo se crea una variable con el número flotante 2.8?",
+            "options": [
+                "x = 2.8",
+                "x = float(2.8)",
+                "Ambas son correctas",
+                "Ninguna es correcta"
+            ],
+            "correct": 2,
+            "explanation": "Tanto x = 2.8 como x = float(2.8) crearán una variable flotante."
+        },
+        {
+            "id": "qb7",
+            "question": "¿Cuál es la sintaxis correcta para mostrar el tipo de una variable u objeto en Python?",
+            "options": [
+                "print(typeOf(x))",
+                "print(typeof(x))",
+                "print(type(x))",
+                "print(x.type())"
+            ],
+            "correct": 2,
+            "explanation": "La función type() devuelve el tipo del objeto especificado."
+        },
+        {
+            "id": "qb8",
+            "question": "¿Cuál es la forma correcta de crear un comentario de varias líneas en Python?",
+            "options": [
+                "/* comentario */",
+                "// comentario //",
+                "\"\"\"comentario\"\"\"",
+                "<!-- comentario -->"
+            ],
+            "correct": 2,
+            "explanation": "Python utiliza comillas triples (\"\"\" o ''') para comentarios/docstrings de varias líneas."
+        },
+        {
+            "id": "qb9",
+            "question": "¿Cuál de los siguientes NO es un tipo de dato válido en Python?",
+            "options": [
+                "str",
+                "int",
+                "float",
+                "char"
+            ],
+            "correct": 3,
+            "explanation": "Python no tiene un tipo 'char'. Los caracteres individuales son cadenas de longitud 1."
+        },
+        {
+            "id": "qb10",
+            "question": "En Python, ¿cuál es el resultado de: type(5)?",
+            "options": [
+                "<class 'float'>",
+                "<class 'int'>",
+                "<class 'number'>",
+                "<class 'str'>"
+            ],
+            "correct": 1,
+            "explanation": "El número 5 sin punto decimal es un entero en Python."
+        },
+        {
+            "id": "qb11",
+            "question": "¿Qué sentencia se utiliza para asignar un valor a una variable?",
+            "options": [
+                "x == 5",
+                "x := 5",
+                "x = 5",
+                "x -> 5"
+            ],
+            "correct": 2,
+            "explanation": "El operador = se utiliza para la asignación. == es para la comparación."
+        },
+        {
+            "id": "qb12",
+            "question": "Python distingue entre mayúsculas y minúsculas. ¿Verdadero o Falso?",
+            "options": [
+                "Verdadero",
+                "Falso"
+            ],
+            "correct": 0,
+            "explanation": "Python distingue entre mayúsculas y minúsculas: 'myVar' y 'myvar' son variables diferentes."
+        },
+        {
+            "id": "qb13",
+            "question": "¿Qué función se puede usar para obtener la entrada del usuario en Python?",
+            "options": [
+                "scan()",
+                "readline()",
+                "input()",
+                "get()"
+            ],
+            "correct": 2,
+            "explanation": "La función input() lee una línea de texto del usuario."
+        },
+        {
+            "id": "qb14",
+            "question": "¿Qué carácter se utiliza para indicar un bloque de código en Python?",
+            "options": [
+                "Llaves {}",
+                "Paréntesis ()",
+                "Indentación",
+                "Corchetes []"
+            ],
+            "correct": 2,
+            "explanation": "Python utiliza la indentación para definir bloques de código, no las llaves."
+        },
+        {
+            "id": "qb15",
+            "question": "¿Cómo se declara una variable global dentro de una función?",
+            "options": [
+                "global x",
+                "Global x",
+                "x = global",
+                "declare global x"
+            ],
+            "correct": 0,
+            "explanation": "Usa la palabra clave 'global' antes del nombre de la variable dentro de una función."
+        }
+    ]
+}

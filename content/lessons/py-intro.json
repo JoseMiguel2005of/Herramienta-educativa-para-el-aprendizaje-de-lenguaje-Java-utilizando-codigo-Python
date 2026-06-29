@@ -4,11 +4,19 @@
     "intro": "Welcome to the Python Intro lesson.",
     "python_desc": "Python code for Python Intro",
     "java_desc": "Java equivalent for Python Intro",
-    "explanation": "<p>In this lesson we cover <b>Python Intro</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Introduction",
+            "text": "In this lesson we cover <b>Python Intro</b>. Python simplifies this operation, whereas Java requires a more structured approach.",
+            "notes": []
+        }
+    ],
     "exercises": [],
     "code_mappings": [
         {
             "id": "py-intro-1",
+            "section": "Introduction",
             "python": "# Python Intro Python example\nprint('Python Intro')",
             "java": "// Python Intro Java example\nSystem.out.println(\"Python Intro\");",
             "explanation": "Basic example demonstrating Python Intro."

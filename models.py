@@ -19,6 +19,10 @@ class User(UserMixin, db.Model):
     attempts = db.relationship("ExerciseAttempt", backref="user", lazy=True)
     achievements = db.relationship("Achievement", backref="user", lazy=True)
     streaks = db.relationship("DailyStreak", backref="user", lazy=True)
+    quiz_results = db.relationship("QuizResult", backref="user", lazy=True)
+    practice_submissions = db.relationship(
+        "PracticeSubmission", backref="user", lazy=True
+    )
 
 
 class LessonProgress(db.Model):
@@ -61,3 +65,28 @@ class DailyStreak(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     date = db.Column(db.Date, nullable=False)
     lessons_completed = db.Column(db.Integer, default=0)
+
+
+class QuizResult(db.Model):
+    __tablename__ = "quiz_results"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    quiz_id = db.Column(db.String(100), nullable=False)
+    score = db.Column(db.Integer, default=0)
+    total = db.Column(db.Integer, default=0)
+    time_taken = db.Column(db.Integer, nullable=True)
+    completed_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class PracticeSubmission(db.Model):
+    __tablename__ = "practice_submissions"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    problem_id = db.Column(db.String(100), nullable=False)
+    code = db.Column(db.Text, nullable=False)
+    passed = db.Column(db.Boolean, default=False)
+    tests_passed = db.Column(db.Integer, default=0)
+    tests_total = db.Column(db.Integer, default=0)
+    submitted_at = db.Column(db.DateTime, default=datetime.utcnow)

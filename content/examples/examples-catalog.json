@@ -1,0 +1,305 @@
+{
+    "categories": [
+        {
+            "id": "syntax",
+            "title": "Sintaxis de Python",
+            "related_lesson": "py-syntax",
+            "examples": [
+                {
+                    "id": "ex-hello",
+                    "title": "Imprimir Hola Mundo",
+                    "description": "Usa la función print() para mostrar 'Hola Mundo'",
+                    "python_code": "print('Hello World')",
+                    "expected_output": "Hello World"
+                },
+                {
+                    "id": "ex-multiline",
+                    "title": "Cadenas de Varias Líneas",
+                    "description": "Crea una cadena de varias líneas usando comillas triples",
+                    "python_code": "text = \"\"\"Hello\nWorld\nPython\"\"\"\nprint(text)",
+                    "expected_output": "Hello\nWorld\nPython"
+                },
+                {
+                    "id": "ex-indent",
+                    "title": "Indentación",
+                    "description": "Python usa la indentación para definir bloques de código",
+                    "python_code": "if 5 > 2:\n    print('Five is greater than two!')",
+                    "expected_output": "Five is greater than two!"
+                }
+            ]
+        },
+        {
+            "id": "variables",
+            "title": "Variables de Python",
+            "related_lesson": "py-variables",
+            "examples": [
+                {
+                    "id": "ex-var-create",
+                    "title": "Crear Variables",
+                    "description": "Las variables se crean cuando asignas un valor",
+                    "python_code": "x = 5\ny = 'Hello'\nprint(x)\nprint(y)",
+                    "expected_output": "5\nHello"
+                },
+                {
+                    "id": "ex-var-casting",
+                    "title": "Conversión de Tipo de Variable",
+                    "description": "Especifica el tipo de una variable con la conversión de tipo",
+                    "python_code": "x = str(3)\ny = int(3)\nz = float(3)\nprint(x, y, z)",
+                    "expected_output": "3 3 3.0"
+                },
+                {
+                    "id": "ex-var-multiple",
+                    "title": "Asignación Múltiple",
+                    "description": "Asigna valores a múltiples variables en una línea",
+                    "python_code": "x, y, z = 'Orange', 'Banana', 'Cherry'\nprint(x)\nprint(y)\nprint(z)",
+                    "expected_output": "Orange\nBanana\nCherry"
+                },
+                {
+                    "id": "ex-var-global",
+                    "title": "Variables Globales",
+                    "description": "Usa la palabra clave global para hacer una variable global",
+                    "python_code": "x = 'awesome'\ndef myfunc():\n    global x\n    x = 'fantastic'\nmyfunc()\nprint('Python is ' + x)",
+                    "expected_output": "Python is fantastic"
+                }
+            ]
+        },
+        {
+            "id": "strings",
+            "title": "Cadenas de Python",
+            "related_lesson": "py-strings",
+            "examples": [
+                {
+                    "id": "ex-str-slice",
+                    "title": "Rebanado de Cadenas",
+                    "description": "Obtén un rango de caracteres de una cadena",
+                    "python_code": "b = 'Hello, World!'\nprint(b[2:5])",
+                    "expected_output": "llo"
+                },
+                {
+                    "id": "ex-str-upper",
+                    "title": "Mayúsculas",
+                    "description": "Convierte una cadena a mayúsculas",
+                    "python_code": "a = 'Hello, World!'\nprint(a.upper())",
+                    "expected_output": "HELLO, WORLD!"
+                },
+                {
+                    "id": "ex-str-replace",
+                    "title": "Reemplazar Cadena",
+                    "description": "Reemplaza una subcadena con otra",
+                    "python_code": "a = 'Hello, World!'\nprint(a.replace('H', 'J'))",
+                    "expected_output": "Jello, World!"
+                },
+                {
+                    "id": "ex-str-split",
+                    "title": "Dividir Cadena",
+                    "description": "Divide una cadena en una lista",
+                    "python_code": "a = 'Hello, World!'\nprint(a.split(', '))",
+                    "expected_output": "['Hello', 'World!']"
+                },
+                {
+                    "id": "ex-str-format",
+                    "title": "Formato de Cadena",
+                    "description": "Usa f-strings para formatear cadenas",
+                    "python_code": "age = 36\ntxt = f'My name is John, I am {age}'\nprint(txt)",
+                    "expected_output": "My name is John, I am 36"
+                }
+            ]
+        },
+        {
+            "id": "lists",
+            "title": "Listas de Python",
+            "related_lesson": "py-lists",
+            "examples": [
+                {
+                    "id": "ex-list-create",
+                    "title": "Crear una Lista",
+                    "description": "Crea una lista con elementos",
+                    "python_code": "fruits = ['apple', 'banana', 'cherry']\nprint(fruits)",
+                    "expected_output": "['apple', 'banana', 'cherry']"
+                },
+                {
+                    "id": "ex-list-access",
+                    "title": "Acceder a Elementos de la Lista",
+                    "description": "Accede a los elementos por número de índice",
+                    "python_code": "fruits = ['apple', 'banana', 'cherry']\nprint(fruits[1])",
+                    "expected_output": "banana"
+                },
+                {
+                    "id": "ex-list-append",
+                    "title": "Añadir Elementos a la Lista",
+                    "description": "Añade un elemento al final de una lista",
+                    "python_code": "fruits = ['apple', 'banana', 'cherry']\nfruits.append('orange')\nprint(fruits)",
+                    "expected_output": "['apple', 'banana', 'cherry', 'orange']"
+                },
+                {
+                    "id": "ex-list-remove",
+                    "title": "Eliminar Elementos de la Lista",
+                    "description": "Elimina un elemento especificado",
+                    "python_code": "fruits = ['apple', 'banana', 'cherry']\nfruits.remove('banana')\nprint(fruits)",
+                    "expected_output": "['apple', 'cherry']"
+                },
+                {
+                    "id": "ex-list-loop",
+                    "title": "Recorrer una Lista",
+                    "description": "Itera a través de los elementos de la lista",
+                    "python_code": "fruits = ['apple', 'banana', 'cherry']\nfor x in fruits:\n    print(x)",
+                    "expected_output": "apple\nbanana\ncherry"
+                },
+                {
+                    "id": "ex-list-comp",
+                    "title": "Comprensión de Listas",
+                    "description": "Crea una nueva lista basada en una lista existente",
+                    "python_code": "fruits = ['apple', 'banana', 'cherry', 'kiwi', 'mango']\nnewlist = [x for x in fruits if 'a' in x]\nprint(newlist)",
+                    "expected_output": "['apple', 'banana', 'mango']"
+                },
+                {
+                    "id": "ex-list-sort",
+                    "title": "Ordenar una Lista",
+                    "description": "Ordena una lista alfabéticamente",
+                    "python_code": "fruits = ['cherry', 'apple', 'banana']\nfruits.sort()\nprint(fruits)",
+                    "expected_output": "['apple', 'banana', 'cherry']"
+                }
+            ]
+        },
+        {
+            "id": "conditions",
+            "title": "Python If...Else",
+            "related_lesson": "py-ifelse",
+            "examples": [
+                {
+                    "id": "ex-if-basic",
+                    "title": "Declaración If",
+                    "description": "Usa if para probar una condición",
+                    "python_code": "a = 33\nb = 200\nif b > a:\n    print('b is greater than a')",
+                    "expected_output": "b is greater than a"
+                },
+                {
+                    "id": "ex-if-elif",
+                    "title": "Elif",
+                    "description": "Usa elif para condiciones adicionales",
+                    "python_code": "a = 33\nb = 33\nif b > a:\n    print('b is greater')\nelif a == b:\n    print('a and b are equal')",
+                    "expected_output": "a and b are equal"
+                },
+                {
+                    "id": "ex-if-else",
+                    "title": "Else",
+                    "description": "Usa else cuando ninguna condición es verdadera",
+                    "python_code": "a = 200\nb = 33\nif b > a:\n    print('b is greater')\nelse:\n    print('b is not greater')",
+                    "expected_output": "b is not greater"
+                },
+                {
+                    "id": "ex-if-short",
+                    "title": "If Abreviado",
+                    "description": "Escribe declaraciones if en una línea",
+                    "python_code": "a = 200\nb = 33\nprint('A') if a > b else print('B')",
+                    "expected_output": "A"
+                }
+            ]
+        },
+        {
+            "id": "loops",
+            "title": "Bucles de Python",
+            "related_lesson": "py-for",
+            "examples": [
+                {
+                    "id": "ex-for-basic",
+                    "title": "Bucle For",
+                    "description": "Recorre una lista",
+                    "python_code": "fruits = ['apple', 'banana', 'cherry']\nfor x in fruits:\n    print(x)",
+                    "expected_output": "apple\nbanana\ncherry"
+                },
+                {
+                    "id": "ex-for-range",
+                    "title": "La Función range()",
+                    "description": "Usa range() para iterar un número específico de veces",
+                    "python_code": "for x in range(6):\n    print(x)",
+                    "expected_output": "0\n1\n2\n3\n4\n5"
+                },
+                {
+                    "id": "ex-while-basic",
+                    "title": "Bucle While",
+                    "description": "Ejecuta un conjunto de declaraciones mientras una condición sea verdadera",
+                    "python_code": "i = 1\nwhile i < 6:\n    print(i)\n    i += 1",
+                    "expected_output": "1\n2\n3\n4\n5"
+                },
+                {
+                    "id": "ex-for-break",
+                    "title": "Break en Bucle",
+                    "description": "Detén el bucle con break",
+                    "python_code": "for x in range(10):\n    if x == 3:\n        break\n    print(x)",
+                    "expected_output": "0\n1\n2"
+                }
+            ]
+        },
+        {
+            "id": "functions",
+            "title": "Funciones de Python",
+            "related_lesson": "py-functions",
+            "examples": [
+                {
+                    "id": "ex-func-create",
+                    "title": "Crear una Función",
+                    "description": "Define y llama a una función",
+                    "python_code": "def my_function():\n    print('Hello from a function')\n\nmy_function()",
+                    "expected_output": "Hello from a function"
+                },
+                {
+                    "id": "ex-func-args",
+                    "title": "Argumentos de Función",
+                    "description": "Pasa información a una función",
+                    "python_code": "def my_function(fname):\n    print(fname + ' Refsnes')\n\nmy_function('Emil')\nmy_function('Tobias')",
+                    "expected_output": "Emil Refsnes\nTobias Refsnes"
+                },
+                {
+                    "id": "ex-func-return",
+                    "title": "Valores de Retorno",
+                    "description": "Retorna un valor de una función",
+                    "python_code": "def my_function(x):\n    return 5 * x\n\nprint(my_function(3))\nprint(my_function(5))",
+                    "expected_output": "15\n25"
+                },
+                {
+                    "id": "ex-func-lambda",
+                    "title": "Función Lambda",
+                    "description": "Una pequeña función anónima",
+                    "python_code": "x = lambda a : a + 10\nprint(x(5))",
+                    "expected_output": "15"
+                }
+            ]
+        },
+        {
+            "id": "classes",
+            "title": "Clases de Python",
+            "related_lesson": "py-classes",
+            "examples": [
+                {
+                    "id": "ex-class-create",
+                    "title": "Crear una Clase",
+                    "description": "Crea una clase y un objeto",
+                    "python_code": "class MyClass:\n    x = 5\n\np1 = MyClass()\nprint(p1.x)",
+                    "expected_output": "5"
+                },
+                {
+                    "id": "ex-class-init",
+                    "title": "La Función __init__()",
+                    "description": "Usa __init__() para asignar valores a las propiedades del objeto",
+                    "python_code": "class Person:\n    def __init__(self, name, age):\n        self.name = name\n        self.age = age\n\np1 = Person('John', 36)\nprint(p1.name)\nprint(p1.age)",
+                    "expected_output": "John\n36"
+                },
+                {
+                    "id": "ex-class-method",
+                    "title": "Métodos de Objeto",
+                    "description": "Los métodos en objetos son funciones que pertenecen al objeto",
+                    "python_code": "class Person:\n    def __init__(self, name, age):\n        self.name = name\n        self.age = age\n    def greeting(self):\n        print(f'Hello, my name is {self.name}')\n\np1 = Person('John', 36)\np1.greeting()",
+                    "expected_output": "Hello, my name is John"
+                },
+                {
+                    "id": "ex-class-inherit",
+                    "title": "Herencia",
+                    "description": "Crea una clase hija que hereda de una clase padre",
+                    "python_code": "class Person:\n    def __init__(self, fname, lname):\n        self.firstname = fname\n        self.lastname = lname\n    def printname(self):\n        print(self.firstname, self.lastname)\n\nclass Student(Person):\n    pass\n\nx = Student('Mike', 'Olsen')\nx.printname()",
+                    "expected_output": "Mike Olsen"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}{{ exercise_data.title }} — Ejercicio {{ exercise_num }} de {{ total_exercises }} — {{ t.site_title }}{% endblock %}
+
+{% block content %}
+<article class="exercise-page">
+    <header class="exercise-page-header">
+        <div class="exercise-breadcrumb">
+            <a href="{{ url_for('exercise_topic', topic=topic) }}" class="breadcrumb-link">← {{ exercise_data.title }}</a>
+        </div>
+        <h1 class="exercise-page-title">
+            <span class="exercise-topic-badge">{{ exercise_data.title }}</span>
+        </h1>
+        <div class="exercise-progress-bar-wrapper">
+            <div class="exercise-counter">Exercise {{ exercise_num }} of {{ total_exercises }}</div>
+            <div class="exercise-progress-track">
+                <div class="exercise-progress-fill" style="width: {{ (exercise_num / total_exercises * 100) | round }}%"></div>
+            </div>
+        </div>
+    </header>
+
+    <section class="exercise-body">
+        <div class="exercise-card-main">
+            <p class="exercise-question-text">{{ current_exercise.question }}</p>
+
+            {% if current_exercise.template_html %}
+            <div class="exercise-code-block">
+                <div class="exercise-template-area" id="exercise-template">
+                    {{ current_exercise.template_html | safe }}
+                </div>
+            </div>
+            {% elif current_exercise.expected_output %}
+            <div class="exercise-code-block">
+                <div class="exercise-freeform-area">
+                    <textarea id="exercise-freeform-input" class="exercise-freeform-editor" spellcheck="false"
+                              placeholder="Escribe tu respuesta aquí..."></textarea>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="exercise-actions">
+                <button class="btn-exercise-submit" id="btn-submit-exercise" data-exercise-id="{{ current_exercise.id or (topic ~ '-' ~ exercise_num) }}" data-lesson="{{ topic }}">
+                    Submit Answer »
+                </button>
+                <button class="btn-exercise-hint" id="btn-hint" title="Obtener una pista">
+                    💡 Get a Hint
+                </button>
+                <button class="btn-exercise-show" id="btn-show-answer">
+                    Show Answer
+                </button>
+            </div>
+
+            <div class="exercise-feedback" id="exercise-feedback" hidden></div>
+
+            {% if current_exercise.hint %}
+            <div class="exercise-hint-box" id="hint-box" hidden>
+                <div class="hint-header">💡 Hint</div>
+                <p class="hint-text">{{ current_exercise.hint }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <nav class="exercise-navigation">
+        {% if exercise_num > 1 %}
+        <a href="{{ url_for('exercise_page', topic=topic, exercise_num=exercise_num - 1) }}" class="exercise-nav-btn exercise-nav-prev">
+            ❮ Previous
+        </a>
+        {% else %}
+        <div></div>
+        {% endif %}
+
+        {% if exercise_num < total_exercises %}
+        <a href="{{ url_for('exercise_page', topic=topic, exercise_num=exercise_num + 1) }}" class="exercise-nav-btn exercise-nav-next">
+            Next ❯
+        </a>
+        {% else %}
+        <a href="{{ url_for('exercise_topic', topic=topic) }}" class="exercise-nav-btn exercise-nav-next exercise-nav-complete">
+            ✓ Complete!
+        </a>
+        {% endif %}
+    </nav>
+</article>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/exercise-nav.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/exercise-page.css') }}">
+{% endblock %}

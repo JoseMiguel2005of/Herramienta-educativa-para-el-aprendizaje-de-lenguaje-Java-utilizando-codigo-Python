@@ -1,0 +1,188 @@
+{
+    "id": "quiz-python-control",
+    "title": "Cuestionario de Flujo de Control en Python",
+    "description": "Pon a prueba tus conocimientos sobre condicionales y bucles en Python: if/else, while, for.",
+    "time_limit": null,
+    "questions": [
+        {
+            "id": "qcf1",
+            "question": "¿Qué palabra clave se utiliza para las declaraciones condicionales en Python?",
+            "options": [
+                "switch",
+                "case",
+                "if",
+                "when"
+            ],
+            "correct": 2,
+            "explanation": "La palabra clave 'if' se utiliza para las declaraciones condicionales."
+        },
+        {
+            "id": "qcf2",
+            "question": "¿Cuál es la sintaxis correcta para una declaración if?",
+            "options": [
+                "if x > 5 then:",
+                "if (x > 5)",
+                "if x > 5:",
+                "if x > 5 do:"
+            ],
+            "correct": 2,
+            "explanation": "Las declaraciones 'if' en Python terminan con dos puntos y no requieren paréntesis."
+        },
+        {
+            "id": "qcf3",
+            "question": "¿Qué palabra clave se utiliza para la condición 'else if' en Python?",
+            "options": [
+                "else if",
+                "elif",
+                "elseif",
+                "elsif"
+            ],
+            "correct": 1,
+            "explanation": "Python utiliza 'elif' para las condiciones 'else if'."
+        },
+        {
+            "id": "qcf4",
+            "question": "¿Qué hace la declaración 'break'?",
+            "options": [
+                "Omite el resto de la iteración del bucle",
+                "Sale del bucle por completo",
+                "Pausa el bucle",
+                "Reinicia el bucle"
+            ],
+            "correct": 1,
+            "explanation": "La declaración 'break' sale del bucle por completo."
+        },
+        {
+            "id": "qcf5",
+            "question": "¿Qué hace la declaración 'continue'?",
+            "options": [
+                "Sale del bucle",
+                "Salta a la siguiente iteración",
+                "Pausa la ejecución",
+                "Continúa hasta el final"
+            ],
+            "correct": 1,
+            "explanation": "La declaración 'continue' omite el resto de la iteración actual."
+        },
+        {
+            "id": "qcf6",
+            "question": "¿Cuál es la salida de: for i in range(3): print(i)?",
+            "options": [
+                "1 2 3",
+                "0 1 2",
+                "0 1 2 3",
+                "1 2"
+            ],
+            "correct": 1,
+            "explanation": "range(3) genera 0, 1, 2."
+        },
+        {
+            "id": "qcf7",
+            "question": "¿Qué bucle está garantizado para ejecutarse al menos una vez?",
+            "options": [
+                "bucle for",
+                "bucle while",
+                "bucle do-while",
+                "Ninguno - Python no tiene tal bucle"
+            ],
+            "correct": 3,
+            "explanation": "Python no tiene un bucle do-while."
+        },
+        {
+            "id": "qcf8",
+            "question": "¿Qué palabra clave se utiliza en Python para una declaración de 'no hacer nada'?",
+            "options": [
+                "null",
+                "none",
+                "pass",
+                "skip"
+            ],
+            "correct": 2,
+            "explanation": "La declaración 'pass' es un marcador de posición de operación nula."
+        },
+        {
+            "id": "qcf9",
+            "question": "¿Cuál es la salida de: range(2, 6)?",
+            "options": [
+                "[2, 3, 4, 5]",
+                "[2, 3, 4, 5, 6]",
+                "[3, 4, 5, 6]",
+                "[2, 6]"
+            ],
+            "correct": 0,
+            "explanation": "range(2, 6) genera números desde 2 hasta (pero sin incluir) 6."
+        },
+        {
+            "id": "qcf10",
+            "question": "¿Qué operador se utiliza para el AND lógico en Python?",
+            "options": [
+                "&&",
+                "AND",
+                "and",
+                "&"
+            ],
+            "correct": 2,
+            "explanation": "Python utiliza la palabra clave 'and' para las operaciones AND lógicas."
+        },
+        {
+            "id": "qcf11",
+            "question": "¿Para qué se utiliza la cláusula 'else' en un bucle for?",
+            "options": [
+                "Manejo de errores",
+                "Se ejecuta cuando el bucle se completa sin 'break'",
+                "Cuerpo alternativo del bucle",
+                "No existe"
+            ],
+            "correct": 1,
+            "explanation": "La cláusula 'else' en un bucle se ejecuta cuando el bucle se completa sin encontrar un 'break'."
+        },
+        {
+            "id": "qcf12",
+            "question": "¿Cómo se itera sobre el índice y el valor de una lista?",
+            "options": [
+                "for i, v in list:",
+                "for i, v in enumerate(list):",
+                "for (i, v) in list:",
+                "for index(list):"
+            ],
+            "correct": 1,
+            "explanation": "La función enumerate() añade un contador de índice a un iterable."
+        },
+        {
+            "id": "qcf13",
+            "question": "¿Qué es un bucle anidado?",
+            "options": [
+                "Un bucle dentro de una función",
+                "Un bucle dentro de otro bucle",
+                "Dos bucles ejecutándose simultáneamente",
+                "Un bucle con condiciones"
+            ],
+            "correct": 1,
+            "explanation": "Un bucle anidado es un bucle dentro de otro bucle."
+        },
+        {
+            "id": "qcf14",
+            "question": "¿Cuál de los siguientes es un bucle while válido?",
+            "options": [
+                "while (x > 5) {}",
+                "while x > 5:",
+                "while x > 5 do:",
+                "loop while x > 5:"
+            ],
+            "correct": 1,
+            "explanation": "Los bucles 'while' en Python usan: while condición:"
+        },
+        {
+            "id": "qcf15",
+            "question": "¿Cuál es la salida de: print(10 > 9 and 5 < 6)?",
+            "options": [
+                "True",
+                "False",
+                "Error",
+                "None"
+            ],
+            "correct": 0,
+            "explanation": "Ambas condiciones son Verdaderas, por lo que 'and' devuelve True."
+        }
+    ]
+}

@@ -1,0 +1,188 @@
+{
+    "id": "quiz-python-collections",
+    "title": "Cuestionario de Colecciones de Python",
+    "description": "Pon a prueba tus conocimientos sobre listas, tuplas, sets y diccionarios en Python.",
+    "time_limit": null,
+    "questions": [
+        {
+            "id": "qc1",
+            "question": "¿Qué colección está ordenada y es modificable?",
+            "options": [
+                "Tupla",
+                "Conjunto",
+                "Lista",
+                "Diccionario"
+            ],
+            "correct": 2,
+            "explanation": "Las listas están ordenadas y son modificables (mutables)."
+        },
+        {
+            "id": "qc2",
+            "question": "¿Qué método añade un elemento al final de una lista?",
+            "options": [
+                "add()",
+                "push()",
+                "append()",
+                "insert()"
+            ],
+            "correct": 2,
+            "explanation": "El método append() añade un elemento al final de una lista."
+        },
+        {
+            "id": "qc3",
+            "question": "¿Qué colección NO permite valores duplicados?",
+            "options": [
+                "Lista",
+                "Tupla",
+                "Conjunto",
+                "Claves de diccionario"
+            ],
+            "correct": 2,
+            "explanation": "Los conjuntos no permiten valores duplicados."
+        },
+        {
+            "id": "qc4",
+            "question": "¿Cómo accedes al valor de una clave de diccionario 'name'?",
+            "options": [
+                "x.name",
+                "x['name']",
+                "x.get['name']",
+                "x(name)"
+            ],
+            "correct": 1,
+            "explanation": "Usa corchetes con el nombre de la clave: x['name']."
+        },
+        {
+            "id": "qc5",
+            "question": "¿Qué colección está ordenada y es inmutable?",
+            "options": [
+                "Lista",
+                "Conjunto",
+                "Diccionario",
+                "Tupla"
+            ],
+            "correct": 3,
+            "explanation": "Las tuplas están ordenadas y son inmutables."
+        },
+        {
+            "id": "qc6",
+            "question": "¿Cómo obtienes el número de elementos en una lista?",
+            "options": [
+                "list.count()",
+                "list.size()",
+                "len(list)",
+                "list.length()"
+            ],
+            "correct": 2,
+            "explanation": "La función len() devuelve el número de elementos."
+        },
+        {
+            "id": "qc7",
+            "question": "¿Qué método elimina el elemento especificado de un conjunto?",
+            "options": [
+                "delete()",
+                "remove()",
+                "pop()",
+                "cut()"
+            ],
+            "correct": 1,
+            "explanation": "El método remove() elimina el elemento especificado de un conjunto."
+        },
+        {
+            "id": "qc8",
+            "question": "¿Cuál es la forma correcta de crear una tupla?",
+            "options": [
+                "x = [1, 2, 3]",
+                "x = {1, 2, 3}",
+                "x = (1, 2, 3)",
+                "x = <1, 2, 3>"
+            ],
+            "correct": 2,
+            "explanation": "Las tuplas usan paréntesis: (1, 2, 3)."
+        },
+        {
+            "id": "qc9",
+            "question": "¿Cómo creas un diccionario en Python?",
+            "options": [
+                "x = (name='John')",
+                "x = {'name': 'John'}",
+                "x = ['name': 'John']",
+                "x = dict[name='John']"
+            ],
+            "correct": 1,
+            "explanation": "Los diccionarios usan llaves con pares clave:valor."
+        },
+        {
+            "id": "qc10",
+            "question": "¿Cuál es la salida de: print([1,2,3] + [4,5,6])?",
+            "options": [
+                "[5, 7, 9]",
+                "[1, 2, 3, 4, 5, 6]",
+                "Error",
+                "10"
+            ],
+            "correct": 1,
+            "explanation": "El operador + concatena listas."
+        },
+        {
+            "id": "qc11",
+            "question": "¿Qué método devuelve una lista de todas las claves en un diccionario?",
+            "options": [
+                "keys()",
+                "getKeys()",
+                "list()",
+                "items()"
+            ],
+            "correct": 0,
+            "explanation": "El método keys() devuelve una vista de todas las claves del diccionario."
+        },
+        {
+            "id": "qc12",
+            "question": "¿Cómo compruebas si 'apple' está presente en una lista?",
+            "options": [
+                "list.contains('apple')",
+                "'apple' in list",
+                "list.has('apple')",
+                "list.find('apple')"
+            ],
+            "correct": 1,
+            "explanation": "Usa la palabra clave 'in': 'apple' in list."
+        },
+        {
+            "id": "qc13",
+            "question": "¿Cuál será el resultado de: fruits = ['apple', 'banana']; fruits[0] = 'kiwi'?",
+            "options": [
+                "Error - las listas son inmutables",
+                "['kiwi', 'banana']",
+                "['apple', 'kiwi']",
+                "['kiwi', 'apple', 'banana']"
+            ],
+            "correct": 1,
+            "explanation": "Las listas son mutables, por lo que puedes cambiar elementos por índice."
+        },
+        {
+            "id": "qc14",
+            "question": "¿Qué método elimina el último elemento de una lista?",
+            "options": [
+                "removeLast()",
+                "pop()",
+                "delete()",
+                "cut()"
+            ],
+            "correct": 1,
+            "explanation": "El método pop() elimina el último elemento (o el elemento en el índice especificado)."
+        },
+        {
+            "id": "qc15",
+            "question": "¿Qué es la comprensión de listas?",
+            "options": [
+                "Una forma de entender las listas",
+                "Una sintaxis más corta para crear una nueva lista",
+                "Un método para comprimir listas",
+                "Una forma de ordenar listas"
+            ],
+            "correct": 1,
+            "explanation": "La comprensión de listas ofrece una sintaxis más corta para crear nuevas listas basadas en las existentes."
+        }
+    ]
+}

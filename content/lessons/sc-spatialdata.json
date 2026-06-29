@@ -4,11 +4,19 @@
     "intro": "Welcome to the SciPy Spatial Data lesson.",
     "python_desc": "Python code for SciPy Spatial Data",
     "java_desc": "Java equivalent for SciPy Spatial Data",
-    "explanation": "<p>In this lesson we cover <b>SciPy Spatial Data</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Spatial Data",
+            "text": "In this lesson we cover <b>SciPy Spatial Data</b>. Python simplifies this operation, whereas Java requires a more structured approach.",
+            "notes": []
+        }
+    ],
     "exercises": [],
     "code_mappings": [
         {
             "id": "sc-spatialdata-1",
+            "section": "Spatial Data",
             "python": "# SciPy Spatial Data Python example\nprint('SciPy Spatial Data')",
             "java": "// SciPy Spatial Data Java example\nSystem.out.println(\"SciPy Spatial Data\");",
             "explanation": "Basic example demonstrating SciPy Spatial Data."

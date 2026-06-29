@@ -8,8 +8,10 @@ from flask_login import (LoginManager, current_user, login_required,
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from content_loader import (get_lesson, get_lesson_title, get_reference,
-                            load_ui_strings)
-from models import ExerciseAttempt, LessonProgress, User, db
+                            load_ui_strings, load_quiz, load_all_quizzes,
+                            load_examples_catalog, get_example_by_id,
+                            load_practice_problems, get_practice_problem)
+from models import ExerciseAttempt, LessonProgress, User, QuizResult, PracticeSubmission, db
 from search_index import search_lessons
 from translator import translate
 
@@ -262,6 +264,29 @@ LESSON_CATEGORIES = [
                     {"id": "ex-modules", "icon": ""},
                 ],
             },
+            {
+                "label_key": "cat_section_quiz",
+                "lessons": [
+                    {"id": "quiz-python-basics", "icon": "🧩", "type": "quiz"},
+                    {"id": "quiz-python-strings", "icon": "🧩", "type": "quiz"},
+                    {"id": "quiz-python-collections", "icon": "🧩", "type": "quiz"},
+                    {"id": "quiz-python-control", "icon": "🧩", "type": "quiz"},
+                    {"id": "quiz-python-functions", "icon": "🧩", "type": "quiz"},
+                    {"id": "quiz-python-oop", "icon": "🧩", "type": "quiz"},
+                ],
+            },
+            {
+                "label_key": "cat_section_examples",
+                "lessons": [
+                    {"id": "examples-hub", "icon": "📋", "type": "examples"}
+                ],
+            },
+            {
+                "label_key": "cat_section_practice",
+                "lessons": [
+                    {"id": "practice-hub", "icon": "", "type": "practice"}
+                ],
+            },
         ],
     }
 ]
@@ -280,6 +305,9 @@ REFERENCE_CATEGORIES = [
     "estructuras",
     "funciones",
     "entrada_salida",
+    "orientado_objetos",
+    "manejo_errores",
+    "manipulacion_datos",
 ]
 
 
@@ -671,6 +699,136 @@ REGLAS:
         )
     except Exception as e:
         return jsonify({"ok": False, "error": f"Error al conectar con la IA: {str(e)}"})
+
+# --- W3SCHOOLS STYLE ROUTES ---
+
+@app.route("/ejercicios/<topic>")
+def exercise_topic(topic):
+    lesson_data = get_lesson(topic)
+    if not lesson_data:
+        return redirect(url_for("index"))
+    
+    exercises = lesson_data.get("exercises", [])
+    user = get_current_user()
+    completed_exercises = []
+    
+    if user.is_authenticated:
+        attempts = ExerciseAttempt.query.filter_by(user_id=user.id, lesson_id=topic, passed=True).all()
+        completed_exercises = [f"{a.lesson_id}-{a.exercise_id}" for a in attempts]
+        
+    return render_template(
+        "exercise_hub.html",
+        topic=topic,
+        exercise_data=lesson_data,
+        exercises=exercises,
+        completed_exercises=completed_exercises,
+        completed_count=len(completed_exercises),
+        categories=LESSON_CATEGORIES,
+        page="exercises"
+    )
+
+@app.route("/ejercicio/<topic>/<int:exercise_num>")
+def exercise_page(topic, exercise_num):
+    lesson_data = get_lesson(topic)
+    if not lesson_data:
+        return redirect(url_for("index"))
+        
+    exercises = lesson_data.get("exercises", [])
+    if exercise_num < 1 or exercise_num > len(exercises):
+        return redirect(url_for("exercise_topic", topic=topic))
+        
+    current_exercise = exercises[exercise_num - 1]
+    
+    return render_template(
+        "exercise.html",
+        topic=topic,
+        exercise_data=lesson_data,
+        current_exercise=current_exercise,
+        exercise_num=exercise_num,
+        total_exercises=len(exercises),
+        categories=LESSON_CATEGORIES,
+        page="exercises"
+    )
+
+
+@app.route("/quiz/<topic>")
+def quiz(topic):
+    quiz_data = load_quiz(topic)
+    if not quiz_data:
+        return redirect(url_for("index"))
+        
+    return render_template(
+        "quiz.html",
+        quiz_data=quiz_data,
+        categories=LESSON_CATEGORIES,
+        page="quiz"
+    )
+
+
+@app.route("/api/quiz/resultado", methods=["POST"])
+def api_quiz_result():
+    data = request.get_json(silent=True) or {}
+    quiz_id = data.get("quiz_id")
+    score = data.get("score", 0)
+    total = data.get("total", 0)
+    
+    user = get_current_user()
+    if user and quiz_id:
+        result = QuizResult(user_id=user.id, quiz_id=quiz_id, score=score, total=total)
+        db.session.add(result)
+        db.session.commit()
+        return jsonify({"ok": True})
+    return jsonify({"ok": False})
+
+
+@app.route("/ejemplos")
+def examples():
+    catalog = load_examples_catalog()
+    return render_template(
+        "examples.html",
+        example_categories=catalog.get("categories", []),
+        categories=LESSON_CATEGORIES,
+        page="examples"
+    )
+
+
+@app.route("/ejemplo/<example_id>")
+def example_detail(example_id):
+    example = get_example_by_id(example_id)
+    if not example:
+        return redirect(url_for("examples"))
+        
+    return render_template(
+        "example_detail.html",
+        example=example,
+        categories=LESSON_CATEGORIES,
+        page="examples"
+    )
+
+
+@app.route("/practica")
+def practice():
+    data = load_practice_problems()
+    return render_template(
+        "practice.html",
+        problems=data.get("problems", []),
+        categories=LESSON_CATEGORIES,
+        page="practice"
+    )
+
+
+@app.route("/practica/<problem_id>")
+def practice_detail(problem_id):
+    problem = get_practice_problem(problem_id)
+    if not problem:
+        return redirect(url_for("practice"))
+        
+    return render_template(
+        "practice_detail.html",
+        problem=problem,
+        categories=LESSON_CATEGORIES,
+        page="practice"
+    )
 
 
 @app.context_processor

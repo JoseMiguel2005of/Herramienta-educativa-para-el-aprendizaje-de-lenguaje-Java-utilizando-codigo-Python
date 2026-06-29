@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Problemas de Práctica — {{ t.site_title }}{% endblock %}
+
+{% block content %}
+<article class="practice-page">
+    <header class="practice-header">
+        <h1 class="practice-title">
+            Practice Problems
+        </h1>
+        <p class="practice-desc">Resuelve problemas de programación para fortalecer tus habilidades. Usa el editor integrado para escribir y probar tu código.</p>
+
+        <div class="practice-filters" id="practice-filters">
+            <button class="filter-btn active" data-filter="all">Todos</button>
+            <button class="filter-btn" data-filter="easy">Fácil</button>
+            <button class="filter-btn" data-filter="medium">Medio</button>
+            <button class="filter-btn" data-filter="hard">Difícil</button>
+        </div>
+    </header>
+
+    <section class="practice-list">
+        {% for p in problems %}
+        <a href="{{ url_for('practice_detail', problem_id=p.id) }}" class="practice-card" data-difficulty="{{ p.difficulty }}">
+            <div class="practice-card-left">
+                <span class="practice-difficulty practice-{{ p.difficulty }}">
+                    {% if p.difficulty == 'easy' %}Fácil{% elif p.difficulty == 'medium' %}Medio{% else %}Difícil{% endif %}
+                </span>
+                <div>
+                    <span class="practice-card-title">{{ p.title }}</span>
+                    <span class="practice-card-category">{{ p.category }}</span>
+                </div>
+            </div>
+            <div class="practice-card-right">
+                <span class="practice-card-tests">{{ p.test_cases | length }} pruebas</span>
+                <span class="practice-card-arrow">❯</span>
+            </div>
+        </a>
+        {% endfor %}
+    </section>
+</article>
+{% endblock %}
+
+{% block scripts %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/practice-page.css') }}">
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const filters = document.querySelectorAll('.filter-btn');
+    const cards = document.querySelectorAll('.practice-card');
+    filters.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filters.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const filter = btn.dataset.filter;
+            cards.forEach(card => {
+                card.style.display = (filter === 'all' || card.dataset.difficulty === filter) ? '' : 'none';
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -4,11 +4,19 @@
     "intro": "Welcome to the SciPy Interpolation lesson.",
     "python_desc": "Python code for SciPy Interpolation",
     "java_desc": "Java equivalent for SciPy Interpolation",
-    "explanation": "<p>In this lesson we cover <b>SciPy Interpolation</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Interpolation",
+            "text": "In this lesson we cover <b>SciPy Interpolation</b>. Python simplifies this operation, whereas Java requires a more structured approach.",
+            "notes": []
+        }
+    ],
     "exercises": [],
     "code_mappings": [
         {
             "id": "sc-interpolation-1",
+            "section": "Interpolation",
             "python": "# SciPy Interpolation Python example\nprint('SciPy Interpolation')",
             "java": "// SciPy Interpolation Java example\nSystem.out.println(\"SciPy Interpolation\");",
             "explanation": "Basic example demonstrating SciPy Interpolation."

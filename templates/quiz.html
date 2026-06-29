@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}{{ quiz_data.title }} — {{ t.site_title }}{% endblock %}
+
+{% block content %}
+<article class="quiz-page" id="quiz-container" data-quiz-id="{{ quiz_data.id }}" data-total="{{ quiz_data.questions | length }}">
+    {# ===== START SCREEN ===== #}
+    <div class="quiz-start-screen" id="quiz-start">
+        <div class="quiz-start-card">
+            <div class="quiz-start-icon">🧩</div>
+            <h1 class="quiz-start-title">{{ quiz_data.title }}</h1>
+            <p class="quiz-start-desc">{{ quiz_data.description }}</p>
+            <div class="quiz-start-info">
+                <span class="quiz-info-badge">{{ quiz_data.questions | length }} Preguntas</span>
+                {% if quiz_data.time_limit %}
+                <span class="quiz-info-badge">⏱ {{ quiz_data.time_limit // 60 }} min</span>
+                {% endif %}
+            </div>
+            <button class="btn-quiz-start" id="btn-start-quiz">Comenzar Quiz ❯</button>
+        </div>
+    </div>
+
+    {# ===== QUIZ QUESTIONS ===== #}
+    <div class="quiz-active" id="quiz-active" hidden>
+        <header class="quiz-header">
+            <h2 class="quiz-title-small">{{ quiz_data.title }}</h2>
+            <div class="quiz-progress-info">
+                <span class="quiz-counter" id="quiz-counter">Pregunta 1 de {{ quiz_data.questions | length }}</span>
+                {% if quiz_data.time_limit %}
+                <span class="quiz-timer" id="quiz-timer">{{ quiz_data.time_limit // 60 }}:00</span>
+                {% endif %}
+            </div>
+            <div class="quiz-progress-track">
+                <div class="quiz-progress-fill" id="quiz-progress-fill" style="width: 0%"></div>
+            </div>
+        </header>
+
+        <div class="quiz-questions-wrapper" id="quiz-questions">
+            {% for q in quiz_data.questions %}
+            {% set outer_loop_index = loop.index0 %}
+            <div class="quiz-question-slide" data-question="{{ outer_loop_index }}" data-correct="{{ q.correct }}" data-explanation="{{ q.explanation }}" {% if not loop.first %}hidden{% endif %}>
+                <p class="quiz-question-text">{{ q.question }}</p>
+                <div class="quiz-options-list">
+                    {% for opt in q.options %}
+                    <label class="quiz-option">
+                        <input type="radio" name="quiz_q{{ outer_loop_index }}" value="{{ loop.index0 }}">
+                        <span class="quiz-option-marker"></span>
+                        <span class="quiz-option-content">{{ opt }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="quiz-actions">
+            <button class="btn-quiz-next" id="btn-quiz-next">Siguiente Pregunta ❯</button>
+        </div>
+    </div>
+
+    {# ===== RESULTS SCREEN ===== #}
+    <div class="quiz-results" id="quiz-results" hidden>
+        <div class="quiz-results-card">
+            <h2 class="quiz-results-title">¡Quiz Completado! 🎉</h2>
+            <div class="quiz-score-circle" id="quiz-score-circle">
+                <svg viewBox="0 0 120 120">
+                    <circle class="score-bg" cx="60" cy="60" r="54" />
+                    <circle class="score-fill" cx="60" cy="60" r="54" id="score-circle-fill" />
+                </svg>
+                <div class="score-text" id="score-text">0%</div>
+            </div>
+            <p class="quiz-results-detail" id="quiz-results-detail">¡Respondiste 0 de 0 correctamente!</p>
+            <div class="quiz-results-actions">
+                <button class="btn-quiz-retry" id="btn-quiz-retry">Reintentar</button>
+                <a href="{{ url_for('lesson', lesson_id='py-home') }}" class="btn-quiz-back">Volver a Lecciones</a>
+            </div>
+        </div>
+    </div>
+</article>
+{% endblock %}
+
+{% block scripts %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/quiz-page.css') }}">
+<script src="{{ url_for('static', filename='js/quiz-engine.js') }}"></script>
+{% endblock %}
