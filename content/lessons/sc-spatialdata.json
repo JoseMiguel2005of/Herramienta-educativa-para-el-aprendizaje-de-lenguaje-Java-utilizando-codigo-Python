@@ -1,25 +1,49 @@
 {
     "id": "sc-spatialdata",
-    "title": "SciPy Spatial Data",
-    "intro": "Welcome to the SciPy Spatial Data lesson.",
-    "python_desc": "Python code for SciPy Spatial Data",
-    "java_desc": "Java equivalent for SciPy Spatial Data",
+    "title": "Datos Espaciales (SciPy Spatial)",
+    "intro": "Los datos espaciales son aquellos que están representados en un espacio geométrico, como la localización de puntos en coordenadas (x,y).",
+    "python_desc": "Código Python para Datos Espaciales",
+    "java_desc": "Equivalente en Java para Geometría Espacial",
     "explanation": "",
     "sections": [
         {
-            "title": "Spatial Data",
-            "text": "In this lesson we cover <b>SciPy Spatial Data</b>. Python simplifies this operation, whereas Java requires a more structured approach.",
+            "title": "¿Para qué sirve el módulo Spatial?",
+            "text": "El módulo <code>scipy.spatial</code> sirve para trabajar con datos espaciales. Contiene utilidades muy avanzadas para calcular distancias entre puntos, encontrar los puntos más cercanos, y realizar Triangulaciones (como la Triangulación de Delaunay).",
+            "notes": [
+                {"type": "note", "text": "Este módulo es fundamental en aplicaciones prácticas de Inteligencia Artificial como agrupación (Clustering), sistemas de recomendación y mapeo computacional."}
+            ]
+        },
+        {
+            "title": "Cálculo de Distancias",
+            "text": "A menudo, lo que más se necesita es calcular la distancia (como la Euclidiana o de Manhattan) entre múltiples puntos de manera extremadamente rápida. SciPy maneja esto mediante árboles de datos KD (KDTrees).",
             "notes": []
         }
     ],
-    "exercises": [],
     "code_mappings": [
         {
             "id": "sc-spatialdata-1",
-            "section": "Spatial Data",
-            "python": "# SciPy Spatial Data Python example\nprint('SciPy Spatial Data')",
-            "java": "// SciPy Spatial Data Java example\nSystem.out.println(\"SciPy Spatial Data\");",
-            "explanation": "Basic example demonstrating SciPy Spatial Data."
+            "section": "Distancia Euclidiana con pdist",
+            "python": "import numpy as np\nfrom scipy.spatial.distance import euclidean\n\npunto1 = (1, 0)\npunto2 = (10, 2)\n\n# Distancia directa entre dos puntos\ndist = euclidean(punto1, punto2)\nprint(\"Distancia:\", dist)",
+            "java": "public class Geometria {\n    public static void main(String[] args) {\n        double[] p1 = {1.0, 0.0};\n        double[] p2 = {10.0, 2.0};\n        \n        // Distancia euclidiana matemática: raíz de la suma de diferencias al cuadrado\n        double dist = Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));\n        System.out.println(\"Distancia: \" + dist);\n    }\n}",
+            "explanation": "Para puntos simples puedes usar las matemáticas base (Math.sqrt en Java). Sin embargo, cuando debes calcular la matriz de distancia para 1 millón de puntos a la vez, SciPy (scipy.spatial.distance.pdist) usa código optimizado (en C) que lo hace de forma mucho más rápida y limpia."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-sc-spatialdata-1",
+            "type": "multiple-choice",
+            "question": "¿Cuál submódulo de SciPy utilizarías si tuvieras que construir un KDTree para encontrar los puntos más cercanos a unas coordenadas geográficas?",
+            "options": ["scipy.optimize", "scipy.spatial", "scipy.stats", "scipy.geometry"],
+            "correct": 1
+        },
+        {
+            "id": "ex-sc-spatialdata-2",
+            "type": "fill-blank",
+            "question": "Escribe el nombre de la función que importas de scipy.spatial.distance para medir la distancia típica (en línea recta) entre dos puntos.",
+            "template": "from scipy.spatial.distance import _________",
+            "template_html": "from scipy.spatial.distance import <input type='text' class='exercise-input' data-answer='euclidean' placeholder='_________'>",
+            "python_code": "from scipy.spatial.distance import euclidean",
+            "answer": "euclidean"
         }
     ]
 }

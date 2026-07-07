@@ -1,50 +1,56 @@
 {
     "id": "ex-strings",
-    "title": "Strings Exercises",
-    "intro": "Welcome to the Strings Exercises.",
-    "python_desc": "Ejercicios sobre Strings",
-    "java_desc": "Práctica equivalente en Java",
-    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>Strings</b> resolviendo estos ejercicios.</p>",
+    "title": "Ejercicios de Strings",
+    "intro": "Practica la manipulación de cadenas de texto en Python.",
+    "python_desc": "Ejercicios sobre Ejercicios de Strings",
+    "java_desc": "Practica equivalente en Java",
+    "explanation": "",
+    "sections": [],
+    "code_mappings": [],
     "exercises": [
         {
-            "question": "Use the len method to print the length of the string.",
-            "expected_output": "x = 'Hello World'\nprint(len(x))"
+            "id": "ex-str-1",
+            "question": "Convierte la cadena a mayúsculas.",
+            "type": "fill-blank",
+            "template_html": "txt = 'hola mundo'<br>print(txt.<input type='text' class='exercise-input' data-answer='upper' size='6'>())",
+            "answer": "upper",
+            "hint": "El método que convierte todos los caracteres a mayúsculas."
         },
         {
-            "question": "Get the first character of the string txt.",
-            "expected_output": "txt = 'Hello World'\nx = txt[0]"
+            "id": "ex-str-2",
+            "question": "¿Qué devuelve <code>len('Python')</code>?",
+            "type": "multiple-choice",
+            "options": [
+                "5",
+                "6",
+                "7",
+                "Error"
+            ],
+            "correct": 1
         },
         {
-            "question": "Get the characters from index 2 to index 4 (llo).",
-            "expected_output": "txt = 'Hello World'\nx = txt[2:5]"
+            "id": "ex-str-3",
+            "question": "Accede al primer carácter de la cadena.",
+            "type": "fill-blank",
+            "template_html": "txt = 'Hola'<br>print(txt[<input type='text' class='exercise-input' data-answer='0' size='2'>])",
+            "answer": "0",
+            "hint": "Los índices empiezan en 0."
         },
         {
-            "question": "Return the string without any whitespace at the beginning or the end.",
-            "expected_output": "txt = ' Hello World '\nx = txt.strip()"
+            "id": "ex-str-4",
+            "question": "Reemplaza 'mundo' con 'Python' en la cadena.",
+            "type": "fill-blank",
+            "template_html": "txt = 'Hola mundo'<br>print(txt.<input type='text' class='exercise-input' data-answer='replace' size='8'>('mundo', 'Python'))",
+            "answer": "replace",
+            "hint": "El método que sustituye una subcadena por otra."
         },
         {
-            "question": "Convert the value of txt to upper case.",
-            "expected_output": "txt = 'Hello World'\nx = txt.upper()"
-        },
-        {
-            "question": "Convert the value of txt to lower case.",
-            "expected_output": "txt = 'Hello World'\nx = txt.lower()"
-        },
-        {
-            "question": "Replace the character H with a J.",
-            "expected_output": "txt = 'Hello World'\nx = txt.replace('H', 'J')"
-        },
-        {
-            "question": "Insert the correct syntax to add a placeholder for the age parameter.",
-            "expected_output": "age = 36\ntxt = f'My name is John, and I am {age}'\nprint(txt)"
-        }
-    ],
-    "code_mappings": [
-        {
-            "id": "ex-strings-1",
-            "python": "# Completa el ejercicio de Strings\\n",
-            "java": "// Completa el ejercicio en Java\\n",
-            "explanation": "Espacio de práctica para Strings."
+            "id": "ex-str-5",
+            "question": "Elimina los espacios en blanco al inicio y al final de la cadena.",
+            "type": "fill-blank",
+            "template_html": "txt = '  Hola  '<br>print(txt.<input type='text' class='exercise-input' data-answer='strip' size='6'>())",
+            "answer": "strip",
+            "hint": "Este método 'recorta' los espacios sobrantes."
         }
     ]
 }

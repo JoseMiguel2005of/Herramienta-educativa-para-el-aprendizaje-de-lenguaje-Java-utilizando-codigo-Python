@@ -1,17 +1,43 @@
 {
     "id": "ref-file",
-    "title": "File Methods",
-    "intro": "Welcome to the File Methods lesson.",
-    "python_desc": "Python code for File Methods",
-    "java_desc": "Java equivalent for File Methods",
-    "explanation": "<p>In this lesson we cover <b>File Methods</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Referencia de Metodos de Archivo",
+    "intro": "Metodos disponibles para trabajar con archivos en Python.",
+    "python_desc": "Referencia de Python: Referencia de Metodos de Archivo",
+    "java_desc": "Equivalente en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Modos de Apertura",
+            "text": "<code>'r'</code> lectura (default), <code>'w'</code> escritura (sobreescribe), <code>'a'</code> agregar al final, <code>'x'</code> crear nuevo (error si existe), <code>'b'</code> modo binario.",
+            "notes": []
+        },
+        {
+            "title": "Tabla de Referencia",
+            "text": "<table><tr><th>Python</th><th>Java</th><th>Descripcion</th></tr><tr><td>open(archivo, modo)</td><td>new FileReader/FileWriter</td><td>Abrir archivo</td></tr><tr><td>f.read()</td><td>reader.read()</td><td>Leer todo el contenido</td></tr><tr><td>f.readline()</td><td>reader.readLine()</td><td>Leer una linea</td></tr><tr><td>f.readlines()</td><td>reader.lines()</td><td>Leer todas las lineas</td></tr><tr><td>f.write(texto)</td><td>writer.write(texto)</td><td>Escribir texto</td></tr><tr><td>f.close()</td><td>reader/writer.close()</td><td>Cerrar archivo</td></tr></table>",
+            "notes": [
+                {
+                    "type": "tip",
+                    "text": "Usa <code>with open()</code> en Python para que el archivo se cierre automaticamente. En Java usa try-with-resources."
+                }
+            ]
+        }
+    ],
     "code_mappings": [
         {
             "id": "ref-file-1",
-            "python": "# File Methods Python example\nprint('File Methods')",
-            "java": "// File Methods Java example\nSystem.out.println(\"File Methods\");",
-            "explanation": "Basic example demonstrating File Methods."
+            "section": "Lectura de Archivo",
+            "python": "with open('datos.txt', 'r') as f:\n    contenido = f.read()\n    print(contenido)",
+            "java": "try (BufferedReader reader = new BufferedReader(new FileReader(\"datos.txt\"))) {\n    String line;\n    while ((line = reader.readLine()) != null) {\n        System.out.println(line);\n    }\n}",
+            "explanation": "Python con 'with' y Java con try-with-resources ambos garantizan el cierre automatico del archivo."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ref-file-ex1",
+            "type": "fill-blank",
+            "question": "Abre el archivo 'datos.txt' para lectura.",
+            "template_html": "f = <input type='text' class='exercise-input' data-answer='open' size='5'>('datos.txt', 'r')",
+            "answer": "open"
         }
     ]
 }

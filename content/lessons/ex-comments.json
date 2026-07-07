@@ -1,26 +1,40 @@
 {
     "id": "ex-comments",
-    "title": "Comments Exercises",
-    "intro": "Welcome to the Comments Exercises.",
-    "python_desc": "Ejercicios sobre Comments",
-    "java_desc": "Práctica equivalente en Java",
-    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>Comments</b> resolviendo estos ejercicios.</p>",
+    "title": "Ejercicios de Comentarios",
+    "intro": "Practica cómo escribir comentarios correctamente en Python.",
+    "python_desc": "Ejercicios sobre Ejercicios de Comentarios",
+    "java_desc": "Practica equivalente en Java",
+    "explanation": "",
+    "sections": [],
+    "code_mappings": [],
     "exercises": [
         {
-            "question": "Comments in Python are written with a special character, which one?",
-            "expected_output": "#This is a comment"
+            "id": "ex-com-1",
+            "question": "Completa para insertar un comentario de una línea.",
+            "type": "fill-blank",
+            "template_html": "<input type='text' class='exercise-input' data-answer='#' size='2'> Esto es un comentario",
+            "answer": "#",
+            "hint": "Python usa el símbolo numeral para comentarios de una línea."
         },
         {
-            "question": "Use a multiline string to make the a multiline comment.",
-            "expected_output": "'''This is a comment\nwritten in\nmore than just one line'''"
-        }
-    ],
-    "code_mappings": [
+            "id": "ex-com-2",
+            "question": "¿Cuál es la forma correcta de escribir un comentario multilínea en Python?",
+            "type": "multiple-choice",
+            "options": [
+                "/* comentario */",
+                "// comentario",
+                "''' comentario '''",
+                "<!-- comentario -->"
+            ],
+            "correct": 2
+        },
         {
-            "id": "ex-comments-1",
-            "python": "# Completa el ejercicio de Comments\\n",
-            "java": "// Completa el ejercicio en Java\\n",
-            "explanation": "Espacio de práctica para Comments."
+            "id": "ex-com-3",
+            "question": "Comenta la segunda línea para que no se ejecute.",
+            "type": "fill-blank",
+            "template_html": "print('Hola')<br><input type='text' class='exercise-input' data-answer='#' size='2'>print('Mundo')",
+            "answer": "#",
+            "hint": "Coloca # antes de la línea que quieres comentar."
         }
     ]
 }

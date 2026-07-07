@@ -1,34 +1,52 @@
 {
     "id": "ex-while",
-    "title": "While Loops Exercises",
-    "intro": "Welcome to the While Loops Exercises.",
-    "python_desc": "Ejercicios sobre While Loops",
-    "java_desc": "Práctica equivalente en Java",
-    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>While Loops</b> resolviendo estos ejercicios.</p>",
+    "title": "Ejercicios de Bucle While",
+    "intro": "Practica el uso de bucles while para repetir acciones mientras una condición sea verdadera.",
+    "python_desc": "Ejercicios sobre Ejercicios de Bucle While",
+    "java_desc": "Practica equivalente en Java",
+    "explanation": "",
+    "sections": [],
+    "code_mappings": [],
     "exercises": [
         {
-            "question": "Print i as long as i is less than 6.",
-            "expected_output": "i = 1\nwhile i < 6:\n    print(i)\n    i += 1"
+            "id": "ex-wh-1",
+            "question": "Completa el bucle while para que se ejecute mientras i sea menor que 6.",
+            "type": "fill-blank",
+            "template_html": "i = 1<br><input type='text' class='exercise-input' data-answer='while' size='6'> i < 6:<br>&nbsp;&nbsp;&nbsp;&nbsp;print(i)<br>&nbsp;&nbsp;&nbsp;&nbsp;i += 1",
+            "answer": "while",
+            "hint": "La palabra clave que repite el bloque mientras la condición sea True."
         },
         {
-            "question": "Stop the loop if i is 3.",
-            "expected_output": "i = 1\nwhile i < 6:\n    if i == 3:\n        break\n    i += 1"
+            "id": "ex-wh-2",
+            "question": "¿Qué pasa si la condición del while NUNCA se vuelve False?",
+            "type": "multiple-choice",
+            "options": [
+                "El programa termina normalmente",
+                "Se crea un bucle infinito",
+                "Python lanza un error automáticamente",
+                "Se ejecuta solo una vez"
+            ],
+            "correct": 1
         },
         {
-            "question": "In the loop, when i is 3, jump directly to the next iteration.",
-            "expected_output": "i = 0\nwhile i < 6:\n    i += 1\n    if i == 3:\n        continue\n    print(i)"
+            "id": "ex-wh-3",
+            "question": "Completa para detener el bucle cuando i llega a 3.",
+            "type": "fill-blank",
+            "template_html": "i = 0<br>while i < 10:<br>&nbsp;&nbsp;&nbsp;&nbsp;if i == 3:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='text' class='exercise-input' data-answer='break' size='6'><br>&nbsp;&nbsp;&nbsp;&nbsp;i += 1",
+            "answer": "break",
+            "hint": "La palabra clave que sale inmediatamente del bucle."
         },
         {
-            "question": "Print a message once the condition is false.",
-            "expected_output": "i = 1\nwhile i < 6:\n    print(i)\n    i += 1\nelse:\n    print('i is no longer less than 6')"
-        }
-    ],
-    "code_mappings": [
-        {
-            "id": "ex-while-1",
-            "python": "# Completa el ejercicio de While Loops\\n",
-            "java": "// Completa el ejercicio en Java\\n",
-            "explanation": "Espacio de práctica para While Loops."
+            "id": "ex-wh-4",
+            "question": "¿Qué hace <code>continue</code> dentro de un bucle while?",
+            "type": "multiple-choice",
+            "options": [
+                "Sale del bucle",
+                "Salta a la siguiente iteración",
+                "Reinicia la variable",
+                "Pausa el bucle"
+            ],
+            "correct": 1
         }
     ]
 }

@@ -40,6 +40,88 @@
 }
 
 /* =============================================
+   LIGHT THEME (Sprint 2 — 1.9)
+   ============================================= */
+[data-theme="light"], [data-theme="light"] body {
+    --green: #0097A7;
+    --green-dark: #006978;
+    --green-light: rgba(0, 151, 167, 0.1);
+
+    --bg: #FFFFFF;
+    --bg-secondary: #F6F8FA;
+    --bg-code: #F0F2F5;
+
+    --text: #24292F;
+    --text-muted: #57606A;
+
+    --border: #D0D7DE;
+
+    --sidebar-bg: #F6F8FA;
+    --sidebar-text: #57606A;
+    --sidebar-hover: #24292F;
+    --sidebar-active: #0097A7;
+
+    --python-color: #0097A7;
+    --java-color: #CF222E;
+
+    --shadow: 0 1px 3px rgba(0,0,0,0.1);
+    --shadow-lg: 0 10px 30px rgba(0,0,0,0.1);
+
+    --explanation-bg: #F6F8FA;
+    --explanation-border: #CF222E;
+
+    --topbar-text: #24292F;
+    --accent-glow: rgba(0, 151, 167, 0.1);
+    --page-bg: #FFFFFF;
+    --card-hover-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+[data-theme="light"] .topbar {
+    background: #F6F8FA !important;
+    border-bottom-color: #D0D7DE !important;
+}
+
+[data-theme="light"] .brand strong {
+    color: #0097A7 !important;
+    text-shadow: none !important;
+}
+
+[data-theme="light"] .level-value {
+    text-shadow: none;
+}
+
+[data-theme="light"] .term-btn {
+    color: #57606A;
+}
+
+[data-theme="light"] .term-btn:hover {
+    color: #0097A7;
+}
+
+[data-theme="light"] .xp-toast {
+    background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(246,248,250,0.95));
+    border-color: #0097A7;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+[data-theme="light"] .xp-toast-title {
+    color: #57606A;
+}
+
+[data-theme="light"] .achievement-modal-content {
+    background: linear-gradient(135deg, #F6F8FA, #FFFFFF);
+    border-color: #0097A7;
+}
+
+[data-theme="light"] .achievement-modal-header h2 {
+    color: #24292F;
+}
+
+[data-theme="light"] .achievement-modal-name {
+    color: #24292F;
+}
+
+/* =============================================
    RESET Y BASE
    ============================================= */
 *,
@@ -1212,6 +1294,11 @@ body::before {
         z-index: 101;
         transition: left 0.3s ease;
         box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+        overflow-y: auto;
+    }
+    
+    .sidebar nav {
+        display: block;
     }
     
     .sidebar.active {
@@ -1264,4 +1351,290 @@ body::before {
         font-size: 0.9rem;
         padding: 0.5rem;
     }
+}
+
+/* =============================================
+   XP TOAST NOTIFICATIONS (Sprint 1 — 1.3)
+   ============================================= */
+#xp-toast-container {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0.75rem;
+    pointer-events: none;
+}
+
+.xp-toast {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1.25rem;
+    background: linear-gradient(135deg, rgba(13, 17, 23, 0.95), rgba(22, 27, 34, 0.95));
+    border: 1px solid var(--green);
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.25), 0 8px 24px rgba(0, 0, 0, 0.6);
+    font-family: "JetBrains Mono", monospace;
+    transform: translateX(120%);
+    opacity: 0;
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+    position: relative;
+    overflow: visible;
+    pointer-events: auto;
+    min-width: 240px;
+}
+
+.xp-toast-show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.xp-toast-hide {
+    transform: translateX(120%);
+    opacity: 0;
+    transition: transform 0.4s ease-in, opacity 0.3s ease;
+}
+
+.xp-toast-icon {
+    font-size: 1.5rem;
+    animation: xp-pulse 0.6s ease-in-out;
+}
+
+@keyframes xp-pulse {
+    0% { transform: scale(0.3); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+.xp-toast-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.xp-toast-title {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.xp-toast-amount {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--green);
+    text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+}
+
+/* XP Particles */
+.xp-toast-particles {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    pointer-events: none;
+}
+
+.xp-particle {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--color);
+    animation: xp-particle-fly 0.8s ease-out var(--delay) forwards;
+    opacity: 0;
+}
+
+@keyframes xp-particle-fly {
+    0% { transform: translate(0, 0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--x), var(--y)) scale(0); opacity: 0; }
+}
+
+/* =============================================
+   ACHIEVEMENT UNLOCK MODAL (Sprint 1 — 1.7)
+   ============================================= */
+.achievement-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.achievement-modal-overlay.achievement-modal-visible {
+    opacity: 1;
+}
+
+.achievement-modal-content {
+    background: linear-gradient(135deg, #161B22, #0D1117);
+    border: 1px solid var(--green);
+    border-radius: 12px;
+    padding: 2.5rem 2rem;
+    max-width: 420px;
+    width: 90%;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transform: scale(0.8) translateY(20px);
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 0 40px rgba(0, 229, 255, 0.2), 0 20px 60px rgba(0, 0, 0, 0.8);
+}
+
+.achievement-modal-visible .achievement-modal-content {
+    transform: scale(1) translateY(0);
+}
+
+.achievement-modal-confetti {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    pointer-events: none;
+}
+
+.confetti-piece {
+    position: absolute;
+    width: var(--size);
+    height: var(--size);
+    background: var(--color);
+    border-radius: 2px;
+    animation: confetti-fall 1.2s ease-out var(--delay) forwards;
+    opacity: 0;
+}
+
+@keyframes confetti-fall {
+    0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+    100% { transform: translate(var(--x), var(--y)) rotate(var(--r)); opacity: 0; }
+}
+
+.achievement-modal-header {
+    margin-bottom: 1.5rem;
+}
+
+.achievement-modal-star {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 0.5rem;
+    animation: trophy-bounce 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes trophy-bounce {
+    0% { transform: scale(0) rotate(-20deg); }
+    60% { transform: scale(1.2) rotate(5deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+
+.achievement-modal-header h2 {
+    color: #fff;
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 1.3rem;
+    margin: 0;
+    letter-spacing: 0.05em;
+}
+
+.achievement-modal-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.achievement-modal-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(0, 229, 255, 0.05);
+    border: 1px solid rgba(0, 229, 255, 0.3);
+    border-radius: 8px;
+    animation: card-slide-in 0.5s ease-out 0.3s backwards;
+}
+
+@keyframes card-slide-in {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.achievement-modal-id {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--green);
+    font-family: "Space Grotesk", sans-serif;
+    text-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
+    min-width: 2.5rem;
+}
+
+.achievement-modal-info {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.achievement-modal-name {
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.achievement-modal-desc {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.achievement-modal-btn {
+    background: var(--green);
+    color: #0D1117;
+    border: none;
+    padding: 0.75rem 2.5rem;
+    border-radius: 6px;
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.05em;
+}
+
+.achievement-modal-btn:hover {
+    background: #00f7ff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 229, 255, 0.4);
+}
+
+/* =============================================
+   SIDEBAR CHECKMARKS (Sprint 1 — 1.8)
+   ============================================= */
+.sidebar-check {
+    color: var(--green);
+    font-size: 0.75rem;
+    margin-left: 0.4rem;
+    text-shadow: 0 0 6px rgba(0, 229, 255, 0.4);
+    font-weight: 700;
+    animation: check-pop 0.3s ease-out;
+}
+
+@keyframes check-pop {
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.3); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.nav-link.lesson-completed .file-name {
+    color: var(--green);
+    opacity: 0.8;
+}
+
+/* Sidebar level title improvements */
+.user-next-title {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 0.3rem;
+    font-family: "JetBrains Mono", monospace;
 }

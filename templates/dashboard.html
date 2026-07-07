@@ -25,6 +25,13 @@
                     <span class="level-value">{{ (summary.total_xp // 100) + 1 }}</span>
                 </div>
                 <div class="xp-data">
+                    {% set level = (summary.total_xp // 100) + 1 %}
+                    {% set titles = {1:'Iniciado',2:'Novato',3:'Aprendiz',4:'Estudiante',5:'Practicante',6:'Competente',7:'Hábil',8:'Experto',9:'Veterano',10:'Pythonista',11:'Maestro',12:'Arquitecto',13:'Virtuoso',14:'Gurú',15:'Sensei',16:'Leyenda',17:'Oráculo',18:'Iluminado',19:'Trascendente',20:'Omnisciente'} %}
+                    {% set current_title = titles.get(level if level <= 20 else 20, 'Iniciado') %}
+                    <div class="data-row">
+                        <span class="data-key">RANK:</span>
+                        <span class="data-val" style="color: var(--green); text-shadow: 0 0 8px rgba(0,229,255,0.4);">{{ current_title }}</span>
+                    </div>
                     <div class="data-row">
                         <span class="data-key">TOTAL_XP:</span>
                         <span class="data-val">{{ summary.total_xp }}</span>
@@ -33,6 +40,12 @@
                         <span class="data-key">NEXT_THRESHOLD:</span>
                         <span class="data-val">{{ summary.total_xp % 100 }}/100</span>
                     </div>
+                    {% if level < 20 %}
+                    <div class="data-row">
+                        <span class="data-key">NEXT_RANK:</span>
+                        <span class="data-val" style="opacity:0.6;">{{ titles.get(level + 1, '???') }}</span>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
             <div class="terminal-progress-container">
@@ -60,12 +73,22 @@
                 <span>// METRICS: STREAK</span>
             </div>
             <div class="module-body center-data">
-                <span class="metric-value highlight-orange">1</span>
-                <span class="metric-total">DAY_ACTIVE</span>
+                <span class="metric-value highlight-orange">{{ summary.streak }}</span>
+                <span class="metric-total">{{ 'DAYS_ACTIVE' if summary.streak != 1 else 'DAY_ACTIVE' }}</span>
             </div>
             <div class="status-pulse-container">
+                {% if summary.streak >= 7 %}
+                <span class="pulse-ring"></span>
+                🔥 XP_MULTIPLIER: ×1.5
+                {% elif summary.streak >= 3 %}
+                <span class="pulse-ring"></span>
+                🔥 XP_MULTIPLIER: ×1.25
+                {% elif summary.streak >= 1 %}
                 <span class="pulse-ring"></span>
                 LOGGED_TODAY
+                {% else %}
+                ⚠️ NO_ACTIVITY_TODAY
+                {% endif %}
             </div>
         </div>
 

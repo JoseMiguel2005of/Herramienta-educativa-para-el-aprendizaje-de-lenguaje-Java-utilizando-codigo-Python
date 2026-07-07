@@ -1,34 +1,48 @@
 {
     "id": "ex-modules",
-    "title": "Modules Exercises",
-    "intro": "Welcome to the Modules Exercises.",
-    "python_desc": "Ejercicios sobre Modules",
-    "java_desc": "Práctica equivalente en Java",
-    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>Modules</b> resolviendo estos ejercicios.</p>",
+    "title": "Ejercicios de Módulos",
+    "intro": "Practica cómo importar y usar módulos en Python.",
+    "python_desc": "Ejercicios sobre Ejercicios de Módulos",
+    "java_desc": "Practica equivalente en Java",
+    "explanation": "",
+    "sections": [],
+    "code_mappings": [],
     "exercises": [
         {
-            "question": "What is the correct syntax to import a module named mymodule?",
-            "expected_output": "import mymodule"
+            "id": "ex-mod-1",
+            "question": "Completa para importar el módulo <code>math</code>.",
+            "type": "fill-blank",
+            "template_html": "<input type='text' class='exercise-input' data-answer='import' size='7'> math<br>print(math.pi)",
+            "answer": "import",
+            "hint": "La palabra clave para importar módulos."
         },
         {
-            "question": "If you want to refer to a module by using a different name, you can create an alias. What is the correct syntax for creating an alias for a module?",
-            "expected_output": "import mymodule as mx"
+            "id": "ex-mod-2",
+            "question": "Importa SOLO la función <code>sqrt</code> del módulo math.",
+            "type": "fill-blank",
+            "template_html": "<input type='text' class='exercise-input' data-answer='from' size='5'> math import sqrt",
+            "answer": "from",
+            "hint": "Usa from...import para importar elementos específicos."
         },
         {
-            "question": "What is the correct syntax of printing all variables and function names of the 'mymodule' module?",
-            "expected_output": "import mymodule\nprint(dir(mymodule))"
+            "id": "ex-mod-3",
+            "question": "¿Qué función del módulo <code>math</code> calcula la raíz cuadrada?",
+            "type": "multiple-choice",
+            "options": [
+                "math.root()",
+                "math.sqrt()",
+                "math.square()",
+                "math.pow()"
+            ],
+            "correct": 1
         },
         {
-            "question": "What is the correct syntax of importing only the person1 dictionary of the 'mymodule' module?",
-            "expected_output": "from mymodule import person1"
-        }
-    ],
-    "code_mappings": [
-        {
-            "id": "ex-modules-1",
-            "python": "# Completa el ejercicio de Modules\\n",
-            "java": "// Completa el ejercicio en Java\\n",
-            "explanation": "Espacio de práctica para Modules."
+            "id": "ex-mod-4",
+            "question": "Importa el módulo <code>random</code> con el alias <code>rd</code>.",
+            "type": "fill-blank",
+            "template_html": "import random <input type='text' class='exercise-input' data-answer='as' size='3'> rd",
+            "answer": "as",
+            "hint": "La palabra clave para dar un alias a un módulo."
         }
     ]
 }

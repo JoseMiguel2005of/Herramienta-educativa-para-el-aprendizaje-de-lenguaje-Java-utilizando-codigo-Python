@@ -1,0 +1,410 @@
+{% extends "base.html" %}
+
+{% block title %}Perfil de {{ profile_user.username }} — Py2Java Edu{% endblock %}
+
+{% block content %}
+<article class="telemetry-dashboard">
+    <header class="telemetry-header">
+        <h1>👤 PERFIL</h1>
+        <div class="system-status">
+            <span class="status-indicator"></span>
+            USER_DATA
+        </div>
+    </header>
+
+    {% set titles = {1:'Iniciado',2:'Novato',3:'Aprendiz',4:'Estudiante',5:'Practicante',6:'Competente',7:'Hábil',8:'Experto',9:'Veterano',10:'Pythonista',11:'Maestro',12:'Arquitecto',13:'Virtuoso',14:'Gurú',15:'Sensei',16:'Leyenda',17:'Oráculo',18:'Iluminado',19:'Trascendente',20:'Omnisciente'} %}
+    {% set current_title = titles.get(level if level <= 20 else 20, 'Iniciado') %}
+
+    <div class="profile-layout">
+
+        <!-- Profile Card -->
+        <div class="profile-card">
+            <div class="profile-avatar-large">
+                {{ profile_user.username[0] | upper }}
+            </div>
+            <h2 class="profile-username">{{ profile_user.username }}</h2>
+            <div class="profile-title" style="color: var(--green);">{{ current_title }}</div>
+            <div class="profile-joined">
+                Miembro desde {{ profile_user.created_at.strftime('%d/%m/%Y') if profile_user.created_at else 'N/A' }}
+            </div>
+
+            <div class="profile-stats-grid">
+                <div class="profile-stat">
+                    <span class="profile-stat-num" style="color: var(--green);">{{ level }}</span>
+                    <span class="profile-stat-label">NIVEL</span>
+                </div>
+                <div class="profile-stat">
+                    <span class="profile-stat-num">{{ summary.total_xp }}</span>
+                    <span class="profile-stat-label">XP TOTAL</span>
+                </div>
+                <div class="profile-stat">
+                    <span class="profile-stat-num" style="color: #ff9800;">{{ summary.streak }}</span>
+                    <span class="profile-stat-label">RACHA 🔥</span>
+                </div>
+                <div class="profile-stat">
+                    <span class="profile-stat-num">{{ summary.completed_lessons | length }}</span>
+                    <span class="profile-stat-label">LECCIONES</span>
+                </div>
+            </div>
+
+            <!-- XP Progress to next level -->
+            <div class="profile-xp-progress">
+                <div class="profile-xp-labels">
+                    <span>LVL {{ level }}</span>
+                    <span>{{ summary.total_xp % 100 }}/100 XP</span>
+                    <span>LVL {{ level + 1 }}</span>
+                </div>
+                <div class="terminal-progress-container" style="border-top: none; border: 1px solid var(--border); border-radius: 4px;">
+                    <div class="terminal-progress-bar" style="width: {{ summary.total_xp % 100 }}%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right column -->
+        <div class="profile-details">
+
+            <!-- Exercise Stats -->
+            <div class="data-module">
+                <div class="module-header">
+                    <span>// EXERCISE_STATS</span>
+                </div>
+                <div class="module-body" style="padding: 1rem;">
+                    <div class="profile-exercise-stats">
+                        <div class="profile-stat-row">
+                            <span class="data-key">INTENTOS_TOTALES:</span>
+                            <span class="data-val">{{ total_exercises }}</span>
+                        </div>
+                        <div class="profile-stat-row">
+                            <span class="data-key">APROBADOS:</span>
+                            <span class="data-val" style="color: var(--green);">{{ passed_exercises }}</span>
+                        </div>
+                        <div class="profile-stat-row">
+                            <span class="data-key">TASA_EXITO:</span>
+                            <span class="data-val">
+                                {% if total_exercises > 0 %}
+                                    {{ ((passed_exercises / total_exercises) * 100) | round(1) }}%
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Results -->
+            {% if quiz_results %}
+            <div class="data-module">
+                <div class="module-header">
+                    <span>// QUIZ_RESULTS</span>
+                    <span>{{ quiz_results | length }} REGISTROS</span>
+                </div>
+                <div class="module-body" style="padding: 0;">
+                    <table class="profile-table">
+                        <thead>
+                            <tr><th>Quiz</th><th>Puntuación</th><th>Fecha</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for qr in quiz_results %}
+                            <tr>
+                                <td>{{ qr.quiz_id }}</td>
+                                <td>
+                                    <span style="color: {% if qr.score >= qr.total %}var(--green){% elif qr.score >= qr.total // 2 %}#ff9800{% else %}#ff5555{% endif %};">
+                                        {{ qr.score }}/{{ qr.total }}
+                                    </span>
+                                </td>
+                                <td style="color: var(--text-muted);">{{ qr.completed_at.strftime('%d/%m/%Y') if qr.completed_at else '-' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Recent Activity -->
+            <div class="data-module">
+                <div class="module-header">
+                    <span>// RECENT_ACTIVITY</span>
+                    <span>ÚLTIMAS {{ recent | length }} LECCIONES</span>
+                </div>
+                <div class="module-body" style="padding: 0;">
+                    {% if recent %}
+                    <div class="profile-activity-list">
+                        {% for lp in recent %}
+                        <div class="profile-activity-item">
+                            <span class="activity-check">✓</span>
+                            <span class="activity-lesson">{{ get_lesson_title(lp.lesson_id) or lp.lesson_id }}</span>
+                            <span class="activity-xp">+{{ lp.score }} XP</span>
+                            <span class="activity-date">{{ lp.completed_at.strftime('%d/%m') if lp.completed_at else '' }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p style="padding: 1.5rem; text-align: center; color: var(--text-muted);">Sin actividad reciente</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Certificates Section -->
+            <div class="data-module">
+                <div class="module-header">
+                    <span>// CERTIFICATES</span>
+                </div>
+                <div class="module-body" style="padding: 1rem;">
+                    <div class="profile-certs-grid">
+                        {% for category in categories %}
+                        {% set cat_lessons = category.sections | map(attribute='lessons') | sum(start=[]) | map(attribute='id') | list %}
+                        {% set completed_in_cat = cat_lessons | select("in", summary.completed_lessons) | list | length %}
+                        {% set cat_complete = completed_in_cat >= cat_lessons | length and cat_lessons | length > 0 %}
+                        <div class="profile-cert-card {{ 'cert-available' if cat_complete else 'cert-locked' }}">
+                            <span class="cert-icon">{{ '📜' if cat_complete else '🔒' }}</span>
+                            <span class="cert-name">{{ t[category.label_key] }}</span>
+                            <span class="cert-progress">{{ completed_in_cat }}/{{ cat_lessons | length }}</span>
+                            {% if cat_complete %}
+                            <a href="{{ url_for('certificate', section_id=category.id) }}" class="cert-download">Ver certificado →</a>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</article>
+
+<style>
+/* ===== PROFILE PAGE ===== */
+.profile-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 1.5rem;
+    font-family: "JetBrains Mono", monospace;
+}
+
+@media (max-width: 900px) {
+    .profile-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Profile Card */
+.profile-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem 1.5rem;
+    text-align: center;
+    height: fit-content;
+    position: sticky;
+    top: 5rem;
+}
+
+.profile-avatar-large {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+    background: linear-gradient(135deg, var(--green), #0088aa);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #0D1117;
+    font-family: "Space Grotesk", sans-serif;
+    box-shadow: 0 0 25px rgba(0, 229, 255, 0.3);
+}
+
+.profile-username {
+    color: #fff;
+    font-size: 1.3rem;
+    margin: 0 0 0.25rem;
+    font-family: "Space Grotesk", sans-serif;
+}
+
+.profile-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.profile-joined {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+}
+
+.profile-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.profile-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.profile-stat-num {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+}
+
+.profile-stat-label {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+}
+
+.profile-xp-progress {
+    margin-top: 1rem;
+}
+
+.profile-xp-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-bottom: 0.3rem;
+}
+
+/* Details Column */
+.profile-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.profile-stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+}
+.profile-stat-row:last-child {
+    border-bottom: none;
+}
+
+.profile-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.profile-table th {
+    padding: 0.6rem 1rem;
+    text-align: left;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
+}
+
+.profile-table td {
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+}
+
+/* Activity */
+.profile-activity-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-activity-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+}
+.profile-activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-check {
+    color: var(--green);
+    font-weight: 700;
+}
+
+.activity-lesson {
+    color: #fff;
+    flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.activity-xp {
+    color: var(--green);
+    font-weight: 700;
+    font-size: 0.8rem;
+}
+
+.activity-date {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    min-width: 50px;
+    text-align: right;
+}
+
+/* Certificates */
+.profile-certs-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.profile-cert-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg);
+}
+
+.cert-available {
+    border-color: var(--green);
+    background: rgba(0, 229, 255, 0.04);
+}
+
+.cert-locked {
+    opacity: 0.5;
+}
+
+.cert-icon { font-size: 1.2rem; }
+.cert-name {
+    flex-grow: 1;
+    color: #fff;
+    font-size: 0.85rem;
+}
+
+.cert-progress {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.cert-download {
+    color: var(--green);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+.cert-download:hover {
+    text-decoration: underline;
+}
+</style>
+{% endblock %}

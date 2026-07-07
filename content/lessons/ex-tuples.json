@@ -1,42 +1,46 @@
 {
     "id": "ex-tuples",
-    "title": "Tuples Exercises",
-    "intro": "Welcome to the Tuples Exercises.",
-    "python_desc": "Ejercicios sobre Tuples",
-    "java_desc": "Práctica equivalente en Java",
-    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>Tuples</b> resolviendo estos ejercicios.</p>",
+    "title": "Ejercicios de Tuplas",
+    "intro": "Practica el uso de tuplas en Python: colecciones ordenadas e inmutables.",
+    "python_desc": "Ejercicios sobre Ejercicios de Tuplas",
+    "java_desc": "Practica equivalente en Java",
+    "explanation": "",
+    "sections": [],
+    "code_mappings": [],
     "exercises": [
         {
-            "question": "Print the first item in the fruits tuple.",
-            "expected_output": "fruits = ('apple', 'banana', 'cherry')\nprint(fruits[0])"
+            "id": "ex-tup-1",
+            "question": "Crea una tupla con los valores 'manzana', 'banana', 'cereza'.",
+            "type": "fill-blank",
+            "template_html": "mi_tupla = <input type='text' class='exercise-input' data-answer='(\"manzana\", \"banana\", \"cereza\")' size='35'>",
+            "answer": "(\"manzana\", \"banana\", \"cereza\")",
+            "hint": "Las tuplas se crean con paréntesis ( )."
         },
         {
-            "question": "Use the correct syntax to print the number of items in the fruits tuple.",
-            "expected_output": "fruits = ('apple', 'banana', 'cherry')\nprint(len(fruits))"
+            "id": "ex-tup-2",
+            "question": "¿Las tuplas son mutables (se pueden cambiar después de crearse)?",
+            "type": "multiple-choice",
+            "options": [
+                "Sí",
+                "No"
+            ],
+            "correct": 1
         },
         {
-            "question": "Use negative indexing to print the last item in the tuple.",
-            "expected_output": "fruits = ('apple', 'banana', 'cherry')\nprint(fruits[-1])"
+            "id": "ex-tup-3",
+            "question": "¿Cuántos elementos tiene <code>(1, 2, 3, 4)</code>?",
+            "type": "fill-blank",
+            "template_html": "t = (1, 2, 3, 4)<br>print(<input type='text' class='exercise-input' data-answer='len' size='4'>(t))  # resultado: 4",
+            "answer": "len",
+            "hint": "La función integrada que cuenta elementos."
         },
         {
-            "question": "Use a range of indexes to print the third, fourth, and fifth item in the tuple.",
-            "expected_output": "fruits = ('apple', 'banana', 'cherry', 'orange', 'kiwi', 'melon', 'mango')\nprint(fruits[2:5])"
-        },
-        {
-            "question": "Use the correct syntax to unpack the tuple into variables.",
-            "expected_output": "fruits = ('apple', 'banana', 'cherry')\n(green, yellow, red) = fruits"
-        },
-        {
-            "question": "Use the correct syntax to add a list to a tuple.",
-            "expected_output": "fruits = ('apple', 'banana', 'cherry')\nfruits_list = list(fruits)\nfruits_list.append('orange')\nfruits = tuple(fruits_list)"
-        }
-    ],
-    "code_mappings": [
-        {
-            "id": "ex-tuples-1",
-            "python": "# Completa el ejercicio de Tuples\\n",
-            "java": "// Completa el ejercicio en Java\\n",
-            "explanation": "Espacio de práctica para Tuples."
+            "id": "ex-tup-4",
+            "question": "Accede al último elemento de la tupla usando índice negativo.",
+            "type": "fill-blank",
+            "template_html": "t = ('a', 'b', 'c')<br>print(t[<input type='text' class='exercise-input' data-answer='-1' size='3'>])",
+            "answer": "-1",
+            "hint": "El índice -1 accede al último elemento."
         }
     ]
 }

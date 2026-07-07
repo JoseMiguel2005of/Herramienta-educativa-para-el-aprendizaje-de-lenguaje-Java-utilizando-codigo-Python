@@ -1,34 +1,60 @@
 {
     "id": "ex-classes",
-    "title": "Classes Exercises",
-    "intro": "Welcome to the Classes Exercises.",
-    "python_desc": "Ejercicios sobre Classes",
-    "java_desc": "Práctica equivalente en Java",
-    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>Classes</b> resolviendo estos ejercicios.</p>",
+    "title": "Ejercicios de Clases",
+    "intro": "Practica la creación y uso de clases y objetos en Python.",
+    "python_desc": "Ejercicios sobre Ejercicios de Clases",
+    "java_desc": "Practica equivalente en Java",
+    "explanation": "",
+    "sections": [],
+    "code_mappings": [],
     "exercises": [
         {
-            "question": "Create a class named MyClass.",
-            "expected_output": "class MyClass:\n    x = 5"
+            "id": "ex-cls-1",
+            "question": "Completa para crear una clase llamada <code>Persona</code>.",
+            "type": "fill-blank",
+            "template_html": "<input type='text' class='exercise-input' data-answer='class' size='6'> Persona:<br>&nbsp;&nbsp;&nbsp;&nbsp;nombre = 'Ana'",
+            "answer": "class",
+            "hint": "La palabra clave para definir una clase en Python."
         },
         {
-            "question": "Create an object of MyClass called p1.",
-            "expected_output": "class MyClass:\n    x = 5\np1 = MyClass()"
+            "id": "ex-cls-2",
+            "question": "¿Cuál es el equivalente de <code>self</code> en Java?",
+            "type": "multiple-choice",
+            "options": [
+                "self",
+                "this",
+                "me",
+                "my"
+            ],
+            "correct": 1
         },
         {
-            "question": "Use the p1 object to print the value of x.",
-            "expected_output": "class MyClass:\n    x = 5\np1 = MyClass()\nprint(p1.x)"
+            "id": "ex-cls-3",
+            "question": "Completa el constructor de la clase.",
+            "type": "fill-blank",
+            "template_html": "class Persona:<br>&nbsp;&nbsp;&nbsp;&nbsp;def <input type='text' class='exercise-input' data-answer='__init__' size='10'>(self, nombre):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.nombre = nombre",
+            "answer": "__init__",
+            "hint": "El nombre especial del constructor en Python usa guiones bajos dobles."
         },
         {
-            "question": "What is the correct syntax to assign a 'init' function to a class?",
-            "expected_output": "class Person:\n    def __init__(self, name, age):\n        self.name = name\n        self.age = age"
-        }
-    ],
-    "code_mappings": [
+            "id": "ex-cls-4",
+            "question": "Crea un objeto <code>p1</code> de la clase Persona con nombre 'Carlos'.",
+            "type": "fill-blank",
+            "template_html": "<input type='text' class='exercise-input' data-answer='p1' size='4'> = Persona(<input type='text' class='exercise-input' data-answer='\"Carlos\"' size='10'>)",
+            "answer": "p1",
+            "hint": "Para crear un objeto, llama a la clase como si fuera una función."
+        },
         {
-            "id": "ex-classes-1",
-            "python": "# Completa el ejercicio de Classes\\n",
-            "java": "// Completa el ejercicio en Java\\n",
-            "explanation": "Espacio de práctica para Classes."
+            "id": "ex-cls-5",
+            "question": "¿Qué parámetro SIEMPRE debe ser el primero en los métodos de una clase Python?",
+            "type": "multiple-choice",
+            "options": [
+                "this",
+                "cls",
+                "self",
+                "me"
+            ],
+            "correct": 2
         }
     ]
 }

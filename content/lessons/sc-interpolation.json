@@ -1,25 +1,49 @@
 {
     "id": "sc-interpolation",
-    "title": "SciPy Interpolation",
-    "intro": "Welcome to the SciPy Interpolation lesson.",
-    "python_desc": "Python code for SciPy Interpolation",
-    "java_desc": "Java equivalent for SciPy Interpolation",
+    "title": "Interpolación en SciPy",
+    "intro": "La interpolación es un método para generar puntos entre puntos dados. Se usa para estimar valores desconocidos que caen dentro del rango de una secuencia discreta de puntos de datos conocidos.",
+    "python_desc": "Código Python para Interpolación en SciPy",
+    "java_desc": "Equivalente en Java para Interpolación (usando librerías externas)",
     "explanation": "",
     "sections": [
         {
-            "title": "Interpolation",
-            "text": "In this lesson we cover <b>SciPy Interpolation</b>. Python simplifies this operation, whereas Java requires a more structured approach.",
+            "title": "¿Qué es la Interpolación?",
+            "text": "La interpolación se utiliza frecuentemente en machine learning y en ciencia de datos para llenar valores faltantes (imputación) en un dataset o para suavizar curvas. SciPy proporciona el módulo <code>scipy.interpolate</code> para esto.",
+            "notes": [
+                {"type": "note", "text": "La función <code>interp1d()</code> se utiliza para interpolar una distribución con una variable."}
+            ]
+        },
+        {
+            "title": "Interpolación vs Extrapolación",
+            "text": "La <b>interpolación</b> encuentra valores <i>dentro</i> del rango de los datos conocidos. La <b>extrapolación</b> busca estimar valores <i>fuera</i> del rango de los datos.",
             "notes": []
         }
     ],
-    "exercises": [],
     "code_mappings": [
         {
             "id": "sc-interpolation-1",
-            "section": "Interpolation",
-            "python": "# SciPy Interpolation Python example\nprint('SciPy Interpolation')",
-            "java": "// SciPy Interpolation Java example\nSystem.out.println(\"SciPy Interpolation\");",
-            "explanation": "Basic example demonstrating SciPy Interpolation."
+            "section": "Interpolación 1D",
+            "python": "from scipy.interpolate import interp1d\nimport numpy as np\n\nxs = np.arange(10)\nys = 2*xs + 1\n\ninterp_func = interp1d(xs, ys)\n\n# Obtener un valor para x=2.5\nnuevo_valor = interp_func(2.5)\nprint(nuevo_valor)  # Devuelve 6.0",
+            "java": "import org.apache.commons.math3.analysis.interpolation.LinearInterpolator;\nimport org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;\n\ndouble[] xs = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};\ndouble[] ys = {1, 3, 5, 7, 9, 11, 13, 15, 17, 19};\n\nLinearInterpolator interpolator = new LinearInterpolator();\nPolynomialSplineFunction function = interpolator.interpolate(xs, ys);\n\ndouble nuevo_valor = function.value(2.5);\nSystem.out.println(nuevo_valor); // Devuelve 6.0",
+            "explanation": "En Python usamos SciPy. En Java tendrías que usar una librería matemática como Apache Commons Math para lograr la misma interpolación lineal de manera simple."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-sc-interpolation-1",
+            "type": "multiple-choice",
+            "question": "¿Cuál es el submódulo de SciPy que contiene las funciones para interpolar datos?",
+            "options": ["scipy.math", "scipy.interpolate", "scipy.stats", "scipy.spatial"],
+            "correct": 1
+        },
+        {
+            "id": "ex-sc-interpolation-2",
+            "type": "fill-blank",
+            "question": "Escribe el nombre de la función que se usa comúnmente para la interpolación lineal de 1 dimensión.",
+            "template": "funcion = ______(xs, ys)",
+            "template_html": "funcion = <input type='text' class='exercise-input' data-answer='interp1d' placeholder='___'>(xs, ys)",
+            "python_code": "funcion = interp1d(xs, ys)",
+            "answer": "interp1d"
         }
     ]
 }

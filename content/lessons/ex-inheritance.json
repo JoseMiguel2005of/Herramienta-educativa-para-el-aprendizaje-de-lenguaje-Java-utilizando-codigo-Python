@@ -1,26 +1,40 @@
 {
     "id": "ex-inheritance",
-    "title": "Inheritance Exercises",
-    "intro": "Welcome to the Inheritance Exercises.",
-    "python_desc": "Ejercicios sobre Inheritance",
-    "java_desc": "Práctica equivalente en Java",
-    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>Inheritance</b> resolviendo estos ejercicios.</p>",
+    "title": "Ejercicios de Herencia",
+    "intro": "Practica cómo las clases hijas heredan propiedades y métodos de las clases padre.",
+    "python_desc": "Ejercicios sobre Ejercicios de Herencia",
+    "java_desc": "Practica equivalente en Java",
+    "explanation": "",
+    "sections": [],
+    "code_mappings": [],
     "exercises": [
         {
-            "question": "What is the correct syntax to create a class named Student that will inherit properties and methods from a class named Person?",
-            "expected_output": "class Student(Person):"
+            "id": "ex-inh-1",
+            "question": "Crea una clase <code>Estudiante</code> que herede de <code>Persona</code>.",
+            "type": "fill-blank",
+            "template_html": "class Estudiante(<input type='text' class='exercise-input' data-answer='Persona' size='8'>):<br>&nbsp;&nbsp;&nbsp;&nbsp;pass",
+            "answer": "Persona",
+            "hint": "Coloca el nombre de la clase padre dentro de los paréntesis."
         },
         {
-            "question": "We have used the Student class to create an object named x. What is the correct syntax to execute the printname method of the object x?",
-            "expected_output": "class Person:\n    def __init__(self, fname):\n        self.firstname = fname\n    def printname(self):\n        print(self.firstname)\nclass Student(Person):\n    pass\nx = Student('Mike')\nx.printname()"
-        }
-    ],
-    "code_mappings": [
+            "id": "ex-inh-2",
+            "question": "¿Qué función se usa para llamar al constructor de la clase padre?",
+            "type": "multiple-choice",
+            "options": [
+                "parent()",
+                "base()",
+                "super()",
+                "this()"
+            ],
+            "correct": 2
+        },
         {
-            "id": "ex-inheritance-1",
-            "python": "# Completa el ejercicio de Inheritance\\n",
-            "java": "// Completa el ejercicio en Java\\n",
-            "explanation": "Espacio de práctica para Inheritance."
+            "id": "ex-inh-3",
+            "question": "Completa para llamar al constructor padre dentro de __init__.",
+            "type": "fill-blank",
+            "template_html": "class Estudiante(Persona):<br>&nbsp;&nbsp;&nbsp;&nbsp;def __init__(self, nombre, grado):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='text' class='exercise-input' data-answer='super' size='6'>().__init__(nombre)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.grado = grado",
+            "answer": "super",
+            "hint": "La función integrada que da acceso a la clase padre."
         }
     ]
 }

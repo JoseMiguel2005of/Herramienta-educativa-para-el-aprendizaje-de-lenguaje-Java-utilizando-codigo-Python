@@ -1,30 +1,60 @@
 {
     "id": "ex-numbers",
-    "title": "Numbers Exercises",
-    "intro": "Welcome to the Numbers Exercises.",
-    "python_desc": "Ejercicios sobre Numbers",
-    "java_desc": "Práctica equivalente en Java",
-    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>Numbers</b> resolviendo estos ejercicios.</p>",
+    "title": "Ejercicios de Números",
+    "intro": "Practica los diferentes tipos numéricos y operaciones matemáticas en Python.",
+    "python_desc": "Ejercicios sobre Ejercicios de Números",
+    "java_desc": "Practica equivalente en Java",
+    "explanation": "",
+    "sections": [],
+    "code_mappings": [],
     "exercises": [
         {
-            "question": "Insert the correct syntax to convert x into a floating point number.",
-            "expected_output": "x = 5\nx = float(x)"
+            "id": "ex-num-1",
+            "question": "¿Cuál es el resultado de <code>10 / 3</code> en Python 3?",
+            "type": "multiple-choice",
+            "options": [
+                "3",
+                "3.3333...",
+                "3.0",
+                "Error"
+            ],
+            "correct": 1
         },
         {
-            "question": "Insert the correct syntax to convert x into a integer.",
-            "expected_output": "x = 5.5\nx = int(x)"
+            "id": "ex-num-2",
+            "question": "¿Qué operador se usa para la división entera (floor division)?",
+            "type": "fill-blank",
+            "template_html": "x = 10 <input type='text' class='exercise-input' data-answer='//' size='3'> 3  # resultado: 3",
+            "answer": "//",
+            "hint": "Usa doble barra diagonal."
         },
         {
-            "question": "Insert the correct syntax to convert x into a complex number.",
-            "expected_output": "x = 5\nx = complex(x)"
-        }
-    ],
-    "code_mappings": [
+            "id": "ex-num-3",
+            "question": "¿Qué operador se usa para calcular la potencia?",
+            "type": "fill-blank",
+            "template_html": "x = 2 <input type='text' class='exercise-input' data-answer='**' size='3'> 3  # resultado: 8",
+            "answer": "**",
+            "hint": "Usa doble asterisco."
+        },
         {
-            "id": "ex-numbers-1",
-            "python": "# Completa el ejercicio de Numbers\\n",
-            "java": "// Completa el ejercicio en Java\\n",
-            "explanation": "Espacio de práctica para Numbers."
+            "id": "ex-num-4",
+            "question": "¿Cuál es el tipo de <code>1j</code> en Python?",
+            "type": "multiple-choice",
+            "options": [
+                "int",
+                "float",
+                "complex",
+                "imaginary"
+            ],
+            "correct": 2
+        },
+        {
+            "id": "ex-num-5",
+            "question": "Convierte el float 3.7 a entero.",
+            "type": "fill-blank",
+            "template_html": "x = <input type='text' class='exercise-input' data-answer='int' size='4'>(3.7)  # resultado: 3",
+            "answer": "int",
+            "hint": "La función de conversión trunca los decimales."
         }
     ]
 }

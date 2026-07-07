@@ -1,17 +1,38 @@
 {
     "id": "ref-functions",
-    "title": "Built-in Functions",
-    "intro": "Welcome to the Built-in Functions lesson.",
-    "python_desc": "Python code for Built-in Functions",
-    "java_desc": "Java equivalent for Built-in Functions",
-    "explanation": "<p>In this lesson we cover <b>Built-in Functions</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Funciones Integradas (Built-in)",
+    "intro": "Las funciones mas usadas que vienen incluidas en Python sin necesidad de importar nada.",
+    "python_desc": "Referencia de Python: Funciones Integradas (Built-in)",
+    "java_desc": "Equivalente en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Funciones Esenciales",
+            "text": "Python incluye docenas de funciones listas para usar: <code>print()</code>, <code>len()</code>, <code>type()</code>, <code>int()</code>, <code>str()</code>, <code>float()</code>, <code>input()</code>, <code>range()</code>, <code>sorted()</code>, <code>enumerate()</code>, entre otras.",
+            "notes": []
+        },
+        {
+            "title": "Tabla de Referencia",
+            "text": "<table><tr><th>Funcion</th><th>Java Equivalente</th><th>Descripcion</th></tr><tr><td>print(x)</td><td>System.out.println(x)</td><td>Imprimir en consola</td></tr><tr><td>len(x)</td><td>x.size() / x.length()</td><td>Longitud/tamano</td></tr><tr><td>type(x)</td><td>x.getClass()</td><td>Tipo de dato</td></tr><tr><td>int(x)</td><td>Integer.parseInt(x)</td><td>Convertir a entero</td></tr><tr><td>str(x)</td><td>String.valueOf(x)</td><td>Convertir a string</td></tr><tr><td>input()</td><td>scanner.nextLine()</td><td>Leer entrada del usuario</td></tr><tr><td>range(n)</td><td>IntStream.range(0,n)</td><td>Generar secuencia</td></tr><tr><td>abs(x)</td><td>Math.abs(x)</td><td>Valor absoluto</td></tr><tr><td>min(a,b)</td><td>Math.min(a,b)</td><td>Valor minimo</td></tr><tr><td>max(a,b)</td><td>Math.max(a,b)</td><td>Valor maximo</td></tr></table>",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
-            "id": "ref-functions-1",
-            "python": "# Built-in Functions Python example\nprint('Built-in Functions')",
-            "java": "// Built-in Functions Java example\nSystem.out.println(\"Built-in Functions\");",
-            "explanation": "Basic example demonstrating Built-in Functions."
+            "id": "ref-fn-1",
+            "section": "Ejemplo Combinado",
+            "python": "nums = [3, 1, 4, 1, 5, 9]\nprint(len(nums))      # 6\nprint(min(nums))      # 1\nprint(max(nums))      # 9\nprint(sorted(nums))   # [1, 1, 3, 4, 5, 9]\nprint(sum(nums))      # 23",
+            "java": "List<Integer> nums = Arrays.asList(3, 1, 4, 1, 5, 9);\nSystem.out.println(nums.size());           // 6\nSystem.out.println(Collections.min(nums)); // 1\nSystem.out.println(Collections.max(nums)); // 9\nCollections.sort(nums);\nSystem.out.println(nums);                  // [1, 1, 3, 4, 5, 9]",
+            "explanation": "Python ofrece funciones como sum() y sorted() directamente. Java depende de Collections y streams."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ref-fn-ex1",
+            "type": "fill-blank",
+            "question": "Obtiene la longitud de la lista.",
+            "template_html": "nums = [1, 2, 3]<br>print(<input type='text' class='exercise-input' data-answer='len' size='4'>(nums))",
+            "answer": "len"
         }
     ]
 }

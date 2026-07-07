@@ -10,6 +10,19 @@
         <strong>Pasa el cursor sobre el código traducido</strong> para ver qué parte de Python corresponde a cada parte de Java.
     </p>
 
+    <!-- Snippet Buttons (3.6) -->
+    <div class="snippet-bar" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem;">
+        <span style="color: var(--text-muted); font-size: 0.8rem; align-self: center; margin-right: 0.5rem; font-family: 'JetBrains Mono', monospace;">>_ SNIPPETS:</span>
+        <button onclick="loadSnippet('hello_world')" class="snippet-btn">👋 Hola Mundo</button>
+        <button onclick="loadSnippet('variables')" class="snippet-btn">📦 Variables</button>
+        <button onclick="loadSnippet('conditionals')" class="snippet-btn">🔀 Condicionales</button>
+        <button onclick="loadSnippet('for_loop')" class="snippet-btn">🔄 Bucle For</button>
+        <button onclick="loadSnippet('fibonacci')" class="snippet-btn">🔢 Fibonacci</button>
+        <button onclick="loadSnippet('calculator')" class="snippet-btn">🧮 Calculadora</button>
+        <button onclick="loadSnippet('bubble_sort')" class="snippet-btn">📊 Ordenamiento</button>
+        <button onclick="loadSnippet('class_animal')" class="snippet-btn">🐾 Clase Animal</button>
+    </div>
+
     <div class="translator-workspace" style="display: flex; flex-direction: column; gap: 2rem; max-width: 1400px; margin: 0 auto;">
         
         <!-- Input Panel -->
@@ -29,6 +42,21 @@ if True:
 for i in range(5):
     print(i)
 </textarea>
+        </div>
+
+        <!-- Complexity Metrics (3.8) -->
+        <div id="transpiler-metrics" class="transpiler-metrics">
+            <!-- Auto-populated by transpiler.js -->
+        </div>
+
+        <!-- Export Buttons (3.7) -->
+        <div class="export-bar" style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <button onclick="downloadJavaFile()" class="export-btn">
+                📥 Descargar .java
+            </button>
+            <button onclick="copyJavaCode()" class="export-btn">
+                📋 Copiar código Java
+            </button>
         </div>
 
         <!-- Output Panel (Side by Side AST) -->
@@ -78,6 +106,96 @@ for i in range(5):
     .token-variable { color: #d2a8ff; } /* Purple */
     .token-punctuation { color: #c9d1d9; }
     .token-comment { color: #8b949e; font-style: italic; }
+
+    /* Snippet Buttons (3.6) */
+    .snippet-btn {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border);
+        color: var(--text);
+        padding: 0.4rem 0.8rem;
+        border-radius: 4px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.78rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .snippet-btn:hover {
+        border-color: var(--green);
+        color: var(--green);
+        background: rgba(0, 229, 255, 0.05);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 229, 255, 0.15);
+    }
+
+    /* Export Buttons (3.7) */
+    .export-btn {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border);
+        color: var(--text);
+        padding: 0.5rem 1.2rem;
+        border-radius: 4px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .export-btn:hover {
+        border-color: var(--green);
+        color: var(--green);
+        background: rgba(0, 229, 255, 0.05);
+    }
+
+    /* Complexity Metrics (3.8) */
+    .transpiler-metrics {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        padding: 0.8rem 1.5rem;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        font-family: 'JetBrains Mono', monospace;
+    }
+    .metric-item {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+    .metric-label {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        letter-spacing: 0.05em;
+    }
+    .metric-num {
+        font-size: 1.3rem;
+        font-weight: 700;
+    }
+    .metric-unit {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+    }
+    .metric-arrow {
+        color: var(--text-muted);
+        font-size: 1.2rem;
+    }
+    .metric-ratio {
+        padding-left: 1rem;
+        border-left: 1px solid var(--border);
+    }
+
+    @media (max-width: 768px) {
+        .output-panel {
+            grid-template-columns: 1fr !important;
+        }
+        .snippet-bar {
+            justify-content: center;
+        }
+        .transpiler-metrics {
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+    }
 </style>
 
 <script src="{{ url_for('static', filename='js/transpiler.js') }}"></script>

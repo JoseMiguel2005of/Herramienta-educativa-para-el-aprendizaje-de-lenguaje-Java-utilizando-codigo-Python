@@ -1,38 +1,64 @@
 {
     "id": "ex-booleans",
-    "title": "Booleans Exercises",
-    "intro": "Welcome to the Booleans Exercises.",
-    "python_desc": "Ejercicios sobre Booleans",
-    "java_desc": "Práctica equivalente en Java",
-    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>Booleans</b> resolviendo estos ejercicios.</p>",
+    "title": "Ejercicios de Booleanos",
+    "intro": "Pon a prueba tus conocimientos sobre valores booleanos (True/False) en Python.",
+    "python_desc": "Ejercicios sobre Ejercicios de Booleanos",
+    "java_desc": "Practica equivalente en Java",
+    "explanation": "",
+    "sections": [],
+    "code_mappings": [],
     "exercises": [
         {
-            "question": "The statement below would print a Boolean value, which one?",
-            "expected_output": "print(10 > 9)\n# True"
+            "id": "ex-bool-1",
+            "question": "¿Cuál es el resultado de <code>bool(0)</code>?",
+            "type": "multiple-choice",
+            "options": [
+                "True",
+                "False",
+                "0",
+                "Error"
+            ],
+            "correct": 1
         },
         {
-            "question": "The statement below would print a Boolean value, which one?",
-            "expected_output": "print(10 == 9)\n# False"
+            "id": "ex-bool-2",
+            "question": "¿Cuál es el resultado de <code>bool('Hello')</code>?",
+            "type": "multiple-choice",
+            "options": [
+                "True",
+                "False",
+                "Hello",
+                "Error"
+            ],
+            "correct": 0
         },
         {
-            "question": "The statement below would print a Boolean value, which one?",
-            "expected_output": "print(10 < 9)\n# False"
+            "id": "ex-bool-3",
+            "question": "Completa para verificar si x es mayor que y.",
+            "type": "fill-blank",
+            "template_html": "x = 10<br>y = 5<br>print(x <input type='text' class='exercise-input' data-answer='>' size='3'> y)",
+            "answer": ">",
+            "hint": "Usa el operador de comparación mayor que."
         },
         {
-            "question": "The statement below would print a Boolean value, which one?",
-            "expected_output": "print(bool('abc'))\n# True"
+            "id": "ex-bool-4",
+            "question": "¿Cuál de estos valores se evalúa como <code>False</code> en Python?",
+            "type": "multiple-choice",
+            "options": [
+                "1",
+                "'texto'",
+                "[]",
+                "[0]"
+            ],
+            "correct": 2
         },
         {
-            "question": "The statement below would print a Boolean value, which one?",
-            "expected_output": "print(bool(0))\n# False"
-        }
-    ],
-    "code_mappings": [
-        {
-            "id": "ex-booleans-1",
-            "python": "# Completa el ejercicio de Booleans\\n",
-            "java": "// Completa el ejercicio en Java\\n",
-            "explanation": "Espacio de práctica para Booleans."
+            "id": "ex-bool-5",
+            "question": "Completa: para verificar si dos valores son iguales usamos el operador...",
+            "type": "fill-blank",
+            "template_html": "if x <input type='text' class='exercise-input' data-answer='==' size='3'> y:<br>&nbsp;&nbsp;&nbsp;&nbsp;print('iguales')",
+            "answer": "==",
+            "hint": "No es = (asignación), sino doble igual."
         }
     ]
 }

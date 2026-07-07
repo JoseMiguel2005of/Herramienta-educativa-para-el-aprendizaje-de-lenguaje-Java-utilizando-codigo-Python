@@ -1,34 +1,64 @@
 {
     "id": "ex-for",
-    "title": "For Loops Exercises",
-    "intro": "Welcome to the For Loops Exercises.",
-    "python_desc": "Ejercicios sobre For Loops",
-    "java_desc": "Práctica equivalente en Java",
-    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>For Loops</b> resolviendo estos ejercicios.</p>",
+    "title": "Ejercicios de Bucle For",
+    "intro": "Practica el uso de bucles for para iterar sobre secuencias en Python.",
+    "python_desc": "Ejercicios sobre Ejercicios de Bucle For",
+    "java_desc": "Practica equivalente en Java",
+    "explanation": "",
+    "sections": [],
+    "code_mappings": [],
     "exercises": [
         {
-            "question": "Loop through the items in the fruits list.",
-            "expected_output": "fruits = ['apple', 'banana', 'cherry']\nfor x in fruits:\n    print(x)"
-        },
-        {
-            "question": "In the loop, when the item value is 'banana', jump directly to the next item.",
-            "expected_output": "fruits = ['apple', 'banana', 'cherry']\nfor x in fruits:\n    if x == 'banana':\n        continue\n    print(x)"
-        },
-        {
-            "question": "Use the range function to loop through a code set 6 times.",
-            "expected_output": "for x in range(6):\n    print(x)"
-        },
-        {
-            "question": "Exit the loop when x is 'banana'.",
-            "expected_output": "fruits = ['apple', 'banana', 'cherry']\nfor x in fruits:\n    if x == 'banana':\n        break\n    print(x)"
-        }
-    ],
-    "code_mappings": [
-        {
             "id": "ex-for-1",
-            "python": "# Completa el ejercicio de For Loops\\n",
-            "java": "// Completa el ejercicio en Java\\n",
-            "explanation": "Espacio de práctica para For Loops."
+            "question": "Completa el bucle for para imprimir cada fruta de la lista.",
+            "type": "fill-blank",
+            "template_html": "frutas = ['manzana', 'banana', 'cereza']<br><input type='text' class='exercise-input' data-answer='for' size='4'> x <input type='text' class='exercise-input' data-answer='in' size='3'> frutas:<br>&nbsp;&nbsp;&nbsp;&nbsp;print(x)",
+            "answer": "for",
+            "hint": "Usa for ... in para iterar."
+        },
+        {
+            "id": "ex-for-2",
+            "question": "Completa para imprimir los números del 0 al 4.",
+            "type": "fill-blank",
+            "template_html": "for i in <input type='text' class='exercise-input' data-answer='range' size='6'>(5):<br>&nbsp;&nbsp;&nbsp;&nbsp;print(i)",
+            "answer": "range",
+            "hint": "range() genera una secuencia de números."
+        },
+        {
+            "id": "ex-for-3",
+            "question": "¿Qué palabra clave se usa para salir de un bucle prematuramente?",
+            "type": "multiple-choice",
+            "options": [
+                "exit",
+                "stop",
+                "break",
+                "end"
+            ],
+            "correct": 2
+        },
+        {
+            "id": "ex-for-4",
+            "question": "¿Qué palabra clave se usa para saltar a la siguiente iteración?",
+            "type": "multiple-choice",
+            "options": [
+                "skip",
+                "next",
+                "continue",
+                "pass"
+            ],
+            "correct": 2
+        },
+        {
+            "id": "ex-for-5",
+            "question": "¿Cuántas veces se ejecuta <code>for i in range(2, 8):</code>?",
+            "type": "multiple-choice",
+            "options": [
+                "5",
+                "6",
+                "7",
+                "8"
+            ],
+            "correct": 1
         }
     ]
 }

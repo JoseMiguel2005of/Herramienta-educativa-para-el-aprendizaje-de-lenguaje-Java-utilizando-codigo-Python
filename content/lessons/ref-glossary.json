@@ -1,17 +1,22 @@
 {
     "id": "ref-glossary",
-    "title": "Python Glossary",
-    "intro": "Welcome to the Python Glossary lesson.",
-    "python_desc": "Python code for Python Glossary",
-    "java_desc": "Java equivalent for Python Glossary",
-    "explanation": "<p>In this lesson we cover <b>Python Glossary</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
-    "code_mappings": [
+    "title": "Glosario de Python",
+    "intro": "Terminos y conceptos fundamentales de Python explicados de forma clara y concisa.",
+    "python_desc": "Referencia de Python: Glosario de Python",
+    "java_desc": "Equivalente en Java",
+    "explanation": "",
+    "sections": [
         {
-            "id": "ref-glossary-1",
-            "python": "# Python Glossary Python example\nprint('Python Glossary')",
-            "java": "// Python Glossary Java example\nSystem.out.println(\"Python Glossary\");",
-            "explanation": "Basic example demonstrating Python Glossary."
+            "title": "Terminos A-L",
+            "text": "<b>Argumento</b>: Valor que se pasa a una funcion.<br><b>Booleano</b>: Tipo de dato con valores True o False.<br><b>Clase</b>: Plantilla para crear objetos.<br><b>Diccionario</b>: Coleccion de pares clave-valor.<br><b>Excepcion</b>: Error que ocurre durante la ejecucion.<br><b>Funcion</b>: Bloque de codigo reutilizable.<br><b>Herencia</b>: Cuando una clase adquiere propiedades de otra.<br><b>Indentacion</b>: Espacios al inicio de linea que definen bloques.<br><b>Iterador</b>: Objeto que permite recorrer una secuencia.<br><b>Lambda</b>: Funcion anonima de una sola expresion.<br><b>Lista</b>: Coleccion ordenada y mutable.",
+            "notes": []
+        },
+        {
+            "title": "Terminos M-Z",
+            "text": "<b>Modulo</b>: Archivo Python con funciones reutilizables.<br><b>None</b>: Valor nulo en Python.<br><b>Objeto</b>: Instancia de una clase.<br><b>Parametro</b>: Variable en la definicion de una funcion.<br><b>Recursion</b>: Funcion que se llama a si misma.<br><b>Set</b>: Coleccion sin duplicados ni orden.<br><b>String</b>: Cadena de texto.<br><b>Tupla</b>: Coleccion ordenada e inmutable.<br><b>Variable</b>: Nombre que almacena un dato.",
+            "notes": []
         }
-    ]
+    ],
+    "code_mappings": [],
+    "exercises": []
 }

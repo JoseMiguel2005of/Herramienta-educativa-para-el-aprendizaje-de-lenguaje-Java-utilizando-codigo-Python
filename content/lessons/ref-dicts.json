@@ -1,17 +1,48 @@
 {
     "id": "ref-dicts",
-    "title": "Dictionary Methods",
-    "intro": "Welcome to the Dictionary Methods lesson.",
-    "python_desc": "Python code for Dictionary Methods",
-    "java_desc": "Java equivalent for Dictionary Methods",
-    "explanation": "<p>In this lesson we cover <b>Dictionary Methods</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Referencia de Metodos de Diccionario",
+    "intro": "Lista completa de los metodos disponibles para diccionarios en Python, con su descripcion y equivalente en Java.",
+    "python_desc": "Referencia de Python: Referencia de Metodos de Diccionario",
+    "java_desc": "Equivalente en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Metodos de Acceso",
+            "text": "Los diccionarios ofrecen varios metodos para acceder a sus datos de forma segura: <code>get()</code> devuelve el valor de una clave (o un valor por defecto si no existe), <code>keys()</code> devuelve todas las claves, <code>values()</code> devuelve todos los valores, e <code>items()</code> devuelve pares clave-valor.",
+            "notes": [
+                {
+                    "type": "tip",
+                    "text": "Usa <code>get(clave, default)</code> en lugar de <code>dict[clave]</code> para evitar errores KeyError cuando la clave no existe."
+                }
+            ]
+        },
+        {
+            "title": "Metodos de Modificacion",
+            "text": "<code>update()</code> fusiona otro diccionario, <code>pop(clave)</code> elimina y retorna un valor, <code>setdefault()</code> establece un valor solo si la clave no existe, y <code>clear()</code> vacia el diccionario completo.",
+            "notes": []
+        },
+        {
+            "title": "Tabla de Referencia",
+            "text": "<table><tr><th>Python</th><th>Java (HashMap)</th><th>Descripcion</th></tr><tr><td>d.get(k)</td><td>map.get(k)</td><td>Obtener valor por clave</td></tr><tr><td>d.keys()</td><td>map.keySet()</td><td>Obtener todas las claves</td></tr><tr><td>d.values()</td><td>map.values()</td><td>Obtener todos los valores</td></tr><tr><td>d.items()</td><td>map.entrySet()</td><td>Obtener pares clave-valor</td></tr><tr><td>d.pop(k)</td><td>map.remove(k)</td><td>Eliminar por clave</td></tr><tr><td>d.update(d2)</td><td>map.putAll(d2)</td><td>Fusionar diccionarios</td></tr><tr><td>d.clear()</td><td>map.clear()</td><td>Vaciar diccionario</td></tr><tr><td>len(d)</td><td>map.size()</td><td>Cantidad de elementos</td></tr></table>",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
             "id": "ref-dicts-1",
-            "python": "# Dictionary Methods Python example\nprint('Dictionary Methods')",
-            "java": "// Dictionary Methods Java example\nSystem.out.println(\"Dictionary Methods\");",
-            "explanation": "Basic example demonstrating Dictionary Methods."
+            "section": "Uso Completo",
+            "python": "persona = {'nombre': 'Ana', 'edad': 25}\nprint(persona.get('nombre'))     # Ana\nprint(persona.keys())            # dict_keys(['nombre', 'edad'])\npersona.update({'ciudad': 'Lima'})\nprint(persona.items())           # pares clave-valor",
+            "java": "HashMap<String, Object> persona = new HashMap<>();\npersona.put(\"nombre\", \"Ana\");\npersona.put(\"edad\", 25);\nSystem.out.println(persona.get(\"nombre\")); // Ana\nSystem.out.println(persona.keySet());      // [nombre, edad]\npersona.put(\"ciudad\", \"Lima\");\nSystem.out.println(persona.entrySet());    // pares",
+            "explanation": "Python usa metodos con nombres cortos. Java usa la clase HashMap con metodos mas descriptivos pero equivalentes."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ref-dict-ex1",
+            "type": "fill-blank",
+            "question": "Obtener el valor de la clave 'nombre' de forma segura (sin riesgo de error).",
+            "template_html": "valor = persona.<input type='text' class='exercise-input' data-answer='get' size='4'>('nombre')",
+            "answer": "get"
         }
     ]
 }

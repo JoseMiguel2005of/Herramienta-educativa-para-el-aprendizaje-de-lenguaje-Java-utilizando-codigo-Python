@@ -1,25 +1,49 @@
 {
     "id": "mongo-drop",
-    "title": "MongoDB Drop Collection",
-    "intro": "Welcome to the MongoDB Drop Collection lesson.",
-    "python_desc": "Python code for MongoDB Drop Collection",
-    "java_desc": "Java equivalent for MongoDB Drop Collection",
+    "title": "Eliminar Colección en MongoDB",
+    "intro": "Puedes eliminar una colección de MongoDB (y todos los documentos que contiene) usando el método `drop()`.",
+    "python_desc": "Código Python para Eliminar Colección",
+    "java_desc": "Equivalente en Java para Eliminar Colección",
     "explanation": "",
     "sections": [
         {
-            "title": "Drop Collection",
-            "text": "In this lesson we cover <b>MongoDB Drop Collection</b>. Python simplifies this operation, whereas Java requires a more structured approach.",
+            "title": "Eliminar la Colección",
+            "text": "El método <code>drop()</code> se utiliza para borrar permanentemente una colección de la base de datos.",
+            "notes": [
+                {"type": "warning", "text": "Eliminar una colección borrará por completo todos los datos en ella. Asegúrate de que esto es lo que quieres hacer."}
+            ]
+        },
+        {
+            "title": "El valor de retorno de drop()",
+            "text": "El método <code>drop()</code> devuelve <code>True</code> si la colección se eliminó correctamente, y <code>False</code> si la colección no existía.",
             "notes": []
         }
     ],
-    "exercises": [],
     "code_mappings": [
         {
             "id": "mongo-drop-1",
-            "section": "Drop Collection",
-            "python": "# MongoDB Drop Collection Python example\nprint('MongoDB Drop Collection')",
-            "java": "// MongoDB Drop Collection Java example\nSystem.out.println(\"MongoDB Drop Collection\");",
-            "explanation": "Basic example demonstrating MongoDB Drop Collection."
+            "section": "Llamada al método drop()",
+            "python": "import pymongo\n\nmyclient = pymongo.MongoClient(\"mongodb://localhost:27017/\")\nmydb = myclient[\"miBaseDeDatos\"]\nmycol = mydb[\"clientes\"]\n\n# Eliminar la colección y almacenar si fue exitoso\neliminado = mycol.drop()\nprint(\"Colección eliminada:\", eliminado)",
+            "java": "import com.mongodb.client.MongoClient;\nimport com.mongodb.client.MongoClients;\nimport com.mongodb.client.MongoDatabase;\nimport com.mongodb.client.MongoCollection;\nimport org.bson.Document;\n\nMongoClient mongoClient = MongoClients.create(\"mongodb://localhost:27017\");\nMongoDatabase database = mongoClient.getDatabase(\"miBaseDeDatos\");\nMongoCollection<Document> collection = database.getCollection(\"clientes\");\n\n// Eliminar la colección\ncollection.drop();\nSystem.out.println(\"Colección eliminada.\");",
+            "explanation": "El método se llama 'drop()' en ambas tecnologías. En Python devuelve un booleano, mientras que el controlador síncrono estándar de Java a menudo simplemente ejecuta la orden y lanza excepción si hay error grave, o ignora si no existía (dependiendo de la implementación)."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-mongo-drop-1",
+            "type": "multiple-choice",
+            "question": "¿Qué devuelve el método drop() en el conector pymongo si la colección que se intentó eliminar no existía?",
+            "options": ["Error", "True", "False", "None"],
+            "correct": 2
+        },
+        {
+            "id": "ex-mongo-drop-2",
+            "type": "fill-blank",
+            "question": "Escribe el nombre del método utilizado para eliminar una colección completa (y sus datos).",
+            "template": "mycol.____()",
+            "template_html": "mycol.<input type='text' class='exercise-input' data-answer='drop' placeholder='___'>()",
+            "python_code": "mycol.drop()",
+            "answer": "drop"
         }
     ]
 }

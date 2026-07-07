@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Laboratorio de Práctica — {{ t.site_title }}{% endblock %}
+
+{% block content %}
+<article class="telemetry-dashboard">
+    <header class="telemetry-header" style="margin-bottom: 2rem;">
+        <h1><span style="color: var(--green);">[LAB]</span> EJERCICIOS LIBRES</h1>
+        <div class="terminal-intro" style="margin-top: 1rem; background: var(--bg-code); border: 1px solid var(--border); padding: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; color: var(--text-muted);">
+            <span style="color: var(--green);">>_ </span>Resuelve estos problemas escribiendo código Python real. Tu código será evaluado contra casos de prueba. ¡Gana 50 XP por cada reto superado!
+        </div>
+    </header>
+
+    <div class="telemetry-grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;">
+        {% for problem in problems %}
+        <div class="data-module module-metric" style="display: flex; flex-direction: column; justify-content: space-between; position: relative;">
+            
+            {% if problem.id in completed_ids %}
+            <div style="position: absolute; top: -10px; right: -10px; background: var(--green); color: #000; font-size: 0.75rem; font-weight: bold; padding: 0.2rem 0.6rem; border-radius: 12px; font-family: 'JetBrains Mono', monospace;">
+                ✓ COMPLETADO
+            </div>
+            {% endif %}
+
+            <div>
+                <div class="module-header" style="display: flex; justify-content: space-between;">
+                    <span style="font-size: 0.8rem;">// {{ problem.category | upper }}</span>
+                    {% if problem.difficulty == 'fácil' %}
+                        <span style="color: #a6e22e; font-size: 0.75rem;">[FÁCIL]</span>
+                    {% elif problem.difficulty == 'medio' %}
+                        <span style="color: #fd971f; font-size: 0.75rem;">[MEDIO]</span>
+                    {% else %}
+                        <span style="color: #f92672; font-size: 0.75rem;">[DIFÍCIL]</span>
+                    {% endif %}
+                </div>
+                <h3 style="margin: 0.5rem 0; font-size: 1.2rem; font-family: 'Space Grotesk', sans-serif;">{{ problem.title }}</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                    {{ problem.description | striptags }}
+                </p>
+            </div>
+            
+            <div style="margin-top: 1.5rem;">
+                <a href="{{ url_for('practice_editor', problem_id=problem.id) }}" class="btn-translate" style="display: block; text-align: center; background: {% if problem.id in completed_ids %}transparent{% else %}var(--python-color){% endif %}; color: {% if problem.id in completed_ids %}var(--python-color){% else %}#000{% endif %}; border: 1px solid var(--python-color); font-weight: bold; padding: 0.5rem; text-decoration: none;">
+                    {% if problem.id in completed_ids %}REINTENTAR RETO{% else %}▶ INICIAR RETO{% endif %}
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div class="module-log" style="grid-column: 1 / -1; padding: 2rem; text-align: center;">
+            <p style="color: var(--text-muted);">No hay ejercicios disponibles en este momento.</p>
+        </div>
+        {% endfor %}
+    </div>
+</article>
+{% endblock %}

@@ -1,46 +1,64 @@
 {
     "id": "ex-datatypes",
-    "title": "Data Types Exercises",
-    "intro": "Welcome to the Data Types Exercises.",
-    "python_desc": "Ejercicios sobre Data Types",
-    "java_desc": "Práctica equivalente en Java",
-    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>Data Types</b> resolviendo estos ejercicios.</p>",
+    "title": "Ejercicios de Tipos de Datos",
+    "intro": "Practica la identificación y conversión de tipos de datos en Python.",
+    "python_desc": "Ejercicios sobre Ejercicios de Tipos de Datos",
+    "java_desc": "Practica equivalente en Java",
+    "explanation": "",
+    "sections": [],
+    "code_mappings": [],
     "exercises": [
         {
-            "question": "The following code example would print the data type of x, what data type would that be? x = 5",
-            "expected_output": "int"
+            "id": "ex-dt-1",
+            "question": "¿Cuál es el tipo de dato del valor <code>3.14</code>?",
+            "type": "multiple-choice",
+            "options": [
+                "int",
+                "float",
+                "str",
+                "complex"
+            ],
+            "correct": 1
         },
         {
-            "question": "What data type would that be? x = 'Hello World'",
-            "expected_output": "str"
+            "id": "ex-dt-2",
+            "question": "¿Qué función usas para obtener el tipo de dato de una variable?",
+            "type": "fill-blank",
+            "template_html": "x = 5<br>print(<input type='text' class='exercise-input' data-answer='type' size='5'>(x))",
+            "answer": "type",
+            "hint": "Es una función integrada (built-in) de Python."
         },
         {
-            "question": "What data type would that be? x = 20.5",
-            "expected_output": "float"
+            "id": "ex-dt-3",
+            "question": "¿Cuál es el tipo de dato de <code>[1, 2, 3]</code>?",
+            "type": "multiple-choice",
+            "options": [
+                "tuple",
+                "dict",
+                "list",
+                "set"
+            ],
+            "correct": 2
         },
         {
-            "question": "What data type would that be? x = ['apple', 'banana', 'cherry']",
-            "expected_output": "list"
+            "id": "ex-dt-4",
+            "question": "Convierte la variable x de entero a cadena de texto.",
+            "type": "fill-blank",
+            "template_html": "x = 10<br>x = <input type='text' class='exercise-input' data-answer='str' size='4'>(x)",
+            "answer": "str",
+            "hint": "Usa la función de conversión de tipo str()."
         },
         {
-            "question": "What data type would that be? x = ('apple', 'banana', 'cherry')",
-            "expected_output": "tuple"
-        },
-        {
-            "question": "What data type would that be? x = {'name': 'John', 'age': 36}",
-            "expected_output": "dict"
-        },
-        {
-            "question": "What data type would that be? x = True",
-            "expected_output": "bool"
-        }
-    ],
-    "code_mappings": [
-        {
-            "id": "ex-datatypes-1",
-            "python": "# Completa el ejercicio de Data Types\\n",
-            "java": "// Completa el ejercicio en Java\\n",
-            "explanation": "Espacio de práctica para Data Types."
+            "id": "ex-dt-5",
+            "question": "¿Qué tipo de dato es <code>True</code>?",
+            "type": "multiple-choice",
+            "options": [
+                "str",
+                "int",
+                "bool",
+                "NoneType"
+            ],
+            "correct": 2
         }
     ]
 }

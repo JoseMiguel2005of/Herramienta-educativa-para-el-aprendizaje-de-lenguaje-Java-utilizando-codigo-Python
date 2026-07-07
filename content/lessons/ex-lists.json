@@ -1,50 +1,56 @@
 {
     "id": "ex-lists",
-    "title": "Lists Exercises",
-    "intro": "Welcome to the Lists Exercises.",
-    "python_desc": "Ejercicios sobre Lists",
-    "java_desc": "Práctica equivalente en Java",
-    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>Lists</b> resolviendo estos ejercicios.</p>",
+    "title": "Ejercicios de Listas",
+    "intro": "Practica la creación, acceso y manipulación de listas en Python.",
+    "python_desc": "Ejercicios sobre Ejercicios de Listas",
+    "java_desc": "Practica equivalente en Java",
+    "explanation": "",
+    "sections": [],
+    "code_mappings": [],
     "exercises": [
         {
-            "question": "Print the second item in the fruits list.",
-            "expected_output": "fruits = ['apple', 'banana', 'cherry']\nprint(fruits[1])"
+            "id": "ex-list-1",
+            "question": "Accede al segundo elemento de la lista.",
+            "type": "fill-blank",
+            "template_html": "frutas = ['manzana', 'banana', 'cereza']<br>x = frutas[<input type='text' class='exercise-input' data-answer='1' size='2'>]",
+            "answer": "1",
+            "hint": "Los índices en Python empiezan en 0."
         },
         {
-            "question": "Change the value from 'apple' to 'kiwi', in the fruits list.",
-            "expected_output": "fruits = ['apple', 'banana', 'cherry']\nfruits[0] = 'kiwi'"
+            "id": "ex-list-2",
+            "question": "Agrega 'naranja' al final de la lista.",
+            "type": "fill-blank",
+            "template_html": "frutas = ['manzana', 'banana']<br>frutas.<input type='text' class='exercise-input' data-answer='append' size='7'>('naranja')",
+            "answer": "append",
+            "hint": "El método para agregar un elemento al final de la lista."
         },
         {
-            "question": "Use the append method to add 'orange' to the fruits list.",
-            "expected_output": "fruits = ['apple', 'banana', 'cherry']\nfruits.append('orange')"
+            "id": "ex-list-3",
+            "question": "¿Cuántos elementos tiene la lista <code>[1, 2, 3, 4, 5]</code>?",
+            "type": "fill-blank",
+            "template_html": "nums = [1, 2, 3, 4, 5]<br>print(<input type='text' class='exercise-input' data-answer='len' size='4'>(nums))",
+            "answer": "len",
+            "hint": "La función integrada que devuelve la longitud."
         },
         {
-            "question": "Use the insert method to add 'lemon' as the second item in the fruits list.",
-            "expected_output": "fruits = ['apple', 'banana', 'cherry']\nfruits.insert(1, 'lemon')"
+            "id": "ex-list-4",
+            "question": "Elimina el elemento 'banana' de la lista.",
+            "type": "fill-blank",
+            "template_html": "frutas = ['manzana', 'banana', 'cereza']<br>frutas.<input type='text' class='exercise-input' data-answer='remove' size='7'>('banana')",
+            "answer": "remove",
+            "hint": "Este método elimina la primera ocurrencia del valor especificado."
         },
         {
-            "question": "Use the remove method to remove 'banana' from the fruits list.",
-            "expected_output": "fruits = ['apple', 'banana', 'cherry']\nfruits.remove('banana')"
-        },
-        {
-            "question": "Use negative indexing to print the last item in the list.",
-            "expected_output": "fruits = ['apple', 'banana', 'cherry']\nprint(fruits[-1])"
-        },
-        {
-            "question": "Use a range of indexes to print the third, fourth, and fifth item in the list.",
-            "expected_output": "fruits = ['apple', 'banana', 'cherry', 'orange', 'kiwi', 'melon', 'mango']\nprint(fruits[2:5])"
-        },
-        {
-            "question": "Use the correct syntax to print the number of items in the list.",
-            "expected_output": "fruits = ['apple', 'banana', 'cherry']\nprint(len(fruits))"
-        }
-    ],
-    "code_mappings": [
-        {
-            "id": "ex-lists-1",
-            "python": "# Completa el ejercicio de Lists\\n",
-            "java": "// Completa el ejercicio en Java\\n",
-            "explanation": "Espacio de práctica para Lists."
+            "id": "ex-list-5",
+            "question": "¿Qué devuelve <code>frutas[-1]</code> si frutas = ['a', 'b', 'c']?",
+            "type": "multiple-choice",
+            "options": [
+                "'a'",
+                "'b'",
+                "'c'",
+                "Error"
+            ],
+            "correct": 2
         }
     ]
 }

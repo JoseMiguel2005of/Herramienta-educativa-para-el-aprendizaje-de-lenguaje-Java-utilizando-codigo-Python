@@ -1,42 +1,56 @@
 {
     "id": "ex-functions",
-    "title": "Functions Exercises",
-    "intro": "Welcome to the Functions Exercises.",
-    "python_desc": "Ejercicios sobre Functions",
-    "java_desc": "Práctica equivalente en Java",
-    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>Functions</b> resolviendo estos ejercicios.</p>",
+    "title": "Ejercicios de Funciones",
+    "intro": "Practica la creación y uso de funciones en Python.",
+    "python_desc": "Ejercicios sobre Ejercicios de Funciones",
+    "java_desc": "Practica equivalente en Java",
+    "explanation": "",
+    "sections": [],
+    "code_mappings": [],
     "exercises": [
         {
-            "question": "Create a function named my_function.",
-            "expected_output": "def my_function():\n    print('Hello from a function')"
+            "id": "ex-fn-1",
+            "question": "Completa para crear una función llamada <code>mi_funcion</code>.",
+            "type": "fill-blank",
+            "template_html": "<input type='text' class='exercise-input' data-answer='def' size='4'> mi_funcion():<br>&nbsp;&nbsp;&nbsp;&nbsp;print('Hola')",
+            "answer": "def",
+            "hint": "La palabra clave para definir funciones en Python."
         },
         {
-            "question": "Execute a function named my_function.",
-            "expected_output": "def my_function():\n    print('Hello from a function')\nmy_function()"
+            "id": "ex-fn-2",
+            "question": "Llama a la función <code>mi_funcion</code>.",
+            "type": "fill-blank",
+            "template_html": "def mi_funcion():<br>&nbsp;&nbsp;&nbsp;&nbsp;print('Hola')<br><br><input type='text' class='exercise-input' data-answer='mi_funcion()' size='14'>",
+            "answer": "mi_funcion()",
+            "hint": "Escribe el nombre de la función seguido de paréntesis."
         },
         {
-            "question": "Inside a function with two parameters, print the first parameter.",
-            "expected_output": "def my_function(fname, lname):\n    print(fname)"
+            "id": "ex-fn-3",
+            "question": "Completa para que la función retorne el valor 5.",
+            "type": "fill-blank",
+            "template_html": "def mi_funcion():<br>&nbsp;&nbsp;&nbsp;&nbsp;<input type='text' class='exercise-input' data-answer='return' size='7'> 5",
+            "answer": "return",
+            "hint": "La palabra clave para devolver un valor desde una función."
         },
         {
-            "question": "Let the function return the x parameter + 5.",
-            "expected_output": "def my_function(x):\n    return x + 5"
+            "id": "ex-fn-4",
+            "question": "¿Cómo se llaman las variables definidas DENTRO de una función?",
+            "type": "multiple-choice",
+            "options": [
+                "Variables globales",
+                "Variables locales",
+                "Variables estáticas",
+                "Variables públicas"
+            ],
+            "correct": 1
         },
         {
-            "question": "If you do not know the number of arguments that will be passed into your function, there is a prefix you can add in the function definition, which one?",
-            "expected_output": "def my_function(*kids):\n    print('The youngest child is ' + kids[2])"
-        },
-        {
-            "question": "If you do not know the number of keyword arguments that will be passed into your function, there is a prefix you can add in the function definition, which one?",
-            "expected_output": "def my_function(**kid):\n    print('His last name is ' + kid['lname'])"
-        }
-    ],
-    "code_mappings": [
-        {
-            "id": "ex-functions-1",
-            "python": "# Completa el ejercicio de Functions\\n",
-            "java": "// Completa el ejercicio en Java\\n",
-            "explanation": "Espacio de práctica para Functions."
+            "id": "ex-fn-5",
+            "question": "Completa la función para que reciba un parámetro <code>nombre</code>.",
+            "type": "fill-blank",
+            "template_html": "def saludar(<input type='text' class='exercise-input' data-answer='nombre' size='8'>):<br>&nbsp;&nbsp;&nbsp;&nbsp;print('Hola ' + nombre)",
+            "answer": "nombre",
+            "hint": "El parámetro va dentro de los paréntesis de la definición."
         }
     ]
 }

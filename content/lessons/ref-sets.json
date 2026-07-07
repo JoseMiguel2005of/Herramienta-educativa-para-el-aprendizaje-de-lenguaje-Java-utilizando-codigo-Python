@@ -1,17 +1,38 @@
 {
     "id": "ref-sets",
-    "title": "Set Methods",
-    "intro": "Welcome to the Set Methods lesson.",
-    "python_desc": "Python code for Set Methods",
-    "java_desc": "Java equivalent for Set Methods",
-    "explanation": "<p>In this lesson we cover <b>Set Methods</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Referencia de Metodos de Set",
+    "intro": "Los sets (conjuntos) ofrecen metodos para operaciones matematicas de conjuntos y manipulacion.",
+    "python_desc": "Referencia de Python: Referencia de Metodos de Set",
+    "java_desc": "Equivalente en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Metodos Principales",
+            "text": "<code>add(x)</code> agrega un elemento, <code>remove(x)</code> elimina (error si no existe), <code>discard(x)</code> elimina (sin error), <code>union(s2)</code> une dos sets, <code>intersection(s2)</code> elementos comunes.",
+            "notes": []
+        },
+        {
+            "title": "Tabla de Referencia",
+            "text": "<table><tr><th>Python</th><th>Java (HashSet)</th><th>Descripcion</th></tr><tr><td>s.add(x)</td><td>set.add(x)</td><td>Agregar elemento</td></tr><tr><td>s.remove(x)</td><td>set.remove(x)</td><td>Eliminar (con error)</td></tr><tr><td>s.discard(x)</td><td>set.remove(x)</td><td>Eliminar (sin error)</td></tr><tr><td>s.union(s2)</td><td>set.addAll(s2)</td><td>Union de conjuntos</td></tr><tr><td>s.intersection(s2)</td><td>set.retainAll(s2)</td><td>Interseccion</td></tr><tr><td>s.difference(s2)</td><td>set.removeAll(s2)</td><td>Diferencia</td></tr><tr><td>len(s)</td><td>set.size()</td><td>Cantidad</td></tr></table>",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
-            "id": "ref-sets-1",
-            "python": "# Set Methods Python example\nprint('Set Methods')",
-            "java": "// Set Methods Java example\nSystem.out.println(\"Set Methods\");",
-            "explanation": "Basic example demonstrating Set Methods."
+            "id": "ref-set-1",
+            "section": "Ejemplo",
+            "python": "a = {1, 2, 3}\nb = {3, 4, 5}\nprint(a.union(b))         # {1, 2, 3, 4, 5}\nprint(a.intersection(b))  # {3}\nprint(a.difference(b))    # {1, 2}",
+            "java": "HashSet<Integer> a = new HashSet<>(Arrays.asList(1, 2, 3));\nHashSet<Integer> b = new HashSet<>(Arrays.asList(3, 4, 5));\nHashSet<Integer> union = new HashSet<>(a);\nunion.addAll(b);\nSystem.out.println(union); // [1, 2, 3, 4, 5]",
+            "explanation": "Las operaciones de conjuntos son fundamentales en matematicas y en programacion para filtrar datos."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ref-set-ex1",
+            "type": "fill-blank",
+            "question": "Agrega el numero 4 al set.",
+            "template_html": "s = {1, 2, 3}<br>s.<input type='text' class='exercise-input' data-answer='add' size='4'>(4)",
+            "answer": "add"
         }
     ]
 }

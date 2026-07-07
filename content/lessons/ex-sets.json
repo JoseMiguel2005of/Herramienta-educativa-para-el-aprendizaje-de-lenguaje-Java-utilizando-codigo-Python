@@ -1,38 +1,50 @@
 {
     "id": "ex-sets",
-    "title": "Sets Exercises",
-    "intro": "Welcome to the Sets Exercises.",
-    "python_desc": "Ejercicios sobre Sets",
-    "java_desc": "Práctica equivalente en Java",
-    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>Sets</b> resolviendo estos ejercicios.</p>",
+    "title": "Ejercicios de Sets (Conjuntos)",
+    "intro": "Practica el uso de sets (conjuntos) en Python: colecciones sin duplicados y sin orden.",
+    "python_desc": "Ejercicios sobre Ejercicios de Sets (Conjuntos)",
+    "java_desc": "Practica equivalente en Java",
+    "explanation": "",
+    "sections": [],
+    "code_mappings": [],
     "exercises": [
         {
-            "question": "Check if 'apple' is present in the fruits set.",
-            "expected_output": "fruits = {'apple', 'banana', 'cherry'}\nif 'apple' in fruits:\n    print('Yes, apple is a fruit!')"
+            "id": "ex-set-1",
+            "question": "Crea un set con los valores 1, 2 y 3.",
+            "type": "fill-blank",
+            "template_html": "mi_set = <input type='text' class='exercise-input' data-answer='{1, 2, 3}' size='12'>",
+            "answer": "{1, 2, 3}",
+            "hint": "Los sets se crean con llaves { }."
         },
         {
-            "question": "Use the add method to add 'orange' to the fruits set.",
-            "expected_output": "fruits = {'apple', 'banana', 'cherry'}\nfruits.add('orange')"
+            "id": "ex-set-2",
+            "question": "¿Qué método se usa para agregar un elemento a un set?",
+            "type": "fill-blank",
+            "template_html": "mi_set = {1, 2}<br>mi_set.<input type='text' class='exercise-input' data-answer='add' size='4'>(3)",
+            "answer": "add",
+            "hint": "No es append (eso es para listas)."
         },
         {
-            "question": "Use the correct method to add multiple items (more_fruits) to the fruits set.",
-            "expected_output": "fruits = {'apple', 'banana', 'cherry'}\nmore_fruits = ['orange', 'mango', 'grapes']\nfruits.update(more_fruits)"
+            "id": "ex-set-3",
+            "question": "¿Los sets permiten elementos duplicados?",
+            "type": "multiple-choice",
+            "options": [
+                "Sí",
+                "No"
+            ],
+            "correct": 1
         },
         {
-            "question": "Use the remove method to remove 'banana' from the fruits set.",
-            "expected_output": "fruits = {'apple', 'banana', 'cherry'}\nfruits.remove('banana')"
-        },
-        {
-            "question": "Use the discard method to remove 'banana' from the fruits set.",
-            "expected_output": "fruits = {'apple', 'banana', 'cherry'}\nfruits.discard('banana')"
-        }
-    ],
-    "code_mappings": [
-        {
-            "id": "ex-sets-1",
-            "python": "# Completa el ejercicio de Sets\\n",
-            "java": "// Completa el ejercicio en Java\\n",
-            "explanation": "Espacio de práctica para Sets."
+            "id": "ex-set-4",
+            "question": "¿Qué método devuelve los elementos que están en AMBOS sets?",
+            "type": "multiple-choice",
+            "options": [
+                "union()",
+                "intersection()",
+                "difference()",
+                "symmetric_difference()"
+            ],
+            "correct": 1
         }
     ]
 }

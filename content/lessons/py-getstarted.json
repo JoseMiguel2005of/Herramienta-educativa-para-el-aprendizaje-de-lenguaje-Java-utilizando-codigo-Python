@@ -1,25 +1,61 @@
 {
     "id": "py-getstarted",
-    "title": "Python Get Started",
-    "intro": "Welcome to the Python Get Started lesson.",
-    "python_desc": "Python code for Python Get Started",
-    "java_desc": "Java equivalent for Python Get Started",
+    "title": "Empezando con Python",
+    "intro": "Aprende cómo configurar Python en tu computadora y cómo ejecutar tu primer script.",
+    "python_desc": "Código Python para Empezar",
+    "java_desc": "Equivalente en Java para Empezar",
     "explanation": "",
     "sections": [
         {
-            "title": "Getting Started with Python",
-            "text": "In this lesson we cover <b>Python Get Started</b>. Python simplifies this operation, whereas Java requires a more structured approach.",
+            "title": "Instalación de Python",
+            "text": "Muchos PC y Mac ya tienen Python instalado por defecto. Para comprobar si lo tienes instalado, puedes abrir la terminal o línea de comandos e intentar escribir el comando de comprobación de versión.",
+            "notes": []
+        },
+        {
+            "title": "Inicio Rápido de Python",
+            "text": "Python es un lenguaje interpretado. Puedes escribir tu código en un editor de texto o en un Entorno de Desarrollo Integrado (IDE) y guardarlo con la extensión <code>.py</code>.",
+            "notes": [
+                {"type": "note", "text": "Para ejecutar tu código, simplemente abre la línea de comandos y escribe <code>python nombre_archivo.py</code>."}
+            ]
+        },
+        {
+            "title": "La Línea de Comandos de Python",
+            "text": "Si quieres probar un fragmento corto de código sin guardarlo en un archivo, puedes abrir directamente el intérprete interactivo de Python escribiendo <code>python</code> (o <code>python3</code>) en la terminal.",
             "notes": []
         }
     ],
-    "exercises": [],
     "code_mappings": [
         {
             "id": "py-getstarted-1",
-            "section": "Getting Started with Python",
-            "python": "# Python Get Started Python example\nprint('Python Get Started')",
-            "java": "// Python Get Started Java example\nSystem.out.println(\"Python Get Started\");",
-            "explanation": "Basic example demonstrating Python Get Started."
+            "section": "Comprobar Versión",
+            "python": "# En tu terminal de Windows/Mac/Linux:\npython --version",
+            "java": "// En Java usamos:\njava -version",
+            "explanation": "Ambos lenguajes te permiten verificar la versión instalada a través de la línea de comandos."
+        },
+        {
+            "id": "py-getstarted-2",
+            "section": "Ejecutar Archivo",
+            "python": "# Guardas un archivo como mimodelo.py y luego:\npython mimodelo.py",
+            "java": "// En Java primero compilas y luego ejecutas:\njavac Main.java\njava Main",
+            "explanation": "Python (interpretado) se ejecuta directamente desde el archivo fuente. Java requiere un paso intermedio de compilación (javac)."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-py-getstarted-1",
+            "type": "fill-blank",
+            "question": "¿Qué extensión deben tener los archivos de código fuente de Python?",
+            "template": "mi_programa.____",
+            "template_html": "mi_programa.<input type='text' class='exercise-input' data-answer='py' placeholder='___'>",
+            "python_code": "# Extensión del archivo: .py",
+            "answer": "py"
+        },
+        {
+            "id": "ex-py-getstarted-2",
+            "type": "multiple-choice",
+            "question": "¿Cómo se llama el proceso en el que Java convierte su código fuente (el archivo .java) a bytecode antes de ser ejecutado?",
+            "options": ["Interpretación", "Compilación", "Depuración", "Instalación"],
+            "correct": 1
         }
     ]
 }

@@ -1,4 +1,5 @@
 import os
+from datetime import date, datetime, timedelta
 
 import requests as http_requests
 from flask import (Flask, jsonify, redirect, render_template, request, session,
@@ -11,12 +12,15 @@ from content_loader import (get_lesson, get_lesson_title, get_reference,
                             load_ui_strings, load_quiz, load_all_quizzes,
                             load_examples_catalog, get_example_by_id,
                             load_practice_problems, get_practice_problem)
-from models import ExerciseAttempt, LessonProgress, User, QuizResult, PracticeSubmission, db
+from models import ExerciseAttempt, LessonProgress, User, QuizResult, PracticeSubmission, DailyStreak, db
 from search_index import search_lessons
 from translator import translate
 
 app = Flask(__name__)
 app.secret_key = "tesis-python-java-educativo"
+
+# Teacher registration secret code (4.10)
+TEACHER_SECRET_CODE = os.environ.get("TEACHER_SECRET_CODE", "profesor2024")
 
 # Database Configuration
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
@@ -347,6 +351,21 @@ def lesson(lesson_id):
     prev_lesson, next_lesson = get_lesson_neighbors(lesson_id)
     current_category = get_lesson_category(lesson_id)
     current_category_id = current_category["id"] if current_category else "py2java"
+
+    # Prerequisite check (Sprint 3 — 2.10)
+    prereq_warning = False
+    prereq_lesson_id = None
+    prereq_lesson_title = None
+    if prev_lesson and lesson_id != "py-home":
+        user = get_current_user()
+        prev_completed = LessonProgress.query.filter_by(
+            user_id=user.id, lesson_id=prev_lesson, completed=True
+        ).first()
+        if not prev_completed:
+            prereq_warning = True
+            prereq_lesson_id = prev_lesson
+            prereq_lesson_title = get_lesson_title(prev_lesson) or prev_lesson
+
     return render_template(
         "lesson.html",
         categories=LESSON_CATEGORIES,
@@ -355,8 +374,106 @@ def lesson(lesson_id):
         current_category=current_category_id,
         prev_lesson=prev_lesson,
         next_lesson=next_lesson,
+        prereq_warning=prereq_warning,
+        prereq_lesson_id=prereq_lesson_id,
+        prereq_lesson_title=prereq_lesson_title,
         page="lesson",
         role=session.get("role", "student"),
+    )
+
+
+# ===== PRACTICE LAB (Sprint 5 — 2.3) =====
+@app.route("/practica")
+def practice_list():
+    data = load_practice_problems()
+    problems = data.get("problems", [])
+    
+    # Check completed problems for current user
+    completed_ids = []
+    if current_user.is_authenticated:
+        completed_submissions = PracticeSubmission.query.filter_by(user_id=current_user.id, passed=True).all()
+        completed_ids = [sub.problem_id for sub in completed_submissions]
+        
+    return render_template(
+        "practice_list.html",
+        problems=problems,
+        completed_ids=completed_ids,
+        categories=LESSON_CATEGORIES,
+        page="practice"
+    )
+
+@app.route("/practica/<problem_id>")
+def practice_editor(problem_id):
+    problem = get_practice_problem(problem_id)
+    if not problem:
+        return redirect(url_for("practice_list"))
+        
+    # Check if previously completed to show starter code or previous answer
+    previous_code = problem.get("starter_code", "")
+    if current_user.is_authenticated:
+        last_submission = PracticeSubmission.query.filter_by(user_id=current_user.id, problem_id=problem_id).order_by(PracticeSubmission.submitted_at.desc()).first()
+        if last_submission:
+            previous_code = last_submission.code
+
+    return render_template(
+        "practice_editor.html",
+        problem=problem,
+        previous_code=previous_code,
+        categories=LESSON_CATEGORIES,
+        page="practice"
+    )
+
+@app.route("/api/submit_practice", methods=["POST"])
+@login_required
+def api_submit_practice():
+    data = request.get_json(silent=True) or {}
+    problem_id = data.get("problem_id", "unknown")
+    code = data.get("code", "")
+    passed = data.get("passed", False)
+    tests_passed = data.get("tests_passed", 0)
+    tests_total = data.get("tests_total", 0)
+    
+    user = current_user
+    
+    submission = PracticeSubmission(
+        user_id=user.id,
+        problem_id=problem_id,
+        code=code,
+        passed=passed,
+        tests_passed=tests_passed,
+        tests_total=tests_total
+    )
+    db.session.add(submission)
+    
+    xp_gained = 0
+    if passed:
+        # Give XP only if not previously completed
+        prev_passed = PracticeSubmission.query.filter_by(user_id=user.id, problem_id=problem_id, passed=True).first()
+        if not prev_passed:
+            xp_gained = 50
+            record_daily_activity(user.id)
+            
+    db.session.commit()
+    
+    new_stats = get_progress_summary(user)
+    lvl_info = get_level_info(new_stats["total_xp"])
+    
+    return jsonify({
+        "ok": True,
+        "xp_gained": xp_gained,
+        "new_total": new_stats["total_xp"],
+        "level": lvl_info["level"],
+        "title": lvl_info["title"],
+        "streak": new_stats["streak"]
+    })
+
+# ===== GLOSSARY (Sprint 3 — 2.8) =====
+@app.route("/glosario")
+def glossary():
+    return render_template(
+        "glossary.html",
+        categories=LESSON_CATEGORIES,
+        page="glossary",
     )
 
 
@@ -430,6 +547,10 @@ def api_ejercicio():
                 db.session.add(lp)
             lp.score += xp_gained
 
+    # Record daily activity for streak (1.1)
+    if passed:
+        record_daily_activity(user.id)
+
     db.session.commit()
     return jsonify(
         {"ok": True, "xp_gained": xp_gained, "summary": get_progress_summary(user)}
@@ -457,17 +578,58 @@ def api_leccion():
         xp_gained = 10
         lp.score = (lp.score or 0) + xp_gained
 
+    # Record daily activity for streak (1.1)
+    record_daily_activity(user.id)
+
     db.session.commit()
     return jsonify(
         {"ok": True, "xp_gained": xp_gained, "summary": get_progress_summary(user)}
     )
 
 
+def record_daily_activity(user_id):
+    """Record that user was active today for streak tracking (1.1)."""
+    today = date.today()
+    existing = DailyStreak.query.filter_by(user_id=user_id, date=today).first()
+    if existing:
+        existing.lessons_completed += 1
+    else:
+        streak_entry = DailyStreak(user_id=user_id, date=today, lessons_completed=1)
+        db.session.add(streak_entry)
+
+
+def calculate_streak(user_id):
+    """Calculate current consecutive day streak for a user (1.1)."""
+    streaks = (
+        DailyStreak.query.filter_by(user_id=user_id)
+        .order_by(DailyStreak.date.desc())
+        .all()
+    )
+    if not streaks:
+        return 0
+
+    today = date.today()
+    # Allow today or yesterday as the start
+    first_date = streaks[0].date
+    if first_date != today and first_date != today - timedelta(days=1):
+        return 0
+
+    count = 1
+    for i in range(1, len(streaks)):
+        expected = first_date - timedelta(days=i)
+        if streaks[i].date == expected:
+            count += 1
+        else:
+            break
+    return count
+
+
 def get_progress_summary(user):
     progresses = LessonProgress.query.filter_by(user_id=user.id).all()
     completed = [p.lesson_id for p in progresses if p.completed]
     total_xp = sum(p.score for p in progresses)
-    return {"completed_lessons": completed, "total_xp": total_xp}
+    streak = calculate_streak(user.id)
+    return {"completed_lessons": completed, "total_xp": total_xp, "streak": streak}
 
 
 @app.route("/api/progreso/resumen", methods=["GET"])
@@ -544,7 +706,16 @@ def register():
         password = request.form.get("password")
         role = request.form.get(
             "role", "student"
-        )  # Podría requerir código secreto para ser teacher en prod
+        )
+        teacher_code = request.form.get("teacher_code", "").strip()
+
+        # Validate teacher code (4.10)
+        if role == "teacher" and teacher_code != TEACHER_SECRET_CODE:
+            return render_template(
+                "register.html",
+                error="Código de profesor incorrecto. Contacta al administrador.",
+                categories=LESSON_CATEGORIES,
+            )
 
         if User.query.filter_by(username=username).first():
             return render_template(
@@ -582,19 +753,222 @@ def teacher_dashboard():
     # Obtener todos los estudiantes y su progreso
     students = User.query.filter_by(role="student").all()
     student_stats = []
+    
+    # Aggregated metrics for dashboard (Sprint 4)
+    total_xp = 0
+    total_completed = 0
+    level_counts = {}
+
     for s in students:
         stats = get_progress_summary(s)
+        lvl_info = get_level_info(stats["total_xp"])
+        title = lvl_info["title"]
+        
+        # Accumulate level counts
+        level_counts[title] = level_counts.get(title, 0) + 1
+        total_xp += stats["total_xp"]
+        total_completed += len(stats["completed_lessons"])
+        
         student_stats.append(
             {
                 "username": s.username,
                 "total_xp": stats["total_xp"],
                 "completed": len(stats["completed_lessons"]),
+                "level": lvl_info["level"],
+                "title": title
             }
         )
 
+    # Sort students by XP descending
+    student_stats.sort(key=lambda x: x["total_xp"], reverse=True)
+
+    metrics = {
+        "total_students": len(students),
+        "avg_xp": round(total_xp / len(students)) if students else 0,
+        "total_completed": total_completed,
+        "level_labels": list(level_counts.keys()),
+        "level_data": list(level_counts.values())
+    }
+
     return render_template(
-        "teacher_dashboard.html", students=student_stats, categories=LESSON_CATEGORIES
+        "teacher_dashboard.html", 
+        students=student_stats, 
+        metrics=metrics,
+        categories=LESSON_CATEGORIES
     )
+
+
+# ===== CSV EXPORT (Sprint 4 — 4.7) =====
+import csv
+from io import StringIO
+from flask import Response
+
+@app.route("/profesor/export/csv")
+@login_required
+def teacher_export_csv():
+    if current_user.role != "teacher":
+        return redirect(url_for("dashboard"))
+        
+    students = User.query.filter_by(role="student").all()
+    
+    si = StringIO()
+    cw = csv.writer(si)
+    cw.writerow(["Username", "Total_XP", "Lecciones_Completadas", "Nivel", "Racha_Actual", "Fecha_Registro"])
+    
+    for s in students:
+        stats = get_progress_summary(s)
+        lvl_info = get_level_info(stats["total_xp"])
+        cw.writerow([
+            s.username,
+            stats["total_xp"],
+            len(stats["completed_lessons"]),
+            lvl_info["title"],
+            stats["streak"],
+            s.created_at.strftime("%Y-%m-%d")
+        ])
+        
+    output = si.getvalue()
+    si.close()
+    
+    return Response(
+        output,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=reporte_estudiantes.csv"}
+    )
+
+
+# ===== LEADERBOARD (Sprint 2 — 1.2) =====
+@app.route("/leaderboard")
+def leaderboard():
+    students = User.query.filter_by(role="student").all()
+    board = []
+    for s in students:
+        summary = get_progress_summary(s)
+        level = (summary["total_xp"] // 100) + 1
+        board.append({
+            "id": s.id,
+            "username": s.username,
+            "total_xp": summary["total_xp"],
+            "level": level,
+            "completed": len(summary["completed_lessons"]),
+            "streak": summary["streak"],
+        })
+    board.sort(key=lambda x: x["total_xp"], reverse=True)
+
+    # Assign rank
+    for i, entry in enumerate(board):
+        entry["rank"] = i + 1
+
+    current_uid = current_user.id if current_user.is_authenticated else None
+    return render_template(
+        "leaderboard.html",
+        board=board,
+        current_uid=current_uid,
+        categories=LESSON_CATEGORIES,
+        page="leaderboard",
+    )
+
+
+# ===== PROFILE (Sprint 2 — 1.6) =====
+@app.route("/perfil")
+@app.route("/perfil/<username>")
+def profile(username=None):
+    if username:
+        user = User.query.filter_by(username=username).first_or_404()
+    elif current_user.is_authenticated:
+        user = current_user
+    else:
+        return redirect(url_for("login"))
+
+    summary = get_progress_summary(user)
+    level = (summary["total_xp"] // 100) + 1
+
+    # Recent activity: last 10 completed lessons
+    recent = (
+        LessonProgress.query.filter_by(user_id=user.id, completed=True)
+        .order_by(LessonProgress.completed_at.desc())
+        .limit(10)
+        .all()
+    )
+
+    # Quiz results
+    quiz_results = (
+        QuizResult.query.filter_by(user_id=user.id)
+        .order_by(QuizResult.completed_at.desc())
+        .limit(10)
+        .all()
+    )
+
+    # Exercise stats
+    total_exercises = ExerciseAttempt.query.filter_by(user_id=user.id).count()
+    passed_exercises = ExerciseAttempt.query.filter_by(user_id=user.id, passed=True).count()
+
+    return render_template(
+        "profile.html",
+        profile_user=user,
+        summary=summary,
+        level=level,
+        recent=recent,
+        quiz_results=quiz_results,
+        total_exercises=total_exercises,
+        passed_exercises=passed_exercises,
+        categories=LESSON_CATEGORIES,
+        page="profile",
+    )
+
+
+# ===== CERTIFICATE (Sprint 2 — 1.10) =====
+@app.route("/certificado/<section_id>")
+@login_required
+def certificate(section_id):
+    user = current_user
+    summary = get_progress_summary(user)
+
+    # Find the category
+    target_cat = None
+    for cat in LESSON_CATEGORIES:
+        if cat["id"] == section_id:
+            target_cat = cat
+            break
+
+    if not target_cat:
+        return redirect(url_for("dashboard"))
+
+    # Get all lessons in this category
+    cat_lessons = []
+    for sec in target_cat["sections"]:
+        for lesson in sec["lessons"]:
+            cat_lessons.append(lesson["id"])
+
+    # Check completion
+    completed_in_cat = [lid for lid in cat_lessons if lid in summary["completed_lessons"]]
+    is_complete = len(completed_in_cat) >= len(cat_lessons) and len(cat_lessons) > 0
+
+    ui = load_ui_strings()
+    cat_name = ui.get(target_cat["label_key"], section_id)
+
+    return render_template(
+        "certificate.html",
+        user=user,
+        category_name=cat_name,
+        category_id=section_id,
+        total_lessons=len(cat_lessons),
+        completed_lessons=len(completed_in_cat),
+        is_complete=is_complete,
+        completion_date=datetime.now().strftime("%d de %B de %Y"),
+        categories=LESSON_CATEGORIES,
+    )
+
+
+# ===== THEME TOGGLE (Sprint 2 — 1.9) =====
+@app.route("/api/theme", methods=["POST"])
+def toggle_theme():
+    data = request.get_json(silent=True) or {}
+    theme = data.get("theme", "dark")
+    if theme not in ("dark", "light"):
+        theme = "dark"
+    session["theme"] = theme
+    return jsonify({"ok": True, "theme": theme})
 
 
 @app.route("/configuracion", methods=["GET", "POST"])

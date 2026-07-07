@@ -1,22 +1,40 @@
 {
     "id": "ex-lambda",
-    "title": "Lambda Exercises",
-    "intro": "Welcome to the Lambda Exercises.",
-    "python_desc": "Ejercicios sobre Lambda",
-    "java_desc": "Práctica equivalente en Java",
-    "explanation": "<p>Pon a prueba tus conocimientos sobre <b>Lambda</b> resolviendo estos ejercicios.</p>",
+    "title": "Ejercicios de Lambda",
+    "intro": "Practica la creación de funciones lambda (funciones anónimas de una línea) en Python.",
+    "python_desc": "Ejercicios sobre Ejercicios de Lambda",
+    "java_desc": "Practica equivalente en Java",
+    "explanation": "",
+    "sections": [],
+    "code_mappings": [],
     "exercises": [
         {
-            "question": "Create a lambda function that takes one parameter (a) and returns it.",
-            "expected_output": "x = lambda a: a"
-        }
-    ],
-    "code_mappings": [
+            "id": "ex-lam-1",
+            "question": "Completa para crear una función lambda que sume 10 a un número.",
+            "type": "fill-blank",
+            "template_html": "sumar = <input type='text' class='exercise-input' data-answer='lambda' size='7'> x: x + 10",
+            "answer": "lambda",
+            "hint": "La palabra clave para funciones anónimas de una línea."
+        },
         {
-            "id": "ex-lambda-1",
-            "python": "# Completa el ejercicio de Lambda\\n",
-            "java": "// Completa el ejercicio en Java\\n",
-            "explanation": "Espacio de práctica para Lambda."
+            "id": "ex-lam-2",
+            "question": "¿Cuál es el resultado de <code>(lambda x, y: x * y)(3, 4)</code>?",
+            "type": "multiple-choice",
+            "options": [
+                "7",
+                "12",
+                "34",
+                "Error"
+            ],
+            "correct": 1
+        },
+        {
+            "id": "ex-lam-3",
+            "question": "Completa la lambda que devuelve True si un número es par.",
+            "type": "fill-blank",
+            "template_html": "es_par = lambda x: x <input type='text' class='exercise-input' data-answer='%' size='2'> 2 == 0",
+            "answer": "%",
+            "hint": "El operador módulo devuelve el residuo de la división."
         }
     ]
 }

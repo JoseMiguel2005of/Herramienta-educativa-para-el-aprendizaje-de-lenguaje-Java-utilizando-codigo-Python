@@ -1,25 +1,49 @@
 {
     "id": "sc-sigtests",
-    "title": "SciPy Significance Tests",
-    "intro": "Welcome to the SciPy Significance Tests lesson.",
-    "python_desc": "Python code for SciPy Significance Tests",
-    "java_desc": "Java equivalent for SciPy Significance Tests",
+    "title": "Pruebas de Significación en SciPy",
+    "intro": "Las pruebas de significación estadística son herramientas estadísticas matemáticas para probar si un hallazgo experimental es lo suficientemente inusual como para ser significativo y no debido a la suerte (azar).",
+    "python_desc": "Código Python para Pruebas de Significación",
+    "java_desc": "Equivalente en Java para Pruebas de Significación (librerías externas)",
     "explanation": "",
     "sections": [
         {
-            "title": "Significance Tests",
-            "text": "In this lesson we cover <b>SciPy Significance Tests</b>. Python simplifies this operation, whereas Java requires a more structured approach.",
+            "title": "¿Qué es la Significación Estadística?",
+            "text": "SciPy nos proporciona el módulo <code>scipy.stats</code> que contiene funciones útiles para realizar pruebas de hipótesis estadísticas, como el <i>T-Test</i>. En estas pruebas, generalmente calculamos un valor <b>p</b> (p-value).",
+            "notes": [
+                {"type": "note", "text": "Si el valor p (p-value) es pequeño (usualmente < 0.05), podemos rechazar la hipótesis nula, lo que significa que nuestros resultados son estadísticamente significativos."}
+            ]
+        },
+        {
+            "title": "T-Test (Prueba T)",
+            "text": "Las pruebas T se usan para determinar si hay una diferencia significativa entre las medias de dos grupos. Por ejemplo, en SciPy se usa <code>ttest_ind()</code> para probar si dos muestras independientes provienen de poblaciones con la misma media.",
             "notes": []
         }
     ],
-    "exercises": [],
     "code_mappings": [
         {
             "id": "sc-sigtests-1",
-            "section": "Significance Tests",
-            "python": "# SciPy Significance Tests Python example\nprint('SciPy Significance Tests')",
-            "java": "// SciPy Significance Tests Java example\nSystem.out.println(\"SciPy Significance Tests\");",
-            "explanation": "Basic example demonstrating SciPy Significance Tests."
+            "section": "T-Test de 2 Muestras",
+            "python": "import numpy as np\nfrom scipy.stats import ttest_ind\n\n# Dos muestras de datos aleatorios\nmuestr1 = np.random.normal(size=100)\nmuestr2 = np.random.normal(size=100)\n\n# Realizar la prueba T (T-Test)\nestadistico, p_valor = ttest_ind(muestr1, muestr2)\nprint(\"P-Value:\", p_valor)",
+            "java": "import org.apache.commons.math3.stat.inference.TTest;\n\ndouble[] muestr1 = { ... };\ndouble[] muestr2 = { ... };\n\nTTest tTest = new TTest();\n// Devuelve el p-value para las dos muestras independientes\ndouble p_valor = tTest.homoscedasticTTest(muestr1, muestr2);\nSystem.out.println(\"P-Value: \" + p_valor);",
+            "explanation": "Al igual que con la interpolación, Java depende de la librería Apache Commons Math (o similares) para tener funciones equivalentes a las ricas pruebas estadísticas integradas en SciPy."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-sc-sigtests-1",
+            "type": "multiple-choice",
+            "question": "En las pruebas de significación estadística, ¿qué significa un valor p (p-value) menor a 0.05 generalmente?",
+            "options": ["Que hubo un error en los datos", "Que se acepta la hipótesis nula", "Que los resultados son estadísticamente significativos", "Que las medias son exactamente iguales"],
+            "correct": 2
+        },
+        {
+            "id": "ex-sc-sigtests-2",
+            "type": "fill-blank",
+            "question": "¿Qué método del submódulo scipy.stats se utiliza para hacer una prueba T de dos muestras independientes?",
+            "template": "stat, p = ______(v1, v2)",
+            "template_html": "stat, p = <input type='text' class='exercise-input' data-answer='ttest_ind' placeholder='___'>(v1, v2)",
+            "python_code": "stat, p = ttest_ind(v1, v2)",
+            "answer": "ttest_ind"
         }
     ]
 }

@@ -1,17 +1,48 @@
 {
     "id": "ref-keywords",
-    "title": "Python Keywords",
-    "intro": "Welcome to the Python Keywords lesson.",
-    "python_desc": "Python code for Python Keywords",
-    "java_desc": "Java equivalent for Python Keywords",
-    "explanation": "<p>In this lesson we cover <b>Python Keywords</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Palabras Clave (Keywords) de Python",
+    "intro": "Las palabras reservadas de Python que no puedes usar como nombres de variables.",
+    "python_desc": "Referencia de Python: Palabras Clave (Keywords) de Python",
+    "java_desc": "Equivalente en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Lista de Keywords",
+            "text": "Python tiene 35 palabras reservadas: <code>False, None, True, and, as, assert, async, await, break, class, continue, def, del, elif, else, except, finally, for, from, global, if, import, in, is, lambda, nonlocal, not, or, pass, raise, return, try, while, with, yield</code>.",
+            "notes": [
+                {
+                    "type": "warning",
+                    "text": "Intentar usar una keyword como nombre de variable causara un <b>SyntaxError</b>."
+                }
+            ]
+        },
+        {
+            "title": "Comparacion con Java",
+            "text": "Java tiene keywords similares (<code>if, else, for, while, class, return, try, catch</code>) pero tambien tiene otras unicas como <code>public, private, static, void, interface, extends, implements</code>. Python no requiere palabras como public/private porque usa convencion de nombres (prefijo _ o __).",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
-            "id": "ref-keywords-1",
-            "python": "# Python Keywords Python example\nprint('Python Keywords')",
-            "java": "// Python Keywords Java example\nSystem.out.println(\"Python Keywords\");",
-            "explanation": "Basic example demonstrating Python Keywords."
+            "id": "ref-kw-1",
+            "section": "Ejemplo de Keywords",
+            "python": "# Keywords de Python en uso:\nfor i in range(5):       # for, in\n    if i > 2:            # if\n        break            # break\n    elif i == 0:         # elif\n        continue         # continue\n    else:                # else\n        pass             # pass",
+            "java": "// Keywords de Java equivalentes:\nfor (int i = 0; i < 5; i++) {  // for\n    if (i > 2) {               // if\n        break;                 // break\n    } else if (i == 0) {       // else if\n        continue;              // continue\n    } else {                   // else\n        // pass (no existe)\n    }\n}",
+            "explanation": "Python usa elif en lugar de 'else if' de Java. Python tiene pass (no hacer nada); Java no lo necesita."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ref-kw-ex1",
+            "type": "multiple-choice",
+            "question": "Cual de estas NO es una keyword de Python?",
+            "options": [
+                "lambda",
+                "def",
+                "function",
+                "yield"
+            ],
+            "correct": 2
         }
     ]
 }

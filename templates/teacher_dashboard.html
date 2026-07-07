@@ -3,51 +3,164 @@
 {% block title %}Panel Profesor — {{ t.site_title }}{% endblock %}
 
 {% block content %}
-<article class="dashboard-page">
-    <header class="lesson-header" style="margin-bottom: 2rem;">
-        <h1>Panel de Profesor</h1>
-        <p class="lesson-intro">Monitorea el progreso de tus estudiantes.</p>
+<article class="telemetry-dashboard">
+    <header class="telemetry-header" style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h1>[ADMIN] PANEL DE CONTROL</h1>
+            <div class="system-status">
+                <span class="status-indicator"></span>
+                TEACHER_DASHBOARD_ACTIVE
+            </div>
+        </div>
+        <a href="{{ url_for('teacher_export_csv') }}" class="btn-translate" style="background: var(--python-color); color: #000; font-weight: bold; padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none; border: none; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;">
+            ⬇️ DESCARGAR CSV
+        </a>
     </header>
 
-    <div class="dashboard-card" style="margin-bottom: 2rem;">
-        <h2>Gestión de Estudiantes</h2>
-        <div style="overflow-x: auto; margin-top: 1rem;">
-            <table style="width: 100%; border-collapse: collapse; text-align: left;">
-                <thead>
-                    <tr style="border-bottom: 2px solid rgba(255,255,255,0.1);">
-                        <th style="padding: 1rem;">Usuario</th>
-                        <th style="padding: 1rem;">XP Total</th>
-                        <th style="padding: 1rem;">Lecciones Completadas</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for s in students %}
-                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                        <td style="padding: 1rem; color: var(--green); font-weight: bold;">{{ s.username }}</td>
-                        <td style="padding: 1rem;">{{ s.total_xp }} XP</td>
-                        <td style="padding: 1rem;">
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <span>{{ s.completed }}</span>
-                                <div class="xp-bar-container" style="width: 100px; height: 6px; background: #333; border-radius: 3px;">
-                                    <div class="xp-bar-fill" style="width: {{ (s.completed / 30 * 100) | round }}%; height: 100%; background: var(--python-color); border-radius: 3px;"></div>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="3" style="padding: 2rem; text-align: center; color: #888;">No hay estudiantes registrados aún.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <!-- METRICS CARDS -->
+    <div class="telemetry-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 2rem;">
+        <div class="data-module module-metric">
+            <div class="module-header"><span>// TOTAL_ESTUDIANTES</span></div>
+            <div class="module-body center-data">
+                <span class="metric-value highlight-cyan">{{ metrics.total_students }}</span>
+                <span class="metric-total">ALUMNOS_REGISTRADOS</span>
+            </div>
+        </div>
+        <div class="data-module module-metric">
+            <div class="module-header"><span>// PROMEDIO_XP</span></div>
+            <div class="module-body center-data">
+                <span class="metric-value highlight-orange">{{ metrics.avg_xp }}</span>
+                <span class="metric-total">XP_GLOBAL</span>
+            </div>
+        </div>
+        <div class="data-module module-metric">
+            <div class="module-header"><span>// LECCIONES_COMPLETAS</span></div>
+            <div class="module-body center-data">
+                <span class="metric-value" style="color: #a6e22e;">{{ metrics.total_completed }}</span>
+                <span class="metric-total">TOTAL_GLOBAL</span>
+            </div>
         </div>
     </div>
-    
-    <div class="dashboard-card">
-        <h2>Gestión de Lecciones (CRUD Próximamente)</h2>
-        <p style="color: #888; font-size: 0.9rem;">El CRUD de lecciones dinámico está planeado para la siguiente versión usando el sistema JSON actual.</p>
-        <button class="btn-ghost" style="margin-top: 1rem; opacity: 0.5; cursor: not-allowed;" disabled>+ Añadir Nueva Lección</button>
+
+    <div class="telemetry-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 2rem;">
+        <!-- TABLA ESTUDIANTES -->
+        <div class="data-module module-log" style="grid-column: 1 / -1; min-height: 350px;">
+            <div class="module-header">
+                <span>// ESTUDIANTES_DETALLE</span>
+                <span style="font-size: 0.7rem; color: #888;">(Haz clic en un usuario para ver su perfil)</span>
+            </div>
+            <div class="module-body" style="padding: 0;">
+                <table class="leaderboard-table" style="width: 100%; border-collapse: collapse; text-align: left; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;">
+                    <thead>
+                        <tr style="border-bottom: 1px dashed var(--border); background: var(--bg-code);">
+                            <th style="padding: 1rem;">USUARIO</th>
+                            <th style="padding: 1rem;">NIVEL</th>
+                            <th style="padding: 1rem;">XP TOTAL</th>
+                            <th style="padding: 1rem;">PROGRESO (LECCIONES)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in students %}
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.2s;">
+                            <td style="padding: 1rem;">
+                                <a href="{{ url_for('profile', username=s.username) }}" style="color: var(--green); text-decoration: none; font-weight: bold;">
+                                    {{ s.username }} ↗
+                                </a>
+                            </td>
+                            <td style="padding: 1rem; color: var(--text-muted);">
+                                Lv.{{ s.level }} <span style="font-size: 0.75rem;">[{{ s.title }}]</span>
+                            </td>
+                            <td style="padding: 1rem; color: #FF9800;">{{ s.total_xp }} XP</td>
+                            <td style="padding: 1rem;">
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <span>{{ s.completed }}</span>
+                                    <div class="xp-bar-container" style="width: 120px; height: 6px; background: var(--bg-code); border: 1px solid var(--border); border-radius: 3px; overflow: hidden;">
+                                        <div class="xp-bar-fill" style="width: {{ (s.completed / 30 * 100) | round }}%; height: 100%; background: var(--python-color); border-right: 1px solid #000;"></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" style="padding: 2rem; text-align: center; color: var(--text-muted);">No hay estudiantes registrados.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- GRÁFICO DISTRIBUCIÓN -->
+        <div class="data-module module-log" style="grid-column: 1 / -1;">
+            <div class="module-header">
+                <span>// DISTRIBUCIÓN_NIVELES</span>
+            </div>
+            <div class="module-body" style="padding: 1rem; display: flex; justify-content: center;">
+                <div style="width: 100%; max-width: 800px; height: 300px;">
+                    <canvas id="levelsChart"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
 </article>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const ctx = document.getElementById('levelsChart').getContext('2d');
+        
+        // Variables passed from backend
+        const labels = {{ metrics.level_labels | tojson }};
+        const data = {{ metrics.level_data | tojson }};
+        
+        // Set chart default colors matching our theme
+        Chart.defaults.color = '#8B949E';
+        Chart.defaults.font.family = "'JetBrains Mono', monospace";
+        
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Estudiantes',
+                    data: data,
+                    backgroundColor: 'rgba(0, 229, 255, 0.2)',
+                    borderColor: '#00E5FF',
+                    borderWidth: 1,
+                    borderRadius: 2,
+                    hoverBackgroundColor: 'rgba(0, 229, 255, 0.4)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)',
+                            borderColor: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false,
+                            borderColor: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
 {% endblock %}

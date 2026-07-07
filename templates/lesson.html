@@ -15,6 +15,17 @@
         </div>
     </header>
 
+    {# ===== PREREQUISITE WARNING (Sprint 3 — 2.10) ===== #}
+    {% if prereq_warning %}
+    <div class="prereq-banner">
+        <span class="prereq-icon">⚠️</span>
+        <div class="prereq-text">
+            <strong>Lección previa no completada</strong>
+            <span>Se recomienda completar primero: <a href="{{ url_for('lesson', lesson_id=prereq_lesson_id) }}" style="color: var(--green);">{{ prereq_lesson_title }}</a></span>
+        </div>
+    </div>
+    {% endif %}
+
     {# ============================================================
        ENRICHED FORMAT: Lessons with "sections" array
        Each section gets its own H2, text, notes, and code examples
@@ -62,6 +73,7 @@
                     {% else %}
                     <h3>{{ t.get('example_label', 'Example') }}</h3>
                     {% endif %}
+                    <button class="btn-diff-toggle" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 0.25rem 0.7rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; cursor: pointer; margin-bottom: 0.5rem; transition: all 0.2s;">🔍 Ver diferencias</button>
                     <section class="code-comparison" {% if current_category == 'java2py' %}style="flex-direction: row-reverse;"{% endif %}>
                         <div class="code-panel code-panel-python">
                             <div class="code-panel-header">
@@ -91,6 +103,17 @@
                     {% if mapping.explanation %}
                     <div class="w3-note">
                         <p>{{ mapping.explanation | safe }}</p>
+                    </div>
+                    {% endif %}
+
+                    {# ===== RUN BUTTON (Sprint 3 — 2.1) ===== #}
+                    {% if mapping.python %}
+                    <div class="example-run-container" style="margin-bottom: 1rem;">
+                        <button class="btn-run-example" onclick="runExampleCode(this, `{{ mapping.python | replace('`', '\`') | replace('\\', '\\\\') }}`)"
+                            style="background: transparent; border: 1px solid var(--python-color); color: var(--python-color); padding: 0.3rem 0.8rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; cursor: pointer; transition: all 0.2s;">
+                            ▶ Ejecutar ejemplo
+                        </button>
+                        <pre class="example-output" style="display:none; background: #000; color: #fff; padding: 0.5rem 0.75rem; margin-top: 0.5rem; border-left: 3px solid var(--python-color); font-size: 0.85rem; border-radius: 2px; max-height: 120px; overflow-y: auto;"><code></code></pre>
                     </div>
                     {% endif %}
                 </div>
@@ -173,9 +196,10 @@
             <div class="translator-panel">
                 <div class="translator-panel-header">
                     <span class="lang-badge python-badge">{{ t.python_label }}</span>
-                    <div style="display: flex; gap: 0.5rem;">
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                         <button type="button" id="btn-run-python" class="btn-translate" style="background: var(--python-color); color: #000; border: none; padding: 0.4rem 1rem; border-radius: 4px; font-weight: bold; cursor: pointer;">▶ Ejecutar Python</button>
                         <button type="button" id="btn-translate" class="btn-translate">{{ t.translate_btn }}</button>
+                        <button type="button" id="btn-restore-editor" class="btn-translate" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 0.4rem 0.8rem; border-radius: 4px; font-weight: bold; cursor: pointer;" title="Restaurar código original">↩️ Restaurar</button>
                     </div>
                 </div>
                 {% set editor_code = lesson.python_code %}
@@ -394,6 +418,93 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
+
+/* ========== SPRINT 3: PREREQUISITE BANNER (2.10) ========== */
+.prereq-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(255, 152, 0, 0.08);
+    border: 1px solid rgba(255, 152, 0, 0.3);
+    border-left: 4px solid #FF9800;
+    padding: 0.75rem 1rem;
+    border-radius: 0 4px 4px 0;
+    margin-bottom: 2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+}
+.prereq-icon { font-size: 1.3rem; }
+.prereq-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+.prereq-text strong { color: #FF9800; font-size: 0.8rem; letter-spacing: 0.05em; }
+.prereq-text span { color: var(--text-muted); font-size: 0.8rem; }
+
+/* ========== SPRINT 3: GLOSSARY TOOLTIPS (2.8) ========== */
+.glossary-term {
+    border-bottom: 1px dotted var(--green);
+    cursor: help;
+    position: relative;
+    transition: color 0.2s;
+}
+.glossary-term:hover {
+    color: var(--green);
+}
+.glossary-term::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-4px);
+    background: var(--bg-code);
+    border: 1px solid var(--green);
+    color: var(--text);
+    padding: 0.4rem 0.7rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    white-space: nowrap;
+    max-width: 280px;
+    white-space: normal;
+    z-index: 50;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    line-height: 1.4;
+}
+.glossary-term:hover::after {
+    opacity: 1;
+}
+
+/* ========== SPRINT 3: DIFF HIGHLIGHTING (2.5) ========== */
+.diff-same {
+    opacity: 0.5;
+}
+.diff-changed {
+    background: rgba(0, 229, 255, 0.1);
+    border-left: 2px solid var(--green);
+    padding-left: 4px;
+    display: inline-block;
+    width: 100%;
+}
+
+.btn-diff-toggle:hover {
+    border-color: var(--green) !important;
+    color: var(--green) !important;
+}
+
+/* ========== SPRINT 3: RUN EXAMPLE (2.1) ========== */
+.btn-run-example:hover {
+    background: rgba(0, 229, 255, 0.1) !important;
+}
+.btn-run-example:disabled {
+    opacity: 0.5;
+    cursor: wait;
+}
 </style>
 
 {% endblock %}
@@ -412,7 +523,171 @@
     };
     window.currentLessonId = "{{ current_lesson }}";
 
-    // Re-highlighting on translation
-    const originalTranslate = window.translateCode; // We will handle translation highlighting in main.js if needed, or just let it be.
+    // ===== RUN EXAMPLE CODE (Sprint 3 — 2.1) =====
+    async function runExampleCode(btn, code) {
+        const container = btn.closest('.example-run-container');
+        const outputEl = container.querySelector('.example-output');
+        const codeEl = outputEl.querySelector('code');
+
+        outputEl.style.display = 'block';
+        codeEl.textContent = '⌛ Ejecutando...';
+        btn.disabled = true;
+
+        try {
+            const pyodide = await loadPyodideIfNeeded();
+            // Reset stdout capture
+            let capturedOutput = '';
+            pyodide.setStdout({
+                batched: (str) => { capturedOutput += str + '\n'; }
+            });
+            await pyodide.runPythonAsync(code);
+            codeEl.textContent = capturedOutput || '[Ejecución completada sin salida]';
+            codeEl.style.color = '#a6e22e';
+
+            // Restore stdout for main editor
+            pyodide.setStdout({
+                batched: (str) => {
+                    const out = document.getElementById('python-console-output');
+                    if (out) out.textContent += str + '\n';
+                }
+            });
+        } catch (err) {
+            codeEl.textContent = err.message || err.toString();
+            codeEl.style.color = '#ef5350';
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    // ===== RESTORE EDITOR (Sprint 3 — 2.2) =====
+    const restoreBtn = document.getElementById('btn-restore-editor');
+    const editorEl = document.getElementById('practice-editor');
+    if (restoreBtn && editorEl) {
+        const originalCode = editorEl.value;
+        restoreBtn.addEventListener('click', () => {
+            editorEl.value = originalCode;
+        });
+    }
+
+    // ===== DIFF HIGHLIGHTING (Sprint 3 — 2.5) =====
+    document.querySelectorAll('.btn-diff-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const comparison = btn.closest('.code-comparison');
+            if (!comparison) return;
+
+            const pyEl = comparison.querySelector('.code-panel-python code');
+            const javaEl = comparison.querySelector('.code-panel-java code');
+            if (!pyEl || !javaEl) return;
+
+            const isActive = btn.classList.toggle('diff-active');
+            if (isActive) {
+                btn.textContent = '✓ Diff activado';
+                btn.style.borderColor = 'var(--green)';
+                btn.style.color = 'var(--green)';
+                highlightDiff(pyEl, javaEl);
+            } else {
+                btn.textContent = '🔍 Ver diferencias';
+                btn.style.borderColor = '';
+                btn.style.color = '';
+                removeDiffHighlight(pyEl);
+                removeDiffHighlight(javaEl);
+            }
+        });
+    });
+
+    function highlightDiff(pyEl, javaEl) {
+        const pyLines = pyEl.textContent.split('\n');
+        const javaLines = javaEl.textContent.split('\n');
+        const maxLines = Math.max(pyLines.length, javaLines.length);
+
+        let pyHtml = '';
+        let javaHtml = '';
+
+        for (let i = 0; i < maxLines; i++) {
+            const pyLine = pyLines[i] || '';
+            const javaLine = javaLines[i] || '';
+
+            if (pyLine.trim() === javaLine.trim()) {
+                pyHtml += `<span class="diff-same">${escapeHtmlDiff(pyLine)}</span>\n`;
+                javaHtml += `<span class="diff-same">${escapeHtmlDiff(javaLine)}</span>\n`;
+            } else {
+                pyHtml += `<span class="diff-changed">${escapeHtmlDiff(pyLine)}</span>\n`;
+                javaHtml += `<span class="diff-changed">${escapeHtmlDiff(javaLine)}</span>\n`;
+            }
+        }
+
+        pyEl.innerHTML = pyHtml;
+        javaEl.innerHTML = javaHtml;
+    }
+
+    function removeDiffHighlight(el) {
+        el.textContent = el.textContent; // Strip HTML, keep text
+    }
+
+    function escapeHtmlDiff(str) {
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    // ===== GLOSSARY TOOLTIPS (Sprint 3 — 2.8) =====
+    const GLOSSARY_TERMS = {
+        'variable': 'Nombre que almacena un dato en memoria.',
+        'función': 'Bloque de código reutilizable que realiza una tarea.',
+        'function': 'Bloque de código reutilizable que realiza una tarea.',
+        'clase': 'Plantilla para crear objetos con atributos y métodos.',
+        'class': 'Plantilla para crear objetos con atributos y métodos.',
+        'lista': 'Colección ordenada y mutable de elementos.',
+        'list': 'Colección ordenada y mutable de elementos.',
+        'diccionario': 'Colección de pares clave-valor.',
+        'dictionary': 'Colección de pares clave-valor.',
+        'tupla': 'Colección ordenada e inmutable.',
+        'tuple': 'Colección ordenada e inmutable.',
+        'string': 'Cadena de texto, secuencia de caracteres.',
+        'booleano': 'Tipo de dato con valores True o False.',
+        'boolean': 'Tipo de dato con valores True o False.',
+        'bucle': 'Estructura que repite un bloque de código.',
+        'loop': 'Estructura que repite un bloque de código.',
+        'condicional': 'Estructura que ejecuta código según una condición.',
+        'herencia': 'Cuando una clase adquiere propiedades de otra.',
+        'inheritance': 'Cuando una clase adquiere propiedades de otra.',
+        'módulo': 'Archivo Python con funciones reutilizables.',
+        'module': 'Archivo Python con funciones reutilizables.',
+        'excepción': 'Error que ocurre durante la ejecución del programa.',
+        'exception': 'Error que ocurre durante la ejecución del programa.',
+        'iterador': 'Objeto que permite recorrer una secuencia elemento a elemento.',
+        'iterator': 'Objeto que permite recorrer una secuencia elemento a elemento.',
+        'lambda': 'Función anónima de una sola expresión.',
+        'recursión': 'Función que se llama a sí misma.',
+        'recursion': 'Función que se llama a sí misma.',
+        'parámetro': 'Variable en la definición de una función.',
+        'parameter': 'Variable en la definición de una función.',
+        'argumento': 'Valor que se pasa a una función al llamarla.',
+        'argument': 'Valor que se pasa a una función al llamarla.',
+        'indentación': 'Espacios al inicio de línea que definen bloques en Python.',
+        'array': 'Estructura de datos que almacena elementos del mismo tipo.',
+        'int': 'Tipo de dato para números enteros.',
+        'float': 'Tipo de dato para números decimales.',
+        'None': 'Valor nulo en Python (equivale a null en Java).',
+        'null': 'Valor nulo en Java (equivale a None en Python).',
+        'set': 'Colección sin duplicados ni orden definido.',
+        'método': 'Función definida dentro de una clase.',
+        'method': 'Función definida dentro de una clase.',
+        'objeto': 'Instancia de una clase.',
+        'object': 'Instancia de una clase.',
+        'import': 'Instrucción para incluir módulos o librerías.',
+        'constructor': 'Método especial que inicializa un objeto (__init__ en Python).'
+    };
+
+    // Apply tooltips to section text content
+    document.querySelectorAll('.section-text, .note-body').forEach(el => {
+        let html = el.innerHTML;
+        for (const [term, def] of Object.entries(GLOSSARY_TERMS)) {
+            // Only match whole words not already inside tags, case-insensitive
+            const regex = new RegExp(`(?<![<\/\w])\\b(${term})\\b(?![^<]*>)`, 'gi');
+            html = html.replace(regex, (match) => {
+                return `<span class="glossary-term" data-tooltip="${def}">${match}</span>`;
+            });
+        }
+        el.innerHTML = html;
+    });
 </script>
 {% endblock %}

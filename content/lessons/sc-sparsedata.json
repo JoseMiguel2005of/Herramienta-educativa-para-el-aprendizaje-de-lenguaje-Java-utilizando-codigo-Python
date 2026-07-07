@@ -1,25 +1,49 @@
 {
     "id": "sc-sparsedata",
-    "title": "SciPy Sparse Data",
-    "intro": "Welcome to the SciPy Sparse Data lesson.",
-    "python_desc": "Python code for SciPy Sparse Data",
-    "java_desc": "Java equivalent for SciPy Sparse Data",
+    "title": "Datos Dispersos (Sparse Data)",
+    "intro": "Los datos dispersos son datos que contienen en su mayoría valores no utilizados (usualmente ceros).",
+    "python_desc": "Código Python para Datos Dispersos en SciPy",
+    "java_desc": "Equivalente en Java para Matrices Dispersas",
     "explanation": "",
     "sections": [
         {
-            "title": "Sparse Data",
-            "text": "In this lesson we cover <b>SciPy Sparse Data</b>. Python simplifies this operation, whereas Java requires a more structured approach.",
+            "title": "¿Qué son los Datos Dispersos?",
+            "text": "Los datos <b>densos</b> son arreglos donde la mayoría de los valores no son cero. Los datos <b>dispersos</b> (sparse) son arreglos donde la mayoría de los elementos son cero.",
+            "notes": [
+                {"type": "note", "text": "Almacenar ceros consume mucha memoria innecesaria. El módulo <code>scipy.sparse</code> comprime estas matrices omitiendo los ceros, ahorrando tiempo y memoria valiosa."}
+            ]
+        },
+        {
+            "title": "Tipos Comunes de Matrices Dispersas",
+            "text": "Existen principalmente dos tipos de matrices dispersas muy populares en SciPy: <b>CSC</b> (Compressed Sparse Column) ideal para operaciones de columnas eficientes, y <b>CSR</b> (Compressed Sparse Row) ideal para acceso rápido a filas y multiplicaciones de matrices.",
             "notes": []
         }
     ],
-    "exercises": [],
     "code_mappings": [
         {
             "id": "sc-sparsedata-1",
-            "section": "Sparse Data",
-            "python": "# SciPy Sparse Data Python example\nprint('SciPy Sparse Data')",
-            "java": "// SciPy Sparse Data Java example\nSystem.out.println(\"SciPy Sparse Data\");",
-            "explanation": "Basic example demonstrating SciPy Sparse Data."
+            "section": "Crear una Matriz CSR",
+            "python": "import numpy as np\nfrom scipy.sparse import csr_matrix\n\n# Un arreglo numpy con muchos ceros\narr = np.array([0, 0, 0, 0, 0, 1, 1, 0, 2])\n\n# Convertir a matriz dispersa CSR\nmatriz_dispersa = csr_matrix(arr)\n\nprint(matriz_dispersa)",
+            "java": "// En Java puro sin librerías tendrías que crear una estructura propia.\nclass SparseMatrix {\n    // Usualmente guardarías un Map de (Fila, Columna) -> Valor\n    // o implementar el algoritmo CSR manualmente (arreglos de valores, índices y punteros).\n}",
+            "explanation": "Al imprimir la matriz CSR en SciPy, solo te mostrará las posiciones y los valores de los elementos que NO son cero. Java estándar carece de estructuras predefinidas para esto, requiriendo su implementación manual o vía librerías."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-sc-sparsedata-1",
+            "type": "multiple-choice",
+            "question": "¿Cuál es la ventaja principal de usar Matrices Dispersas para almacenar datos llenos de ceros?",
+            "options": ["El código se ve más bonito", "Ahorran memoria al no guardar cada elemento nulo (cero)", "Cambian automáticamente los ceros por unos", "Obligan al procesador a ser más veloz"],
+            "correct": 1
+        },
+        {
+            "id": "ex-sc-sparsedata-2",
+            "type": "fill-blank",
+            "question": "Escribe el nombre de la función usada en SciPy para convertir un arreglo numpy normal en una matriz comprimida por filas (CSR).",
+            "template": "matriz = _______(arr)",
+            "template_html": "matriz = <input type='text' class='exercise-input' data-answer='csr_matrix' placeholder='_______'>(arr)",
+            "python_code": "matriz = csr_matrix(arr)",
+            "answer": "csr_matrix"
         }
     ]
 }

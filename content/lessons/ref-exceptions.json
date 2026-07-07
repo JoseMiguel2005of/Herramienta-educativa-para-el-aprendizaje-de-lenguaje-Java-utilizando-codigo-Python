@@ -1,17 +1,38 @@
 {
     "id": "ref-exceptions",
-    "title": "Python Exceptions",
-    "intro": "Welcome to the Python Exceptions lesson.",
-    "python_desc": "Python code for Python Exceptions",
-    "java_desc": "Java equivalent for Python Exceptions",
-    "explanation": "<p>In this lesson we cover <b>Python Exceptions</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Excepciones en Python",
+    "intro": "Referencia de las excepciones mas comunes en Python y sus equivalentes en Java.",
+    "python_desc": "Referencia de Python: Excepciones en Python",
+    "java_desc": "Equivalente en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Excepciones Comunes",
+            "text": "Python define una jerarquia de excepciones. Las mas usadas son: <code>ValueError</code> (valor inapropiado), <code>TypeError</code> (tipo incorrecto), <code>IndexError</code> (indice fuera de rango), <code>KeyError</code> (clave no encontrada), <code>ZeroDivisionError</code> (division por cero).",
+            "notes": []
+        },
+        {
+            "title": "Tabla de Equivalencias",
+            "text": "<table><tr><th>Python</th><th>Java</th><th>Cuando ocurre</th></tr><tr><td>ValueError</td><td>IllegalArgumentException</td><td>Valor inapropiado para la funcion</td></tr><tr><td>TypeError</td><td>ClassCastException</td><td>Operacion con tipo incorrecto</td></tr><tr><td>IndexError</td><td>IndexOutOfBoundsException</td><td>Indice fuera de rango</td></tr><tr><td>KeyError</td><td>NoSuchElementException</td><td>Clave no encontrada en dict</td></tr><tr><td>ZeroDivisionError</td><td>ArithmeticException</td><td>Division por cero</td></tr><tr><td>FileNotFoundError</td><td>FileNotFoundException</td><td>Archivo no encontrado</td></tr><tr><td>AttributeError</td><td>NoSuchFieldException</td><td>Atributo no existe</td></tr></table>",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
-            "id": "ref-exceptions-1",
-            "python": "# Python Exceptions Python example\nprint('Python Exceptions')",
-            "java": "// Python Exceptions Java example\nSystem.out.println(\"Python Exceptions\");",
-            "explanation": "Basic example demonstrating Python Exceptions."
+            "id": "ref-exc-1",
+            "section": "Manejo de Excepciones",
+            "python": "try:\n    x = int('abc')\nexcept ValueError as e:\n    print(f'Error: {e}')\nfinally:\n    print('Siempre se ejecuta')",
+            "java": "try {\n    int x = Integer.parseInt(\"abc\");\n} catch (NumberFormatException e) {\n    System.out.println(\"Error: \" + e.getMessage());\n} finally {\n    System.out.println(\"Siempre se ejecuta\");\n}",
+            "explanation": "Ambos lenguajes usan try/catch(except)/finally. Los nombres de excepciones varian."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ref-exc-ex1",
+            "type": "fill-blank",
+            "question": "Captura cualquier error que ocurra en el bloque try.",
+            "template_html": "try:<br>&nbsp;&nbsp;&nbsp;&nbsp;x = 1/0<br><input type='text' class='exercise-input' data-answer='except' size='7'>:<br>&nbsp;&nbsp;&nbsp;&nbsp;print('Error')",
+            "answer": "except"
         }
     ]
 }

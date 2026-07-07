@@ -1,25 +1,47 @@
 {
     "id": "py-intro",
-    "title": "Python Intro",
-    "intro": "Welcome to the Python Intro lesson.",
-    "python_desc": "Python code for Python Intro",
-    "java_desc": "Java equivalent for Python Intro",
+    "title": "Introducción a Python",
+    "intro": "Python es un lenguaje de programación de propósito general, popular, versátil y muy fácil de aprender.",
+    "python_desc": "Código Python para Introducción",
+    "java_desc": "Equivalente en Java para Introducción",
     "explanation": "",
     "sections": [
         {
-            "title": "Introduction",
-            "text": "In this lesson we cover <b>Python Intro</b>. Python simplifies this operation, whereas Java requires a more structured approach.",
+            "title": "¿Qué es Python?",
+            "text": "Python fue creado por Guido van Rossum y lanzado en 1991. Se usa ampliamente para desarrollo web (del lado del servidor), desarrollo de software, matemáticas y secuencias de comandos de sistemas (scripting).",
             "notes": []
+        },
+        {
+            "title": "¿Por qué Python?",
+            "text": "Python funciona en diferentes plataformas (Windows, Mac, Linux). Tiene una sintaxis simple parecida al idioma inglés, lo que permite a los desarrolladores escribir programas con menos líneas que en otros lenguajes de programación.",
+            "notes": [
+                {"type": "note", "text": "Python se ejecuta en un sistema <b>interpretado</b>. Esto significa que el código se puede ejecutar tan pronto como se escribe, ideal para prototipos rápidos."}
+            ]
+        },
+        {
+            "title": "Comparación con Java",
+            "text": "Mientras que Java es estrictamente tipado y requiere definir el tipo de cada variable, Python usa tipado dinámico. Además, Java es un lenguaje compilado (a bytecode) antes de ejecutarse.",
+            "notes": [
+                {"type": "tip", "text": "En Python, los bloques de código se definen usando <b>indentación</b> (espacios al principio de la línea). Java usa <b>llaves</b> <code>{}</code>."}
+            ]
         }
     ],
-    "exercises": [],
     "code_mappings": [
         {
             "id": "py-intro-1",
-            "section": "Introduction",
-            "python": "# Python Intro Python example\nprint('Python Intro')",
-            "java": "// Python Intro Java example\nSystem.out.println(\"Python Intro\");",
-            "explanation": "Basic example demonstrating Python Intro."
+            "section": "Sintaxis Básica",
+            "python": "print(\"¡Hola, Mundo!\")",
+            "java": "public class Main {\n  public static void main(String[] args) {\n    System.out.println(\"¡Hola, Mundo!\");\n  }\n}",
+            "explanation": "Como puedes ver, Python requiere mucho menos código de preparación para lograr la misma salida."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ex-py-intro-1",
+            "type": "multiple-choice",
+            "question": "¿Cómo se definen los bloques de código (como los que van dentro de un condicional o función) en Python?",
+            "options": ["Usando corchetes []", "Usando indentación (espacios)", "Usando llaves {}", "Usando paréntesis ()"],
+            "correct": 1
         }
     ]
 }

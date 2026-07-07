@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificado — {{ category_name }} — Py2Java Edu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #0D1117;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: "Inter", sans-serif;
+            padding: 2rem;
+        }
+
+        .cert-container {
+            background: linear-gradient(135deg, #0D1117 0%, #161B22 50%, #0D1117 100%);
+            border: 2px solid #00E5FF;
+            border-radius: 12px;
+            padding: 3rem 4rem;
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow:
+                0 0 40px rgba(0, 229, 255, 0.15),
+                0 20px 60px rgba(0, 0, 0, 0.8),
+                inset 0 0 80px rgba(0, 229, 255, 0.03);
+        }
+
+        /* Corner decorations */
+        .cert-container::before,
+        .cert-container::after {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-color: #00E5FF;
+            border-style: solid;
+        }
+        .cert-container::before {
+            top: 15px;
+            left: 15px;
+            border-width: 2px 0 0 2px;
+        }
+        .cert-container::after {
+            bottom: 15px;
+            right: 15px;
+            border-width: 0 2px 2px 0;
+        }
+
+        .cert-header {
+            margin-bottom: 1rem;
+        }
+
+        .cert-logo {
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #00E5FF;
+            letter-spacing: 0.15em;
+            text-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+            margin-bottom: 0.5rem;
+        }
+
+        .cert-type {
+            font-size: 0.85rem;
+            color: #8B949E;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            font-family: "JetBrains Mono", monospace;
+        }
+
+        .cert-divider {
+            width: 60%;
+            margin: 1.5rem auto;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #00E5FF, transparent);
+        }
+
+        .cert-body h2 {
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 1.2rem;
+            color: #8B949E;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+
+        .cert-name {
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .cert-achievement {
+            font-size: 1rem;
+            color: #C9D1D9;
+            margin-bottom: 0.25rem;
+        }
+
+        .cert-course-name {
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #00E5FF;
+            text-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+            margin: 0.5rem 0 1rem;
+        }
+
+        .cert-lessons {
+            font-size: 0.85rem;
+            color: #8B949E;
+            font-family: "JetBrains Mono", monospace;
+        }
+
+        .cert-date {
+            font-size: 0.85rem;
+            color: #8B949E;
+            margin-top: 1rem;
+            font-family: "JetBrains Mono", monospace;
+        }
+
+        .cert-footer {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .cert-signature {
+            text-align: center;
+        }
+
+        .cert-sig-line {
+            width: 160px;
+            height: 1px;
+            background: #30363D;
+            margin-bottom: 0.5rem;
+        }
+
+        .cert-sig-title {
+            font-size: 0.7rem;
+            color: #8B949E;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .cert-id {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.65rem;
+            color: #30363D;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Locked state */
+        .cert-locked-overlay {
+            background: rgba(13, 17, 23, 0.85);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            border-radius: 12px;
+        }
+
+        .cert-locked-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .cert-locked-text {
+            color: #8B949E;
+            font-size: 1.1rem;
+            font-family: "JetBrains Mono", monospace;
+            margin-bottom: 0.5rem;
+        }
+
+        .cert-locked-progress {
+            color: #00E5FF;
+            font-family: "JetBrains Mono", monospace;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .cert-locked-back {
+            margin-top: 1.5rem;
+            color: #00E5FF;
+            text-decoration: none;
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.85rem;
+            border: 1px solid rgba(0, 229, 255, 0.4);
+            padding: 0.5rem 1.5rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+        .cert-locked-back:hover {
+            background: rgba(0, 229, 255, 0.1);
+        }
+
+        /* Print */
+        .cert-actions {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .cert-btn {
+            background: transparent;
+            border: 1px solid #00E5FF;
+            color: #00E5FF;
+            padding: 0.6rem 1.5rem;
+            border-radius: 4px;
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        .cert-btn:hover {
+            background: rgba(0, 229, 255, 0.1);
+        }
+        .cert-btn-primary {
+            background: #00E5FF;
+            color: #0D1117;
+            font-weight: 700;
+        }
+        .cert-btn-primary:hover {
+            background: #00f7ff;
+        }
+
+        @media print {
+            body { background: #fff; padding: 0; }
+            .cert-container {
+                border-color: #000;
+                box-shadow: none;
+                background: #fff;
+            }
+            .cert-logo, .cert-course-name { color: #006080; text-shadow: none; }
+            .cert-name { color: #000; text-shadow: none; }
+            .cert-actions { display: none; }
+            .cert-container::before, .cert-container::after { border-color: #000; }
+        }
+
+        @media (max-width: 600px) {
+            .cert-container { padding: 2rem 1.5rem; }
+            .cert-name { font-size: 1.8rem; }
+            .cert-course-name { font-size: 1.2rem; }
+            .cert-footer { flex-direction: column; align-items: center; gap: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="cert-container">
+    {% if not is_complete %}
+    <!-- Locked Overlay -->
+    <div class="cert-locked-overlay">
+        <div class="cert-locked-icon">🔒</div>
+        <div class="cert-locked-text">Certificado no disponible aún</div>
+        <div class="cert-locked-progress">{{ completed_lessons }} / {{ total_lessons }} lecciones completadas</div>
+        <a href="{{ url_for('dashboard') }}" class="cert-locked-back">← Volver al Dashboard</a>
+    </div>
+    {% endif %}
+
+    <div class="cert-header">
+        <div class="cert-logo">PY2JAVA EDU</div>
+        <div class="cert-type">Certificado de Finalización</div>
+    </div>
+
+    <div class="cert-divider"></div>
+
+    <div class="cert-body">
+        <h2>Se certifica que</h2>
+        <div class="cert-name">{{ user.username }}</div>
+        <div class="cert-achievement">ha completado satisfactoriamente el módulo</div>
+        <div class="cert-course-name">{{ category_name }}</div>
+        <div class="cert-lessons">{{ total_lessons }} lecciones completadas</div>
+        <div class="cert-date">{{ completion_date }}</div>
+    </div>
+
+    <div class="cert-divider"></div>
+
+    <div class="cert-footer">
+        <div class="cert-signature">
+            <div class="cert-sig-line"></div>
+            <div class="cert-sig-title">Plataforma Py2Java Edu</div>
+        </div>
+        <div class="cert-signature">
+            <div class="cert-sig-line"></div>
+            <div class="cert-sig-title">Instructor</div>
+        </div>
+    </div>
+
+    <div class="cert-id">CERT-{{ category_id | upper }}-{{ user.id }}-{{ "2026" }}</div>
+</div>
+
+{% if is_complete %}
+<div class="cert-actions">
+    <button onclick="window.print()" class="cert-btn cert-btn-primary">🖨️ Imprimir / PDF</button>
+    <a href="{{ url_for('dashboard') }}" class="cert-btn">← Dashboard</a>
+</div>
+{% endif %}
+
+</body>
+</html>

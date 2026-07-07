@@ -1,17 +1,43 @@
 {
     "id": "ref-tuples",
-    "title": "Tuple Methods",
-    "intro": "Welcome to the Tuple Methods lesson.",
-    "python_desc": "Python code for Tuple Methods",
-    "java_desc": "Java equivalent for Tuple Methods",
-    "explanation": "<p>In this lesson we cover <b>Tuple Methods</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Referencia de Metodos de Tupla",
+    "intro": "Las tuplas tienen solo dos metodos integrados, ya que son inmutables (no se pueden modificar).",
+    "python_desc": "Referencia de Python: Referencia de Metodos de Tupla",
+    "java_desc": "Equivalente en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Metodos Disponibles",
+            "text": "Como las tuplas son <b>inmutables</b>, solo tienen dos metodos: <code>count(x)</code> que cuenta cuantas veces aparece un valor, y <code>index(x)</code> que devuelve la posicion de la primera ocurrencia de un valor.",
+            "notes": [
+                {
+                    "type": "note",
+                    "text": "A diferencia de las listas, las tuplas NO tienen append, insert, remove, pop, sort ni reverse."
+                }
+            ]
+        },
+        {
+            "title": "Tabla de Referencia",
+            "text": "<table><tr><th>Python</th><th>Descripcion</th></tr><tr><td>t.count(x)</td><td>Cuenta cuantas veces aparece x</td></tr><tr><td>t.index(x)</td><td>Devuelve el indice de la primera ocurrencia de x</td></tr><tr><td>len(t)</td><td>Numero de elementos</td></tr></table>",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
-            "id": "ref-tuples-1",
-            "python": "# Tuple Methods Python example\nprint('Tuple Methods')",
-            "java": "// Tuple Methods Java example\nSystem.out.println(\"Tuple Methods\");",
-            "explanation": "Basic example demonstrating Tuple Methods."
+            "id": "ref-tup-1",
+            "section": "Ejemplo",
+            "python": "t = (1, 3, 7, 8, 7, 5, 4, 7)\nprint(t.count(7))   # 3\nprint(t.index(8))   # 3\nprint(len(t))       # 8",
+            "java": "// Java no tiene un tipo Tuple nativo\n// Se puede usar List.of() para crear listas inmutables\nList<Integer> t = List.of(1, 3, 7, 8, 7, 5, 4, 7);\nSystem.out.println(Collections.frequency(t, 7)); // 3\nSystem.out.println(t.indexOf(8));                 // 3\nSystem.out.println(t.size());                     // 8",
+            "explanation": "Java no tiene tuplas. Se usan listas inmutables (List.of) como alternativa mas cercana."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ref-tup-ex1",
+            "type": "fill-blank",
+            "question": "Cuenta cuantas veces aparece el 7 en la tupla.",
+            "template_html": "t = (1, 3, 7, 8, 7)<br>print(t.<input type='text' class='exercise-input' data-answer='count' size='6'>(7))",
+            "answer": "count"
         }
     ]
 }

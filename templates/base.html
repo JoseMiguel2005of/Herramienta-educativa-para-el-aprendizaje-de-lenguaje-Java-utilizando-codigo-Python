@@ -37,6 +37,11 @@
             </a>
             <div class="topbar-actions">
                 <div style="display:flex; align-items:center; gap:0.5rem;">
+                    <button type="button" id="btn-theme-toggle" class="term-btn" title="Cambiar tema"
+                        onclick="toggleTheme()"
+                        style="border: 1px solid rgba(255,255,255,0.2); background: transparent; color: var(--text-muted); padding: 0.3rem 0.6rem; font-family: inherit; font-size: 0.85rem; cursor: pointer;">
+                        <span id="theme-icon">🌙</span>
+                    </button>
                     <button type="button" id="btn-open-search" class="term-btn" title="Buscar (Ctrl+K)"
                         style="border: 1px solid rgba(255,255,255,0.2); background: transparent; color: var(--text-muted); padding: 0.3rem 0.6rem; font-family: inherit; font-size: 0.85rem; cursor: pointer;">
                         <span style="color: var(--green);">>_</span> <span class="hide-mobile">CMD: SEARCH</span>
@@ -78,9 +83,23 @@
                     <a href="{{ url_for('roadmap') }}" class="term-btn text-python">
                         [ EXEC: ROADMAP ]
                     </a>
+                    <a href="{{ url_for('practice_list') }}" class="term-btn text-green" style="font-weight: bold; text-shadow: 0 0 5px rgba(0, 229, 255, 0.5);">
+                        [ EXEC: LABS ]
+                    </a>
                     <a href="{{ url_for('traductor') }}" class="term-btn text-green">
                         [ TOOL: TRANSPILER ]
                     </a>
+                    <a href="{{ url_for('glossary') }}" class="term-btn text-green">
+                        [ TOOL: GLOSSARY ]
+                    </a>
+                    <a href="{{ url_for('leaderboard') }}" class="term-btn text-green">
+                        [ EXEC: LEADERBOARD ]
+                    </a>
+                    {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('profile') }}" class="term-btn text-green">
+                        [ EXEC: PROFILE ]
+                    </a>
+                    {% endif %}
                     {% if current_user.is_authenticated and current_user.role == 'teacher' %}
                     <a href="{{ url_for('teacher_dashboard') }}" class="term-btn text-orange">
                         [ ADMIN: TEACHER_PANEL ]
@@ -269,6 +288,40 @@
                     .catch(err => console.log('SW registration failed: ', err));
             });
         }
+
+        // Theme Toggle (Sprint 2 — 1.9)
+        function toggleTheme() {
+            const html = document.documentElement;
+            const current = html.getAttribute('data-theme') || 'dark';
+            const next = current === 'dark' ? 'light' : 'dark';
+
+            html.setAttribute('data-theme', next);
+            document.body.style.transition = 'background 0.4s ease, color 0.4s ease';
+
+            // Update icon
+            const icon = document.getElementById('theme-icon');
+            if (icon) icon.textContent = next === 'dark' ? '🌙' : '☀️';
+
+            // Persist to localStorage
+            localStorage.setItem('py2java_theme', next);
+
+            // Persist to server session
+            fetch('/api/theme', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ theme: next })
+            }).catch(() => {});
+        }
+
+        // Apply saved theme on load
+        (function() {
+            const saved = localStorage.getItem('py2java_theme');
+            if (saved) {
+                document.documentElement.setAttribute('data-theme', saved);
+                const icon = document.getElementById('theme-icon');
+                if (icon) icon.textContent = saved === 'dark' ? '🌙' : '☀️';
+            }
+        })();
     </script>
     {% block scripts %}{% endblock %}
 </body>

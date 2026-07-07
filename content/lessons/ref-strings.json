@@ -1,17 +1,38 @@
 {
     "id": "ref-strings",
-    "title": "String Methods",
-    "intro": "Welcome to the String Methods lesson.",
-    "python_desc": "Python code for String Methods",
-    "java_desc": "Java equivalent for String Methods",
-    "explanation": "<p>In this lesson we cover <b>String Methods</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Referencia de Metodos de String",
+    "intro": "Lista completa de los metodos disponibles para cadenas de texto en Python.",
+    "python_desc": "Referencia de Python: Referencia de Metodos de String",
+    "java_desc": "Equivalente en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Metodos de Transformacion",
+            "text": "<code>upper()</code> convierte a mayusculas, <code>lower()</code> a minusculas, <code>capitalize()</code> solo la primera letra, <code>title()</code> cada palabra, <code>strip()</code> elimina espacios al inicio y al final.",
+            "notes": []
+        },
+        {
+            "title": "Tabla de Referencia",
+            "text": "<table><tr><th>Python</th><th>Java (String)</th><th>Descripcion</th></tr><tr><td>s.upper()</td><td>s.toUpperCase()</td><td>A mayusculas</td></tr><tr><td>s.lower()</td><td>s.toLowerCase()</td><td>A minusculas</td></tr><tr><td>s.strip()</td><td>s.trim()</td><td>Quitar espacios</td></tr><tr><td>s.replace(a,b)</td><td>s.replace(a,b)</td><td>Reemplazar</td></tr><tr><td>s.split(sep)</td><td>s.split(sep)</td><td>Dividir en lista</td></tr><tr><td>s.find(sub)</td><td>s.indexOf(sub)</td><td>Buscar subcadena</td></tr><tr><td>s.startswith(x)</td><td>s.startsWith(x)</td><td>Verificar inicio</td></tr><tr><td>s.endswith(x)</td><td>s.endsWith(x)</td><td>Verificar final</td></tr><tr><td>len(s)</td><td>s.length()</td><td>Longitud</td></tr></table>",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
-            "id": "ref-strings-1",
-            "python": "# String Methods Python example\nprint('String Methods')",
-            "java": "// String Methods Java example\nSystem.out.println(\"String Methods\");",
-            "explanation": "Basic example demonstrating String Methods."
+            "id": "ref-str-1",
+            "section": "Ejemplo Completo",
+            "python": "txt = '  Hola Mundo  '\nprint(txt.strip())        # 'Hola Mundo'\nprint(txt.upper())        # '  HOLA MUNDO  '\nprint(txt.replace('Mundo', 'Python'))\nprint(txt.split())",
+            "java": "String txt = \"  Hola Mundo  \";\nSystem.out.println(txt.trim());          // \"Hola Mundo\"\nSystem.out.println(txt.toUpperCase());   // \"  HOLA MUNDO  \"\nSystem.out.println(txt.replace(\"Mundo\", \"Python\"));\nSystem.out.println(txt.split(\" \"));",
+            "explanation": "Los metodos de strings son muy similares entre Python y Java, con diferencias menores en los nombres."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ref-str-ex1",
+            "type": "fill-blank",
+            "question": "Convierte el texto a minusculas.",
+            "template_html": "txt = 'HOLA'<br>print(txt.<input type='text' class='exercise-input' data-answer='lower' size='6'>())",
+            "answer": "lower"
         }
     ]
 }

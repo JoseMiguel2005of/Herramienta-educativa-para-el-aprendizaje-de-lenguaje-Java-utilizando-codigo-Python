@@ -1,17 +1,43 @@
 {
     "id": "ref-lists",
-    "title": "List Methods",
-    "intro": "Welcome to the List Methods lesson.",
-    "python_desc": "Python code for List Methods",
-    "java_desc": "Java equivalent for List Methods",
-    "explanation": "<p>In this lesson we cover <b>List Methods</b>. Python simplifies this operation, whereas Java requires a more structured approach.</p>",
-    "exercises": [],
+    "title": "Referencia de Metodos de Lista",
+    "intro": "Lista completa de los metodos disponibles para listas en Python, con su descripcion y equivalente en Java.",
+    "python_desc": "Referencia de Python: Referencia de Metodos de Lista",
+    "java_desc": "Equivalente en Java",
+    "explanation": "",
+    "sections": [
+        {
+            "title": "Metodos para Agregar Elementos",
+            "text": "<code>append(x)</code> agrega al final, <code>insert(i, x)</code> inserta en la posicion i, y <code>extend(iterable)</code> agrega todos los elementos de otro iterable.",
+            "notes": []
+        },
+        {
+            "title": "Metodos para Eliminar Elementos",
+            "text": "<code>remove(x)</code> elimina la primera ocurrencia del valor x, <code>pop(i)</code> elimina y retorna el elemento en la posicion i (o el ultimo si no se especifica), y <code>clear()</code> vacia la lista.",
+            "notes": []
+        },
+        {
+            "title": "Tabla de Referencia",
+            "text": "<table><tr><th>Python</th><th>Java (ArrayList)</th><th>Descripcion</th></tr><tr><td>lst.append(x)</td><td>list.add(x)</td><td>Agregar al final</td></tr><tr><td>lst.insert(i,x)</td><td>list.add(i, x)</td><td>Insertar en posicion</td></tr><tr><td>lst.remove(x)</td><td>list.remove(x)</td><td>Eliminar por valor</td></tr><tr><td>lst.pop()</td><td>list.remove(list.size()-1)</td><td>Eliminar ultimo</td></tr><tr><td>lst.sort()</td><td>Collections.sort(list)</td><td>Ordenar</td></tr><tr><td>lst.reverse()</td><td>Collections.reverse(list)</td><td>Invertir orden</td></tr><tr><td>lst.index(x)</td><td>list.indexOf(x)</td><td>Buscar posicion</td></tr><tr><td>len(lst)</td><td>list.size()</td><td>Cantidad de elementos</td></tr></table>",
+            "notes": []
+        }
+    ],
     "code_mappings": [
         {
             "id": "ref-lists-1",
-            "python": "# List Methods Python example\nprint('List Methods')",
-            "java": "// List Methods Java example\nSystem.out.println(\"List Methods\");",
-            "explanation": "Basic example demonstrating List Methods."
+            "section": "Ejemplo Completo",
+            "python": "frutas = ['manzana', 'banana']\nfrutas.append('cereza')\nfrutas.insert(1, 'naranja')\nfrutas.sort()\nprint(frutas)\nfrutas.pop()\nprint(len(frutas))",
+            "java": "ArrayList<String> frutas = new ArrayList<>(Arrays.asList(\"manzana\", \"banana\"));\nfrutas.add(\"cereza\");\nfrutas.add(1, \"naranja\");\nCollections.sort(frutas);\nSystem.out.println(frutas);\nfrutas.remove(frutas.size() - 1);\nSystem.out.println(frutas.size());",
+            "explanation": "Python usa metodos directos. Java usa ArrayList + Collections para operaciones como sort y reverse."
+        }
+    ],
+    "exercises": [
+        {
+            "id": "ref-list-ex1",
+            "type": "fill-blank",
+            "question": "Agrega 'uva' al final de la lista.",
+            "template_html": "frutas.<input type='text' class='exercise-input' data-answer='append' size='7'>('uva')",
+            "answer": "append"
         }
     ]
 }
