@@ -23,7 +23,19 @@
         <div class="exercise-card-main">
             <p class="exercise-question-text">{{ current_exercise.question }}</p>
 
-            {% if current_exercise.template_html %}
+            {% if current_exercise.type == 'multiple-choice' and current_exercise.options %}
+            <div class="exercise-options-block" id="exercise-mc-options">
+                <div class="quiz-options">
+                    {% for option in current_exercise.options %}
+                    <label class="quiz-option-label">
+                        <input type="radio" name="exercise_mc" value="{{ loop.index0 }}">
+                        <span class="quiz-option-text">{{ option }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+                <div class="quiz-answer-data" data-correct="{{ current_exercise.correct }}" hidden></div>
+            </div>
+            {% elif current_exercise.template_html %}
             <div class="exercise-code-block">
                 <div class="exercise-template-area" id="exercise-template">
                     {{ current_exercise.template_html | safe }}

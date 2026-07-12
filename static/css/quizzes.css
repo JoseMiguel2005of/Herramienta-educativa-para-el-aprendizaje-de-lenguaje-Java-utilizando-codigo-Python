@@ -217,6 +217,39 @@
     background: rgba(4, 170, 109, 0.1);
 }
 
+.quiz-option-label.option-correct {
+    border-color: #4caf50;
+    background: rgba(76, 175, 80, 0.15);
+    color: #81c784;
+}
+
+.quiz-option-label.option-incorrect {
+    border-color: #ef5350;
+    background: rgba(239, 83, 80, 0.12);
+    color: #e57373;
+}
+
+/* Find-error line selection */
+.error-line {
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.error-line:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+.error-line.selected-line {
+    background: rgba(255, 193, 7, 0.12);
+    border-left: 3px solid #ffc107;
+}
+.error-line.line-correct {
+    background: rgba(76, 175, 80, 0.15);
+    border-left: 3px solid #4caf50;
+}
+.error-line.line-incorrect {
+    background: rgba(239, 83, 80, 0.12);
+    border-left: 3px solid #ef5350;
+}
+
 /* Reorder Quiz */
 .quiz-reorder {
     margin-bottom: 1.5rem;

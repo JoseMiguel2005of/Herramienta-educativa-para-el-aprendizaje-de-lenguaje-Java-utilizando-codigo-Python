@@ -17,15 +17,21 @@ from search_index import search_lessons
 from translator import translate
 
 app = Flask(__name__)
-app.secret_key = "tesis-python-java-educativo"
+app.secret_key = os.environ.get("SECRET_KEY", "tesis-python-java-educativo-fallback")
 
 # Teacher registration secret code (4.10)
 TEACHER_SECRET_CODE = os.environ.get("TEACHER_SECRET_CODE", "profesor2024")
 
 # Database Configuration
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
-    os.path.abspath(os.path.dirname(__file__)), "database_v2.sqlite"
-)
+database_url = os.environ.get("DATABASE_URL")
+if database_url:
+    if database_url.startswith("postgres://"):
+        database_url = database_url.replace("postgres://", "postgresql://", 1)
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_url
+else:
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
+        os.path.abspath(os.path.dirname(__file__)), "database_v2.sqlite"
+    )
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db.init_app(app)
 
@@ -495,7 +501,6 @@ def api_translate():
     data = request.get_json(silent=True) or {}
     python_code = data.get("code", "")
     class_name = data.get("class_name", "Program")
-    data.get("lesson_id", "unknown")
 
     result = translate(python_code, class_name=class_name)
 
@@ -630,6 +635,38 @@ def get_progress_summary(user):
     total_xp = sum(p.score for p in progresses)
     streak = calculate_streak(user.id)
     return {"completed_lessons": completed, "total_xp": total_xp, "streak": streak}
+
+
+LEVEL_TITLES = {
+    1: "Iniciado",
+    2: "Novato",
+    3: "Aprendiz",
+    4: "Entusiasta",
+    5: "Programador Junior",
+    6: "Programador",
+    7: "Desarrollador",
+    8: "Ingeniero de Software",
+    9: "Arquitecto",
+    10: "Maestro del Código",
+    11: "Mago de la Sintaxis",
+    12: "Gurú de Algoritmos",
+    13: "Hacker",
+    14: "Ninja del Desarrollo",
+    15: "Jedi del Software",
+    16: "Titán de la Programación",
+    17: "Leyenda Viva",
+    18: "Semidiós del Código",
+    19: "Dios del Código",
+    20: "Entidad Binaria Superior"
+}
+
+def get_level_info(total_xp):
+    level = (total_xp // 100) + 1
+    if level >= 20:
+        title = LEVEL_TITLES[20]
+    else:
+        title = LEVEL_TITLES.get(level, "Iniciado")
+    return {"level": level, "title": title}
 
 
 @app.route("/api/progreso/resumen", methods=["GET"])
@@ -990,9 +1027,7 @@ def traductor():
 
 # --- AI TUTOR (Gemini API) ---
 
-GEMINI_API_KEY = os.environ.get(
-    "GEMINI_API_KEY", "AQ.Ab8RN6JX_BvWBYYh4CzXK6kvkDyqsNGCBME6wUvirs0UQtjoMA"
-)
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
 
 
@@ -1177,31 +1212,6 @@ def example_detail(example_id):
         example=example,
         categories=LESSON_CATEGORIES,
         page="examples"
-    )
-
-
-@app.route("/practica")
-def practice():
-    data = load_practice_problems()
-    return render_template(
-        "practice.html",
-        problems=data.get("problems", []),
-        categories=LESSON_CATEGORIES,
-        page="practice"
-    )
-
-
-@app.route("/practica/<problem_id>")
-def practice_detail(problem_id):
-    problem = get_practice_problem(problem_id)
-    if not problem:
-        return redirect(url_for("practice"))
-        
-    return render_template(
-        "practice_detail.html",
-        problem=problem,
-        categories=LESSON_CATEGORIES,
-        page="practice"
     )
 
 

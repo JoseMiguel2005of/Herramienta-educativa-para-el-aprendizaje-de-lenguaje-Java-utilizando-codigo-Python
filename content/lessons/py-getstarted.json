@@ -27,14 +27,14 @@
     "code_mappings": [
         {
             "id": "py-getstarted-1",
-            "section": "Comprobar Versión",
+            "section": "Instalación de Python",
             "python": "# En tu terminal de Windows/Mac/Linux:\npython --version",
             "java": "// En Java usamos:\njava -version",
             "explanation": "Ambos lenguajes te permiten verificar la versión instalada a través de la línea de comandos."
         },
         {
             "id": "py-getstarted-2",
-            "section": "Ejecutar Archivo",
+            "section": "Inicio Rápido de Python",
             "python": "# Guardas un archivo como mimodelo.py y luego:\npython mimodelo.py",
             "java": "// En Java primero compilas y luego ejecutas:\njavac Main.java\njava Main",
             "explanation": "Python (interpretado) se ejecuta directamente desde el archivo fuente. Java requiere un paso intermedio de compilación (javac)."

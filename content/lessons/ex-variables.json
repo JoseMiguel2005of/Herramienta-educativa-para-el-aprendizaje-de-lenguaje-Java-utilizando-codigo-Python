@@ -63,12 +63,5 @@
             "expected_output": "def myfunc():\n    global x\n    x = 'fantastic'"
         }
     ],
-    "code_mappings": [
-        {
-            "id": "ex-variables-1",
-            "python": "# Completa el ejercicio de Variables\n",
-            "java": "// Completa el ejercicio en Java\n",
-            "explanation": "Espacio de práctica para Variables."
-        }
-    ]
+    "code_mappings": []
 }

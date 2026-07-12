@@ -9,13 +9,48 @@ document.addEventListener('DOMContentLoaded', () => {
     const feedback = document.getElementById('exercise-feedback');
     const hintBox = document.getElementById('hint-box');
     const freeformInput = document.getElementById('exercise-freeform-input');
+    const mcOptions = document.getElementById('exercise-mc-options');
 
     // Submit answer
     if (submitBtn) {
         submitBtn.addEventListener('click', () => {
             const templateArea = document.getElementById('exercise-template');
 
-            if (templateArea) {
+            if (mcOptions) {
+                // Multiple-choice mode
+                const answerData = mcOptions.querySelector('.quiz-answer-data');
+                const correctIndex = answerData ? parseInt(answerData.getAttribute('data-correct')) : -1;
+
+                const selected = mcOptions.querySelector('input[type="radio"]:checked');
+                if (!selected) {
+                    showFeedback(false, 'Por favor selecciona una opción antes de enviar.');
+                    return;
+                }
+
+                const selectedIndex = parseInt(selected.value);
+                const isCorrect = (selectedIndex === correctIndex);
+
+                // Highlight options
+                mcOptions.querySelectorAll('.quiz-option-label').forEach((label, i) => {
+                    label.classList.remove('option-correct', 'option-incorrect');
+                    if (i === correctIndex) {
+                        label.classList.add('option-correct');
+                    } else if (i === selectedIndex && !isCorrect) {
+                        label.classList.add('option-incorrect');
+                    }
+                    // Disable all radios after submission
+                    const radio = label.querySelector('input[type="radio"]');
+                    if (radio) radio.disabled = true;
+                });
+
+                showFeedback(isCorrect,
+                    isCorrect ? '✅ ¡Correcto! Buen trabajo.' : '❌ Incorrecto. La respuesta correcta está resaltada en verde.');
+
+                if (isCorrect) {
+                    trackExerciseProgress(submitBtn.dataset.lesson, submitBtn.dataset.exerciseId);
+                }
+
+            } else if (templateArea) {
                 // Fill-in-the-blank mode
                 const inputs = templateArea.querySelectorAll('.exercise-input');
                 let allCorrect = true;
@@ -64,16 +99,35 @@ document.addEventListener('DOMContentLoaded', () => {
     // Show answer
     if (showBtn) {
         showBtn.addEventListener('click', () => {
-            const templateArea = document.getElementById('exercise-template');
-            if (templateArea) {
-                const inputs = templateArea.querySelectorAll('.exercise-input');
-                inputs.forEach(input => {
-                    input.value = input.dataset.answer;
-                    input.classList.remove('input-incorrect');
-                    input.classList.add('input-correct');
+            if (mcOptions) {
+                // Multiple-choice: highlight correct answer
+                const answerData = mcOptions.querySelector('.quiz-answer-data');
+                const correctIndex = answerData ? parseInt(answerData.getAttribute('data-correct')) : -1;
+
+                mcOptions.querySelectorAll('.quiz-option-label').forEach((label, i) => {
+                    label.classList.remove('option-correct', 'option-incorrect');
+                    if (i === correctIndex) {
+                        label.classList.add('option-correct');
+                    }
+                    const radio = label.querySelector('input[type="radio"]');
+                    if (radio) {
+                        radio.disabled = true;
+                        if (i === correctIndex) radio.checked = true;
+                    }
                 });
+                showFeedback(true, '✅ Respuesta mostrada.');
+            } else {
+                const templateArea = document.getElementById('exercise-template');
+                if (templateArea) {
+                    const inputs = templateArea.querySelectorAll('.exercise-input');
+                    inputs.forEach(input => {
+                        input.value = input.dataset.answer;
+                        input.classList.remove('input-incorrect');
+                        input.classList.add('input-correct');
+                    });
+                }
+                showFeedback(true, 'Answer shown.');
             }
-            showFeedback(true, 'Answer shown.');
         });
     }
 
@@ -110,3 +164,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }).catch(() => {});
     }
 });
+

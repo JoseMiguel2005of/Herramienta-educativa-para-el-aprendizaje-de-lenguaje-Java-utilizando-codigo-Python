@@ -195,30 +195,98 @@ function initCodeHover() {
 
 function initExercises() {
     // Comprobar respuesta
-    document.querySelectorAll('.btn-check').forEach(btn => {
+    document.querySelectorAll('.btn-check-quiz').forEach(btn => {
         btn.addEventListener('click', () => {
             const exerciseId = btn.getAttribute('data-exercise-id');
             const lessonId = btn.getAttribute('data-lesson');
+            const exType = btn.getAttribute('data-type');
             const card = document.getElementById('exercise-' + exerciseId);
             const feedbackEl = document.getElementById('feedback-' + exerciseId);
             if (!card || !feedbackEl) return;
 
-            const inputs = card.querySelectorAll('.exercise-input');
-            let allCorrect = true;
+            let allCorrect = false;
+            let explanation = '';
 
-            inputs.forEach(input => {
-                const userAnswer = input.value.trim().toLowerCase().replace(/\s+/g, ' ');
-                const correctAnswer = input.getAttribute('data-answer').trim().toLowerCase().replace(/\s+/g, ' ');
+            if (exType === 'multiple-choice') {
+                // --- Multiple choice: check radio selection ---
+                const answerData = card.querySelector('.quiz-answer-data');
+                const correctIndex = answerData ? parseInt(answerData.getAttribute('data-correct')) : -1;
+                explanation = answerData ? answerData.getAttribute('data-explanation') || '' : '';
 
-                if (userAnswer === correctAnswer) {
-                    input.classList.remove('input-incorrect');
-                    input.classList.add('input-correct');
-                } else {
-                    input.classList.remove('input-correct');
-                    input.classList.add('input-incorrect');
-                    allCorrect = false;
+                const selected = card.querySelector('input[type="radio"]:checked');
+                if (!selected) {
+                    feedbackEl.hidden = false;
+                    feedbackEl.className = 'exercise-feedback feedback-incorrect';
+                    feedbackEl.textContent = 'Por favor selecciona una opción antes de enviar.';
+                    return;
                 }
-            });
+
+                const selectedIndex = parseInt(selected.value);
+                allCorrect = (selectedIndex === correctIndex);
+
+                // Highlight options
+                card.querySelectorAll('.quiz-option-label').forEach((label, i) => {
+                    label.classList.remove('option-correct', 'option-incorrect');
+                    if (i === correctIndex) {
+                        label.classList.add('option-correct');
+                    } else if (i === selectedIndex && !allCorrect) {
+                        label.classList.add('option-incorrect');
+                    }
+                    // Disable all radios
+                    const radio = label.querySelector('input[type="radio"]');
+                    if (radio) radio.disabled = true;
+                });
+
+            } else if (exType === 'fill-blank' || !exType) {
+                // --- Fill in the blank: check text inputs ---
+                const inputs = card.querySelectorAll('.exercise-input');
+                allCorrect = true;
+                inputs.forEach(input => {
+                    const userAnswer = input.value.trim().toLowerCase().replace(/\s+/g, ' ');
+                    const correctAnswer = input.getAttribute('data-answer').trim().toLowerCase().replace(/\s+/g, ' ');
+                    if (userAnswer === correctAnswer) {
+                        input.classList.remove('input-incorrect');
+                        input.classList.add('input-correct');
+                    } else {
+                        input.classList.remove('input-correct');
+                        input.classList.add('input-incorrect');
+                        allCorrect = false;
+                    }
+                });
+
+            } else if (exType === 'find-error') {
+                // --- Find the error line ---
+                const answerData = card.querySelector('.quiz-answer-data');
+                const correctLine = answerData ? parseInt(answerData.getAttribute('data-error-line')) : -1;
+                explanation = answerData ? answerData.getAttribute('data-explanation') || '' : '';
+
+                const selectedLine = card.querySelector('.error-line.selected-line');
+                if (!selectedLine) {
+                    feedbackEl.hidden = false;
+                    feedbackEl.className = 'exercise-feedback feedback-incorrect';
+                    feedbackEl.textContent = 'Haz click en la línea que crees que tiene el error.';
+                    return;
+                }
+                const selectedIndex = parseInt(selectedLine.getAttribute('data-line-index'));
+                allCorrect = (selectedIndex === correctLine);
+
+                card.querySelectorAll('.error-line').forEach(line => {
+                    const idx = parseInt(line.getAttribute('data-line-index'));
+                    if (idx === correctLine) line.classList.add('line-correct');
+                    else if (idx === selectedIndex && !allCorrect) line.classList.add('line-incorrect');
+                });
+
+            } else if (exType === 'reorder') {
+                // --- Reorder: check order of items ---
+                const answerData = card.querySelector('.quiz-answer-data');
+                const correctCount = answerData ? parseInt(answerData.getAttribute('data-correct-count')) : 0;
+                const items = card.querySelectorAll('.reorder-item');
+                let correctPositions = 0;
+                items.forEach((item, i) => {
+                    if (parseInt(item.getAttribute('data-original-index')) === i) correctPositions++;
+                });
+                allCorrect = (correctPositions === correctCount && correctCount > 0);
+            }
 
             // Mostrar feedback visual
             feedbackEl.hidden = false;
@@ -227,12 +295,16 @@ function initExercises() {
             if (allCorrect) {
                 card.classList.add('correct');
                 feedbackEl.className = 'exercise-feedback feedback-correct';
-                feedbackEl.textContent = 'Correcto. Excelente trabajo.';
+                feedbackEl.textContent = '✅ Correcto. Excelente trabajo.' + (explanation ? ' ' + explanation : '');
                 btn.disabled = true;
             } else {
                 card.classList.add('incorrect');
                 feedbackEl.className = 'exercise-feedback feedback-incorrect';
-                feedbackEl.textContent = 'Respuesta incorrecta. Revisa los campos marcados en rojo e intentalo de nuevo.';
+                if (exType === 'multiple-choice' || exType === 'find-error') {
+                    feedbackEl.textContent = '❌ Respuesta incorrecta.' + (explanation ? ' ' + explanation : ' Inténtalo de nuevo.');
+                } else {
+                    feedbackEl.textContent = '❌ Respuesta incorrecta. Revisa los campos marcados en rojo e inténtalo de nuevo.';
+                }
             }
 
             // Registrar intento en analíticas (silenciosamente)
@@ -247,25 +319,58 @@ function initExercises() {
         });
     });
 
+    // Click en líneas de find-error para seleccionarlas
+    document.querySelectorAll('.error-line').forEach(line => {
+        line.addEventListener('click', () => {
+            const card = line.closest('.exercise-card');
+            if (!card) return;
+            card.querySelectorAll('.error-line').forEach(l => l.classList.remove('selected-line'));
+            line.classList.add('selected-line');
+        });
+    });
+
     // Mostrar respuesta
-    document.querySelectorAll('.btn-show-answer').forEach(btn => {
+    document.querySelectorAll('.btn-show-answer-quiz').forEach(btn => {
         btn.addEventListener('click', () => {
             const exerciseId = btn.getAttribute('data-exercise-id');
+            const exType = btn.getAttribute('data-type');
             const card = document.getElementById('exercise-' + exerciseId);
+            const feedbackEl = document.getElementById('feedback-' + exerciseId);
             if (!card) return;
 
-            const inputs = card.querySelectorAll('.exercise-input');
-            inputs.forEach(input => {
-                const correctAnswer = input.getAttribute('data-answer');
-                input.value = correctAnswer;
-                input.classList.remove('input-incorrect');
-                input.classList.add('input-correct');
-            });
-            
-            // Trigger check manually to show success message
-            const checkBtn = card.querySelector('.btn-check');
-            if (checkBtn) {
-                checkBtn.click();
+            if (exType === 'multiple-choice') {
+                const answerData = card.querySelector('.quiz-answer-data');
+                const correctIndex = answerData ? parseInt(answerData.getAttribute('data-correct')) : -1;
+                const explanation = answerData ? answerData.getAttribute('data-explanation') || '' : '';
+
+                card.querySelectorAll('.quiz-option-label').forEach((label, i) => {
+                    label.classList.remove('option-correct', 'option-incorrect');
+                    if (i === correctIndex) label.classList.add('option-correct');
+                    const radio = label.querySelector('input[type="radio"]');
+                    if (radio) {
+                        radio.disabled = true;
+                        if (i === correctIndex) radio.checked = true;
+                    }
+                });
+
+                if (feedbackEl) {
+                    feedbackEl.hidden = false;
+                    feedbackEl.className = 'exercise-feedback feedback-correct';
+                    feedbackEl.textContent = '✅ Respuesta mostrada.' + (explanation ? ' ' + explanation : '');
+                }
+
+            } else {
+                // Fill-blank: show answers in inputs
+                const inputs = card.querySelectorAll('.exercise-input');
+                inputs.forEach(input => {
+                    const correctAnswer = input.getAttribute('data-answer');
+                    input.value = correctAnswer;
+                    input.classList.remove('input-incorrect');
+                    input.classList.add('input-correct');
+                });
+
+                const checkBtn = card.querySelector('.btn-check-quiz');
+                if (checkBtn) checkBtn.click();
             }
         });
     });

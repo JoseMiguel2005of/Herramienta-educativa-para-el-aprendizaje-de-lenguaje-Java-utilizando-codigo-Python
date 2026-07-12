@@ -130,7 +130,7 @@
                                     {% elif lesson.type == 'examples' %}
                                         <a href="{{ url_for('examples') }}"
                                     {% elif lesson.type == 'practice' %}
-                                        <a href="{{ url_for('practice') }}"
+                                        <a href="{{ url_for('practice_list') }}"
                                     {% elif lesson.id.startswith('ex-') %}
                                         <a href="{{ url_for('exercise_topic', topic=lesson.id) }}"
                                     {% else %}
