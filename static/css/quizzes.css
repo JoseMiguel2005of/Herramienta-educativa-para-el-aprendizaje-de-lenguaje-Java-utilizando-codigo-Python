@@ -5,7 +5,7 @@
 .exercises-section {
     margin-top: 3rem;
     padding-top: 2rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid var(--border);
 }
 
 .exercises-title {
@@ -16,13 +16,13 @@
 
 .exercises-intro {
     font-size: 1.1rem;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-muted);
     margin-bottom: 2rem;
 }
 
 .exercise-card {
-    background: #1e1e1e;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 1.5rem;
     margin-bottom: 1.5rem;
@@ -35,7 +35,7 @@
 
 .exercise-badge {
     background: var(--green);
-    color: #fff;
+    color: var(--text);
     padding: 0.2rem 0.6rem;
     border-radius: var(--radius);
     font-weight: 700;
@@ -50,7 +50,7 @@
 }
 
 .exercise-python-ref {
-    background: #2a2a2a;
+    background: var(--bg-code);
     padding: 1rem;
     border-radius: var(--radius);
     margin-bottom: 1rem;
@@ -66,7 +66,7 @@
 }
 
 .exercise-code-area {
-    background: #000;
+    background: var(--bg-code);
     padding: 1.25rem;
     border-radius: var(--radius);
     border-left: 4px solid var(--java-color);
@@ -76,7 +76,7 @@
 .exercise-template {
     font-family: 'Source Code Pro', monospace;
     font-size: 1.15rem;
-    color: #fff;
+    color: var(--text);
     line-height: 1.8;
     margin-top: 0.5rem;
 }
@@ -116,7 +116,7 @@
 
 .btn-check {
     background: var(--green);
-    color: white;
+    color: var(--text);
     border: none;
     padding: 0.75rem 1.5rem;
     font-size: 1rem;
@@ -188,7 +188,7 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    background: #2a2a2a;
+    background: var(--bg-code);
     padding: 1rem;
     border-radius: var(--radius);
     cursor: pointer;
@@ -197,7 +197,7 @@
 }
 
 .quiz-option-label:hover {
-    background: #333;
+    background: var(--accent-glow);
 }
 
 .quiz-option-label input[type="radio"] {
@@ -265,14 +265,14 @@
 }
 
 .reorder-item {
-    background: #000;
+    background: var(--bg-code);
     padding: 0.75rem 1rem;
     border-radius: var(--radius);
     cursor: grab;
     display: flex;
     align-items: center;
     gap: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border);
     border-left: 4px solid var(--java-color);
 }
 
@@ -282,7 +282,7 @@
 
 .drag-handle {
     cursor: grab;
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--text-muted);
     font-size: 1.2rem;
 }
 
@@ -293,7 +293,7 @@
 
 .reorder-instruction, .find-error-instruction {
     margin-bottom: 1rem;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-muted);
     font-size: 1.05rem;
 }
 
@@ -303,7 +303,7 @@
 }
 
 .find-error-code {
-    background: #000;
+    background: var(--bg-code);
     border-radius: var(--radius);
     padding: 1rem 0;
     font-family: 'Source Code Pro', monospace;
@@ -320,7 +320,7 @@
 }
 
 .error-line:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--accent-glow);
 }
 
 .error-line.selected {
@@ -330,7 +330,7 @@
 }
 
 .error-line .line-number {
-    color: rgba(255, 255, 255, 0.3);
+    color: var(--text-muted);
     user-select: none;
     width: 2rem;
     text-align: right;

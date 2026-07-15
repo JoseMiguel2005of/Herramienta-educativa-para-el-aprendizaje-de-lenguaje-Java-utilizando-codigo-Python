@@ -74,7 +74,34 @@ def sync_databases():
 
     supa_session.close()
     mysql_session.close()
+    
+    # IMPORTANTE: Destruir el motor para no dejar conexiones abiertas ("dormidas")
+    # que terminan saturando el límite (pool_size) de Supabase.
+    supabase_engine.dispose()
+    mysql_engine.dispose()
+    
     print("Sincronización completada exitosamente.")
 
 if __name__ == "__main__":
-    sync_databases()
+    import sys
+    import time
+    
+    if "--watch" in sys.argv:
+        print("======================================================")
+        print("🚀 INICIANDO MODO TIEMPO REAL (SYNC DAEMON)")
+        print("======================================================")
+        print("El script se quedará escuchando cambios en Supabase")
+        print("y los actualizará en MySQL cada 5 segundos.")
+        print("Presiona Ctrl+C para detener.\n")
+        
+        try:
+            while True:
+                sync_databases()
+                print("\n[⏳] Esperando 5 segundos para la próxima sincronización...\n")
+                time.sleep(5)
+        except KeyboardInterrupt:
+            print("\n🛑 Sincronización en tiempo real detenida por el usuario.")
+    else:
+        sync_databases()
+        print("\n💡 Tip: Puedes correr este script en tiempo real añadiendo '--watch'")
+        print("Ejemplo: python sync_to_mysql.py --watch")

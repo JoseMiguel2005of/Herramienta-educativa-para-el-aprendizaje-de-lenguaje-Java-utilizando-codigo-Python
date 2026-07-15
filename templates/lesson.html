@@ -7,7 +7,7 @@
 {% block content %}
 <article class="lesson">
     <header class="telemetry-header term-hero" style="border-bottom: 1px dashed var(--border); padding-bottom: 1rem; margin-bottom: 2rem;">
-        <h1 style="font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; margin: 0; color: #fff;">
+        <h1 style="font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; margin: 0; color: var(--text);">
             <span style="color: var(--green);">[MODULE]</span> {{ lesson.title | upper }}
         </h1>
         <div class="terminal-intro" style="margin-top: 1rem; background: var(--bg-code); border: 1px solid var(--border); padding: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; color: var(--text-muted);">
@@ -113,7 +113,7 @@
                             style="background: transparent; border: 1px solid var(--python-color); color: var(--python-color); padding: 0.3rem 0.8rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; cursor: pointer; transition: all 0.2s;">
                             ▶ Ejecutar ejemplo
                         </button>
-                        <pre class="example-output" style="display:none; background: #000; color: #fff; padding: 0.5rem 0.75rem; margin-top: 0.5rem; border-left: 3px solid var(--python-color); font-size: 0.85rem; border-radius: 2px; max-height: 120px; overflow-y: auto;"><code></code></pre>
+                        <pre class="example-output" style="display:none; background: #000; color: var(--text); padding: 0.5rem 0.75rem; margin-top: 0.5rem; border-left: 3px solid var(--python-color); font-size: 0.85rem; border-radius: 2px; max-height: 120px; overflow-y: auto;"><code></code></pre>
                     </div>
                     {% endif %}
                 </div>
@@ -214,7 +214,7 @@
                         <span>Consola interactiva</span>
                         <span id="pyodide-status" style="color: #888;">(Iniciando bajo demanda...)</span>
                     </div>
-                    <pre class="code-block" style="background: #000; min-height: 80px; max-height: 150px; overflow-y: auto; color: #fff; padding: 0.75rem; margin: 0; border-left: 4px solid var(--python-color); font-family: 'Source Code Pro', monospace;"><code id="python-console-output"></code></pre>
+                    <pre class="code-block" style="background: #000; min-height: 80px; max-height: 150px; overflow-y: auto; color: var(--text); padding: 0.75rem; margin: 0; border-left: 4px solid var(--python-color); font-family: 'Source Code Pro', monospace;"><code id="python-console-output"></code></pre>
                 </div>
             </div>
 
@@ -309,7 +309,7 @@
 .section-title {
     font-family: 'Space Grotesk', sans-serif;
     font-size: 1.4rem;
-    color: #fff;
+    color: var(--text);
     margin: 0 0 1rem 0;
     display: flex;
     align-items: center;

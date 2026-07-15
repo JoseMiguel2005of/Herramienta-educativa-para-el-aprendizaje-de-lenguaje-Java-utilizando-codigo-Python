@@ -17,7 +17,7 @@
                 <span class="glossary-tag" style="color: #a6e22e; border-color: #a6e22e;">{{ problem.difficulty | upper }}</span>
             </div>
             
-            <h1 style="font-family: 'Space Grotesk', sans-serif; margin: 0 0 1rem 0; font-size: 1.8rem; color: #fff;">{{ problem.title }}</h1>
+            <h1 style="font-family: 'Space Grotesk', sans-serif; margin: 0 0 1rem 0; font-size: 1.8rem; color: var(--text);">{{ problem.title }}</h1>
             
             <div class="problem-description" style="font-size: 1rem; line-height: 1.6; color: var(--text); margin-bottom: 2rem;">
                 {{ problem.description | safe }}
@@ -52,7 +52,7 @@
             <span>// main.py</span>
             <div style="display: flex; gap: 0.5rem;">
                 <button type="button" id="btn-reset" class="btn-translate" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 0.3rem 0.8rem; font-size: 0.75rem; cursor: pointer;">
-                    ↩️ RESET
+                    RESET
                 </button>
                 <button type="button" id="btn-run-tests" class="btn-translate" style="background: var(--python-color); color: #000; border: none; padding: 0.3rem 1rem; font-weight: bold; cursor: pointer;">
                     ▶ EJECUTAR PRUEBAS
@@ -71,7 +71,7 @@
                 <span>TERMINAL DE PRUEBAS</span>
                 <span id="pyodide-status">Cargando Pyodide...</span>
             </div>
-            <div id="test-output" style="padding: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #fff; overflow-y: auto; flex-grow: 1;">
+            <div id="test-output" style="padding: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text); overflow-y: auto; flex-grow: 1;">
                 Listo para ejecutar. Presiona "Ejecutar Pruebas".
             </div>
         </div>
@@ -123,7 +123,7 @@
             const userCode = editor.value;
             output.innerHTML = "<span style='color:#fd971f;'>Ejecutando pruebas...</span><br>";
             btnRun.disabled = true;
-            btnRun.textContent = "⌛ EVALUANDO...";
+            btnRun.textContent = "EVALUANDO...";
 
             try {
                 const pyodide = await loadPyodideIfNeeded();
@@ -197,7 +197,7 @@ json.dumps({"passed": _passed, "actual": _actual_repr})
                 const data = await response.json();
                 
                 if(allPassed) {
-                    output.innerHTML += `<br><br><span style='color:#a6e22e; font-size:1.1rem; font-weight:bold;'>🎉 ¡TODAS LAS PRUEBAS SUPERADAS! 🎉</span>`;
+                    output.innerHTML += `<br><br><span style='color:#a6e22e; font-size:1.1rem; font-weight:bold;'>TODAS LAS PRUEBAS SUPERADAS</span>`;
                     
                     if(data.xp_gained > 0) {
                         output.innerHTML += `<br><span style='color:#fd971f;'>+${data.xp_gained} XP obtenidos.</span>`;
@@ -209,7 +209,7 @@ json.dumps({"passed": _passed, "actual": _actual_repr})
                         }
                     }
                 } else {
-                    output.innerHTML += `<br><br><span style='color:#f92672; font-weight:bold;'>⚠️ Algunas pruebas fallaron. Revisa tu código e intenta de nuevo.</span>`;
+                    output.innerHTML += `<br><br><span style='color:#f92672; font-weight:bold;'>Algunas pruebas fallaron. Revisa tu codigo e intenta de nuevo.</span>`;
                 }
 
             } catch (err) {

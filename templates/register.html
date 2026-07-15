@@ -5,28 +5,28 @@
 {% block content %}
 <article class="login-page" style="display: flex; justify-content: center; align-items: center; min-height: 70vh;">
     <div class="login-container" style="background: var(--bg-color); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 2rem; width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
-        <h2 style="text-align: center; margin-bottom: 1.5rem; color: var(--green);">Crear Cuenta</h2>
+        <h2 style="text-align: center; margin-bottom: 1.5rem; color: var(--green);">✨ Crear Cuenta</h2>
         
         {% if error %}
         <div style="background: rgba(239, 83, 80, 0.1); border: 1px solid #ef5350; color: #ef5350; padding: 0.8rem; border-radius: 4px; margin-bottom: 1.5rem; text-align: center;">
-            {{ error }}
+            ⚠️ {{ error }}
         </div>
         {% endif %}
         
         <form method="POST" action="{{ url_for('register') }}" style="display: flex; flex-direction: column; gap: 1rem;">
             <div>
-                <label for="username" style="display: block; margin-bottom: 0.5rem; color: var(--text-color);">Usuario</label>
-                <input type="text" id="username" name="username" required style="width: 100%; padding: 0.8rem; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: white; outline: none; font-family: inherit;">
+                <label for="username" style="display: block; margin-bottom: 0.5rem; color: var(--text-color);">👤 Usuario</label>
+                <input type="text" id="username" name="username" required style="width: 100%; padding: 0.8rem; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: var(--text); outline: none; font-family: inherit;">
             </div>
             
             <div>
-                <label for="password" style="display: block; margin-bottom: 0.5rem; color: var(--text-color);">Contraseña</label>
-                <input type="password" id="password" name="password" required style="width: 100%; padding: 0.8rem; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: white; outline: none; font-family: inherit;">
+                <label for="password" style="display: block; margin-bottom: 0.5rem; color: var(--text-color);">🔒 Contraseña</label>
+                <input type="password" id="password" name="password" required style="width: 100%; padding: 0.8rem; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: var(--text); outline: none; font-family: inherit;">
             </div>
             
             <div>
-                <label for="role" style="display: block; margin-bottom: 0.5rem; color: var(--text-color);">Soy...</label>
-                <select id="role" name="role" onchange="toggleTeacherCode(this.value)" style="width: 100%; padding: 0.8rem; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: white; outline: none; font-family: inherit;">
+                <label for="role" style="display: block; margin-bottom: 0.5rem; color: var(--text-color);">🎓 Soy...</label>
+                <select id="role" name="role" onchange="toggleTeacherCode(this.value)" style="width: 100%; padding: 0.8rem; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: var(--text); outline: none; font-family: inherit;">
                     <option value="student">Estudiante</option>
                     <option value="teacher">Profesor</option>
                 </select>
@@ -38,11 +38,11 @@
                     🔑 Código de Profesor
                     <span style="font-size: 0.75rem; color: var(--text-muted); display: block;">Ingresa el código proporcionado por el administrador</span>
                 </label>
-                <input type="password" id="teacher_code" name="teacher_code" placeholder="Código secreto..." style="width: 100%; padding: 0.8rem; border-radius: 4px; border: 1px solid rgba(255,152,0,0.4); background: rgba(255,152,0,0.05); color: white; outline: none; font-family: inherit;">
+                <input type="password" id="teacher_code" name="teacher_code" placeholder="Código secreto..." style="width: 100%; padding: 0.8rem; border-radius: 4px; border: 1px solid rgba(255,152,0,0.4); background: rgba(255,152,0,0.05); color: var(--text); outline: none; font-family: inherit;">
             </div>
             
             <button type="submit" class="btn-translate" style="background: var(--python-color); color: #000; border: none; padding: 0.8rem; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 0.5rem; font-size: 1.1rem;">
-                Registrarme
+                🚀 Registrarme
             </button>
         </form>
         

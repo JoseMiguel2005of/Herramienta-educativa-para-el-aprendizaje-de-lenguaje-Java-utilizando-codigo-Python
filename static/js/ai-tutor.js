@@ -17,7 +17,7 @@
         panel.innerHTML = `
             <div class="ai-tutor-header">
                 <div class="ai-tutor-title">
-                    <span class="ai-tutor-icon">🤖</span>
+                    <span class="ai-tutor-avatar">🤖</span>
                     <span>AI TUTOR</span>
                 </div>
                 <button class="ai-tutor-close" id="ai-tutor-close" title="Cerrar">×</button>
@@ -239,6 +239,10 @@
         exerciseCards.forEach(card => {
             const controls = card.querySelector('.exercise-controls');
             if (!controls || controls.querySelector('.btn-ai-hint')) return;
+
+            // Only inject hint button on fill-blank exercises (those with .exercise-input)
+            const isFillBlank = card.querySelector('.exercise-input') !== null;
+            if (!isFillBlank) return;
 
             const exerciseId = card.id;
             const questionEl = card.querySelector('.exercise-question');

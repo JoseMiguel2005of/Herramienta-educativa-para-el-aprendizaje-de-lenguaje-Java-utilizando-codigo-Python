@@ -109,7 +109,7 @@ sys.stderr = io.StringIO()
         testsScore.textContent = `${passed}/${total} aprobadas`;
         testsScore.style.color = passed === total ? '#66bb6a' : '#ef5350';
         outputEl.textContent = passed === total
-            ? '🎉 ¡Todas las pruebas aprobadas! ¡Excelente trabajo!'
+            ? 'Todas las pruebas aprobadas. Excelente trabajo.'
             : `${passed} de ${total} pruebas aprobadas. ¡Sigue intentando!`;
         outputEl.style.color = passed === total ? '#66bb6a' : '#ffc107';
 

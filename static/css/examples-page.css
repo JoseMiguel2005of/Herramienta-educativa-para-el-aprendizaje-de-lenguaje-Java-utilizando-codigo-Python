@@ -19,7 +19,7 @@
 
 .examples-title {
     font-size: 1.8rem;
-    color: #fff;
+    color: var(--text);
     margin: 0.5rem 0;
 }
 
@@ -38,7 +38,7 @@
 
 .examples-category-title {
     font-size: 1.3rem;
-    color: #fff;
+    color: var(--text);
     margin: 0 0 1rem 0;
     display: flex;
     align-items: center;
@@ -81,7 +81,7 @@
 .example-card-title {
     font-size: 1rem;
     font-weight: 600;
-    color: #fff;
+    color: var(--text);
 }
 
 .example-card-desc {
@@ -115,7 +115,7 @@
 
 .example-detail-title {
     font-size: 1.6rem;
-    color: #fff;
+    color: var(--text);
     margin: 0.75rem 0 0.5rem 0;
 }
 
@@ -160,7 +160,7 @@
 
 .btn-tryit-run {
     background: var(--green);
-    color: #fff;
+    color: var(--text);
     border: none;
     padding: 0.6rem 1.25rem;
     font-size: 0.95rem;
@@ -259,7 +259,7 @@
 }
 
 .btn-tryit-reset:hover {
-    color: #fff;
+    color: var(--text);
 }
 
 /* Related Lesson */

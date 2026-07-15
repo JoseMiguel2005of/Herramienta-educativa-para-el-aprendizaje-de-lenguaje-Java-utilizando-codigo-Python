@@ -150,7 +150,7 @@ h1, h2, h3, h4, h5, h6 {
     font-family: "Space Grotesk", sans-serif;
     letter-spacing: -0.02em;
     font-weight: 700;
-    color: #FFFFFF;
+    color: var(--text);
 }
 
 /* Patrón de fondo geométrico sutil (Grid / Terminal) */
@@ -297,7 +297,7 @@ body::before {
     background: transparent;
 }
 .sidebar::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.15);
+    background: var(--border);
 }
 
 .tree-root {
@@ -329,7 +329,8 @@ body::before {
     outline: none;
 }
 .term-input::placeholder {
-    color: rgba(255, 255, 255, 0.2);
+    color: var(--text-muted);
+    opacity: 0.5;
 }
 
 .term-commands {
@@ -344,7 +345,7 @@ body::before {
 }
 .term-btn:hover {
     background: var(--bg-secondary);
-    color: #fff !important;
+    color: var(--topbar-text) !important;
 }
 .term-btn::before {
     content: "> ";
@@ -364,7 +365,7 @@ body::before {
 
 .dir-name {
     padding: 0.5rem 1rem;
-    color: #fff;
+    color: var(--text);
     font-weight: 700;
 }
 .dir-name.cat-python { color: var(--python-color); }
@@ -386,7 +387,7 @@ body::before {
     gap: 0.25rem;
 }
 .term-section-btn:hover {
-    color: #fff;
+    color: var(--text);
     background: var(--bg-secondary);
 }
 
@@ -418,7 +419,7 @@ body::before {
     margin-left: 0.25rem;
 }
 .term-nav-link:hover {
-    color: #fff;
+    color: var(--text);
     background: var(--bg-secondary);
 }
 .term-nav-link.active {
@@ -572,7 +573,7 @@ body::before {
 }
 
 .lang-badge {
-    color: white;
+    color: var(--text);
     font-weight: 700;
     font-size: 0.82rem;
     padding: 0.2rem 0.7rem;
@@ -727,7 +728,7 @@ body::before {
 
 .btn-translate {
     background: linear-gradient(135deg, var(--green), var(--green-dark));
-    color: white;
+    color: var(--text);
     border: none;
     padding: 0.4rem 1rem;
     border-radius: var(--radius);
@@ -846,7 +847,7 @@ body::before {
 
 .ref-table th {
     background: linear-gradient(135deg, var(--green), var(--green-dark));
-    color: white;
+    color: var(--text);
     text-align: left;
     padding: 0.75rem 1rem;
     font-weight: 600;
@@ -961,7 +962,7 @@ body::before {
 
 .exercise-badge {
     background: linear-gradient(135deg, var(--green), var(--green-dark));
-    color: white;
+    color: var(--text);
     padding: 0.2rem 0.75rem;
     border-radius: var(--radius);
     font-size: 0.8rem;
@@ -1040,7 +1041,7 @@ body::before {
 
 .btn-check {
     background: linear-gradient(135deg, var(--green), var(--green-dark));
-    color: white;
+    color: var(--text);
     border: none;
     padding: 0.5rem 1.1rem;
     border-radius: var(--radius);
@@ -1122,12 +1123,12 @@ body::before {
    FOOTER
    ============================================= */
 .footer {
-    background: linear-gradient(135deg, var(--sidebar-bg) 0%, #12141e 100%);
+    background: linear-gradient(135deg, var(--sidebar-bg) 0%, var(--bg-secondary) 100%);
     border-top: 3px solid var(--green);
     text-align: center;
     padding: 1.25rem;
     font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-muted);
 }
 
 .footer p {
@@ -1219,7 +1220,7 @@ body::before {
 /* Green Action Button */
 .w3-btn-green {
     background: linear-gradient(135deg, var(--green), var(--green-dark));
-    color: #ffffff;
+    color: var(--text);
     border: none;
     padding: 10px 22px;
     font-size: 1rem;
@@ -1532,7 +1533,7 @@ body::before {
 }
 
 .achievement-modal-header h2 {
-    color: #fff;
+    color: var(--text);
     font-family: "Space Grotesk", sans-serif;
     font-size: 1.3rem;
     margin: 0;
@@ -1578,7 +1579,7 @@ body::before {
 }
 
 .achievement-modal-name {
-    color: #fff;
+    color: var(--text);
     font-weight: 700;
     font-size: 0.95rem;
 }
