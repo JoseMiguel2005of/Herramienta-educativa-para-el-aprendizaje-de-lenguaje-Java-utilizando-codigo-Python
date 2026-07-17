@@ -15,13 +15,13 @@ class User(UserMixin, db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Relaciones
-    progress = db.relationship("LessonProgress", backref="user", lazy=True)
-    attempts = db.relationship("ExerciseAttempt", backref="user", lazy=True)
-    achievements = db.relationship("Achievement", backref="user", lazy=True)
-    streaks = db.relationship("DailyStreak", backref="user", lazy=True)
-    quiz_results = db.relationship("QuizResult", backref="user", lazy=True)
+    progress = db.relationship("LessonProgress", backref="user", lazy=True, cascade="all, delete-orphan")
+    attempts = db.relationship("ExerciseAttempt", backref="user", lazy=True, cascade="all, delete-orphan")
+    achievements = db.relationship("Achievement", backref="user", lazy=True, cascade="all, delete-orphan")
+    streaks = db.relationship("DailyStreak", backref="user", lazy=True, cascade="all, delete-orphan")
+    quiz_results = db.relationship("QuizResult", backref="user", lazy=True, cascade="all, delete-orphan")
     practice_submissions = db.relationship(
-        "PracticeSubmission", backref="user", lazy=True
+        "PracticeSubmission", backref="user", lazy=True, cascade="all, delete-orphan"
     )
 
 

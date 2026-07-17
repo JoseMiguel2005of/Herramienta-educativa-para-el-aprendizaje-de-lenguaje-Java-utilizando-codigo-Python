@@ -57,6 +57,7 @@
                             <th style="padding: 1rem;">NIVEL</th>
                             <th style="padding: 1rem;">XP TOTAL</th>
                             <th style="padding: 1rem;">PROGRESO (LECCIONES)</th>
+                            <th style="padding: 1rem; text-align: center;">ACCIONES</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -79,10 +80,15 @@
                                     </div>
                                 </div>
                             </td>
+                            <td style="padding: 1rem; text-align: center;">
+                                <button onclick="deleteStudent({{ s.id }}, '{{ s.username }}', this)" style="background: none; border: 1px solid #F44336; color: #F44336; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; transition: all 0.2s;" onmouseover="this.style.background='#F44336'; this.style.color='#fff';" onmouseout="this.style.background='none'; this.style.color='#F44336';">
+                                    Eliminar
+                                </button>
+                            </td>
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="4" style="padding: 2rem; text-align: center; color: var(--text-muted);">No hay estudiantes registrados.</td>
+                            <td colspan="5" style="padding: 2rem; text-align: center; color: var(--text-muted);">No hay estudiantes registrados.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -162,5 +168,41 @@
             }
         });
     });
+
+    function deleteStudent(studentId, username, btnElement) {
+        if (!confirm('¿Estás seguro de que quieres eliminar al estudiante ' + username + '? Esta acción no se puede deshacer y borrará todo su progreso.')) {
+            return;
+        }
+        
+        btnElement.disabled = true;
+        btnElement.innerText = "Borrando...";
+        
+        fetch('/profesor/estudiante/' + studentId + '/eliminar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const row = btnElement.closest('tr');
+                row.style.transition = "all 0.4s ease";
+                row.style.opacity = "0";
+                row.style.transform = "translateX(20px)";
+                setTimeout(() => row.remove(), 400);
+            } else {
+                alert('Error al eliminar: ' + (data.error || 'Desconocido'));
+                btnElement.disabled = false;
+                btnElement.innerText = "Eliminar";
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Ocurrió un error al intentar eliminar el estudiante.');
+            btnElement.disabled = false;
+            btnElement.innerText = "Eliminar";
+        });
+    }
 </script>
 {% endblock %}

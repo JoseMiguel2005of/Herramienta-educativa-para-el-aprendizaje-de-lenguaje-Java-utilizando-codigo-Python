@@ -1,5 +1,8 @@
 import os
 from datetime import date, datetime, timedelta
+from dotenv import load_dotenv
+
+load_dotenv()
 
 import requests as http_requests
 from flask import (Flask, jsonify, redirect, render_template, request, session,
@@ -812,7 +815,8 @@ def teacher_dashboard():
                 "total_xp": stats["total_xp"],
                 "completed": len(stats["completed_lessons"]),
                 "level": lvl_info["level"],
-                "title": title
+                "title": title,
+                "id": s.id
             }
         )
 
@@ -834,6 +838,20 @@ def teacher_dashboard():
         categories=LESSON_CATEGORIES
     )
 
+@app.route("/profesor/estudiante/<int:student_id>/eliminar", methods=["POST"])
+@login_required
+def teacher_delete_student(student_id):
+    if current_user.role != "teacher":
+        return jsonify({"success": False, "error": "No autorizado"}), 403
+        
+    student = User.query.get(student_id)
+    if student and student.role == "student":
+        db.session.delete(student)
+        db.session.commit()
+        return jsonify({"success": True})
+        
+    return jsonify({"success": False, "error": "Estudiante no encontrado"}), 404
+
 
 # ===== CSV EXPORT (Sprint 4 — 4.7) =====
 import csv
@@ -849,7 +867,8 @@ def teacher_export_csv():
     students = User.query.filter_by(role="student").all()
     
     si = StringIO()
-    cw = csv.writer(si)
+    si.write('\ufeff')  # Agregamos BOM para que Excel detecte correctamente el UTF-8
+    cw = csv.writer(si, delimiter=';')  # Usamos punto y coma que es el separador esperado por Excel en español
     cw.writerow(["Username", "Total_XP", "Lecciones_Completadas", "Nivel", "Racha_Actual", "Fecha_Registro"])
     
     for s in students:
