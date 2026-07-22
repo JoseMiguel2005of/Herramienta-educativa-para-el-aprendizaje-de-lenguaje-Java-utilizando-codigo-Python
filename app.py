@@ -36,9 +36,16 @@ if database_url:
         database_url = database_url.replace("postgres://", "postgresql://", 1)
     app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 else:
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
-        os.path.abspath(os.path.dirname(__file__)), "database_v2.sqlite"
-    )
+    # On Vercel serverless, working directory is read-only (/var/task), write SQLite to /tmp
+    is_vercel = os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME")
+    if is_vercel:
+        sqlite_path = "/tmp/database_v2.sqlite"
+    else:
+        sqlite_path = os.path.join(
+            os.path.abspath(os.path.dirname(__file__)), "database_v2.sqlite"
+        )
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + sqlite_path
+
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db.init_app(app)
 
@@ -53,7 +60,10 @@ def load_user(user_id):
 
 
 with app.app_context():
-    db.create_all()
+    try:
+        db.create_all()
+    except Exception as e:
+        print(f"[WARNING] db.create_all failed during initialization: {e}")
 
 LESSON_CATEGORIES = [
     {

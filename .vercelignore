@@ -1,0 +1,9 @@
+.git
+.agents
+.gemini
+__pycache__
+*.pyc
+*.pyo
+node_modules
+database_v2.sqlite
+skills-lock.json
