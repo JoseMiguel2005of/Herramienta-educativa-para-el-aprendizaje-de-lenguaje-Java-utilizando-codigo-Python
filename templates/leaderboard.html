@@ -5,7 +5,12 @@
 {% block content %}
 <article class="telemetry-dashboard">
     <header class="telemetry-header">
-        <h1>🏆 LEADERBOARD</h1>
+        <h1 style="display:flex; align-items:center; gap:0.75rem;">
+            <div class="neu-icon-box" style="color: #FFD700;">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+            </div>
+            LEADERBOARD
+        </h1>
         <div class="system-status">
             <span class="status-indicator"></span>
             RANKING_GLOBAL
@@ -34,7 +39,7 @@
             </div>
             <!-- 1st place -->
             <div class="podium-entry podium-gold {% if board[0].id == current_uid %}podium-current{% endif %}">
-                <div class="podium-rank">👑</div>
+                <div class="podium-rank">1</div>
                 <div class="podium-avatar">{{ board[0].username[0] | upper }}</div>
                 <div class="podium-name">{{ board[0].username }}</div>
                 <div class="podium-xp">{{ board[0].total_xp }} XP</div>
@@ -61,16 +66,16 @@
                         <th>Nivel</th>
                         <th>XP Total</th>
                         <th>Lecciones</th>
-                        <th>Racha 🔥</th>
+                        <th>Racha (Días)</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for entry in board %}
                     <tr class="{% if entry.id == current_uid %}lb-row-current{% endif %} {% if entry.rank <= 3 %}lb-row-top{% endif %}">
                         <td class="lb-rank">
-                            {% if entry.rank == 1 %}🥇
-                            {% elif entry.rank == 2 %}🥈
-                            {% elif entry.rank == 3 %}🥉
+                            {% if entry.rank == 1 %}<span class="rank-badge rank-1">#1</span>
+                            {% elif entry.rank == 2 %}<span class="rank-badge rank-2">#2</span>
+                            {% elif entry.rank == 3 %}<span class="rank-badge rank-3">#3</span>
                             {% else %}{{ entry.rank }}
                             {% endif %}
                         </td>
@@ -86,7 +91,7 @@
                         </td>
                         <td class="lb-xp">{{ entry.total_xp }}</td>
                         <td class="lb-lessons">{{ entry.completed }}</td>
-                        <td class="lb-streak">{% if entry.streak > 0 %}{{ entry.streak }}🔥{% else %}-{% endif %}</td>
+                        <td class="lb-streak">{% if entry.streak > 0 %}{{ entry.streak }}d{% else %}-{% endif %}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

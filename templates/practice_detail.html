@@ -21,9 +21,18 @@
             <div class="practice-editor-header">
                 <span class="lang-badge python-badge">Python</span>
                 <div class="practice-editor-actions">
-                    <button class="btn-practice-run" id="btn-run-code">▶ Ejecutar Código</button>
-                    <button class="btn-practice-submit" id="btn-submit-code">✓ Enviar</button>
-                    <button class="btn-practice-reset" id="btn-reset-code">↺ Reiniciar</button>
+                    <button class="btn-practice-run" id="btn-run-code">
+                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                        Ejecutar Código
+                    </button>
+                    <button class="btn-practice-submit" id="btn-submit-code">
+                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        Enviar
+                    </button>
+                    <button class="btn-practice-reset" id="btn-reset-code">
+                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                        Reiniciar
+                    </button>
                 </div>
             </div>
             <textarea id="practice-editor" class="practice-editor-textarea" spellcheck="false">{{ problem.starter_code }}</textarea>
@@ -55,7 +64,10 @@
     </section>
 
     <div class="practice-solution-section" id="solution-section" hidden>
-        <button class="btn-show-solution" id="btn-show-solution">👁 Mostrar Solución</button>
+        <button class="btn-show-solution" id="btn-show-solution">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            Mostrar Solución
+        </button>
         <div class="practice-solution-code" id="solution-code" hidden>
             <pre><code class="language-python">{{ problem.solution }}</code></pre>
         </div>
