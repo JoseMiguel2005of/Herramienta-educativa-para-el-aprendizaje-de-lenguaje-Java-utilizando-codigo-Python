@@ -18,7 +18,7 @@
     {# ===== PREREQUISITE WARNING (Sprint 3 — 2.10) ===== #}
     {% if prereq_warning %}
     <div class="prereq-banner">
-        <span class="prereq-icon">⚠️</span>
+        <span class="prereq-icon">[!]</span>
         <div class="prereq-text">
             <strong>Lección previa no completada</strong>
             <span>Se recomienda completar primero: <a href="{{ url_for('lesson', lesson_id=prereq_lesson_id) }}" style="color: var(--green);">{{ prereq_lesson_title }}</a></span>
@@ -51,11 +51,11 @@
                 <div class="lesson-note note-{{ note.type }}">
                     <div class="note-header">
                         {% if note.type == 'tip' %}
-                            <span class="note-icon">💡</span> <span class="note-label">TIP</span>
+                            <span class="note-label">[TIP]</span>
                         {% elif note.type == 'warning' %}
-                            <span class="note-icon">⚠️</span> <span class="note-label">WARNING</span>
+                            <span class="note-label">[WARNING]</span>
                         {% else %}
-                            <span class="note-icon">📝</span> <span class="note-label">NOTE</span>
+                            <span class="note-label">[NOTE]</span>
                         {% endif %}
                     </div>
                     <div class="note-body">{{ note.text | safe }}</div>

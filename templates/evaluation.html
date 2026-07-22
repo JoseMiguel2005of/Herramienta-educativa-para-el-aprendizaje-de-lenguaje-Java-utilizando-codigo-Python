@@ -12,28 +12,28 @@
     {# ===== START SCREEN ===== #}
     <div class="eval-start-screen" id="eval-start">
         <div class="eval-start-card">
-            <div class="eval-start-icon">📋</div>
+            <div class="eval-start-badge">EVALUATION MODULE</div>
             <h1 class="eval-start-title">{{ eval_data.title }}</h1>
             <p class="eval-start-desc">{{ eval_data.description }}</p>
 
             <div class="eval-start-info">
                 <div class="eval-info-item">
-                    <span class="eval-info-icon">📝</span>
+                    <span class="eval-info-icon">Q.</span>
                     <span class="eval-info-label">Preguntas</span>
                     <span class="eval-info-value">{{ questions | length }}</span>
                 </div>
                 <div class="eval-info-item">
-                    <span class="eval-info-icon">⏱</span>
+                    <span class="eval-info-icon">T.</span>
                     <span class="eval-info-label">Tiempo</span>
                     <span class="eval-info-value">{{ (time_limit // 60) }} min</span>
                 </div>
                 <div class="eval-info-item">
-                    <span class="eval-info-icon">🎯</span>
+                    <span class="eval-info-icon">P.</span>
                     <span class="eval-info-label">Aprobación</span>
                     <span class="eval-info-value">≥ {{ passing_score }}%</span>
                 </div>
                 <div class="eval-info-item">
-                    <span class="eval-info-icon">🔄</span>
+                    <span class="eval-info-icon">I.</span>
                     <span class="eval-info-label">Intentos</span>
                     <span class="eval-info-value">{{ status.attempts }}</span>
                 </div>
@@ -43,13 +43,13 @@
             <div class="eval-prev-result">
                 <span>Mejor resultado anterior: <strong>{{ status.best_score }}%</strong></span>
                 {% if status.passed %}
-                <span class="eval-badge-passed">✅ APROBADO</span>
+                <span class="eval-badge-passed">APROBADO</span>
                 {% endif %}
             </div>
             {% endif %}
 
             <div class="eval-start-rules">
-                <h3>📌 Instrucciones</h3>
+                <h3>Instrucciones de la Evaluación</h3>
                 <ul>
                     <li>Las preguntas se adaptan a las lecciones que has completado</li>
                     <li>Hay 3 tipos: opción múltiple, completar código y verdadero/falso</li>
@@ -71,7 +71,7 @@
             <div class="eval-header-top">
                 <h2 class="eval-title-small">{{ eval_data.title }}</h2>
                 <div class="eval-timer" id="eval-timer">
-                    <span class="timer-icon">⏱</span>
+                    <span class="timer-icon">TIMER</span>
                     <span class="timer-value" id="timer-value">{{ (time_limit // 60) }}:00</span>
                 </div>
             </div>
@@ -130,10 +130,10 @@
                     {% elif q.type == 'true_false' %}
                     <div class="eval-tf-buttons">
                         <button class="eval-tf-btn" data-value="true">
-                            <span class="tf-icon">✓</span> Verdadero
+                            Verdadero
                         </button>
                         <button class="eval-tf-btn" data-value="false">
-                            <span class="tf-icon">✗</span> Falso
+                            Falso
                         </button>
                     </div>
                     {% endif %}
@@ -145,7 +145,7 @@
         <div class="eval-actions">
             <button class="btn-eval-prev" id="btn-eval-prev" disabled>❮ Anterior</button>
             <button class="btn-eval-next" id="btn-eval-next">Siguiente ❯</button>
-            <button class="btn-eval-submit" id="btn-eval-submit" hidden>Enviar Evaluación ✓</button>
+            <button class="btn-eval-submit" id="btn-eval-submit" hidden>Enviar Evaluación</button>
         </div>
     </div>
 
@@ -169,7 +169,6 @@
             <p class="eval-results-detail" id="eval-results-detail"></p>
 
             <div class="eval-xp-badge" id="eval-xp-badge" hidden>
-                <span class="xp-icon">⚡</span>
                 <span class="xp-text" id="eval-xp-text">+100 XP</span>
             </div>
 
@@ -182,8 +181,8 @@
             </div>
 
             <div class="eval-results-actions">
-                <button class="btn-eval-retry" id="btn-eval-retry">🔄 Reintentar</button>
-                <a href="{{ url_for('dashboard') }}" class="btn-eval-dashboard">📊 Dashboard</a>
+                <button class="btn-eval-retry" id="btn-eval-retry">Reintentar</button>
+                <a href="{{ url_for('dashboard') }}" class="btn-eval-dashboard">Ir al Dashboard</a>
             </div>
         </div>
     </div>

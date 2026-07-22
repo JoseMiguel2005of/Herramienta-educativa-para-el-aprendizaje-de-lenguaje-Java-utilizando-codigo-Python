@@ -213,14 +213,14 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 alert('Error: ' + (data.error || 'No se pudo procesar la evaluación'));
                 btnSubmit.disabled = false;
-                btnSubmit.textContent = 'Enviar Evaluación ✓';
+                btnSubmit.textContent = 'Enviar Evaluación';
             }
         })
         .catch(err => {
             console.error('Error:', err);
             alert('Error de conexión. Intenta de nuevo.');
             btnSubmit.disabled = false;
-            btnSubmit.textContent = 'Enviar Evaluación ✓';
+            btnSubmit.textContent = 'Enviar Evaluación';
         });
     }
 
@@ -234,16 +234,16 @@ document.addEventListener('DOMContentLoaded', () => {
         // Status badge
         const statusEl = document.getElementById('eval-results-status');
         if (passed) {
-            statusEl.innerHTML = '<span class="eval-status-passed">✅ APROBADO</span>';
+            statusEl.innerHTML = '<span class="eval-status-passed">EVALUACIÓN APROBADA</span>';
         } else {
-            statusEl.innerHTML = '<span class="eval-status-failed">❌ NO APROBADO</span>';
+            statusEl.innerHTML = '<span class="eval-status-failed">NO APROBADO</span>';
         }
 
         // Title
         const titleEl = document.getElementById('eval-results-title');
         titleEl.textContent = passed
-            ? '¡Felicidades! Has demostrado tu dominio 🎉'
-            : 'Sigue practicando, ¡tú puedes! 💪';
+            ? '¡Excelente Trabajo! Has demostrado tu dominio'
+            : 'Sigue practicando para mejorar tu puntaje';
 
         // Score circle
         const scoreFill = document.getElementById('eval-score-fill');

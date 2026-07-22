@@ -79,15 +79,15 @@
             <div class="status-pulse-container">
                 {% if summary.streak >= 7 %}
                 <span class="pulse-ring"></span>
-                🔥 XP_MULTIPLIER: ×1.5
+                XP_MULTIPLIER: ×1.5
                 {% elif summary.streak >= 3 %}
                 <span class="pulse-ring"></span>
-                🔥 XP_MULTIPLIER: ×1.25
+                XP_MULTIPLIER: ×1.25
                 {% elif summary.streak >= 1 %}
                 <span class="pulse-ring"></span>
                 LOGGED_TODAY
                 {% else %}
-                ⚠️ NO_ACTIVITY_TODAY
+                NO_ACTIVITY_TODAY
                 {% endif %}
             </div>
         </div>
@@ -162,7 +162,7 @@
                     </div>
                     <span class="achievement-ratio">{{ ach.progress }}/{{ ach.max }}</span>
                     {% if not ach.unlocked %}
-                    <div class="achievement-lock">🔒</div>
+                    <div class="achievement-lock">LOCKED</div>
                     {% endif %}
                 </div>
                 {% endfor %}
@@ -744,13 +744,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const actionEl = document.getElementById(`eval-action-${key}`);
                 
                 if (data.passed) {
-                    statusEl.innerHTML = `<span class="status-passed">✅ APROBADO — Mejor nota: ${data.best_score}%</span>`;
+                    statusEl.innerHTML = `<span class="status-passed">APROBADO — Mejor nota: ${data.best_score}%</span>`;
                     actionEl.innerHTML = `<a href="/evaluacion/${key}" class="eval-dash-btn passed">Mejorar Nota</a>`;
                 } else if (data.unlocked) {
-                    statusEl.innerHTML = `<span class="status-available">📝 Disponible — ${data.completion_pct}% completado${data.attempts > 0 ? ' — Mejor: ' + data.best_score + '%' : ''}</span>`;
+                    statusEl.innerHTML = `<span class="status-available">Disponible — ${data.completion_pct}% completado${data.attempts > 0 ? ' — Mejor: ' + data.best_score + '%' : ''}</span>`;
                     actionEl.innerHTML = `<a href="/evaluacion/${key}" class="eval-dash-btn available">${data.attempts > 0 ? 'Reintentar' : 'Comenzar'}</a>`;
                 } else {
-                    statusEl.innerHTML = `<span class="status-locked">🔒 Bloqueado — ${data.completion_pct}% completado (necesitas 80%)</span>`;
+                    statusEl.innerHTML = `<span class="status-locked">Bloqueado — ${data.completion_pct}% completado (necesitas 80%)</span>`;
                     actionEl.innerHTML = `<span class="eval-dash-btn locked">Bloqueado</span>`;
                 }
             })

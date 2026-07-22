@@ -2,78 +2,78 @@
    TEMA Y VARIABLES
    ============================================= */
 :root, body {
-    /* HIGH-CONTRAST TERMINAL THEME */
-    --green: #00E5FF; /* Usamos Cyan eléctrico para acentos principales/Python */
-    --green-dark: #00B2CC;
-    --green-light: rgba(0, 229, 255, 0.1);
+    /* ERGONOMIC EYE-FRIENDLY THEME (Color Theory Calibrated) */
+    --green: #00D2E5;         /* Soft Cyan Accent */
+    --green-dark: #009BB0;
+    --green-light: rgba(0, 210, 229, 0.12);
     
-    --bg: #0D1117;
-    --bg-secondary: #161B22;
-    --bg-code: #010409;
+    --bg: #0B0F19;             /* Soft Obsidian Blue-Dark */
+    --bg-secondary: #131924;   /* Slate Card Background */
+    --bg-code: #080B12;        /* Dark Slate Code Editor */
     
-    --text: #C9D1D9;
-    --text-muted: #8B949E;
+    --text: #E2E8F0;           /* Soft off-white to eliminate glare */
+    --text-muted: #94A3B8;     /* Muted Slate Text */
     
-    --border: #30363D;
+    --border: rgba(255, 255, 255, 0.09); /* Soft border for visual division */
     
-    --sidebar-bg: #0D1117;
-    --sidebar-text: #8B949E;
-    --sidebar-hover: #FFFFFF;
-    --sidebar-active: #00E5FF;
+    --sidebar-bg: #0B0F19;
+    --sidebar-text: #94A3B8;
+    --sidebar-hover: #F8FAFC;
+    --sidebar-active: #00D2E5;
     
-    --python-color: #00E5FF; /* Cyan */
-    --java-color: #FF5555;   /* Rojo/Neon */
+    --python-color: #00D2E5;   /* Cyan */
+    --java-color: #F43F5E;     /* Soft Coral Red */
     
-    --shadow: none;
-    --shadow-lg: 0 10px 30px rgba(0,0,0,0.8);
+    --shadow: 0 2px 8px rgba(0,0,0,0.3);
+    --shadow-lg: 0 12px 32px -4px rgba(0, 0, 0, 0.5);
     
-    --explanation-bg: #161B22;
-    --explanation-border: #FF5555;
+    --explanation-bg: #131924;
+    --explanation-border: #F43F5E;
     
-    --topbar-text: #FFFFFF;
-    --accent-glow: rgba(0, 229, 255, 0.1);
-    --page-bg: #0D1117;
-    --card-hover-shadow: none;
+    --topbar-text: #F8FAFC;
+    --accent-glow: rgba(0, 210, 229, 0.15);
+    --page-bg: #0B0F19;
+    --card-hover-shadow: 0 8px 24px -4px rgba(0, 210, 229, 0.15);
     
-    /* Variables estructurales */
-    --radius: 2px;
+    /* Structural variables */
+    --radius: 10px;
 }
 
 /* =============================================
-   LIGHT THEME (Sprint 2 — 1.9)
+   LIGHT THEME (Ergonomic Soft Slate)
    ============================================= */
 [data-theme="light"], [data-theme="light"] body {
-    --green: #0097A7;
-    --green-dark: #006978;
-    --green-light: rgba(0, 151, 167, 0.1);
+    --green: #0284C7;
+    --green-dark: #0369A1;
+    --green-light: rgba(2, 132, 199, 0.08);
 
-    --bg: #FFFFFF;
-    --bg-secondary: #F6F8FA;
-    --bg-code: #EFF1F3;
+    --bg: #F8FAFC;
+    --bg-secondary: #FFFFFF;
+    --bg-code: #F1F5F9;
 
-    --text: #24292F;
-    --text-muted: #57606A;
+    --text: #0F172A;
+    --text-muted: #64748B;
 
-    --border: #D0D7DE;
+    --border: #E2E8F0;
 
-    --sidebar-bg: #F6F8FA;
-    --sidebar-text: #57606A;
-    --sidebar-hover: #24292F;
-    --sidebar-active: #0097A7;
+    --sidebar-bg: #F1F5F9;
+    --sidebar-text: #64748B;
+    --sidebar-hover: #0F172A;
+    --sidebar-active: #0284C7;
 
-    --python-color: #0097A7;
-    --java-color: #CF222E;
+    --python-color: #0284C7;
+    --java-color: #E11D48;
 
-    --shadow: 0 1px 3px rgba(0,0,0,0.1);
-    --shadow-lg: 0 10px 30px rgba(0,0,0,0.1);
+    --shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+    --shadow-lg: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
 
-    --explanation-bg: #F6F8FA;
-    --explanation-border: #CF222E;
+    --explanation-bg: #FFFFFF;
+    --explanation-border: #E11D48;
 
-    --topbar-text: #24292F;
-    --accent-glow: rgba(0, 151, 167, 0.08);
-    --page-bg: #FFFFFF;
-    --card-hover-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    --topbar-text: #0F172A;
+    --accent-glow: rgba(2, 132, 199, 0.08);
+    --page-bg: #F8FAFC;
+    --card-hover-shadow: 0 6px 18px rgba(2, 132, 199, 0.12);
 }
 
 /* --- Topbar --- */
@@ -314,7 +314,9 @@ body::before {
    TOPBAR
    ============================================= */
 .topbar {
-    background: var(--bg-secondary);
+    background: rgba(11, 15, 25, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     color: var(--topbar-text);
     position: sticky;
     top: 0;
@@ -329,6 +331,8 @@ body::before {
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
 .brand {
@@ -338,36 +342,21 @@ body::before {
     text-decoration: none;
     color: inherit;
     transition: opacity 0.2s;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .brand:hover {
     opacity: 0.9;
 }
 
-.brand-icon {
-    font-family: "JetBrains Mono", monospace;
+.brand-title {
+    letter-spacing: 0.1em;
+    font-family: 'Space Grotesk', sans-serif;
     font-size: 1.5rem;
     font-weight: 700;
-    background: transparent;
-    padding: 0.25rem 0.6rem;
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
     color: var(--green);
-}
-
-.brand strong {
-    display: block;
-    font-size: 1.1rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-family: "Space Grotesk", sans-serif;
-}
-
-.brand small {
-    display: block;
-    font-size: 0.75rem;
-    opacity: 0.85;
-    font-family: "JetBrains Mono", monospace;
 }
 
 .topbar-actions {
@@ -376,8 +365,66 @@ body::before {
     margin-left: auto;
 }
 
-.inline-form {
-    display: inline;
+.prompt-accent {
+    color: var(--green);
+    font-weight: 700;
+}
+
+.term-btn {
+    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+    color: var(--text-muted);
+    padding: 0.35rem 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.2s ease;
+}
+
+.term-btn:hover {
+    border-color: var(--green);
+    color: var(--text);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.term-btn.btn-logout {
+    color: var(--java-color);
+    border-color: rgba(244, 63, 94, 0.3);
+}
+
+.term-btn.btn-logout:hover {
+    border-color: var(--java-color);
+    background: rgba(244, 63, 94, 0.08);
+}
+
+.term-btn.btn-login {
+    color: var(--green);
+    border-color: rgba(0, 210, 229, 0.3);
+}
+
+.term-btn.btn-login:hover {
+    border-color: var(--green);
+    background: rgba(0, 210, 229, 0.08);
+}
+
+.sec-icon {
+    font-size: 0.75rem;
+    color: var(--green);
+    margin-right: 0.2rem;
+    display: inline-block;
+    transition: transform 0.2s ease;
+}
+
+.eval-star {
+    color: #FFD700;
+    font-size: 0.85rem;
+    margin-right: 0.2rem;
 }
 
 .btn-ghost {
@@ -395,7 +442,7 @@ body::before {
 
 .btn-ghost:hover {
     background: var(--bg-secondary);
-    border-color: var(--text);
+    border-color: var(--green);
 }
 
 [data-theme="light"] .theme-icon-dark,
