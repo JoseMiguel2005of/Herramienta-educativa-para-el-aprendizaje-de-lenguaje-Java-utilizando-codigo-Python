@@ -3,44 +3,49 @@
 {% block title %}{{ eval_data.title }} — {{ t.site_title }}{% endblock %}
 
 {% block content %}
-<article class="eval-page" id="eval-container"
-         data-section-key="{{ section_key }}"
-         data-total="{{ questions | length }}"
-         data-time-limit="{{ time_limit }}"
-         data-passing-score="{{ passing_score }}">
+<article class="eval-page" id="eval-container" data-section-key="{{ section_key }}"
+    data-total="{{ questions | length }}" data-time-limit="{{ time_limit }}" data-passing-score="{{ passing_score }}">
 
     {# ===== START SCREEN ===== #}
     <div class="eval-start-screen" id="eval-start">
         <div class="eval-start-card">
-            <div class="eval-start-badge">EVALUATION MODULE</div>
+            <div class="eval-start-icon">📋</div>
             <h1 class="eval-start-title">{{ eval_data.title }}</h1>
             <p class="eval-start-desc">{{ eval_data.description }}</p>
 
             <div class="eval-start-info">
-                <div class="eval-info-item">
-                    <span class="eval-info-icon">Q.</span>
+                <div class="eval-info-item neu-card">
+                    <div class="neu-icon-box">
+                        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                    </div>
                     <span class="eval-info-label">Preguntas</span>
                     <span class="eval-info-value">{{ questions | length }}</span>
                 </div>
-                <div class="eval-info-item">
-                    <span class="eval-info-icon">T.</span>
+                <div class="eval-info-item neu-card">
+                    <div class="neu-icon-box">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    </div>
                     <span class="eval-info-label">Tiempo</span>
                     <span class="eval-info-value">{{ (time_limit // 60) }} min</span>
                 </div>
-                <div class="eval-info-item">
-                    <span class="eval-info-icon">P.</span>
+                <div class="eval-info-item neu-card">
+                    <div class="neu-icon-box">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+                    </div>
                     <span class="eval-info-label">Aprobación</span>
                     <span class="eval-info-value">≥ {{ passing_score }}%</span>
                 </div>
-                <div class="eval-info-item">
-                    <span class="eval-info-icon">I.</span>
+                <div class="eval-info-item neu-card">
+                    <div class="neu-icon-box">
+                        <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                    </div>
                     <span class="eval-info-label">Intentos</span>
                     <span class="eval-info-value">{{ status.attempts }}</span>
                 </div>
             </div>
 
             {% if status.attempts > 0 %}
-            <div class="eval-prev-result">
+            <div class="eval-prev-result neu-card">
                 <span>Mejor resultado anterior: <strong>{{ status.best_score }}%</strong></span>
                 {% if status.passed %}
                 <span class="eval-badge-passed">APROBADO</span>
@@ -49,7 +54,7 @@
             {% endif %}
 
             <div class="eval-start-rules">
-                <h3>Instrucciones de la Evaluación</h3>
+                <h3>📌 Instrucciones</h3>
                 <ul>
                     <li>Las preguntas se adaptan a las lecciones que has completado</li>
                     <li>Hay 3 tipos: opción múltiple, completar código y verdadero/falso</li>
@@ -71,7 +76,7 @@
             <div class="eval-header-top">
                 <h2 class="eval-title-small">{{ eval_data.title }}</h2>
                 <div class="eval-timer" id="eval-timer">
-                    <span class="timer-icon">TIMER</span>
+                    <span class="timer-icon">⏱</span>
                     <span class="timer-value" id="timer-value">{{ (time_limit // 60) }}:00</span>
                 </div>
             </div>
@@ -84,7 +89,8 @@
             </div>
             <div class="eval-question-dots" id="eval-question-dots">
                 {% for q in questions %}
-                <button class="dot-btn {% if loop.first %}active{% endif %}" data-idx="{{ loop.index0 }}" title="Pregunta {{ loop.index }}"></button>
+                <button class="dot-btn {% if loop.first %}active{% endif %}" data-idx="{{ loop.index0 }}"
+                    title="Pregunta {{ loop.index }}"></button>
                 {% endfor %}
             </div>
         </header>
@@ -92,8 +98,9 @@
         <div class="eval-questions-wrapper" id="eval-questions">
             {% for q in questions %}
             {% set outer_loop_index = loop.index0 %}
-            <div class="eval-question-slide" data-question="{{ outer_loop_index }}" data-qid="{{ q.id }}" data-type="{{ q.type }}" {% if not loop.first %}hidden{% endif %}>
-                
+            <div class="eval-question-slide" data-question="{{ outer_loop_index }}" data-qid="{{ q.id }}"
+                data-type="{{ q.type }}" {% if not loop.first %}hidden{% endif %}>
+
                 <div class="eval-question-meta">
                     <span class="eval-q-number">Pregunta {{ loop.index }}</span>
                     <span class="eval-q-type">
@@ -123,17 +130,17 @@
                         <pre class="eval-code-template"><code>{{ q.code_template }}</code></pre>
                         <div class="eval-code-input-wrap">
                             <label for="code-input-{{ outer_loop_index }}">Tu respuesta (reemplaza ___):</label>
-                            <input type="text" class="eval-code-input" id="code-input-{{ outer_loop_index }}" 
-                                   placeholder="Escribe aquí..." autocomplete="off" spellcheck="false">
+                            <input type="text" class="eval-code-input" id="code-input-{{ outer_loop_index }}"
+                                placeholder="Escribe aquí..." autocomplete="off" spellcheck="false">
                         </div>
                     </div>
                     {% elif q.type == 'true_false' %}
                     <div class="eval-tf-buttons">
                         <button class="eval-tf-btn" data-value="true">
-                            Verdadero
+                            <span class="tf-icon">✓</span> Verdadero
                         </button>
                         <button class="eval-tf-btn" data-value="false">
-                            Falso
+                            <span class="tf-icon">✗</span> Falso
                         </button>
                     </div>
                     {% endif %}
@@ -145,7 +152,7 @@
         <div class="eval-actions">
             <button class="btn-eval-prev" id="btn-eval-prev" disabled>❮ Anterior</button>
             <button class="btn-eval-next" id="btn-eval-next">Siguiente ❯</button>
-            <button class="btn-eval-submit" id="btn-eval-submit" hidden>Enviar Evaluación</button>
+            <button class="btn-eval-submit" id="btn-eval-submit" hidden>Enviar Evaluación ✓</button>
         </div>
     </div>
 
@@ -169,6 +176,7 @@
             <p class="eval-results-detail" id="eval-results-detail"></p>
 
             <div class="eval-xp-badge" id="eval-xp-badge" hidden>
+                <span class="xp-icon">⚡</span>
                 <span class="xp-text" id="eval-xp-text">+100 XP</span>
             </div>
 
@@ -181,8 +189,8 @@
             </div>
 
             <div class="eval-results-actions">
-                <button class="btn-eval-retry" id="btn-eval-retry">Reintentar</button>
-                <a href="{{ url_for('dashboard') }}" class="btn-eval-dashboard">Ir al Dashboard</a>
+                <button class="btn-eval-retry" id="btn-eval-retry">🔄 Reintentar</button>
+                <a href="{{ url_for('dashboard') }}" class="btn-eval-dashboard">📊 Dashboard</a>
             </div>
         </div>
     </div>

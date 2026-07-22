@@ -20,35 +20,45 @@
 </head>
 
 <body>
-    <header class="topbar telemetry-topbar">
+    <header class="topbar telemetry-topbar"
+        style="background: var(--bg-code); border-bottom: 1px dashed var(--border); font-family: 'JetBrains Mono', monospace; position: sticky; top: 0; z-index: 100;">
         <div class="topbar-inner">
             <div class="mobile-menu-container">
+                <button id="mobile-menu-toggle" class="btn-ghost hide-desktop"
                 <button id="mobile-menu-toggle" class="btn-ghost hide-desktop" aria-label="Menú">☰</button>
             </div>
 
             <a href="{{ url_for('lesson', lesson_id='py-home') }}" class="brand">
+                <div class="brand-icon">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                    </svg>
+                </div>
                 <strong class="brand-title">
                     {{ t.site_title | upper }}
                 </strong>
             </a>
-            <div class="topbar-actions">
-                <div style="display:flex; align-items:center; gap:0.5rem;">
-                    <button type="button" id="btn-theme-toggle" class="term-btn" title="Cambiar tema"
-                        onclick="toggleTheme()">
-                        <span id="theme-icon">🌙</span>
-                    </button>
-                    <button type="button" id="btn-open-search" class="term-btn" title="Buscar (Ctrl+K)">
-                        <span class="prompt-accent">>_</span> <span class="hide-mobile">BUSCAR</span>
-                    </button>
 
-                    {% if current_user.is_authenticated %}
-                    <a href="{{ url_for('logout') }}" class="term-btn btn-logout">[
-                        LOGOUT ]</a>
-                    {% else %}
-                    <a href="{{ url_for('login') }}" class="term-btn btn-login">[
-                        LOGIN ]</a>
-                    {% endif %}
-                </div>
+            <div class="topbar-actions">
+                <button type="button" id="btn-theme-toggle" class="term-btn" title="Cambiar tema" onclick="toggleTheme()">
+                    <span id="theme-icon">🌙</span>
+                </button>
+                <button type="button" id="btn-open-search" class="term-btn" title="Buscar (Ctrl+K)">
+                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <span class="hide-mobile">BUSCAR</span>
+                </button>
+
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('logout') }}" class="term-btn btn-logout">
+                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    LOGOUT
+                </a>
+                {% else %}
+                <a href="{{ url_for('login') }}" class="term-btn btn-login">
+                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+                    LOGIN
+                </a>
+                {% endif %}
             </div>
         </div>
     </header>
@@ -59,40 +69,47 @@
 
         <aside class="sidebar terminal-sidebar" id="main-sidebar">
             <nav class="dir-tree">
-                <div class="sidebar-search term-search">
-                    <span class="prompt-char">&gt;_</span>
-                    <input type="text" id="sidebar-search-input" placeholder="Buscar lecciones..."
-                        class="sidebar-search-input term-input">
+                <div class="sidebar-search term-search neu-inset">
+                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" id="sidebar-search-input" placeholder="Buscar lecciones..." class="sidebar-search-input term-input">
                 </div>
 
                 <div class="sidebar-user-section term-commands">
                     <span class="tree-root">root/</span>
                     <a href="{{ url_for('dashboard') }}" class="term-btn text-green">
-                        [ EXEC: DASHBOARD ]
+                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                        DASHBOARD
                     </a>
                     <a href="{{ url_for('roadmap') }}" class="term-btn text-python">
-                        [ EXEC: ROADMAP ]
+                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                        ROADMAP
                     </a>
                     <a href="{{ url_for('practice_list') }}" class="term-btn text-green">
-                        [ EXEC: LABS ]
+                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                        LABS
                     </a>
                     <a href="{{ url_for('traductor') }}" class="term-btn text-green">
-                        [ TOOL: TRANSPILER ]
+                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M5 8l6 6-6 6"></path><line x1="12" y1="18" x2="19" y2="18"></line></svg>
+                        TRANSPILER
                     </a>
                     <a href="{{ url_for('glossary') }}" class="term-btn text-green">
-                        [ TOOL: GLOSSARY ]
+                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                        GLOSSARY
                     </a>
                     <a href="{{ url_for('leaderboard') }}" class="term-btn text-green">
-                        [ EXEC: LEADERBOARD ]
+                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+                        LEADERBOARD
                     </a>
                     {% if current_user.is_authenticated %}
                     <a href="{{ url_for('profile') }}" class="term-btn text-green">
-                        [ EXEC: PROFILE ]
+                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        PROFILE
                     </a>
                     {% endif %}
                     {% if current_user.is_authenticated and current_user.role == 'teacher' %}
                     <a href="{{ url_for('teacher_dashboard') }}" class="term-btn text-orange">
-                        [ ADMIN: TEACHER_PANEL ]
+                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        TEACHER_PANEL
                     </a>
                     {% endif %}
                 </div>
@@ -104,14 +121,13 @@
                         <div class="dir-name {{ category.color_class }}">{{ t[category.label_key] | upper }}</div>
 
                         {% for section in category.sections %}
-                        <button class="section-btn term-section-btn"
-                            onclick="toggleSection('sec-{{ category.id }}-{{ loop.index }}')">
-                            <span class="tree-branch">├─</span> <span class="sec-icon">▸</span> {{ t[section.label_key] | upper }}
+                        <button class="section-btn term-section-btn" onclick="toggleSection('sec-{{ category.id }}-{{ loop.index }}')">
+                            <span class="tree-branch">├─</span>
+                            <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" class="sec-folder-svg"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                            {{ t[section.label_key] | upper }}
                         </button>
-                        {% set is_active = (page == 'lesson' and section.lessons | selectattr('id', 'equalto',
-                        current_lesson) | list | length > 0) %}
-                        <div class="section-content term-section-content" id="sec-{{ category.id }}-{{ loop.index }}"
-                            style="display: {{ 'block' if is_active else 'none' }};">
+                        {% set is_active = (page == 'lesson' and section.lessons | selectattr('id', 'equalto', current_lesson) | list | length > 0) %}
+                        <div class="section-content term-section-content" id="sec-{{ category.id }}-{{ loop.index }}" style="display: {{ 'block' if is_active else 'none' }};">
                             <ul class="nav-list term-nav-list">
                                 {% for lesson in section.lessons %}
                                 <li>
@@ -139,7 +155,10 @@
                                         class="nav-link term-nav-link eval-sidebar-link {% if page == 'evaluation' and section_key == section.label_key %}active{% endif %}"
                                         data-title="evaluación final">
                                         <span class="tree-file">│ └─</span>
-                                        <span class="file-name"><span class="eval-star">✦</span> Evaluación Final</span>
+                                        <span class="file-name">
+                                            <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2" class="eval-svg-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                            Evaluación Final
+                                        </span>
                                     </a>
                                 </li>
                                 {% endif %}
@@ -187,7 +206,8 @@
                     style="font-size:1.5rem; padding:0 0.5rem;">&times;</button>
             </div>
             <div id="search-results" class="search-results" style="overflow-y:auto; flex-grow:1; padding:0;">
-                <p style="color:var(--text-muted); text-align:center; padding:2rem 1rem;">Escribe al menos 2 caracteres para
+                <p style="color:var(--text-muted); text-align:center; padding:2rem 1rem;">Escribe al menos 2 caracteres
+                    para
                     buscar...</p>
             </div>
         </div>
@@ -310,11 +330,11 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ theme: next })
-            }).catch(() => {});
+            }).catch(() => { });
         }
 
         // Apply saved theme on load
-        (function() {
+        (function () {
             const saved = localStorage.getItem('py2java_theme');
             if (saved) {
                 document.documentElement.setAttribute('data-theme', saved);

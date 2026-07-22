@@ -26,740 +26,786 @@
                 </div>
                 <div class="xp-data">
                     {% set level = (summary.total_xp // 100) + 1 %}
-                    {% set titles = {1:'Iniciado',2:'Novato',3:'Aprendiz',4:'Estudiante',5:'Practicante',6:'Competente',7:'Hábil',8:'Experto',9:'Veterano',10:'Pythonista',11:'Maestro',12:'Arquitecto',13:'Virtuoso',14:'Gurú',15:'Sensei',16:'Leyenda',17:'Oráculo',18:'Iluminado',19:'Trascendente',20:'Omnisciente'} %}
-                    {% set current_title = titles.get(level if level <= 20 else 20, 'Iniciado') %}
-                    <div class="data-row">
+                    {% set titles =
+                    {1:'Iniciado',2:'Novato',3:'Aprendiz',4:'Estudiante',5:'Practicante',6:'Competente',7:'Hábil',8:'Experto',9:'Veterano',10:'Pythonista',11:'Maestro',12:'Arquitecto',13:'Virtuoso',14:'Gurú',15:'Sensei',16:'Leyenda',17:'Oráculo',18:'Iluminado',19:'Trascendente',20:'Omnisciente'}
+                    %}
+                    {% set current_title = titles.get(level if level <= 20 else 20, 'Iniciado' ) %} <div
+                        class="data-row">
                         <span class="data-key">RANK:</span>
-                        <span class="data-val" style="color: var(--green); text-shadow: 0 0 8px rgba(0,229,255,0.4);">{{ current_title }}</span>
-                    </div>
-                    <div class="data-row">
-                        <span class="data-key">TOTAL_XP:</span>
-                        <span class="data-val">{{ summary.total_xp }}</span>
-                    </div>
-                    <div class="data-row">
-                        <span class="data-key">NEXT_THRESHOLD:</span>
-                        <span class="data-val">{{ summary.total_xp % 100 }}/100</span>
-                    </div>
-                    {% if level < 20 %}
-                    <div class="data-row">
-                        <span class="data-key">NEXT_RANK:</span>
-                        <span class="data-val" style="opacity:0.6;">{{ titles.get(level + 1, '???') }}</span>
-                    </div>
-                    {% endif %}
+                        <span class="data-val" style="color: var(--green); text-shadow: 0 0 8px rgba(0,229,255,0.4);">{{
+                            current_title }}</span>
                 </div>
+                <div class="data-row">
+                    <span class="data-key">TOTAL_XP:</span>
+                    <span class="data-val">{{ summary.total_xp }}</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-key">NEXT_THRESHOLD:</span>
+                    <span class="data-val">{{ summary.total_xp % 100 }}/100</span>
+                </div>
+                {% if level < 20 %} <div class="data-row">
+                    <span class="data-key">NEXT_RANK:</span>
+                    <span class="data-val" style="opacity:0.6;">{{ titles.get(level + 1, '???') }}</span>
             </div>
-            <div class="terminal-progress-container">
-                <div class="terminal-progress-bar" style="width: {{ summary.total_xp % 100 }}%;"></div>
-            </div>
+            {% endif %}
         </div>
+    </div>
+    <div class="terminal-progress-container">
+        <div class="terminal-progress-bar" style="width: {{ summary.total_xp % 100 }}%;"></div>
+    </div>
+    </div>
 
-        <!-- Metrics -->
-        <div class="data-module module-metric">
-            <div class="module-header">
-                <span>// METRICS: COMPLETED</span>
-            </div>
-            <div class="module-body center-data">
-                <span class="metric-value">{{ summary.completed_lessons | length }}</span>
-                <span class="metric-total">/ {{ lessons | length }} MODULES</span>
-            </div>
-            <div class="segmented-bar">
-                {% set comp_pct = (summary.completed_lessons | length / lessons | length * 100) | round %}
-                <div class="seg-fill" style="width: {{ comp_pct }}%;"></div>
-            </div>
+    <!-- Metrics -->
+    <div class="data-module module-metric">
+        <div class="module-header">
+            <span>// METRICS: COMPLETED</span>
         </div>
+        <div class="module-body center-data">
+            <span class="metric-value">{{ summary.completed_lessons | length }}</span>
+            <span class="metric-total">/ {{ lessons | length }} MODULES</span>
+        </div>
+        <div class="segmented-bar">
+            {% set comp_pct = (summary.completed_lessons | length / lessons | length * 100) | round %}
+            <div class="seg-fill" style="width: {{ comp_pct }}%;"></div>
+        </div>
+    </div>
 
-        <div class="data-module module-metric">
-            <div class="module-header">
-                <span>// METRICS: STREAK</span>
-            </div>
-            <div class="module-body center-data">
-                <span class="metric-value highlight-orange">{{ summary.streak }}</span>
-                <span class="metric-total">{{ 'DAYS_ACTIVE' if summary.streak != 1 else 'DAY_ACTIVE' }}</span>
-            </div>
-            <div class="status-pulse-container">
-                {% if summary.streak >= 7 %}
-                <span class="pulse-ring"></span>
-                XP_MULTIPLIER: ×1.5
-                {% elif summary.streak >= 3 %}
-                <span class="pulse-ring"></span>
-                XP_MULTIPLIER: ×1.25
-                {% elif summary.streak >= 1 %}
-                <span class="pulse-ring"></span>
-                LOGGED_TODAY
-                {% else %}
-                NO_ACTIVITY_TODAY
+    <div class="data-module module-metric">
+        <div class="module-header">
+            <span>// METRICS: STREAK</span>
+        </div>
+        <div class="module-body center-data">
+            <span class="metric-value highlight-orange">{{ summary.streak }}</span>
+            <span class="metric-total">{{ 'DAYS_ACTIVE' if summary.streak != 1 else 'DAY_ACTIVE' }}</span>
+        </div>
+        <div class="status-pulse-container">
+            {% if summary.streak >= 7 %}
+            <span class="pulse-ring"></span>
+            🔥 XP_MULTIPLIER: ×1.5
+            {% elif summary.streak >= 3 %}
+            <span class="pulse-ring"></span>
+            🔥 XP_MULTIPLIER: ×1.25
+            {% elif summary.streak >= 1 %}
+            <span class="pulse-ring"></span>
+            LOGGED_TODAY
+            {% else %}
+            ⚠️ NO_ACTIVITY_TODAY
+            {% endif %}
+        </div>
+    </div>
+
+
+
+    <!-- Achievements Section -->
+    {% set completed_count = summary.completed_lessons | length %}
+    {% set total_xp = summary.total_xp %}
+    {% set total_lessons = lessons | length %}
+
+    {# Check for special category completions #}
+    {% set numpy_ids = [] %}
+    {% set pandas_ids = [] %}
+    {% set scipy_ids = [] %}
+    {% set sql_ids = [] %}
+    {% set mongo_ids = [] %}
+    {% for cat in categories %}
+    {% for sec in cat.sections %}
+    {% for lesson in sec.lessons %}
+    {% if lesson.id.startswith('np-') %}
+    {% if numpy_ids.append(lesson.id) %}{% endif %}
+    {% elif lesson.id.startswith('pd-') %}
+    {% if pandas_ids.append(lesson.id) %}{% endif %}
+    {% elif lesson.id.startswith('sc-') %}
+    {% if scipy_ids.append(lesson.id) %}{% endif %}
+    {% elif lesson.id.startswith('sql-') %}
+    {% if sql_ids.append(lesson.id) %}{% endif %}
+    {% elif lesson.id.startswith('mongo-') %}
+    {% if mongo_ids.append(lesson.id) %}{% endif %}
+    {% endif %}
+    {% endfor %}
+    {% endfor %}
+    {% endfor %}
+
+    {% set has_science = (numpy_ids | select("in", summary.completed_lessons) | list | length > 0) or (pandas_ids |
+    select("in", summary.completed_lessons) | list | length > 0) or (scipy_ids | select("in", summary.completed_lessons)
+    | list | length > 0) %}
+    {% set has_db = (sql_ids | select("in", summary.completed_lessons) | list | length > 0) or (mongo_ids | select("in",
+    summary.completed_lessons) | list | length > 0) %}
+    {% set has_exercises = completed_count >= 1 %}
+
+    {# Define all achievements #}
+    {% set achievements = [
+    {"id": "01", "name": "Primer Paso", "desc": "Gana tu primer XP", "unlocked": total_xp > 0, "progress": (1 if
+    total_xp > 0 else 0), "max": 1},
+    {"id": "02", "name": "Estudiante", "desc": "Completa 1 lección", "unlocked": completed_count >= 1, "progress":
+    ([completed_count, 1] | min), "max": 1},
+    {"id": "03", "name": "En Racha", "desc": "Completa 5 lecciones", "unlocked": completed_count >= 5, "progress":
+    ([completed_count, 5] | min), "max": 5},
+    {"id": "04", "name": "Explorador", "desc": "Completa 10 lecciones", "unlocked": completed_count >= 10, "progress":
+    ([completed_count, 10] | min), "max": 10},
+    {"id": "05", "name": "Imparable", "desc": "Completa 25 lecciones", "unlocked": completed_count >= 25, "progress":
+    ([completed_count, 25] | min), "max": 25},
+    {"id": "06", "name": "Medio Camino", "desc": "Completa 50 lecciones", "unlocked": completed_count >= 50, "progress":
+    ([completed_count, 50] | min), "max": 50},
+    {"id": "07", "name": "Maestro", "desc": "Completa 100 lecciones", "unlocked": completed_count >= 100, "progress":
+    ([completed_count, 100] | min), "max": 100},
+    {"id": "08", "name": "Completista", "desc": "Completa TODAS las lecciones", "unlocked": completed_count >=
+    total_lessons, "progress": completed_count, "max": total_lessons},
+    {"id": "09", "name": "Nivel 5", "desc": "Alcanza nivel 5", "unlocked": total_xp >= 400, "progress": ([total_xp, 400]
+    | min), "max": 400},
+    {"id": "10", "name": "Nivel 10", "desc": "Alcanza nivel 10", "unlocked": total_xp >= 900, "progress": ([total_xp,
+    900] | min), "max": 900},
+    {"id": "11", "name": "Científico", "desc": "Explora NumPy, Pandas o SciPy", "unlocked": has_science, "progress": (1
+    if has_science else 0), "max": 1},
+    {"id": "12", "name": "DBA Junior", "desc": "Explora SQL o MongoDB", "unlocked": has_db, "progress": (1 if has_db
+    else 0), "max": 1}
+    ] %}
+
+    <div class="data-module module-achievements span-full">
+        <div class="module-header">
+            <span>// ACHIEVEMENTS_SYSTEM</span>
+            <span>{{ achievements | selectattr("unlocked") | list | length }} / {{ achievements | length }}
+                UNLOCKED</span>
+        </div>
+        <div class="module-body achievements-grid">
+            {% for ach in achievements %}
+            <div class="achievement-card {{ 'unlocked' if ach.unlocked else 'locked' }}">
+                <div class="achievement-icon">{{ ach.id }}</div>
+                <div class="achievement-info">
+                    <span class="achievement-name">{{ ach.name }}</span>
+                    <span class="achievement-desc">{{ ach.desc }}</span>
+                </div>
+                <div class="achievement-progress-bar">
+                    {% set pct = (ach.progress / ach.max * 100) | round %}
+                    <div class="achievement-fill {{ 'complete' if ach.unlocked else '' }}" style="width: {{ pct }}%;">
+                    </div>
+                </div>
+                <span class="achievement-ratio">{{ ach.progress }}/{{ ach.max }}</span>
+                {% if not ach.unlocked %}
+                <div class="achievement-lock">🔒</div>
                 {% endif %}
             </div>
-        </div>
-
-
-
-        <!-- Achievements Section -->
-        {% set completed_count = summary.completed_lessons | length %}
-        {% set total_xp = summary.total_xp %}
-        {% set total_lessons = lessons | length %}
-        
-        {# Check for special category completions #}
-        {% set numpy_ids = [] %}
-        {% set pandas_ids = [] %}
-        {% set scipy_ids = [] %}
-        {% set sql_ids = [] %}
-        {% set mongo_ids = [] %}
-        {% for cat in categories %}
-            {% for sec in cat.sections %}
-                {% for lesson in sec.lessons %}
-                    {% if lesson.id.startswith('np-') %}
-                        {% if numpy_ids.append(lesson.id) %}{% endif %}
-                    {% elif lesson.id.startswith('pd-') %}
-                        {% if pandas_ids.append(lesson.id) %}{% endif %}
-                    {% elif lesson.id.startswith('sc-') %}
-                        {% if scipy_ids.append(lesson.id) %}{% endif %}
-                    {% elif lesson.id.startswith('sql-') %}
-                        {% if sql_ids.append(lesson.id) %}{% endif %}
-                    {% elif lesson.id.startswith('mongo-') %}
-                        {% if mongo_ids.append(lesson.id) %}{% endif %}
-                    {% endif %}
-                {% endfor %}
             {% endfor %}
-        {% endfor %}
-        
-        {% set has_science = (numpy_ids | select("in", summary.completed_lessons) | list | length > 0) or (pandas_ids | select("in", summary.completed_lessons) | list | length > 0) or (scipy_ids | select("in", summary.completed_lessons) | list | length > 0) %}
-        {% set has_db = (sql_ids | select("in", summary.completed_lessons) | list | length > 0) or (mongo_ids | select("in", summary.completed_lessons) | list | length > 0) %}
-        {% set has_exercises = completed_count >= 1 %}
-        
-        {# Define all achievements #}
-        {% set achievements = [
-            {"id": "01", "name": "Primer Paso", "desc": "Gana tu primer XP", "unlocked": total_xp > 0, "progress": (1 if total_xp > 0 else 0), "max": 1},
-            {"id": "02", "name": "Estudiante", "desc": "Completa 1 lección", "unlocked": completed_count >= 1, "progress": ([completed_count, 1] | min), "max": 1},
-            {"id": "03", "name": "En Racha", "desc": "Completa 5 lecciones", "unlocked": completed_count >= 5, "progress": ([completed_count, 5] | min), "max": 5},
-            {"id": "04", "name": "Explorador", "desc": "Completa 10 lecciones", "unlocked": completed_count >= 10, "progress": ([completed_count, 10] | min), "max": 10},
-            {"id": "05", "name": "Imparable", "desc": "Completa 25 lecciones", "unlocked": completed_count >= 25, "progress": ([completed_count, 25] | min), "max": 25},
-            {"id": "06", "name": "Medio Camino", "desc": "Completa 50 lecciones", "unlocked": completed_count >= 50, "progress": ([completed_count, 50] | min), "max": 50},
-            {"id": "07", "name": "Maestro", "desc": "Completa 100 lecciones", "unlocked": completed_count >= 100, "progress": ([completed_count, 100] | min), "max": 100},
-            {"id": "08", "name": "Completista", "desc": "Completa TODAS las lecciones", "unlocked": completed_count >= total_lessons, "progress": completed_count, "max": total_lessons},
-            {"id": "09", "name": "Nivel 5", "desc": "Alcanza nivel 5", "unlocked": total_xp >= 400, "progress": ([total_xp, 400] | min), "max": 400},
-            {"id": "10", "name": "Nivel 10", "desc": "Alcanza nivel 10", "unlocked": total_xp >= 900, "progress": ([total_xp, 900] | min), "max": 900},
-            {"id": "11", "name": "Científico", "desc": "Explora NumPy, Pandas o SciPy", "unlocked": has_science, "progress": (1 if has_science else 0), "max": 1},
-            {"id": "12", "name": "DBA Junior", "desc": "Explora SQL o MongoDB", "unlocked": has_db, "progress": (1 if has_db else 0), "max": 1}
-        ] %}
-        
-        <div class="data-module module-achievements span-full">
-            <div class="module-header">
-                <span>// ACHIEVEMENTS_SYSTEM</span>
-                <span>{{ achievements | selectattr("unlocked") | list | length }} / {{ achievements | length }} UNLOCKED</span>
-            </div>
-            <div class="module-body achievements-grid">
-                {% for ach in achievements %}
-                <div class="achievement-card {{ 'unlocked' if ach.unlocked else 'locked' }}">
-                    <div class="achievement-icon">{{ ach.id }}</div>
-                    <div class="achievement-info">
-                        <span class="achievement-name">{{ ach.name }}</span>
-                        <span class="achievement-desc">{{ ach.desc }}</span>
-                    </div>
-                    <div class="achievement-progress-bar">
-                        {% set pct = (ach.progress / ach.max * 100) | round %}
-                        <div class="achievement-fill {{ 'complete' if ach.unlocked else '' }}" style="width: {{ pct }}%;"></div>
-                    </div>
-                    <span class="achievement-ratio">{{ ach.progress }}/{{ ach.max }}</span>
-                    {% if not ach.unlocked %}
-                    <div class="achievement-lock">LOCKED</div>
-                    {% endif %}
-                </div>
-                {% endfor %}
-            </div>
         </div>
+    </div>
 
-        <!-- Section Progress -->
-        <div class="data-module module-sections span-full">
-            <div class="module-header">
-                <span>// MODULE_BREAKDOWN</span>
-            </div>
-            <div class="module-body sections-container">
-                {% for category in categories %}
-                {% set cat_lessons = category.sections | map(attribute='lessons') | sum(start=[]) | map(attribute='id') | list %}
-                {% set completed_in_cat = cat_lessons | select("in", summary.completed_lessons) | list | length %}
-                <div class="section-row">
-                    <div class="section-info">
-                        <span class="sec-id">SEC_{{ loop.index }}</span>
-                        <span class="sec-name">{{ t[category.label_key] | upper }}</span>
+    <!-- Section Progress -->
+    <div class="data-module module-sections span-full">
+        <div class="module-header">
+            <span>// MODULE_BREAKDOWN</span>
+        </div>
+        <div class="module-body sections-container">
+            {% for category in categories %}
+            {% set cat_lessons = category.sections | map(attribute='lessons') | sum(start=[]) | map(attribute='id') |
+            list %}
+            {% set completed_in_cat = cat_lessons | select("in", summary.completed_lessons) | list | length %}
+            <div class="section-row">
+                <div class="section-info">
+                    <span class="sec-id">SEC_{{ loop.index }}</span>
+                    <span class="sec-name">{{ t[category.label_key] | upper }}</span>
+                </div>
+                <div class="section-tracker">
+                    <div class="terminal-progress-container sec-bar">
+                        <div class="terminal-progress-bar bg-python"
+                            style="width: {{ (completed_in_cat / cat_lessons | length * 100) | round }}%;"></div>
                     </div>
-                    <div class="section-tracker">
-                        <div class="terminal-progress-container sec-bar">
-                            <div class="terminal-progress-bar bg-python" style="width: {{ (completed_in_cat / cat_lessons | length * 100) | round }}%;"></div>
-                        </div>
-                        <span class="sec-ratio">[{{ completed_in_cat }}/{{ cat_lessons | length }}]</span>
+                    <span class="sec-ratio">[{{ completed_in_cat }}/{{ cat_lessons | length }}]</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Evaluations Module -->
+    <div class="data-module module-evaluations span-full">
+        <div class="module-header">
+            <span>// EVALUACIONES_FINALES</span>
+            <span>ADAPTIVE_ASSESSMENT</span>
+        </div>
+        <div class="module-body" style="padding: 1rem;">
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0 0 1rem;">
+                Completa al menos el 80% de una sección para desbloquear su evaluación final.
+            </p>
+            <div class="eval-dashboard-grid">
+                {% set eval_sections = [
+                {'key': 'cat_python_tutorial', 'label': 'Python Tutorial'},
+                {'key': 'cat_python_functions', 'label': 'Funciones'},
+                {'key': 'cat_python_classes', 'label': 'Clases y POO'},
+                {'key': 'cat_python_modules', 'label': 'Módulos'},
+                {'key': 'cat_file_handling', 'label': 'Manejo de Archivos'},
+                {'key': 'cat_numpy', 'label': 'NumPy'},
+                {'key': 'cat_pandas', 'label': 'Pandas'},
+                {'key': 'cat_scipy', 'label': 'SciPy'},
+                {'key': 'cat_mysql', 'label': 'MySQL'},
+                {'key': 'cat_mongodb', 'label': 'MongoDB'}
+                ] %}
+                {% for es in eval_sections %}
+                <div class="eval-dash-item" data-section="{{ es.key }}">
+                    <div class="eval-dash-info">
+                        <span class="eval-dash-name">{{ es.label }}</span>
+                        <span class="eval-dash-status" id="eval-status-{{ es.key }}">
+                            Cargando...
+                        </span>
+                    </div>
+                    <div class="eval-dash-action" id="eval-action-{{ es.key }}">
                     </div>
                 </div>
                 {% endfor %}
             </div>
         </div>
-
-        <!-- Evaluations Module -->
-        <div class="data-module module-evaluations span-full">
-            <div class="module-header">
-                <span>// EVALUACIONES_FINALES</span>
-                <span>ADAPTIVE_ASSESSMENT</span>
-            </div>
-            <div class="module-body" style="padding: 1rem;">
-                <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0 0 1rem;">
-                    Completa al menos el 80% de una sección para desbloquear su evaluación final.
-                </p>
-                <div class="eval-dashboard-grid">
-                    {% set eval_sections = [
-                        {'key': 'cat_python_tutorial', 'label': 'Python Tutorial'},
-                        {'key': 'cat_python_functions', 'label': 'Funciones'},
-                        {'key': 'cat_python_classes', 'label': 'Clases y POO'},
-                        {'key': 'cat_python_modules', 'label': 'Módulos'},
-                        {'key': 'cat_file_handling', 'label': 'Manejo de Archivos'},
-                        {'key': 'cat_numpy', 'label': 'NumPy'},
-                        {'key': 'cat_pandas', 'label': 'Pandas'},
-                        {'key': 'cat_scipy', 'label': 'SciPy'},
-                        {'key': 'cat_mysql', 'label': 'MySQL'},
-                        {'key': 'cat_mongodb', 'label': 'MongoDB'}
-                    ] %}
-                    {% for es in eval_sections %}
-                    <div class="eval-dash-item" data-section="{{ es.key }}">
-                        <div class="eval-dash-info">
-                            <span class="eval-dash-name">{{ es.label }}</span>
-                            <span class="eval-dash-status" id="eval-status-{{ es.key }}">
-                                Cargando...
-                            </span>
-                        </div>
-                        <div class="eval-dash-action" id="eval-action-{{ es.key }}">
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
+    </div>
     </div>
 </article>
 
 <style>
-.telemetry-dashboard {
-    font-family: "JetBrains Mono", monospace;
-    color: var(--text);
-    padding: 0 1rem;
-}
-
-.telemetry-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    border-bottom: 2px solid var(--text);
-    padding-bottom: 0.5rem;
-    margin-bottom: 2rem;
-}
-
-.telemetry-header h1 {
-    font-size: 1.5rem;
-    font-family: "Space Grotesk", sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin: 0;
-    color: var(--text);
-}
-
-.system-status {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.8rem;
-    color: var(--green);
-}
-
-.status-indicator {
-    width: 8px;
-    height: 8px;
-    background-color: var(--green);
-    border-radius: 50%;
-    animation: blink 2s infinite;
-}
-
-@keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-}
-
-.telemetry-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1px;
-    background: var(--border); /* Borders formed by grid gap */
-    border: 1px solid var(--border);
-}
-
-@media (max-width: 900px) {
-    .telemetry-grid {
-        grid-template-columns: 1fr;
+    .telemetry-dashboard {
+        font-family: "JetBrains Mono", monospace;
+        color: var(--text);
+        padding: 0 1rem;
     }
-}
 
-.data-module {
-    background: var(--bg);
-    display: flex;
-    flex-direction: column;
-}
+    .telemetry-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        border-bottom: 2px solid var(--text);
+        padding-bottom: 0.5rem;
+        margin-bottom: 2rem;
+    }
 
-.span-2 {
-    grid-column: span 2;
-}
-@media (max-width: 800px) {
-    .span-2 { grid-column: span 1; }
-}
+    .telemetry-header h1 {
+        font-size: 1.5rem;
+        font-family: "Space Grotesk", sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin: 0;
+        color: var(--text);
+    }
 
-.span-full {
-    grid-column: 1 / -1;
-}
+    .system-status {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8rem;
+        color: var(--green);
+    }
 
-.module-header {
-    background: rgba(255, 255, 255, 0.03);
-    padding: 0.4rem 0.8rem;
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--border);
-}
+    .status-indicator {
+        width: 8px;
+        height: 8px;
+        background-color: var(--green);
+        border-radius: 50%;
+        animation: blink 2s infinite;
+    }
 
-.module-body {
-    padding: 1.5rem;
-    flex-grow: 1;
-}
+    @keyframes blink {
 
-/* Level Readout */
-.level-readout {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+        0%,
+        100% {
+            opacity: 1;
+        }
 
-.level-display {
-    display: flex;
-    flex-direction: column;
-    line-height: 1;
-}
+        50% {
+            opacity: 0.4;
+        }
+    }
 
-.level-label {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-}
+    .telemetry-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1px;
+        background: var(--border);
+        /* Borders formed by grid gap */
+        border: 1px solid var(--border);
+    }
 
-.level-value {
-    font-size: 4rem;
-    font-weight: 700;
-    color: var(--green);
-    text-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
-}
+    @media (max-width: 900px) {
+        .telemetry-grid {
+            grid-template-columns: 1fr;
+        }
+    }
 
-.xp-data {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    text-align: right;
-}
-
-.data-row {
-    font-size: 0.85rem;
-}
-
-.data-key {
-    color: var(--text-muted);
-    margin-right: 0.5rem;
-}
-
-.data-val {
-    color: var(--text);
-    font-weight: 700;
-}
-
-.terminal-progress-container {
-    height: 12px;
-    background: var(--bg-secondary);
-    border-top: 1px solid var(--border);
-    position: relative;
-    overflow: hidden;
-}
-
-.terminal-progress-bar {
-    height: 100%;
-    background: var(--green);
-    position: relative;
-}
-.terminal-progress-bar.bg-python {
-    background: var(--python-color);
-}
-
-.terminal-progress-bar::after {
-    content: '';
-    position: absolute;
-    top: 0; right: 0; bottom: 0; left: 0;
-    background: repeating-linear-gradient(
-        45deg,
-        transparent,
-        transparent 5px,
-        rgba(0,0,0,0.3) 5px,
-        rgba(0,0,0,0.3) 10px
-    );
-}
-
-/* Center Metrics */
-.center-data {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-
-.metric-value {
-    font-size: 3rem;
-    font-weight: 700;
-    color: var(--text);
-    line-height: 1.2;
-}
-.highlight-orange {
-    color: #ff9800;
-}
-
-.metric-total {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    letter-spacing: 0.05em;
-}
-
-.segmented-bar {
-    height: 12px;
-    background: var(--bg-secondary);
-    border-top: 1px solid var(--border);
-    padding: 2px;
-}
-.seg-fill {
-    height: 100%;
-    background: var(--python-color);
-}
-
-.status-pulse-container {
-    padding: 0.5rem;
-    border-top: 1px solid var(--border);
-    text-align: center;
-    font-size: 0.75rem;
-    color: #ff9800;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    background: rgba(255, 152, 0, 0.05);
-}
-
-/* ========== ACHIEVEMENTS ========== */
-.achievements-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 0.75rem;
-    padding: 1rem;
-}
-
-.achievement-card {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.85rem 1rem;
-    border: 1px solid var(--border);
-    background: var(--bg-secondary);
-    border-radius: 4px;
-    transition: all 0.3s ease;
-    overflow: hidden;
-}
-
-.achievement-card.unlocked {
-    border-color: var(--green);
-    background: rgba(0, 229, 255, 0.04);
-    animation: achieveGlow 3s ease-in-out infinite alternate;
-}
-
-.achievement-card.locked {
-    opacity: 0.5;
-    filter: grayscale(70%);
-}
-
-.achievement-card.locked:hover {
-    opacity: 0.75;
-    filter: grayscale(40%);
-}
-
-.achievement-card.unlocked:hover {
-    border-color: #00e5ff;
-    background: rgba(0, 229, 255, 0.08);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 229, 255, 0.15);
-}
-
-@keyframes achieveGlow {
-    0% { box-shadow: 0 0 0 rgba(0, 229, 255, 0); }
-    100% { box-shadow: 0 0 8px rgba(0, 229, 255, 0.1); }
-}
-
-.achievement-icon {
-    font-size: 1.25rem;
-    font-weight: 700;
-    min-width: 2.5rem;
-    text-align: center;
-    line-height: 1;
-    color: var(--text-muted);
-    font-family: "Space Grotesk", sans-serif;
-    letter-spacing: -0.05em;
-    position: relative;
-}
-.achievement-card.unlocked .achievement-icon {
-    color: var(--green);
-    text-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
-}
-
-.achievement-info {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    min-width: 0;
-}
-
-.achievement-name {
-    color: var(--text);
-    font-size: 0.85rem;
-    font-weight: 700;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.achievement-desc {
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.achievement-progress-bar {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.achievement-fill {
-    height: 100%;
-    background: var(--python-color);
-    transition: width 0.5s ease;
-}
-
-.achievement-fill.complete {
-    background: var(--green);
-}
-
-.achievement-ratio {
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    min-width: 40px;
-    text-align: right;
-}
-
-.achievement-lock {
-    position: absolute;
-    top: 4px;
-    right: 6px;
-    font-size: 0.65rem;
-    opacity: 0.6;
-}
-
-/* Sections */
-.sections-container {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    padding: 0;
-}
-
-.section-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--border);
-}
-.section-row:last-child {
-    border-bottom: none;
-}
-
-.section-info {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    width: 30%;
-}
-
-.sec-id {
-    color: var(--text-muted);
-    font-size: 0.75rem;
-}
-
-.sec-name {
-    color: var(--text);
-    font-size: 0.9rem;
-    font-weight: 700;
-}
-
-.section-tracker {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    width: 60%;
-}
-
-.sec-bar {
-    flex-grow: 1;
-    border-top: none;
-    border: 1px solid var(--border);
-}
-
-.sec-ratio {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    min-width: 60px;
-    text-align: right;
-}
-
-/* Evaluations Dashboard */
-.eval-dashboard-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.eval-dash-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.85rem 1rem;
-    background: var(--bg-code, #0d1117);
-    border: 1px solid var(--border, #2a2a4a);
-    border-radius: 8px;
-    gap: 1rem;
-}
-
-.eval-dash-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-}
-
-.eval-dash-name {
-    font-weight: 600;
-    color: var(--text, #ccccdd);
-    font-size: 0.95rem;
-}
-
-.eval-dash-status {
-    font-size: 0.8rem;
-    color: var(--text-muted, #8888aa);
-}
-
-.eval-dash-status .status-passed {
-    color: #00c864;
-    font-weight: 600;
-}
-
-.eval-dash-status .status-available {
-    color: #00e5ff;
-}
-
-.eval-dash-status .status-locked {
-    color: #666;
-}
-
-.eval-dash-btn {
-    padding: 0.4rem 1rem;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-decoration: none;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
-    white-space: nowrap;
-}
-
-.eval-dash-btn.available {
-    background: linear-gradient(135deg, #00e5ff, #0088ff);
-    color: #fff;
-}
-
-.eval-dash-btn.passed {
-    background: rgba(0, 200, 100, 0.15);
-    color: #00c864;
-    border: 1px solid rgba(0, 200, 100, 0.3);
-}
-
-.eval-dash-btn.locked {
-    background: var(--border, #2a2a4a);
-    color: #666;
-    cursor: not-allowed;
-}
-
-@media (max-width: 600px) {
-    .section-row {
+    .data-module {
+        background: var(--bg);
+        display: flex;
         flex-direction: column;
-        align-items: flex-start;
+    }
+
+    .span-2 {
+        grid-column: span 2;
+    }
+
+    @media (max-width: 800px) {
+        .span-2 {
+            grid-column: span 1;
+        }
+    }
+
+    .span-full {
+        grid-column: 1 / -1;
+    }
+
+    .module-header {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 0.4rem 0.8rem;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .module-body {
+        padding: 1.5rem;
+        flex-grow: 1;
+    }
+
+    /* Level Readout */
+    .level-readout {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .level-display {
+        display: flex;
+        flex-direction: column;
+        line-height: 1;
+    }
+
+    .level-label {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    .level-value {
+        font-size: 4rem;
+        font-weight: 700;
+        color: var(--green);
+        text-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+    }
+
+    .xp-data {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: right;
+    }
+
+    .data-row {
+        font-size: 0.85rem;
+    }
+
+    .data-key {
+        color: var(--text-muted);
+        margin-right: 0.5rem;
+    }
+
+    .data-val {
+        color: var(--text);
+        font-weight: 700;
+    }
+
+    .terminal-progress-container {
+        height: 12px;
+        background: var(--bg-secondary);
+        border-top: 1px solid var(--border);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .terminal-progress-bar {
+        height: 100%;
+        background: var(--green);
+        position: relative;
+    }
+
+    .terminal-progress-bar.bg-python {
+        background: var(--python-color);
+    }
+
+    .terminal-progress-bar::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background: repeating-linear-gradient(45deg,
+                transparent,
+                transparent 5px,
+                rgba(0, 0, 0, 0.3) 5px,
+                rgba(0, 0, 0, 0.3) 10px);
+    }
+
+    /* Center Metrics */
+    .center-data {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .metric-value {
+        font-size: 3rem;
+        font-weight: 700;
+        color: var(--text);
+        line-height: 1.2;
+    }
+
+    .highlight-orange {
+        color: #ff9800;
+    }
+
+    .metric-total {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        letter-spacing: 0.05em;
+    }
+
+    .segmented-bar {
+        height: 12px;
+        background: var(--bg-secondary);
+        border-top: 1px solid var(--border);
+        padding: 2px;
+    }
+
+    .seg-fill {
+        height: 100%;
+        background: var(--python-color);
+    }
+
+    .status-pulse-container {
+        padding: 0.5rem;
+        border-top: 1px solid var(--border);
+        text-align: center;
+        font-size: 0.75rem;
+        color: #ff9800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        background: rgba(255, 152, 0, 0.05);
+    }
+
+    /* ========== ACHIEVEMENTS ========== */
+    .achievements-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 0.75rem;
+        padding: 1rem;
+    }
+
+    .achievement-card {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.85rem 1rem;
+        border: 1px solid var(--border);
+        background: var(--bg-secondary);
+        border-radius: 4px;
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+    .achievement-card.unlocked {
+        border-color: var(--green);
+        background: rgba(0, 229, 255, 0.04);
+        animation: achieveGlow 3s ease-in-out infinite alternate;
+    }
+
+    .achievement-card.locked {
+        opacity: 0.5;
+        filter: grayscale(70%);
+    }
+
+    .achievement-card.locked:hover {
+        opacity: 0.75;
+        filter: grayscale(40%);
+    }
+
+    .achievement-card.unlocked:hover {
+        border-color: #00e5ff;
+        background: rgba(0, 229, 255, 0.08);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 229, 255, 0.15);
+    }
+
+    @keyframes achieveGlow {
+        0% {
+            box-shadow: 0 0 0 rgba(0, 229, 255, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 8px rgba(0, 229, 255, 0.1);
+        }
+    }
+
+    .achievement-icon {
+        font-size: 1.25rem;
+        font-weight: 700;
+        min-width: 2.5rem;
+        text-align: center;
+        line-height: 1;
+        color: var(--text-muted);
+        font-family: "Space Grotesk", sans-serif;
+        letter-spacing: -0.05em;
+        position: relative;
+    }
+
+    .achievement-card.unlocked .achievement-icon {
+        color: var(--green);
+        text-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
+    }
+
+    .achievement-info {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        min-width: 0;
+    }
+
+    .achievement-name {
+        color: var(--text);
+        font-size: 0.85rem;
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .achievement-desc {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .achievement-progress-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .achievement-fill {
+        height: 100%;
+        background: var(--python-color);
+        transition: width 0.5s ease;
+    }
+
+    .achievement-fill.complete {
+        background: var(--green);
+    }
+
+    .achievement-ratio {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        min-width: 40px;
+        text-align: right;
+    }
+
+    .achievement-lock {
+        position: absolute;
+        top: 4px;
+        right: 6px;
+        font-size: 0.65rem;
+        opacity: 0.6;
+    }
+
+    /* Sections */
+    .sections-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        padding: 0;
+    }
+
+    .section-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .section-row:last-child {
+        border-bottom: none;
+    }
+
+    .section-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        width: 30%;
+    }
+
+    .sec-id {
+        color: var(--text-muted);
+        font-size: 0.75rem;
+    }
+
+    .sec-name {
+        color: var(--text);
+        font-size: 0.9rem;
+        font-weight: 700;
+    }
+
+    .section-tracker {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        width: 60%;
+    }
+
+    .sec-bar {
+        flex-grow: 1;
+        border-top: none;
+        border: 1px solid var(--border);
+    }
+
+    .sec-ratio {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        min-width: 60px;
+        text-align: right;
+    }
+
+    /* Evaluations Dashboard */
+    .eval-dashboard-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .eval-dash-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.85rem 1rem;
+        background: var(--bg-code, #0d1117);
+        border: 1px solid var(--border, #2a2a4a);
+        border-radius: 8px;
         gap: 1rem;
     }
-    .section-info, .section-tracker {
-        width: 100%;
-    }
-    .achievements-grid {
-        grid-template-columns: 1fr;
-    }
-    .eval-dash-item {
+
+    .eval-dash-info {
+        display: flex;
         flex-direction: column;
-        align-items: flex-start;
+        gap: 0.25rem;
     }
-}
+
+    .eval-dash-name {
+        font-weight: 600;
+        color: var(--text, #ccccdd);
+        font-size: 0.95rem;
+    }
+
+    .eval-dash-status {
+        font-size: 0.8rem;
+        color: var(--text-muted, #8888aa);
+    }
+
+    .eval-dash-status .status-passed {
+        color: #00c864;
+        font-weight: 600;
+    }
+
+    .eval-dash-status .status-available {
+        color: #00e5ff;
+    }
+
+    .eval-dash-status .status-locked {
+        color: #666;
+    }
+
+    .eval-dash-btn {
+        padding: 0.4rem 1rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s;
+        white-space: nowrap;
+    }
+
+    .eval-dash-btn.available {
+        background: linear-gradient(135deg, #00e5ff, #0088ff);
+        color: #fff;
+    }
+
+    .eval-dash-btn.passed {
+        background: rgba(0, 200, 100, 0.15);
+        color: #00c864;
+        border: 1px solid rgba(0, 200, 100, 0.3);
+    }
+
+    .eval-dash-btn.locked {
+        background: var(--border, #2a2a4a);
+        color: #666;
+        cursor: not-allowed;
+    }
+
+    @media (max-width: 600px) {
+        .section-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .section-info,
+        .section-tracker {
+            width: 100%;
+        }
+
+        .achievements-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .eval-dash-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
 </style>
 
 <script>
-// Load evaluation statuses
-document.addEventListener('DOMContentLoaded', () => {
-    const sections = [
-        'cat_python_tutorial', 'cat_python_functions', 'cat_python_classes', 'cat_python_modules',
-        'cat_file_handling', 'cat_numpy', 'cat_pandas', 'cat_scipy', 'cat_mysql', 'cat_mongodb'
-    ];
-    
-    sections.forEach(key => {
-        fetch(`/api/evaluacion/estado/${key}`)
-            .then(r => r.json())
-            .then(data => {
-                const statusEl = document.getElementById(`eval-status-${key}`);
-                const actionEl = document.getElementById(`eval-action-${key}`);
-                
-                if (data.passed) {
-                    statusEl.innerHTML = `<span class="status-passed">APROBADO — Mejor nota: ${data.best_score}%</span>`;
-                    actionEl.innerHTML = `<a href="/evaluacion/${key}" class="eval-dash-btn passed">Mejorar Nota</a>`;
-                } else if (data.unlocked) {
-                    statusEl.innerHTML = `<span class="status-available">Disponible — ${data.completion_pct}% completado${data.attempts > 0 ? ' — Mejor: ' + data.best_score + '%' : ''}</span>`;
-                    actionEl.innerHTML = `<a href="/evaluacion/${key}" class="eval-dash-btn available">${data.attempts > 0 ? 'Reintentar' : 'Comenzar'}</a>`;
-                } else {
-                    statusEl.innerHTML = `<span class="status-locked">Bloqueado — ${data.completion_pct}% completado (necesitas 80%)</span>`;
-                    actionEl.innerHTML = `<span class="eval-dash-btn locked">Bloqueado</span>`;
-                }
-            })
-            .catch(() => {
-                const statusEl = document.getElementById(`eval-status-${key}`);
-                if (statusEl) statusEl.textContent = 'No disponible';
-            });
+    // Load evaluation statuses
+    document.addEventListener('DOMContentLoaded', () => {
+        const sections = [
+            'cat_python_tutorial', 'cat_python_functions', 'cat_python_classes', 'cat_python_modules',
+            'cat_file_handling', 'cat_numpy', 'cat_pandas', 'cat_scipy', 'cat_mysql', 'cat_mongodb'
+        ];
+
+        sections.forEach(key => {
+            fetch(`/api/evaluacion/estado/${key}`)
+                .then(r => r.json())
+                .then(data => {
+                    const statusEl = document.getElementById(`eval-status-${key}`);
+                    const actionEl = document.getElementById(`eval-action-${key}`);
+
+                    if (data.passed) {
+                        statusEl.innerHTML = `<span class="status-passed">✅ APROBADO — Mejor nota: ${data.best_score}%</span>`;
+                        actionEl.innerHTML = `<a href="/evaluacion/${key}" class="eval-dash-btn passed">Mejorar Nota</a>`;
+                    } else if (data.unlocked) {
+                        statusEl.innerHTML = `<span class="status-available">📝 Disponible — ${data.completion_pct}% completado${data.attempts > 0 ? ' — Mejor: ' + data.best_score + '%' : ''}</span>`;
+                        actionEl.innerHTML = `<a href="/evaluacion/${key}" class="eval-dash-btn available">${data.attempts > 0 ? 'Reintentar' : 'Comenzar'}</a>`;
+                    } else {
+                        statusEl.innerHTML = `<span class="status-locked">🔒 Bloqueado — ${data.completion_pct}% completado (necesitas 80%)</span>`;
+                        actionEl.innerHTML = `<span class="eval-dash-btn locked">Bloqueado</span>`;
+                    }
+                })
+                .catch(() => {
+                    const statusEl = document.getElementById(`eval-status-${key}`);
+                    if (statusEl) statusEl.textContent = 'No disponible';
+                });
+        });
     });
-});
 </script>
 {% endblock %}
-

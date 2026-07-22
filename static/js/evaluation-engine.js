@@ -206,22 +206,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 time_taken: timeTaken,
             }),
         })
-        .then(res => res.json())
-        .then(data => {
-            if (data.ok) {
-                showResults(data);
-            } else {
-                alert('Error: ' + (data.error || 'No se pudo procesar la evaluación'));
+            .then(res => res.json())
+            .then(data => {
+                if (data.ok) {
+                    showResults(data);
+                } else {
+                    alert('Error: ' + (data.error || 'No se pudo procesar la evaluación'));
+                    btnSubmit.disabled = false;
+                    btnSubmit.textContent = 'Enviar Evaluación ✓';
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert('Error de conexión. Intenta de nuevo.');
                 btnSubmit.disabled = false;
-                btnSubmit.textContent = 'Enviar Evaluación';
-            }
-        })
-        .catch(err => {
-            console.error('Error:', err);
-            alert('Error de conexión. Intenta de nuevo.');
-            btnSubmit.disabled = false;
-            btnSubmit.textContent = 'Enviar Evaluación';
-        });
+                btnSubmit.textContent = 'Enviar Evaluación ✓';
+            });
     }
 
     // ===== RESULTS =====
@@ -234,16 +234,16 @@ document.addEventListener('DOMContentLoaded', () => {
         // Status badge
         const statusEl = document.getElementById('eval-results-status');
         if (passed) {
-            statusEl.innerHTML = '<span class="eval-status-passed">EVALUACIÓN APROBADA</span>';
+            statusEl.innerHTML = '<span class="eval-status-passed">✅ APROBADO</span>';
         } else {
-            statusEl.innerHTML = '<span class="eval-status-failed">NO APROBADO</span>';
+            statusEl.innerHTML = '<span class="eval-status-failed">❌ NO APROBADO</span>';
         }
 
         // Title
         const titleEl = document.getElementById('eval-results-title');
         titleEl.textContent = passed
-            ? '¡Excelente Trabajo! Has demostrado tu dominio'
-            : 'Sigue practicando para mejorar tu puntaje';
+            ? '¡Felicidades! Has demostrado tu dominio 🎉'
+            : 'Sigue practicando, ¡tú puedes! 💪';
 
         // Score circle
         const scoreFill = document.getElementById('eval-score-fill');
