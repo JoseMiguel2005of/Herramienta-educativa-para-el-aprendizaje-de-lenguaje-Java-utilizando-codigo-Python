@@ -1,0 +1,284 @@
+{
+    "id": "eval-python-modules",
+    "section_key": "cat_python_modules",
+    "title": "Evaluación Final: Módulos y Herramientas de Python",
+    "description": "Evalúa tu dominio de módulos, manejo de fechas, math, JSON, regex, excepciones y más.",
+    "passing_score": 70,
+    "questions_per_eval": 18,
+    "time_per_question": 120,
+    "lesson_questions": {
+        "py-modules": [
+            {
+                "id": "em-mod1",
+                "type": "multiple_choice",
+                "question": "¿Qué palabra clave se usa para importar un módulo en Python?",
+                "options": ["include", "require", "import", "using"],
+                "correct": 2,
+                "explanation": "La palabra clave 'import' se usa para importar módulos en Python.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "em-mod2",
+                "type": "complete_code",
+                "question": "Completa el código para importar solo la función sqrt del módulo math:",
+                "code_template": "___ math import sqrt",
+                "correct_answer": "from",
+                "explanation": "La sintaxis 'from módulo import función' importa funciones específicas.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "em-mod3",
+                "type": "true_false",
+                "question": "Puedes crear tus propios módulos guardando código Python en un archivo .py.",
+                "correct": true,
+                "explanation": "Cualquier archivo .py puede ser importado como un módulo.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "em-mod4",
+                "type": "multiple_choice",
+                "question": "¿Qué hace 'import math as m'?",
+                "options": ["Renombra el archivo math.py", "Crea un alias 'm' para el módulo math", "Importa solo la función m de math", "Es un error de sintaxis"],
+                "correct": 1,
+                "explanation": "La sintaxis 'as' crea un alias más corto para referirse al módulo.",
+                "difficulty": "easy"
+            }
+        ],
+        "py-dates": [
+            {
+                "id": "em-date1",
+                "type": "multiple_choice",
+                "question": "¿Qué módulo se usa para trabajar con fechas en Python?",
+                "options": ["time", "calendar", "datetime", "date"],
+                "correct": 2,
+                "explanation": "El módulo datetime es el principal para trabajar con fechas y horas.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "em-date2",
+                "type": "complete_code",
+                "question": "Completa el código para obtener la fecha y hora actual:",
+                "code_template": "import datetime\nahora = datetime.datetime.___()",
+                "correct_answer": "now",
+                "explanation": "datetime.datetime.now() devuelve la fecha y hora actual.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "em-date3",
+                "type": "multiple_choice",
+                "question": "¿Qué método se usa para formatear una fecha como string en Python?",
+                "options": [".format()", ".strftime()", ".to_string()", ".dateformat()"],
+                "correct": 1,
+                "explanation": "strftime() (string format time) formatea un objeto datetime como string.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "em-date4",
+                "type": "true_false",
+                "question": "El código de formato %Y representa el año con 4 dígitos en strftime().",
+                "correct": true,
+                "explanation": "%Y devuelve el año completo (ej: 2024). %y devuelve solo los últimos 2 dígitos.",
+                "difficulty": "medium"
+            }
+        ],
+        "py-math": [
+            {
+                "id": "em-math1",
+                "type": "multiple_choice",
+                "question": "¿Qué devuelve math.sqrt(16)?",
+                "options": ["16", "4.0", "4", "256"],
+                "correct": 1,
+                "explanation": "math.sqrt() devuelve la raíz cuadrada como float. sqrt(16) = 4.0.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "em-math2",
+                "type": "complete_code",
+                "question": "Completa el código para obtener el valor de pi:",
+                "code_template": "import math\nprint(math.___)",
+                "correct_answer": "pi",
+                "explanation": "math.pi contiene el valor de π (3.14159...).",
+                "difficulty": "easy"
+            },
+            {
+                "id": "em-math3",
+                "type": "multiple_choice",
+                "question": "¿Cuál es la diferencia entre math.ceil(4.1) y math.floor(4.9)?",
+                "options": ["Ambos devuelven 4", "ceil devuelve 5, floor devuelve 4", "ceil devuelve 4, floor devuelve 5", "Ambos devuelven 5"],
+                "correct": 1,
+                "explanation": "ceil() redondea hacia arriba (5), floor() redondea hacia abajo (4).",
+                "difficulty": "medium"
+            }
+        ],
+        "py-json": [
+            {
+                "id": "em-json1",
+                "type": "multiple_choice",
+                "question": "¿Qué función convierte un objeto Python a una cadena JSON?",
+                "options": ["json.parse()", "json.dumps()", "json.encode()", "json.stringify()"],
+                "correct": 1,
+                "explanation": "json.dumps() (dump string) convierte un objeto Python a string JSON.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "em-json2",
+                "type": "complete_code",
+                "question": "Completa el código para convertir una cadena JSON a un diccionario Python:",
+                "code_template": "import json\ndatos = json.___('{\"nombre\": \"Ana\"}')",
+                "correct_answer": "loads",
+                "explanation": "json.loads() (load string) parsea una cadena JSON a un objeto Python.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "em-json3",
+                "type": "true_false",
+                "question": "En JSON, las claves deben estar entre comillas dobles, no simples.",
+                "correct": true,
+                "explanation": "JSON requiere comillas dobles para las claves y valores string. Las comillas simples no son válidas.",
+                "difficulty": "medium"
+            }
+        ],
+        "py-regex": [
+            {
+                "id": "em-regex1",
+                "type": "multiple_choice",
+                "question": "¿Qué módulo se usa para expresiones regulares en Python?",
+                "options": ["regex", "re", "regexp", "pattern"],
+                "correct": 1,
+                "explanation": "El módulo 're' proporciona soporte para expresiones regulares.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "em-regex2",
+                "type": "multiple_choice",
+                "question": "¿Qué hace re.findall(r'\\d+', 'Tengo 3 gatos y 5 perros')?",
+                "options": ["['Tengo', 'gatos', 'perros']", "['3', '5']", "['3 gatos', '5 perros']", "Error"],
+                "correct": 1,
+                "explanation": "\\d+ busca uno o más dígitos. findall devuelve todas las coincidencias: ['3', '5'].",
+                "difficulty": "medium"
+            },
+            {
+                "id": "em-regex3",
+                "type": "complete_code",
+                "question": "Completa para buscar un patrón en un texto:",
+                "code_template": "import re\nresultado = re.___(r'Python', 'Me gusta Python')",
+                "correct_answer": "search",
+                "explanation": "re.search() busca la primera ocurrencia de un patrón en el texto.",
+                "difficulty": "easy"
+            }
+        ],
+        "py-pip": [
+            {
+                "id": "em-pip1",
+                "type": "multiple_choice",
+                "question": "¿Qué es pip en Python?",
+                "options": ["Un editor de código", "El gestor de paquetes de Python", "Un debugger", "Un compilador"],
+                "correct": 1,
+                "explanation": "pip es el gestor de paquetes estándar para instalar bibliotecas externas de Python.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "em-pip2",
+                "type": "true_false",
+                "question": "El comando 'pip install numpy' descarga e instala el paquete numpy.",
+                "correct": true,
+                "explanation": "pip install descarga el paquete del Python Package Index (PyPI) y lo instala.",
+                "difficulty": "easy"
+            }
+        ],
+        "py-tryexcept": [
+            {
+                "id": "em-try1",
+                "type": "multiple_choice",
+                "question": "¿Qué bloque se ejecuta cuando ocurre un error dentro de try?",
+                "options": ["finally", "else", "except", "catch"],
+                "correct": 2,
+                "explanation": "El bloque except se ejecuta cuando ocurre una excepción dentro del bloque try.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "em-try2",
+                "type": "complete_code",
+                "question": "Completa el manejo de excepciones:",
+                "code_template": "try:\n    resultado = 10 / 0\n___ ZeroDivisionError:\n    print('No se puede dividir entre cero')",
+                "correct_answer": "except",
+                "explanation": "La palabra clave 'except' captura el tipo de excepción especificado.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "em-try3",
+                "type": "multiple_choice",
+                "question": "¿Qué bloque se ejecuta SIEMPRE, haya o no una excepción?",
+                "options": ["except", "else", "finally", "try"],
+                "correct": 2,
+                "explanation": "El bloque finally se ejecuta siempre, sin importar si hubo excepción o no.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "em-try4",
+                "type": "true_false",
+                "question": "La palabra clave 'raise' se usa para lanzar una excepción manualmente.",
+                "correct": true,
+                "explanation": "raise permite lanzar excepciones intencionalmente: raise ValueError('mensaje').",
+                "difficulty": "medium"
+            },
+            {
+                "id": "em-try5",
+                "type": "multiple_choice",
+                "question": "¿Cuándo se ejecuta el bloque 'else' en un try/except/else?",
+                "options": ["Siempre", "Solo si ocurre una excepción", "Solo si NO ocurre una excepción", "Nunca"],
+                "correct": 2,
+                "explanation": "El bloque else se ejecuta solo si el bloque try NO lanzó ninguna excepción.",
+                "difficulty": "medium"
+            }
+        ],
+        "py-userinput": [
+            {
+                "id": "em-inp1",
+                "type": "multiple_choice",
+                "question": "¿Qué tipo de dato devuelve la función input() en Python 3?",
+                "options": ["int", "float", "str", "Depende de lo que escriba el usuario"],
+                "correct": 2,
+                "explanation": "input() siempre devuelve un string, incluso si el usuario escribe un número.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "em-inp2",
+                "type": "complete_code",
+                "question": "Completa para pedir un número al usuario y convertirlo a entero:",
+                "code_template": "edad = ___(input('Tu edad: '))",
+                "correct_answer": "int",
+                "explanation": "input() devuelve string, se usa int() para convertirlo a entero.",
+                "difficulty": "easy"
+            }
+        ],
+        "py-stringformat": [
+            {
+                "id": "em-fmt1",
+                "type": "multiple_choice",
+                "question": "¿Cuál es la forma más moderna de formatear strings en Python?",
+                "options": ["% formatting", ".format()", "f-strings (f'...')", "Template strings"],
+                "correct": 2,
+                "explanation": "Los f-strings (f'Hola {nombre}') introducidos en Python 3.6 son la forma más moderna y legible.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "em-fmt2",
+                "type": "complete_code",
+                "question": "Completa el f-string para insertar la variable nombre:",
+                "code_template": "nombre = 'Ana'\nprint(___'Hola {nombre}')",
+                "correct_answer": "f",
+                "explanation": "El prefijo f antes de las comillas activa las f-strings para interpolación.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "em-fmt3",
+                "type": "true_false",
+                "question": "Dentro de un f-string se pueden incluir expresiones y operaciones: f'{2 + 3}'.",
+                "correct": true,
+                "explanation": "Los f-strings evalúan cualquier expresión Python dentro de las llaves.",
+                "difficulty": "medium"
+            }
+        ]
+    }
+}

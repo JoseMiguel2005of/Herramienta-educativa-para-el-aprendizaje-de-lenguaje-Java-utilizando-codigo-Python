@@ -1,4 +1,6 @@
 import os
+import json
+import random
 from datetime import date, datetime, timedelta
 from dotenv import load_dotenv
 
@@ -14,8 +16,10 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from content_loader import (get_lesson, get_lesson_title, get_reference,
                             load_ui_strings, load_quiz, load_all_quizzes,
                             load_examples_catalog, get_example_by_id,
-                            load_practice_problems, get_practice_problem)
-from models import ExerciseAttempt, LessonProgress, User, QuizResult, PracticeSubmission, DailyStreak, db
+                            load_practice_problems, get_practice_problem,
+                            get_evaluation_for_section, load_all_evaluations)
+from models import (ExerciseAttempt, LessonProgress, User, QuizResult,
+                    PracticeSubmission, DailyStreak, SectionEvaluation, db)
 from search_index import search_lessons
 from translator import translate
 
@@ -577,12 +581,13 @@ def api_leccion():
 
     xp_gained = 0
     if not lp:
-        lp = LessonProgress(user_id=user.id, lesson_id=lesson_id, completed=True, score=0)
+        lp = LessonProgress(user_id=user.id, lesson_id=lesson_id, completed=True, score=0, completed_at=datetime.utcnow())
         db.session.add(lp)
         xp_gained = 10
         lp.score += xp_gained
     elif not lp.completed:
         lp.completed = True
+        lp.completed_at = datetime.utcnow()
         xp_gained = 10
         lp.score = (lp.score or 0) + xp_gained
 
@@ -1234,6 +1239,7 @@ def example_detail(example_id):
     )
 
 
+
 @app.context_processor
 def inject_globals():
     ui = load_ui_strings()
@@ -1247,5 +1253,302 @@ def inject_globals():
     }
 
 
+# ===== ADAPTIVE SECTION EVALUATIONS =====
+
+# Maps section label_keys to their evaluation file IDs
+SECTION_EVAL_MAP = {
+    "cat_python_tutorial": "eval-python-tutorial",
+    "cat_python_functions": "eval-python-functions",
+    "cat_python_classes": "eval-python-classes",
+    "cat_python_modules": "eval-python-modules",
+}
+
+
+def get_section_lessons(section_key):
+    """Returns the list of lesson IDs for a given section label_key."""
+    for cat in LESSON_CATEGORIES:
+        for sec in cat["sections"]:
+            if sec["label_key"] == section_key:
+                return [lesson["id"] for lesson in sec["lessons"]
+                        if not lesson.get("type")]  # Exclude quiz/practice/examples entries
+    return []
+
+
+def get_section_eval_status(user_id, section_key):
+    """Check if a section evaluation is unlocked and its pass status."""
+    lesson_ids = get_section_lessons(section_key)
+    if not lesson_ids:
+        return {"unlocked": False, "passed": False, "best_score": 0, "attempts": 0, "completion_pct": 0}
+
+    # Count completed lessons
+    completed = LessonProgress.query.filter(
+        LessonProgress.user_id == user_id,
+        LessonProgress.lesson_id.in_(lesson_ids),
+        LessonProgress.completed == True
+    ).count()
+
+    completion_pct = round((completed / len(lesson_ids)) * 100) if lesson_ids else 0
+    unlocked = completion_pct >= 80
+
+    # Check best evaluation result
+    best_eval = SectionEvaluation.query.filter_by(
+        user_id=user_id, section_id=section_key
+    ).order_by(SectionEvaluation.percentage.desc()).first()
+
+    total_attempts = SectionEvaluation.query.filter_by(
+        user_id=user_id, section_id=section_key
+    ).count()
+
+    return {
+        "unlocked": unlocked,
+        "passed": best_eval.passed if best_eval else False,
+        "best_score": round(best_eval.percentage) if best_eval else 0,
+        "attempts": total_attempts,
+        "completion_pct": completion_pct,
+        "completed_lessons": completed,
+        "total_lessons": len(lesson_ids),
+    }
+
+
+def generate_adaptive_questions(section_key, user_id):
+    """Generate an adaptive set of questions based on completed lessons."""
+    eval_data = get_evaluation_for_section(section_key)
+    if not eval_data:
+        return [], eval_data
+
+    lesson_questions = eval_data.get("lesson_questions", {})
+    questions_per_eval = eval_data.get("questions_per_eval", 20)
+
+    # Get completed lessons for this user in this section
+    section_lessons = get_section_lessons(section_key)
+    completed_records = LessonProgress.query.filter(
+        LessonProgress.user_id == user_id,
+        LessonProgress.lesson_id.in_(section_lessons),
+        LessonProgress.completed == True
+    ).all()
+    completed_ids = {r.lesson_id for r in completed_records}
+
+    # Collect questions only from completed lessons
+    available = []
+    for lesson_id in completed_ids:
+        qs = lesson_questions.get(lesson_id, [])
+        for q in qs:
+            q_copy = dict(q)
+            q_copy["source_lesson"] = lesson_id
+            available.append(q_copy)
+
+    # Select random subset
+    num_questions = min(questions_per_eval, len(available))
+    if num_questions == 0:
+        return [], eval_data
+
+    selected = random.sample(available, num_questions)
+    random.shuffle(selected)
+    return selected, eval_data
+
+
+@app.route("/evaluacion/<section_key>")
+@login_required
+def evaluation_page(section_key):
+    """Render the adaptive evaluation page for a section."""
+    if section_key not in SECTION_EVAL_MAP:
+        return redirect(url_for("dashboard"))
+
+    user = current_user
+    status = get_section_eval_status(user.id, section_key)
+
+    if not status["unlocked"]:
+        return redirect(url_for("dashboard"))
+
+    questions, eval_data = generate_adaptive_questions(section_key, user.id)
+    if not eval_data:
+        return redirect(url_for("dashboard"))
+
+    # Strip correct answers from questions sent to client (security)
+    client_questions = []
+    for q in questions:
+        cq = {
+            "id": q["id"],
+            "type": q["type"],
+            "question": q["question"],
+            "difficulty": q.get("difficulty", "medium"),
+            "source_lesson": q.get("source_lesson", ""),
+        }
+        if q["type"] == "multiple_choice":
+            cq["options"] = q["options"]
+        elif q["type"] == "complete_code":
+            cq["code_template"] = q["code_template"]
+        elif q["type"] == "true_false":
+            pass  # No extra fields needed
+        client_questions.append(cq)
+
+    # Build answer key (stored in session for validation)
+    answer_key = {}
+    for q in questions:
+        if q["type"] == "multiple_choice":
+            answer_key[q["id"]] = {"correct": q["correct"], "explanation": q["explanation"]}
+        elif q["type"] == "true_false":
+            answer_key[q["id"]] = {"correct": q["correct"], "explanation": q["explanation"]}
+        elif q["type"] == "complete_code":
+            answer_key[q["id"]] = {"correct": q["correct_answer"], "explanation": q["explanation"]}
+
+    session[f"eval_answers_{section_key}"] = answer_key
+    session[f"eval_questions_{section_key}"] = [q["id"] for q in questions]
+
+    # Get section display info
+    ui = load_ui_strings()
+    section_title = ui.get(section_key, section_key)
+
+    time_limit = eval_data.get("time_per_question", 120) * len(client_questions)
+
+    return render_template(
+        "evaluation.html",
+        section_key=section_key,
+        section_title=section_title,
+        eval_data=eval_data,
+        questions=client_questions,
+        questions_json=json.dumps(client_questions, ensure_ascii=False),
+        time_limit=time_limit,
+        status=status,
+        passing_score=eval_data.get("passing_score", 70),
+        categories=LESSON_CATEGORIES,
+        page="evaluation",
+    )
+
+
+@app.route("/api/evaluacion/resultado", methods=["POST"])
+@login_required
+def api_evaluation_result():
+    """Process and save evaluation results."""
+    data = request.get_json(silent=True) or {}
+    section_key = data.get("section_key", "")
+    answers = data.get("answers", {})
+    time_taken = data.get("time_taken", 0)
+
+    if section_key not in SECTION_EVAL_MAP:
+        return jsonify({"ok": False, "error": "Sección inválida"})
+
+    # Get answer key from session
+    answer_key = session.get(f"eval_answers_{section_key}", {})
+    question_ids = session.get(f"eval_questions_{section_key}", [])
+
+    if not answer_key:
+        return jsonify({"ok": False, "error": "Sesión de evaluación expirada"})
+
+    user = current_user
+    score = 0
+    total = len(question_ids)
+    details = {}  # Per-lesson breakdown
+
+    for qid in question_ids:
+        key_data = answer_key.get(qid, {})
+        user_answer = answers.get(qid)
+        correct_val = key_data.get("correct")
+
+        # Determine source lesson from question ID pattern
+        # Find the question's source lesson from the eval data
+        eval_data = get_evaluation_for_section(section_key)
+        source_lesson = ""
+        if eval_data:
+            for lesson_id, qs in eval_data.get("lesson_questions", {}).items():
+                for q in qs:
+                    if q["id"] == qid:
+                        source_lesson = lesson_id
+                        break
+
+        if source_lesson not in details:
+            details[source_lesson] = {"correct": 0, "total": 0, "lesson_title": get_lesson_title(source_lesson)}
+
+        details[source_lesson]["total"] += 1
+
+        is_correct = False
+        if isinstance(correct_val, bool):
+            # true/false question
+            is_correct = (user_answer == correct_val)
+        elif isinstance(correct_val, int):
+            # multiple choice
+            try:
+                is_correct = (int(user_answer) == correct_val)
+            except (ValueError, TypeError):
+                is_correct = False
+        elif isinstance(correct_val, str):
+            # complete code
+            is_correct = (str(user_answer).strip().lower() == correct_val.strip().lower())
+
+        if is_correct:
+            score += 1
+            details[source_lesson]["correct"] += 1
+
+    percentage = round((score / total) * 100, 1) if total > 0 else 0
+    passed = percentage >= 70
+
+    # Count previous attempts
+    prev_attempts = SectionEvaluation.query.filter_by(
+        user_id=user.id, section_id=section_key
+    ).count()
+
+    # Save result
+    evaluation = SectionEvaluation(
+        user_id=user.id,
+        section_id=section_key,
+        score=score,
+        total=total,
+        percentage=percentage,
+        passed=passed,
+        time_taken=time_taken,
+        attempt_number=prev_attempts + 1,
+        details_json=json.dumps(details, ensure_ascii=False),
+    )
+    db.session.add(evaluation)
+
+    # Award XP if passed for first time
+    xp_gained = 0
+    if passed:
+        first_pass = SectionEvaluation.query.filter_by(
+            user_id=user.id, section_id=section_key, passed=True
+        ).first()
+        if not first_pass or first_pass.id is None:
+            xp_gained = 100
+            # Update a LessonProgress record for XP tracking
+            lp = LessonProgress.query.filter_by(
+                user_id=user.id, lesson_id=f"eval-{section_key}"
+            ).first()
+            if not lp:
+                lp = LessonProgress(
+                    user_id=user.id, lesson_id=f"eval-{section_key}",
+                    completed=True, score=xp_gained, completed_at=datetime.utcnow()
+                )
+                db.session.add(lp)
+            record_daily_activity(user.id)
+
+    db.session.commit()
+
+    # Clean up session
+    session.pop(f"eval_answers_{section_key}", None)
+    session.pop(f"eval_questions_{section_key}", None)
+
+    return jsonify({
+        "ok": True,
+        "score": score,
+        "total": total,
+        "percentage": percentage,
+        "passed": passed,
+        "xp_gained": xp_gained,
+        "attempt_number": prev_attempts + 1,
+        "details": details,
+    })
+
+
+@app.route("/api/evaluacion/estado/<section_key>")
+def api_evaluation_status(section_key):
+    """Get the evaluation readiness status for a section."""
+    if not current_user.is_authenticated:
+        return jsonify({"unlocked": False, "passed": False})
+
+    status = get_section_eval_status(current_user.id, section_key)
+    return jsonify(status)
+
+
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
+

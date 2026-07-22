@@ -1,0 +1,147 @@
+{
+    "id": "eval-python-functions",
+    "section_key": "cat_python_functions",
+    "title": "Evaluación Final: Funciones en Python",
+    "description": "Evalúa tu dominio de funciones y expresiones lambda en Python.",
+    "passing_score": 70,
+    "questions_per_eval": 15,
+    "time_per_question": 120,
+    "lesson_questions": {
+        "py-functions": [
+            {
+                "id": "ef-fn1",
+                "type": "multiple_choice",
+                "question": "¿Qué palabra clave se usa para definir una función en Python?",
+                "options": ["function", "def", "func", "define"],
+                "correct": 1,
+                "explanation": "La palabra clave 'def' se usa para definir funciones en Python.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "ef-fn2",
+                "type": "complete_code",
+                "question": "Completa el código para definir una función que reciba un parámetro:",
+                "code_template": "___ saludar(nombre):\n    print(f'Hola {nombre}')",
+                "correct_answer": "def",
+                "explanation": "La palabra clave 'def' inicia la definición de una función.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "ef-fn3",
+                "type": "multiple_choice",
+                "question": "¿Qué palabra clave se usa para devolver un valor desde una función?",
+                "options": ["send", "output", "return", "yield"],
+                "correct": 2,
+                "explanation": "La palabra clave 'return' devuelve un valor al código que llamó la función.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "ef-fn4",
+                "type": "true_false",
+                "question": "Una función en Python puede devolver múltiples valores separados por comas.",
+                "correct": true,
+                "explanation": "Python permite: return a, b, c — que devuelve una tupla con los tres valores.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "ef-fn5",
+                "type": "multiple_choice",
+                "question": "¿Qué es un argumento con valor por defecto?",
+                "options": ["Un argumento obligatorio", "Un argumento que tiene un valor asignado en la definición de la función", "Un argumento que no se puede cambiar", "Un argumento que siempre es None"],
+                "correct": 1,
+                "explanation": "def foo(x=10) define x con valor por defecto 10. Si no se pasa, usa 10.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "ef-fn6",
+                "type": "multiple_choice",
+                "question": "¿Qué sucede si llamas a una función sin pasar un argumento obligatorio?",
+                "options": ["Se usa None automáticamente", "TypeError: missing required argument", "La función no se ejecuta silenciosamente", "Se usa 0 como valor por defecto"],
+                "correct": 1,
+                "explanation": "Python lanza un TypeError indicando que falta un argumento requerido.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "ef-fn7",
+                "type": "complete_code",
+                "question": "Completa el código para usar argumentos con nombre (keyword arguments):",
+                "code_template": "def info(nombre, edad):\n    print(f'{nombre} tiene {edad} años')\n\ninfo(___='Ana', edad=25)",
+                "correct_answer": "nombre",
+                "explanation": "Los keyword arguments se pasan como nombre=valor en la llamada.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "ef-fn8",
+                "type": "multiple_choice",
+                "question": "¿Qué hace *args en la definición de una función?",
+                "options": ["Limita el número de argumentos", "Permite recibir un número variable de argumentos posicionales", "Define argumentos obligatorios", "Es un error de sintaxis"],
+                "correct": 1,
+                "explanation": "*args recibe una cantidad variable de argumentos posicionales como una tupla.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "ef-fn9",
+                "type": "true_false",
+                "question": "**kwargs permite recibir un número variable de argumentos con nombre como un diccionario.",
+                "correct": true,
+                "explanation": "**kwargs recoge argumentos keyword extras en un diccionario.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "ef-fn10",
+                "type": "multiple_choice",
+                "question": "¿Cuál es el resultado si una función no tiene una instrucción return?",
+                "options": ["Error", "Devuelve 0", "Devuelve None", "Devuelve una cadena vacía"],
+                "correct": 2,
+                "explanation": "Una función sin return devuelve None implícitamente.",
+                "difficulty": "medium"
+            }
+        ],
+        "py-lambda": [
+            {
+                "id": "ef-lam1",
+                "type": "multiple_choice",
+                "question": "¿Cuál es la sintaxis correcta para una función lambda que suma dos números?",
+                "options": ["lambda: a + b", "lambda a, b: a + b", "def lambda(a, b): a + b", "lambda(a, b) => a + b"],
+                "correct": 1,
+                "explanation": "La sintaxis es: lambda parámetros: expresión. No necesita 'def' ni 'return'.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "ef-lam2",
+                "type": "complete_code",
+                "question": "Completa la función lambda que duplica un número:",
+                "code_template": "doble = ___ x: x * 2",
+                "correct_answer": "lambda",
+                "explanation": "La palabra clave 'lambda' crea una función anónima en una sola línea.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "ef-lam3",
+                "type": "true_false",
+                "question": "Las funciones lambda pueden contener múltiples expresiones y sentencias.",
+                "correct": false,
+                "explanation": "Las funciones lambda solo pueden contener una única expresión. Para múltiples sentencias, se necesita def.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "ef-lam4",
+                "type": "multiple_choice",
+                "question": "¿Con qué función de Python se suelen combinar las funciones lambda?",
+                "options": ["print() y input()", "map(), filter() y sorted()", "len() y range()", "open() y close()"],
+                "correct": 1,
+                "explanation": "Las lambda se usan frecuentemente con map(), filter() y sorted() como funciones de transformación.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "ef-lam5",
+                "type": "multiple_choice",
+                "question": "¿Cuál es el resultado de: (lambda x, y: x * y)(3, 4)?",
+                "options": ["7", "12", "34", "Error"],
+                "correct": 1,
+                "explanation": "Se crea una lambda que multiplica x * y, y se llama inmediatamente con 3 y 4: 3 * 4 = 12.",
+                "difficulty": "hard"
+            }
+        ]
+    }
+}

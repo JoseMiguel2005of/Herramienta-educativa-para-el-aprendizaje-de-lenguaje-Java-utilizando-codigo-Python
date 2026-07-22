@@ -107,6 +107,19 @@
                 </div>
             </div>
         </div>
+
+        <!-- EVALUACIONES FINALES -->
+        <div class="data-module module-log" style="grid-column: 1 / -1;">
+            <div class="module-header">
+                <span>// EVALUACIONES_FINALES</span>
+                <span style="font-size: 0.7rem; color: #888;">Resumen del rendimiento en evaluaciones adaptativas</span>
+            </div>
+            <div class="module-body" style="padding: 1rem;">
+                <div id="teacher-eval-summary" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <div style="text-align: center; color: var(--text-muted); padding: 2rem;">Cargando datos de evaluaciones...</div>
+                </div>
+            </div>
+        </div>
     </div>
 </article>
 {% endblock %}
@@ -204,5 +217,35 @@
             btnElement.innerText = "Eliminar";
         });
     }
+    // Load evaluation summary for teacher
+    const evalSections = [
+        {key: 'cat_python_tutorial', label: 'Python Tutorial'},
+        {key: 'cat_python_functions', label: 'Funciones'},
+        {key: 'cat_python_classes', label: 'Clases y POO'},
+        {key: 'cat_python_modules', label: 'Módulos'}
+    ];
+
+    const summaryContainer = document.getElementById('teacher-eval-summary');
+    if (summaryContainer) {
+        summaryContainer.innerHTML = '';
+        evalSections.forEach(sec => {
+            fetch(`/api/evaluacion/estado/${sec.key}`)
+                .then(r => r.json())
+                .then(data => {
+                    const card = document.createElement('div');
+                    card.style.cssText = 'background: var(--bg-code, #0d1117); border: 1px solid var(--border, #2a2a4a); border-radius: 8px; padding: 1.25rem; text-align: center;';
+                    card.innerHTML = `
+                        <div style="font-weight: 600; color: var(--green, #00e5ff); margin-bottom: 0.5rem; font-size: 0.9rem;">${sec.label}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted, #888); line-height: 1.8;">
+                            Evaluación disponible<br>
+                            <span style="color: var(--text, #ccc);">Preguntas adaptativas por sección</span>
+                        </div>
+                    `;
+                    summaryContainer.appendChild(card);
+                })
+                .catch(() => {});
+        });
+    }
 </script>
 {% endblock %}
+

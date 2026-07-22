@@ -1,0 +1,622 @@
+{
+    "id": "eval-python-tutorial",
+    "section_key": "cat_python_tutorial",
+    "title": "Evaluación Final: Fundamentos de Python",
+    "description": "Evalúa tu dominio completo de los fundamentos de Python: sintaxis, variables, tipos de datos, estructuras de control y más.",
+    "passing_score": 70,
+    "questions_per_eval": 20,
+    "time_per_question": 120,
+    "lesson_questions": {
+        "py-syntax": [
+            {
+                "id": "et-syn1",
+                "type": "multiple_choice",
+                "question": "¿Qué característica define la estructura de bloques de código en Python?",
+                "options": ["Llaves {}", "Indentación con espacios o tabs", "Paréntesis ()", "Punto y coma ;"],
+                "correct": 1,
+                "explanation": "Python usa la indentación (espacios o tabs) para definir bloques de código, a diferencia de otros lenguajes que usan llaves.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-syn2",
+                "type": "true_false",
+                "question": "En Python, es obligatorio terminar cada línea con un punto y coma (;).",
+                "correct": false,
+                "explanation": "Python no requiere punto y coma al final de las líneas. Se usa el salto de línea como separador.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-syn3",
+                "type": "multiple_choice",
+                "question": "¿Cuál de las siguientes es la forma correcta de escribir un bloque if en Python?",
+                "options": ["if (x > 5) { print(x) }", "if x > 5:\\n    print(x)", "if x > 5 then print(x)", "IF x > 5: print(x)"],
+                "correct": 1,
+                "explanation": "Python usa dos puntos (:) después de la condición y la indentación para el bloque.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "et-syn4",
+                "type": "complete_code",
+                "question": "Completa el código para imprimir 'Hola Mundo':",
+                "code_template": "___('Hola Mundo')",
+                "correct_answer": "print",
+                "explanation": "La función print() muestra texto en la consola de Python.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-syn5",
+                "type": "multiple_choice",
+                "question": "¿Python es un lenguaje sensible a mayúsculas y minúsculas (case-sensitive)?",
+                "options": ["No, trata igual mayúsculas y minúsculas", "Sí, distingue entre mayúsculas y minúsculas", "Solo en nombres de funciones", "Solo en palabras reservadas"],
+                "correct": 1,
+                "explanation": "Python es case-sensitive: 'Variable', 'variable' y 'VARIABLE' son tres identificadores diferentes.",
+                "difficulty": "easy"
+            }
+        ],
+        "py-comments": [
+            {
+                "id": "et-com1",
+                "type": "multiple_choice",
+                "question": "¿Cuál es la forma correcta de escribir un comentario de una línea en Python?",
+                "options": ["// Este es un comentario", "# Este es un comentario", "/* Este es un comentario */", "-- Este es un comentario"],
+                "correct": 1,
+                "explanation": "En Python, los comentarios de una línea comienzan con el símbolo #.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-com2",
+                "type": "true_false",
+                "question": "En Python se pueden usar triples comillas (''' o \"\"\") para crear comentarios multilínea.",
+                "correct": true,
+                "explanation": "Aunque técnicamente son strings multilínea, las triples comillas se usan comúnmente como comentarios multilínea.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-com3",
+                "type": "complete_code",
+                "question": "Completa la línea para que sea un comentario válido en Python:",
+                "code_template": "___ Este código calcula el promedio",
+                "correct_answer": "#",
+                "explanation": "El símbolo # al inicio de una línea la convierte en un comentario.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-com4",
+                "type": "multiple_choice",
+                "question": "¿Qué sucede cuando Python encuentra un comentario (#) en el código?",
+                "options": ["Genera un error de sintaxis", "Lo ejecuta como texto", "Lo ignora completamente", "Lo convierte en una variable"],
+                "correct": 2,
+                "explanation": "Python ignora completamente todo lo que está después del # en esa línea.",
+                "difficulty": "easy"
+            }
+        ],
+        "py-variables": [
+            {
+                "id": "et-var1",
+                "type": "multiple_choice",
+                "question": "¿Cuál de los siguientes es un nombre de variable INVÁLIDO en Python?",
+                "options": ["_nombre", "mi_variable", "2datos", "edad"],
+                "correct": 2,
+                "explanation": "Los nombres de variables no pueden comenzar con un número. Deben empezar con una letra o guion bajo.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-var2",
+                "type": "complete_code",
+                "question": "Completa el código para asignar el valor 10 a la variable 'edad':",
+                "code_template": "edad ___ 10",
+                "correct_answer": "=",
+                "explanation": "El operador = se usa para asignar valores a variables en Python.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-var3",
+                "type": "multiple_choice",
+                "question": "¿Qué tipo de dato tiene la variable x después de ejecutar: x = 'Hola'?",
+                "options": ["int", "float", "str", "bool"],
+                "correct": 2,
+                "explanation": "Al asignar texto entre comillas, Python crea una variable de tipo str (string).",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-var4",
+                "type": "true_false",
+                "question": "En Python, es necesario declarar el tipo de una variable antes de usarla (como en Java).",
+                "correct": false,
+                "explanation": "Python tiene tipado dinámico, no necesitas declarar el tipo de variable previamente.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "et-var5",
+                "type": "multiple_choice",
+                "question": "¿Qué resultado imprime el siguiente código?\nx = 5\nx = 'cinco'\nprint(type(x))",
+                "options": ["<class 'int'>", "<class 'str'>", "Error: variable ya definida", "<class 'float'>"],
+                "correct": 1,
+                "explanation": "Python permite reasignar variables a diferentes tipos. La última asignación define el tipo actual.",
+                "difficulty": "medium"
+            }
+        ],
+        "py-datatypes": [
+            {
+                "id": "et-dt1",
+                "type": "multiple_choice",
+                "question": "¿Cuáles son los tipos de datos numéricos principales en Python?",
+                "options": ["int, float, complex", "int, double, long", "number, decimal, float", "integer, real, imaginary"],
+                "correct": 0,
+                "explanation": "Python tiene tres tipos numéricos: int (enteros), float (decimales) y complex (complejos).",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-dt2",
+                "type": "complete_code",
+                "question": "Completa el código para verificar el tipo de dato de una variable:",
+                "code_template": "x = 3.14\nprint(___(x))",
+                "correct_answer": "type",
+                "explanation": "La función type() devuelve el tipo de dato de una variable.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-dt3",
+                "type": "true_false",
+                "question": "En Python, una lista (list) es un tipo de dato inmutable.",
+                "correct": false,
+                "explanation": "Las listas son mutables: se pueden modificar después de crearlas. Las tuplas son inmutables.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "et-dt4",
+                "type": "multiple_choice",
+                "question": "¿Qué tipo de dato devuelve la expresión: x = True?",
+                "options": ["str", "int", "bool", "NoneType"],
+                "correct": 2,
+                "explanation": "True y False son valores del tipo bool (booleano) en Python.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-dt5",
+                "type": "multiple_choice",
+                "question": "¿Cuál de los siguientes NO es un tipo de secuencia en Python?",
+                "options": ["list", "tuple", "range", "dict"],
+                "correct": 3,
+                "explanation": "dict es un tipo de mapeo (mapping), no de secuencia. list, tuple y range son secuencias.",
+                "difficulty": "medium"
+            }
+        ],
+        "py-numbers": [
+            {
+                "id": "et-num1",
+                "type": "multiple_choice",
+                "question": "¿Cuál es el resultado de: 10 / 3 en Python 3?",
+                "options": ["3", "3.3333333333333335", "3.33", "3.0"],
+                "correct": 1,
+                "explanation": "La división / en Python 3 siempre devuelve un float, incluso si los operandos son enteros.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "et-num2",
+                "type": "complete_code",
+                "question": "Completa el código para obtener la división entera de 17 entre 5:",
+                "code_template": "resultado = 17 ___ 5",
+                "correct_answer": "//",
+                "explanation": "El operador // realiza la división entera (floor division) en Python.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "et-num3",
+                "type": "true_false",
+                "question": "En Python, los números enteros (int) tienen un tamaño limitado como en Java o C.",
+                "correct": false,
+                "explanation": "En Python, los enteros tienen precisión arbitraria, pueden ser tan grandes como la memoria lo permita.",
+                "difficulty": "hard"
+            },
+            {
+                "id": "et-num4",
+                "type": "multiple_choice",
+                "question": "¿Qué función convierte un string '42' a un número entero?",
+                "options": ["str(42)", "int('42')", "float('42')", "number('42')"],
+                "correct": 1,
+                "explanation": "La función int() convierte un string numérico a entero.",
+                "difficulty": "easy"
+            }
+        ],
+        "py-casting": [
+            {
+                "id": "et-cas1",
+                "type": "multiple_choice",
+                "question": "¿Qué resultado produce: int(3.9)?",
+                "options": ["4", "3", "3.9", "Error"],
+                "correct": 1,
+                "explanation": "int() trunca el decimal, no lo redondea. 3.9 se convierte a 3.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "et-cas2",
+                "type": "complete_code",
+                "question": "Completa el código para convertir el número 5 a string:",
+                "code_template": "x = ___(5)",
+                "correct_answer": "str",
+                "explanation": "La función str() convierte cualquier valor a su representación como cadena de texto.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-cas3",
+                "type": "true_false",
+                "question": "La expresión float('hola') es válida y devuelve 0.0.",
+                "correct": false,
+                "explanation": "float('hola') genera un ValueError porque 'hola' no es un número válido.",
+                "difficulty": "medium"
+            }
+        ],
+        "py-strings": [
+            {
+                "id": "et-str1",
+                "type": "multiple_choice",
+                "question": "¿Cuál es el resultado de: 'Python'[0]?",
+                "options": ["'P'", "'y'", "'Python'", "Error"],
+                "correct": 0,
+                "explanation": "Los strings en Python se indexan desde 0. El primer carácter es 'P'.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-str2",
+                "type": "complete_code",
+                "question": "Completa el código para obtener la longitud de un string:",
+                "code_template": "texto = 'Hola Mundo'\nlongitud = ___(texto)",
+                "correct_answer": "len",
+                "explanation": "La función len() devuelve la longitud (número de caracteres) de un string.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-str3",
+                "type": "multiple_choice",
+                "question": "¿Qué método convierte un string a mayúsculas?",
+                "options": [".capitalize()", ".upper()", ".title()", ".swapcase()"],
+                "correct": 1,
+                "explanation": "El método .upper() convierte todos los caracteres a mayúsculas.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-str4",
+                "type": "true_false",
+                "question": "Los strings en Python son mutables (se pueden modificar carácter por carácter).",
+                "correct": false,
+                "explanation": "Los strings son inmutables. No puedes hacer texto[0] = 'X'. Debes crear un nuevo string.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "et-str5",
+                "type": "multiple_choice",
+                "question": "¿Cuál es el resultado de: 'Hola' + ' ' + 'Mundo'?",
+                "options": ["'HolaMundo'", "'Hola Mundo'", "Error", "'Hola + Mundo'"],
+                "correct": 1,
+                "explanation": "El operador + concatena strings, uniendo los textos incluyendo el espacio.",
+                "difficulty": "easy"
+            }
+        ],
+        "py-booleans": [
+            {
+                "id": "et-bool1",
+                "type": "multiple_choice",
+                "question": "¿Cuál es el resultado de: bool(0)?",
+                "options": ["True", "False", "0", "None"],
+                "correct": 1,
+                "explanation": "El número 0 es considerado 'falsy' en Python. bool(0) devuelve False.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "et-bool2",
+                "type": "true_false",
+                "question": "En Python, una lista vacía [] se evalúa como True en un contexto booleano.",
+                "correct": false,
+                "explanation": "Las colecciones vacías ([], {}, '', set()) se evalúan como False.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "et-bool3",
+                "type": "multiple_choice",
+                "question": "¿Qué operador lógico devuelve True solo si AMBAS condiciones son verdaderas?",
+                "options": ["or", "and", "not", "xor"],
+                "correct": 1,
+                "explanation": "El operador 'and' devuelve True solo si ambos operandos son True.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-bool4",
+                "type": "complete_code",
+                "question": "Completa el código para negar un valor booleano:",
+                "code_template": "x = True\ny = ___ x  # y será False",
+                "correct_answer": "not",
+                "explanation": "El operador 'not' invierte un valor booleano: not True es False.",
+                "difficulty": "easy"
+            }
+        ],
+        "py-operators": [
+            {
+                "id": "et-op1",
+                "type": "multiple_choice",
+                "question": "¿Cuál es el resultado de: 2 ** 3?",
+                "options": ["6", "8", "5", "23"],
+                "correct": 1,
+                "explanation": "El operador ** es la exponenciación. 2 ** 3 = 2³ = 8.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-op2",
+                "type": "multiple_choice",
+                "question": "¿Cuál es el resultado de: 17 % 5?",
+                "options": ["3", "2", "3.4", "12"],
+                "correct": 1,
+                "explanation": "El operador % (módulo) devuelve el resto de la división. 17 / 5 = 3 resto 2.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "et-op3",
+                "type": "complete_code",
+                "question": "Completa el operador de comparación para verificar igualdad:",
+                "code_template": "if x ___ 10:\n    print('Es diez')",
+                "correct_answer": "==",
+                "explanation": "El operador == compara igualdad. El operador = es para asignación.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-op4",
+                "type": "true_false",
+                "question": "El operador 'is' y el operador '==' siempre devuelven el mismo resultado.",
+                "correct": false,
+                "explanation": "'==' compara valores, mientras que 'is' compara identidad (si son el mismo objeto en memoria).",
+                "difficulty": "hard"
+            }
+        ],
+        "py-lists": [
+            {
+                "id": "et-lst1",
+                "type": "multiple_choice",
+                "question": "¿Cuál es el resultado de: [1, 2, 3][-1]?",
+                "options": ["1", "3", "Error", "-1"],
+                "correct": 1,
+                "explanation": "Los índices negativos cuentan desde el final. -1 es el último elemento.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "et-lst2",
+                "type": "complete_code",
+                "question": "Completa el código para agregar un elemento al final de la lista:",
+                "code_template": "frutas = ['manzana', 'pera']\nfrutas.___(\"uva\")",
+                "correct_answer": "append",
+                "explanation": "El método .append() agrega un elemento al final de la lista.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-lst3",
+                "type": "multiple_choice",
+                "question": "¿Qué método elimina un elemento de la lista por su valor?",
+                "options": [".delete()", ".remove()", ".pop()", ".discard()"],
+                "correct": 1,
+                "explanation": "El método .remove() elimina la primera ocurrencia del valor especificado.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-lst4",
+                "type": "true_false",
+                "question": "Las listas en Python pueden contener elementos de diferentes tipos de datos.",
+                "correct": true,
+                "explanation": "Una lista puede mezclar tipos: [1, 'hola', True, 3.14] es válido.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-lst5",
+                "type": "multiple_choice",
+                "question": "¿Cuál es el resultado de: len([1, [2, 3], 4])?",
+                "options": ["3", "4", "5", "Error"],
+                "correct": 0,
+                "explanation": "La lista tiene 3 elementos: 1, [2, 3] (una lista anidada cuenta como uno), y 4.",
+                "difficulty": "hard"
+            }
+        ],
+        "py-tuples": [
+            {
+                "id": "et-tup1",
+                "type": "multiple_choice",
+                "question": "¿Qué diferencia fundamental hay entre una tupla y una lista?",
+                "options": ["Las tuplas son más rápidas", "Las tuplas son inmutables", "Las tuplas solo almacenan números", "Las tuplas no tienen índices"],
+                "correct": 1,
+                "explanation": "La diferencia principal es que las tuplas son inmutables: no se pueden modificar después de crearlas.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-tup2",
+                "type": "complete_code",
+                "question": "Completa el código para crear una tupla con un solo elemento:",
+                "code_template": "mi_tupla = (5___)",
+                "correct_answer": ",",
+                "explanation": "Una tupla con un solo elemento necesita una coma al final: (5,). Sin la coma, sería solo un entero entre paréntesis.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "et-tup3",
+                "type": "true_false",
+                "question": "Se puede usar el método .append() para agregar elementos a una tupla.",
+                "correct": false,
+                "explanation": "Las tuplas son inmutables, no tienen métodos que modifiquen su contenido como append o remove.",
+                "difficulty": "easy"
+            }
+        ],
+        "py-sets": [
+            {
+                "id": "et-set1",
+                "type": "multiple_choice",
+                "question": "¿Cuál es la característica principal de un set en Python?",
+                "options": ["Es ordenado", "No permite duplicados", "Es inmutable", "Solo almacena strings"],
+                "correct": 1,
+                "explanation": "Los sets no permiten elementos duplicados y no están ordenados.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-set2",
+                "type": "multiple_choice",
+                "question": "¿Cuál es el resultado de: len({1, 2, 2, 3, 3, 3})?",
+                "options": ["6", "3", "4", "Error"],
+                "correct": 1,
+                "explanation": "Un set elimina duplicados automáticamente. Solo quedan {1, 2, 3}, longitud 3.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "et-set3",
+                "type": "complete_code",
+                "question": "Completa el código para agregar un elemento a un set:",
+                "code_template": "colores = {'rojo', 'azul'}\ncolores.___('verde')",
+                "correct_answer": "add",
+                "explanation": "El método .add() agrega un elemento a un set.",
+                "difficulty": "easy"
+            }
+        ],
+        "py-dicts": [
+            {
+                "id": "et-dic1",
+                "type": "multiple_choice",
+                "question": "¿Cómo se accede al valor asociado a la clave 'nombre' en un diccionario?",
+                "options": ["datos['nombre']", "datos.nombre", "datos(nombre)", "datos[0]"],
+                "correct": 0,
+                "explanation": "Se accede a los valores de un diccionario usando la clave entre corchetes.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-dic2",
+                "type": "complete_code",
+                "question": "Completa el código para obtener todas las claves de un diccionario:",
+                "code_template": "persona = {'nombre': 'Ana', 'edad': 25}\nclaves = persona.___()",
+                "correct_answer": "keys",
+                "explanation": "El método .keys() devuelve todas las claves del diccionario.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-dic3",
+                "type": "true_false",
+                "question": "Un diccionario en Python puede tener claves duplicadas.",
+                "correct": false,
+                "explanation": "Las claves de un diccionario deben ser únicas. Si se repite una clave, el último valor la sobreescribe.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-dic4",
+                "type": "multiple_choice",
+                "question": "¿Qué método devuelve un valor por defecto si la clave no existe en el diccionario?",
+                "options": [".find()", ".get()", ".search()", ".fetch()"],
+                "correct": 1,
+                "explanation": "El método .get(clave, valor_defecto) devuelve el valor si existe la clave, sino el valor por defecto.",
+                "difficulty": "medium"
+            }
+        ],
+        "py-ifelse": [
+            {
+                "id": "et-if1",
+                "type": "multiple_choice",
+                "question": "¿Cuál es la palabra clave para agregar una condición alternativa después de un if?",
+                "options": ["else if", "elsif", "elif", "elseif"],
+                "correct": 2,
+                "explanation": "Python usa 'elif' (abreviación de 'else if') para condiciones alternativas.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-if2",
+                "type": "complete_code",
+                "question": "Completa la estructura condicional:",
+                "code_template": "edad = 18\n___ edad >= 18:\n    print('Mayor de edad')",
+                "correct_answer": "if",
+                "explanation": "La palabra clave 'if' inicia una estructura condicional en Python.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-if3",
+                "type": "multiple_choice",
+                "question": "¿Cuál es el resultado del siguiente código?\nx = 10\nresult = 'par' if x % 2 == 0 else 'impar'\nprint(result)",
+                "options": ["'par'", "'impar'", "Error", "None"],
+                "correct": 0,
+                "explanation": "Esta es una expresión ternaria. Como 10 % 2 == 0 es True, el resultado es 'par'.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "et-if4",
+                "type": "true_false",
+                "question": "En Python, un bloque if puede existir sin un bloque else.",
+                "correct": true,
+                "explanation": "El bloque else es opcional. Un if puede existir solo para ejecutar código cuando la condición es verdadera.",
+                "difficulty": "easy"
+            }
+        ],
+        "py-while": [
+            {
+                "id": "et-wh1",
+                "type": "multiple_choice",
+                "question": "¿Qué instrucción se usa para salir de un bucle while prematuramente?",
+                "options": ["exit", "stop", "break", "return"],
+                "correct": 2,
+                "explanation": "La instrucción 'break' sale inmediatamente del bucle más cercano.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-wh2",
+                "type": "complete_code",
+                "question": "Completa el bucle para imprimir números del 1 al 5:",
+                "code_template": "i = 1\n___ i <= 5:\n    print(i)\n    i += 1",
+                "correct_answer": "while",
+                "explanation": "El bucle 'while' repite el bloque mientras la condición sea verdadera.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-wh3",
+                "type": "true_false",
+                "question": "La instrucción 'continue' en un bucle while termina el bucle completamente.",
+                "correct": false,
+                "explanation": "'continue' salta a la siguiente iteración del bucle. 'break' es el que termina el bucle.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "et-wh4",
+                "type": "multiple_choice",
+                "question": "¿Qué problema causa un bucle while cuya condición nunca se vuelve False?",
+                "options": ["Error de sintaxis", "Un bucle infinito", "El programa se detiene automáticamente", "Python lo ignora"],
+                "correct": 1,
+                "explanation": "Si la condición nunca es False, el bucle se ejecuta infinitamente.",
+                "difficulty": "easy"
+            }
+        ],
+        "py-for": [
+            {
+                "id": "et-for1",
+                "type": "multiple_choice",
+                "question": "¿Cuál es el resultado de: list(range(3))?",
+                "options": ["[1, 2, 3]", "[0, 1, 2]", "[0, 1, 2, 3]", "[3]"],
+                "correct": 1,
+                "explanation": "range(3) genera números desde 0 hasta 2 (sin incluir el 3).",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-for2",
+                "type": "complete_code",
+                "question": "Completa el bucle para iterar sobre una lista:",
+                "code_template": "___ fruta in ['manzana', 'pera', 'uva']:\n    print(fruta)",
+                "correct_answer": "for",
+                "explanation": "El bucle 'for' itera sobre cada elemento de una secuencia.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "et-for3",
+                "type": "multiple_choice",
+                "question": "¿Qué hace range(2, 10, 3)?",
+                "options": ["Genera [2, 5, 8]", "Genera [2, 3, 4, 5, 6, 7, 8, 9, 10]", "Genera [2, 10, 3]", "Error"],
+                "correct": 0,
+                "explanation": "range(inicio, fin, paso) genera: 2, 2+3=5, 5+3=8. El 11 (8+3) supera 10, así que se detiene.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "et-for4",
+                "type": "true_false",
+                "question": "Un bucle for en Python puede tener un bloque else que se ejecuta al terminar el bucle normalmente.",
+                "correct": true,
+                "explanation": "El bloque else de un for se ejecuta cuando el bucle termina sin un break.",
+                "difficulty": "hard"
+            }
+        ]
+    }
+}

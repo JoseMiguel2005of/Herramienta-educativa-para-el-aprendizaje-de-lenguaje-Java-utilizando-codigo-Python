@@ -308,7 +308,7 @@ function initExercises() {
             }
 
             // Registrar intento en analíticas (silenciosamente)
-            fetch('/api/ejercicio', {
+            fetch('/api/progreso/ejercicio', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

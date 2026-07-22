@@ -155,3 +155,39 @@ def get_practice_problem(problem_id):
             return p
     return None
 
+
+# ===== EVALUATION LOADERS =====
+
+EVALUATIONS_DIR = os.path.join(CONTENT_DIR, "evaluations")
+
+
+@lru_cache(maxsize=10)
+def load_evaluation(eval_id):
+    """Carga una evaluación por su ID."""
+    path = os.path.join(EVALUATIONS_DIR, f"{eval_id}.json")
+    if not os.path.exists(path):
+        return None
+    return _load_json(path)
+
+
+@lru_cache(maxsize=1)
+def load_all_evaluations():
+    """Devuelve lista de todos los IDs de evaluaciones disponibles."""
+    ids = []
+    if os.path.isdir(EVALUATIONS_DIR):
+        for fname in sorted(os.listdir(EVALUATIONS_DIR)):
+            if fname.endswith(".json"):
+                ids.append(fname[:-5])
+    return ids
+
+
+def get_evaluation_for_section(section_key):
+    """Obtiene la evaluación correspondiente a una sección del sidebar."""
+    eval_ids = load_all_evaluations()
+    for eid in eval_ids:
+        data = load_evaluation(eid)
+        if data and data.get("section_key") == section_key:
+            return data
+    return None
+
+

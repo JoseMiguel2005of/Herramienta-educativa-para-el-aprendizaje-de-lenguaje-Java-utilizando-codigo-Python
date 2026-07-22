@@ -1,0 +1,252 @@
+{
+    "id": "eval-python-classes",
+    "section_key": "cat_python_classes",
+    "title": "Evaluación Final: Clases y POO en Python",
+    "description": "Evalúa tu dominio de Programación Orientada a Objetos: clases, herencia, polimorfismo y más.",
+    "passing_score": 70,
+    "questions_per_eval": 18,
+    "time_per_question": 120,
+    "lesson_questions": {
+        "py-classes": [
+            {
+                "id": "ec-cls1",
+                "type": "multiple_choice",
+                "question": "¿Qué palabra clave se usa para definir una clase en Python?",
+                "options": ["def", "class", "struct", "object"],
+                "correct": 1,
+                "explanation": "La palabra clave 'class' se usa para definir una clase en Python.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "ec-cls2",
+                "type": "complete_code",
+                "question": "Completa el código para crear una clase vacía:",
+                "code_template": "___ MiClase:\n    pass",
+                "correct_answer": "class",
+                "explanation": "La palabra clave 'class' seguida del nombre define una nueva clase.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "ec-cls3",
+                "type": "true_false",
+                "question": "En Python, un objeto es una instancia de una clase.",
+                "correct": true,
+                "explanation": "Cuando creas una variable con MiClase(), estás creando una instancia (objeto) de esa clase.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "ec-cls4",
+                "type": "multiple_choice",
+                "question": "¿Cómo se crea un objeto (instancia) de una clase llamada 'Persona'?",
+                "options": ["new Persona()", "Persona.create()", "Persona()", "create Persona()"],
+                "correct": 2,
+                "explanation": "En Python se crea un objeto llamando al nombre de la clase como si fuera una función: Persona().",
+                "difficulty": "easy"
+            }
+        ],
+        "py-init": [
+            {
+                "id": "ec-ini1",
+                "type": "multiple_choice",
+                "question": "¿Cuál es el propósito del método __init__ en una clase?",
+                "options": ["Destruir el objeto", "Inicializar los atributos del objeto cuando se crea", "Imprimir el objeto", "Comparar objetos"],
+                "correct": 1,
+                "explanation": "__init__ es el constructor: se ejecuta automáticamente al crear una nueva instancia.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "ec-ini2",
+                "type": "complete_code",
+                "question": "Completa el constructor de la clase:",
+                "code_template": "class Persona:\n    def ___(self, nombre, edad):\n        self.nombre = nombre\n        self.edad = edad",
+                "correct_answer": "__init__",
+                "explanation": "El método __init__ es el constructor que inicializa los atributos del objeto.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "ec-ini3",
+                "type": "true_false",
+                "question": "El método __init__ debe ser llamado explícitamente para crear un objeto.",
+                "correct": false,
+                "explanation": "__init__ se llama automáticamente cuando creas un objeto: Persona('Ana', 25).",
+                "difficulty": "medium"
+            },
+            {
+                "id": "ec-ini4",
+                "type": "multiple_choice",
+                "question": "¿Qué sucede si una clase no define __init__?",
+                "options": ["Error al crear objetos", "Se hereda __init__ de object (clase base)", "No se pueden crear instancias", "Los atributos se crean automáticamente"],
+                "correct": 1,
+                "explanation": "Todas las clases heredan de object, que tiene un __init__ básico. La clase funciona pero sin atributos inicializados.",
+                "difficulty": "medium"
+            }
+        ],
+        "py-self": [
+            {
+                "id": "ec-self1",
+                "type": "multiple_choice",
+                "question": "¿Qué representa 'self' en un método de una clase?",
+                "options": ["La clase misma", "La instancia actual del objeto", "Una variable global", "El método padre"],
+                "correct": 1,
+                "explanation": "'self' es una referencia a la instancia actual del objeto que está llamando al método.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "ec-self2",
+                "type": "true_false",
+                "question": "El nombre 'self' es obligatorio en Python; no se puede usar otro nombre.",
+                "correct": false,
+                "explanation": "'self' es una convención fuerte, pero técnicamente se puede usar cualquier nombre como primer parámetro.",
+                "difficulty": "hard"
+            },
+            {
+                "id": "ec-self3",
+                "type": "complete_code",
+                "question": "Completa el método para acceder al atributo del objeto:",
+                "code_template": "class Coche:\n    def __init__(self, marca):\n        self.marca = marca\n    \n    def mostrar(self):\n        print(___.marca)",
+                "correct_answer": "self",
+                "explanation": "Se usa self.atributo para acceder a los atributos de la instancia dentro de un método.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "ec-self4",
+                "type": "multiple_choice",
+                "question": "Al llamar obj.metodo(), ¿qué se pasa automáticamente como primer argumento?",
+                "options": ["None", "El nombre del método", "La instancia obj (self)", "La clase del objeto"],
+                "correct": 2,
+                "explanation": "Python pasa automáticamente la instancia como primer argumento (self) al llamar métodos.",
+                "difficulty": "medium"
+            }
+        ],
+        "py-inheritance": [
+            {
+                "id": "ec-inh1",
+                "type": "multiple_choice",
+                "question": "¿Cómo se define una clase 'Estudiante' que hereda de 'Persona'?",
+                "options": ["class Estudiante inherits Persona:", "class Estudiante extends Persona:", "class Estudiante(Persona):", "class Estudiante -> Persona:"],
+                "correct": 2,
+                "explanation": "En Python, la herencia se expresa poniendo la clase padre entre paréntesis.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "ec-inh2",
+                "type": "complete_code",
+                "question": "Completa para llamar al constructor de la clase padre:",
+                "code_template": "class Estudiante(Persona):\n    def __init__(self, nombre, edad, grado):\n        ___.__init__(self, nombre, edad)\n        self.grado = grado",
+                "correct_answer": "Persona",
+                "explanation": "Se puede llamar al __init__ de la clase padre directamente o usar super().__init__().",
+                "difficulty": "medium"
+            },
+            {
+                "id": "ec-inh3",
+                "type": "true_false",
+                "question": "Python soporta herencia múltiple (una clase puede heredar de varias clases).",
+                "correct": true,
+                "explanation": "Python permite herencia múltiple: class C(A, B): es válido.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "ec-inh4",
+                "type": "multiple_choice",
+                "question": "¿Qué función se usa para verificar si un objeto es instancia de una clase?",
+                "options": ["typeof()", "instanceof()", "isinstance()", "type_check()"],
+                "correct": 2,
+                "explanation": "isinstance(obj, Clase) devuelve True si obj es una instancia de Clase o de una subclase.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "ec-inh5",
+                "type": "multiple_choice",
+                "question": "¿Qué hace la función super() en Python?",
+                "options": ["Crea un nuevo objeto", "Permite acceder a métodos de la clase padre", "Elimina la herencia", "Define un método estático"],
+                "correct": 1,
+                "explanation": "super() devuelve un objeto proxy que delega llamadas a la clase padre.",
+                "difficulty": "medium"
+            }
+        ],
+        "py-iterators": [
+            {
+                "id": "ec-iter1",
+                "type": "multiple_choice",
+                "question": "¿Qué dos métodos debe implementar un objeto para ser un iterador en Python?",
+                "options": ["next() y prev()", "__iter__() y __next__()", "start() y stop()", "begin() y end()"],
+                "correct": 1,
+                "explanation": "Un iterador debe implementar __iter__() (devuelve el iterador) y __next__() (devuelve el siguiente valor).",
+                "difficulty": "medium"
+            },
+            {
+                "id": "ec-iter2",
+                "type": "true_false",
+                "question": "Un objeto iterable y un iterador son exactamente lo mismo.",
+                "correct": false,
+                "explanation": "Un iterable tiene __iter__() y puede crear un iterador. Un iterador tiene tanto __iter__() como __next__().",
+                "difficulty": "hard"
+            },
+            {
+                "id": "ec-iter3",
+                "type": "multiple_choice",
+                "question": "¿Qué excepción se lanza cuando un iterador no tiene más elementos?",
+                "options": ["IndexError", "ValueError", "StopIteration", "EndOfIterator"],
+                "correct": 2,
+                "explanation": "StopIteration señala que el iterador ha agotado todos sus elementos.",
+                "difficulty": "medium"
+            }
+        ],
+        "py-polymorphism": [
+            {
+                "id": "ec-poly1",
+                "type": "multiple_choice",
+                "question": "¿Qué es el polimorfismo en programación orientada a objetos?",
+                "options": ["Tener múltiples constructores", "Que diferentes clases puedan tener métodos con el mismo nombre pero diferente comportamiento", "Ocultar los atributos de una clase", "Heredar de múltiples clases"],
+                "correct": 1,
+                "explanation": "El polimorfismo permite que diferentes clases implementen métodos con el mismo nombre pero con comportamiento específico.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "ec-poly2",
+                "type": "true_false",
+                "question": "En Python, el polimorfismo funciona sin necesidad de que las clases compartan una clase base común.",
+                "correct": true,
+                "explanation": "Python usa 'duck typing': si un objeto tiene el método, se puede usar, sin importar la herencia.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "ec-poly3",
+                "type": "multiple_choice",
+                "question": "¿Cuál es un ejemplo de polimorfismo built-in en Python?",
+                "options": ["La función type()", "La función len() funciona con strings, listas, diccionarios, etc.", "El operador =", "La función id()"],
+                "correct": 1,
+                "explanation": "len() funciona con cualquier objeto que implemente __len__(), demostrando polimorfismo.",
+                "difficulty": "medium"
+            }
+        ],
+        "py-scope": [
+            {
+                "id": "ec-scp1",
+                "type": "multiple_choice",
+                "question": "¿Cuál es el orden de búsqueda de variables en Python (regla LEGB)?",
+                "options": ["Local, Enclosing, Global, Built-in", "Built-in, Global, Local, Enclosing", "Global, Local, Built-in, Enclosing", "Local, Global, Enclosing, Built-in"],
+                "correct": 0,
+                "explanation": "LEGB: Local → Enclosing (función exterior) → Global → Built-in.",
+                "difficulty": "hard"
+            },
+            {
+                "id": "ec-scp2",
+                "type": "complete_code",
+                "question": "Completa para poder modificar una variable global dentro de una función:",
+                "code_template": "x = 10\ndef cambiar():\n    ___ x\n    x = 20",
+                "correct_answer": "global",
+                "explanation": "La palabra clave 'global' permite modificar una variable global dentro de una función.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "ec-scp3",
+                "type": "true_false",
+                "question": "Una variable definida dentro de una función es accesible desde fuera de esa función.",
+                "correct": false,
+                "explanation": "Las variables locales solo existen dentro de la función donde fueron definidas.",
+                "difficulty": "easy"
+            }
+        ]
+    }
+}

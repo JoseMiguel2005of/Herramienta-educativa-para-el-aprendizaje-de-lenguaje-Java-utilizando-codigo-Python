@@ -23,6 +23,9 @@ class User(UserMixin, db.Model):
     practice_submissions = db.relationship(
         "PracticeSubmission", backref="user", lazy=True, cascade="all, delete-orphan"
     )
+    evaluations = db.relationship(
+        "SectionEvaluation", backref="user", lazy=True, cascade="all, delete-orphan"
+    )
 
 
 class LessonProgress(db.Model):
@@ -90,3 +93,19 @@ class PracticeSubmission(db.Model):
     tests_passed = db.Column(db.Integer, default=0)
     tests_total = db.Column(db.Integer, default=0)
     submitted_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class SectionEvaluation(db.Model):
+    __tablename__ = "section_evaluations"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    section_id = db.Column(db.String(100), nullable=False)
+    score = db.Column(db.Integer, default=0)
+    total = db.Column(db.Integer, default=0)
+    percentage = db.Column(db.Float, default=0.0)
+    passed = db.Column(db.Boolean, default=False)
+    time_taken = db.Column(db.Integer, nullable=True)
+    attempt_number = db.Column(db.Integer, default=1)
+    details_json = db.Column(db.Text, nullable=True)
+    completed_at = db.Column(db.DateTime, default=datetime.utcnow)

@@ -49,7 +49,7 @@
 
     --bg: #FFFFFF;
     --bg-secondary: #F6F8FA;
-    --bg-code: #F0F2F5;
+    --bg-code: #EFF1F3;
 
     --text: #24292F;
     --text-muted: #57606A;
@@ -71,11 +71,12 @@
     --explanation-border: #CF222E;
 
     --topbar-text: #24292F;
-    --accent-glow: rgba(0, 151, 167, 0.1);
+    --accent-glow: rgba(0, 151, 167, 0.08);
     --page-bg: #FFFFFF;
     --card-hover-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
+/* --- Topbar --- */
 [data-theme="light"] .topbar {
     background: #F6F8FA !important;
     border-bottom-color: #D0D7DE !important;
@@ -90,14 +91,48 @@
     text-shadow: none;
 }
 
+/* --- Sidebar terminal links --- */
 [data-theme="light"] .term-btn {
     color: #57606A;
 }
 
 [data-theme="light"] .term-btn:hover {
     color: #0097A7;
+    background: rgba(0, 151, 167, 0.06);
 }
 
+[data-theme="light"] .term-btn.text-green {
+    color: #0097A7;
+}
+
+[data-theme="light"] .term-btn.text-python {
+    color: #0097A7;
+}
+
+[data-theme="light"] .term-btn.text-orange {
+    color: #D97706;
+}
+
+[data-theme="light"] .sidebar {
+    background: #EAECEF;
+    border-right-color: #D0D7DE;
+}
+
+[data-theme="light"] .term-nav-link.active {
+    color: #0097A7;
+    background: rgba(0, 151, 167, 0.08);
+}
+
+[data-theme="light"] .prompt-char {
+    color: #0097A7;
+}
+
+/* --- Grid pattern reduction for light mode --- */
+[data-theme="light"] body::before {
+    opacity: 0.12;
+}
+
+/* --- XP Toast --- */
 [data-theme="light"] .xp-toast {
     background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(246,248,250,0.95));
     border-color: #0097A7;
@@ -108,6 +143,11 @@
     color: #57606A;
 }
 
+[data-theme="light"] .xp-toast-amount {
+    text-shadow: none;
+}
+
+/* --- Achievement modal --- */
 [data-theme="light"] .achievement-modal-content {
     background: linear-gradient(135deg, #F6F8FA, #FFFFFF);
     border-color: #0097A7;
@@ -119,6 +159,107 @@
 
 [data-theme="light"] .achievement-modal-name {
     color: #24292F;
+}
+
+[data-theme="light"] .achievement-modal-card {
+    background: rgba(0, 151, 167, 0.06);
+    border-color: rgba(0, 151, 167, 0.25);
+}
+
+[data-theme="light"] .achievement-modal-id {
+    text-shadow: none;
+}
+
+/* --- Action buttons: white text for contrast --- */
+[data-theme="light"] .btn-check,
+[data-theme="light"] .btn-translate,
+[data-theme="light"] .btn-quiz-start,
+[data-theme="light"] .btn-quiz-next,
+[data-theme="light"] .btn-quiz-retry,
+[data-theme="light"] .btn-practice-run,
+[data-theme="light"] .btn-practice-submit,
+[data-theme="light"] .btn-exercise-submit,
+[data-theme="light"] .btn-start-exercises,
+[data-theme="light"] .btn-tryit-run,
+[data-theme="light"] .w3-btn-green,
+[data-theme="light"] .exercise-badge,
+[data-theme="light"] .achievement-modal-btn {
+    color: #FFFFFF;
+}
+
+/* --- Dashboard & Leaderboard module headers --- */
+[data-theme="light"] .module-header {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="light"] .lb-table thead {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+/* --- Achievement progress bar --- */
+[data-theme="light"] .achievement-progress-bar {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+/* --- Practice editor & output --- */
+[data-theme="light"] .practice-editor-textarea {
+    background: #F0F2F5;
+    color: #24292F;
+}
+
+[data-theme="light"] .practice-output-pre {
+    background: #F0F2F5;
+    color: #24292F;
+}
+
+[data-theme="light"] .practice-editor-header,
+[data-theme="light"] .practice-output-header,
+[data-theme="light"] .practice-tests-header {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .practice-solution-code {
+    background: #F0F2F5;
+}
+
+/* --- Exercise code blocks --- */
+[data-theme="light"] .exercise-code-block {
+    background: #F0F2F5;
+    color: #24292F;
+}
+
+[data-theme="light"] .exercise-freeform-editor {
+    background: #F0F2F5;
+    color: #24292F;
+}
+
+[data-theme="light"] .exercise-progress-track {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+/* --- Examples --- */
+[data-theme="light"] .example-code-block {
+    background: #F0F2F5;
+}
+
+[data-theme="light"] .example-output {
+    background: #F0F2F5;
+    color: #24292F;
+}
+
+[data-theme="light"] .tryit-textarea {
+    background: #F0F2F5;
+    color: #24292F;
+}
+
+/* --- Quiz page --- */
+[data-theme="light"] .quiz-option:hover {
+    background: rgba(0, 151, 167, 0.06);
+}
+
+/* --- Sidebar checkmark glow removal --- */
+[data-theme="light"] .sidebar-check {
+    text-shadow: none;
 }
 
 /* =============================================

@@ -193,6 +193,39 @@
                 {% endfor %}
             </div>
         </div>
+
+        <!-- Evaluations Module -->
+        <div class="data-module module-evaluations span-full">
+            <div class="module-header">
+                <span>// EVALUACIONES_FINALES</span>
+                <span>ADAPTIVE_ASSESSMENT</span>
+            </div>
+            <div class="module-body" style="padding: 1rem;">
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0 0 1rem;">
+                    Completa al menos el 80% de una sección para desbloquear su evaluación final.
+                </p>
+                <div class="eval-dashboard-grid">
+                    {% set eval_sections = [
+                        {'key': 'cat_python_tutorial', 'label': 'Python Tutorial'},
+                        {'key': 'cat_python_functions', 'label': 'Funciones'},
+                        {'key': 'cat_python_classes', 'label': 'Clases y POO'},
+                        {'key': 'cat_python_modules', 'label': 'Módulos'}
+                    ] %}
+                    {% for es in eval_sections %}
+                    <div class="eval-dash-item" data-section="{{ es.key }}">
+                        <div class="eval-dash-info">
+                            <span class="eval-dash-name">{{ es.label }}</span>
+                            <span class="eval-dash-status" id="eval-status-{{ es.key }}">
+                                Cargando...
+                            </span>
+                        </div>
+                        <div class="eval-dash-action" id="eval-action-{{ es.key }}">
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
     </div>
 </article>
 
@@ -593,6 +626,83 @@
     text-align: right;
 }
 
+/* Evaluations Dashboard */
+.eval-dashboard-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.eval-dash-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 1rem;
+    background: var(--bg-code, #0d1117);
+    border: 1px solid var(--border, #2a2a4a);
+    border-radius: 8px;
+    gap: 1rem;
+}
+
+.eval-dash-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.eval-dash-name {
+    font-weight: 600;
+    color: var(--text, #ccccdd);
+    font-size: 0.95rem;
+}
+
+.eval-dash-status {
+    font-size: 0.8rem;
+    color: var(--text-muted, #8888aa);
+}
+
+.eval-dash-status .status-passed {
+    color: #00c864;
+    font-weight: 600;
+}
+
+.eval-dash-status .status-available {
+    color: #00e5ff;
+}
+
+.eval-dash-status .status-locked {
+    color: #666;
+}
+
+.eval-dash-btn {
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.eval-dash-btn.available {
+    background: linear-gradient(135deg, #00e5ff, #0088ff);
+    color: #fff;
+}
+
+.eval-dash-btn.passed {
+    background: rgba(0, 200, 100, 0.15);
+    color: #00c864;
+    border: 1px solid rgba(0, 200, 100, 0.3);
+}
+
+.eval-dash-btn.locked {
+    background: var(--border, #2a2a4a);
+    color: #666;
+    cursor: not-allowed;
+}
+
 @media (max-width: 600px) {
     .section-row {
         flex-direction: column;
@@ -605,6 +715,42 @@
     .achievements-grid {
         grid-template-columns: 1fr;
     }
+    .eval-dash-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }
 </style>
+
+<script>
+// Load evaluation statuses
+document.addEventListener('DOMContentLoaded', () => {
+    const sections = ['cat_python_tutorial', 'cat_python_functions', 'cat_python_classes', 'cat_python_modules'];
+    
+    sections.forEach(key => {
+        fetch(`/api/evaluacion/estado/${key}`)
+            .then(r => r.json())
+            .then(data => {
+                const statusEl = document.getElementById(`eval-status-${key}`);
+                const actionEl = document.getElementById(`eval-action-${key}`);
+                
+                if (data.passed) {
+                    statusEl.innerHTML = `<span class="status-passed">✅ APROBADO — Mejor nota: ${data.best_score}%</span>`;
+                    actionEl.innerHTML = `<a href="/evaluacion/${key}" class="eval-dash-btn passed">Mejorar Nota</a>`;
+                } else if (data.unlocked) {
+                    statusEl.innerHTML = `<span class="status-available">📝 Disponible — ${data.completion_pct}% completado${data.attempts > 0 ? ' — Mejor: ' + data.best_score + '%' : ''}</span>`;
+                    actionEl.innerHTML = `<a href="/evaluacion/${key}" class="eval-dash-btn available">${data.attempts > 0 ? 'Reintentar' : 'Comenzar'}</a>`;
+                } else {
+                    statusEl.innerHTML = `<span class="status-locked">🔒 Bloqueado — ${data.completion_pct}% completado (necesitas 80%)</span>`;
+                    actionEl.innerHTML = `<span class="eval-dash-btn locked">Bloqueado</span>`;
+                }
+            })
+            .catch(() => {
+                const statusEl = document.getElementById(`eval-status-${key}`);
+                if (statusEl) statusEl.textContent = 'No disponible';
+            });
+    });
+});
+</script>
 {% endblock %}
+
