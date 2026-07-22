@@ -47,6 +47,10 @@ else:
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + sqlite_path
 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    "pool_pre_ping": True,
+    "pool_recycle": 300,
+}
 db.init_app(app)
 
 login_manager = LoginManager()
@@ -527,15 +531,27 @@ def api_translate():
 def get_current_user():
     if current_user.is_authenticated:
         return current_user
-    if "user_id" not in session:
-        user = User(username=f"Estudiante_{os.urandom(3).hex()}", password_hash="")
+    user_id = session.get("user_id")
+    if user_id:
+        try:
+            user = User.query.get(user_id)
+            if user:
+                return user
+        except Exception:
+            pass
+
+    user = User(username=f"Estudiante_{os.urandom(3).hex()}", password_hash="")
+    try:
         db.session.add(user)
         db.session.commit()
         session["user_id"] = user.id
-    return User.query.get(session["user_id"])
+        return user
+    except Exception as e:
+        db.session.rollback()
+        print(f"[WARNING] Error creating anonymous user: {e}")
+        return user
 
 
-@app.route("/api/progreso/ejercicio", methods=["POST"])
 def api_ejercicio():
     data = request.get_json(silent=True) or {}
     lesson_id = data.get("lesson_id", "unknown")
@@ -543,7 +559,7 @@ def api_ejercicio():
     passed = data.get("passed", False)
 
     user = get_current_user()
-    if not user:
+    if not user or not user.id:
         return jsonify({"ok": False})
 
     attempt = ExerciseAttempt(
@@ -567,7 +583,7 @@ def api_ejercicio():
             if not lp:
                 lp = LessonProgress(user_id=user.id, lesson_id=lesson_id)
                 db.session.add(lp)
-            lp.score += xp_gained
+            lp.score = (lp.score or 0) + xp_gained
 
     # Record daily activity for streak (1.1)
     if passed:
@@ -587,6 +603,9 @@ def api_leccion():
         return jsonify({"ok": False})
 
     user = get_current_user()
+    if not user or not user.id:
+        return jsonify({"ok": False})
+
     lp = LessonProgress.query.filter_by(user_id=user.id, lesson_id=lesson_id).first()
 
     xp_gained = 0
@@ -594,7 +613,7 @@ def api_leccion():
         lp = LessonProgress(user_id=user.id, lesson_id=lesson_id, completed=True, score=0, completed_at=datetime.utcnow())
         db.session.add(lp)
         xp_gained = 10
-        lp.score += xp_gained
+        lp.score = (lp.score or 0) + xp_gained
     elif not lp.completed:
         lp.completed = True
         lp.completed_at = datetime.utcnow()
@@ -612,6 +631,8 @@ def api_leccion():
 
 def record_daily_activity(user_id):
     """Record that user was active today for streak tracking (1.1)."""
+    if not user_id:
+        return
     today = date.today()
     existing = DailyStreak.query.filter_by(user_id=user_id, date=today).first()
     if existing:
@@ -623,6 +644,8 @@ def record_daily_activity(user_id):
 
 def calculate_streak(user_id):
     """Calculate current consecutive day streak for a user (1.1)."""
+    if not user_id:
+        return 0
     streaks = (
         DailyStreak.query.filter_by(user_id=user_id)
         .order_by(DailyStreak.date.desc())
@@ -648,11 +671,17 @@ def calculate_streak(user_id):
 
 
 def get_progress_summary(user):
-    progresses = LessonProgress.query.filter_by(user_id=user.id).all()
-    completed = [p.lesson_id for p in progresses if p.completed]
-    total_xp = sum(p.score for p in progresses)
-    streak = calculate_streak(user.id)
-    return {"completed_lessons": completed, "total_xp": total_xp, "streak": streak}
+    if not user or not getattr(user, 'id', None):
+        return {"completed_lessons": [], "total_xp": 0, "streak": 0}
+    try:
+        progresses = LessonProgress.query.filter_by(user_id=user.id).all()
+        completed = [p.lesson_id for p in progresses if p.completed]
+        total_xp = sum((p.score or 0) for p in progresses)
+        streak = calculate_streak(user.id)
+        return {"completed_lessons": completed, "total_xp": total_xp, "streak": streak}
+    except Exception as e:
+        print(f"[WARNING] get_progress_summary error: {e}")
+        return {"completed_lessons": [], "total_xp": 0, "streak": 0}
 
 
 LEVEL_TITLES = {
