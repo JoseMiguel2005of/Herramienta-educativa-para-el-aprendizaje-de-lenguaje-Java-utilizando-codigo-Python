@@ -5,7 +5,7 @@
     "description": "Evalúa tu dominio sobre arreglos multidimensionales (ndarray), slicing, ufuncs y operaciones estadísticas con NumPy.",
     "passing_score": 70,
     "questions_per_eval": 20,
-    "time_per_question": 120,
+    "time_per_question": 30,
     "lesson_questions": {
         "np-intro": [
             {

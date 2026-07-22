@@ -5,7 +5,7 @@
     "description": "Evalúa tu conocimiento sobre constantes físicas, optimizadores, matrices dispersas y pruebas estadísticas con SciPy.",
     "passing_score": 70,
     "questions_per_eval": 12,
-    "time_per_question": 120,
+    "time_per_question": 30,
     "lesson_questions": {
         "sc-intro": [
             {

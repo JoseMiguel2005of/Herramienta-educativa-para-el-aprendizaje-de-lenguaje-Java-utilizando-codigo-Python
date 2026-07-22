@@ -5,7 +5,7 @@
     "description": "Evalúa tu dominio sobre Series, DataFrames, lectura de CSV/JSON, limpieza de datos, filtrado y estadística descriptiva con Pandas.",
     "passing_score": 70,
     "questions_per_eval": 15,
-    "time_per_question": 120,
+    "time_per_question": 30,
     "lesson_questions": {
         "pd-intro": [
             {

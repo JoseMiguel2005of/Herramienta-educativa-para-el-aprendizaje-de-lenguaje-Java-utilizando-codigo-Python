@@ -5,7 +5,7 @@
     "description": "Evalúa tu dominio completo de los fundamentos de Python: sintaxis, variables, tipos de datos, estructuras de control y más.",
     "passing_score": 70,
     "questions_per_eval": 20,
-    "time_per_question": 120,
+    "time_per_question": 30,
     "lesson_questions": {
         "py-syntax": [
             {

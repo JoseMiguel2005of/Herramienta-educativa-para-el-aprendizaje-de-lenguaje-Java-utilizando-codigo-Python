@@ -5,7 +5,7 @@
     "description": "Evalúa tu dominio de módulos, manejo de fechas, math, JSON, regex, excepciones y más.",
     "passing_score": 70,
     "questions_per_eval": 18,
-    "time_per_question": 120,
+    "time_per_question": 30,
     "lesson_questions": {
         "py-modules": [
             {

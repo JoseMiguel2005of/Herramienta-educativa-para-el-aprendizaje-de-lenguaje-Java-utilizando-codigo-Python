@@ -5,7 +5,7 @@
     "description": "Evalúa tu dominio sobre lectura, escritura, creación y eliminación de archivos en Python.",
     "passing_score": 70,
     "questions_per_eval": 12,
-    "time_per_question": 120,
+    "time_per_question": 30,
     "lesson_questions": {
         "py-filehandling": [
             {

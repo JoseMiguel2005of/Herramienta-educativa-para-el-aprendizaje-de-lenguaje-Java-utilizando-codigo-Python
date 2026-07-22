@@ -1405,7 +1405,9 @@ def evaluation_page(section_key):
     ui = load_ui_strings()
     section_title = ui.get(section_key, section_key)
 
-    time_limit = eval_data.get("time_per_question", 120) * len(client_questions)
+    # Time limit: 30s per question, capped at max 10 minutes (600s)
+    raw_time = eval_data.get("time_per_question", 30) * len(client_questions)
+    time_limit = min(600, raw_time)
 
     return render_template(
         "evaluation.html",

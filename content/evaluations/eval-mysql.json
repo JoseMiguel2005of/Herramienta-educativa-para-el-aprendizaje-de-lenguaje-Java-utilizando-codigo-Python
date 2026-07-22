@@ -5,7 +5,7 @@
     "description": "Evalúa tu dominio sobre consultas SQL: CREATE, INSERT, SELECT, WHERE, JOIN, UPDATE y DELETE desde Python.",
     "passing_score": 70,
     "questions_per_eval": 15,
-    "time_per_question": 120,
+    "time_per_question": 30,
     "lesson_questions": {
         "sql-getstarted": [
             {
