@@ -143,7 +143,7 @@
                                     </a>
                                 </li>
                                 {% endfor %}
-                                {% if section.label_key in ['cat_python_tutorial', 'cat_python_functions', 'cat_python_classes', 'cat_python_modules'] %}
+                                {% if section.label_key in ['cat_python_tutorial', 'cat_python_functions', 'cat_python_classes', 'cat_python_modules', 'cat_file_handling', 'cat_numpy', 'cat_pandas', 'cat_scipy', 'cat_mysql', 'cat_mongodb'] %}
                                 <li>
                                     <a href="{{ url_for('evaluation_page', section_key=section.label_key) }}"
                                         class="nav-link term-nav-link eval-sidebar-link {% if page == 'evaluation' and section_key == section.label_key %}active{% endif %}"

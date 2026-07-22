@@ -1,0 +1,142 @@
+{
+    "id": "eval-file-handling",
+    "section_key": "cat_file_handling",
+    "title": "Evaluación Final: Manejo de Archivos en Python",
+    "description": "Evalúa tu dominio sobre lectura, escritura, creación y eliminación de archivos en Python.",
+    "passing_score": 70,
+    "questions_per_eval": 12,
+    "time_per_question": 120,
+    "lesson_questions": {
+        "py-filehandling": [
+            {
+                "id": "efh-fh1",
+                "type": "multiple_choice",
+                "question": "¿Qué función incorporada de Python se utiliza para abrir un archivo?",
+                "options": ["read_file()", "open()", "file()", "load_file()"],
+                "correct": 1,
+                "explanation": "La función open() es la función estándar de Python para abrir archivos.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "efh-fh2",
+                "type": "multiple_choice",
+                "question": "¿Cuál es el modo por defecto de la función open() si no se especifica ninguno?",
+                "options": ["'w' (escritura)", "'r' (lectura)", "'a' (anexar)", "'x' (crear)"],
+                "correct": 1,
+                "explanation": "El modo por defecto de open() es 'r' (read / lectura en modo texto).",
+                "difficulty": "easy"
+            },
+            {
+                "id": "efh-fh3",
+                "type": "complete_code",
+                "question": "Completa el código para abrir un archivo en modo lectura:",
+                "code_template": "f = ___('datos.txt', 'r')",
+                "correct_answer": "open",
+                "explanation": "La función open() recibe el nombre del archivo y el modo.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "efh-fh4",
+                "type": "true_false",
+                "question": "Es una buena práctica cerrar siempre un archivo usando .close() o una sentencia 'with'.",
+                "correct": true,
+                "explanation": "Cerrar archivos libera recursos del sistema operativo y asegura que los datos se guarden.",
+                "difficulty": "easy"
+            }
+        ],
+        "py-readfiles": [
+            {
+                "id": "efh-rf1",
+                "type": "multiple_choice",
+                "question": "¿Qué método lee TODO el contenido de un archivo como una sola cadena?",
+                "options": [".readline()", ".readlines()", ".read()", ".get_content()"],
+                "correct": 2,
+                "explanation": ".read() devuelve todo el contenido del archivo como un único string.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "efh-rf2",
+                "type": "multiple_choice",
+                "question": "¿Qué método devuelve una lista donde cada elemento es una línea del archivo?",
+                "options": [".read()", ".readline()", ".readlines()", ".to_list()"],
+                "correct": 2,
+                "explanation": ".readlines() lee todas las líneas y las devuelve como una lista de strings.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "efh-rf3",
+                "type": "complete_code",
+                "question": "Completa el código para leer la primera línea de un archivo abierto:",
+                "code_template": "linea = f.___()",
+                "correct_answer": "readline",
+                "explanation": ".readline() lee una sola línea del archivo.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "efh-rf4",
+                "type": "true_false",
+                "question": "La sentencia 'with open(...) as f:' cierra el archivo automáticamente al salir del bloque.",
+                "correct": true,
+                "explanation": "'with' gestiona el contexto y cierra el archivo automáticamente, incluso si ocurre una excepción.",
+                "difficulty": "medium"
+            }
+        ],
+        "py-writefiles": [
+            {
+                "id": "efh-wf1",
+                "type": "multiple_choice",
+                "question": "¿Qué sucede si abres un archivo existente con el modo 'w'?",
+                "options": ["Se agrega contenido al final", "Se sobreescribe y borra el contenido existente", "Genera un error FileExistsError", "Abre el archivo en modo lectura"],
+                "correct": 1,
+                "explanation": "El modo 'w' sobreescribe completamente el contenido previo del archivo.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "efh-wf2",
+                "type": "multiple_choice",
+                "question": "¿Qué modo debes usar si quieres agregar contenido al final del archivo sin borrar lo existente?",
+                "options": ["'w'", "'a'", "'r+'", "'x'"],
+                "correct": 1,
+                "explanation": "El modo 'a' (append) escribe al final del archivo preservando lo que ya contenía.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "efh-wf3",
+                "type": "complete_code",
+                "question": "Completa el código para escribir texto en un archivo:",
+                "code_template": "with open('demo.txt', 'w') as f:\n    f.___('Hola Mundo')",
+                "correct_answer": "write",
+                "explanation": "El método .write() escribe texto en el archivo abierto.",
+                "difficulty": "easy"
+            }
+        ],
+        "py-deletefiles": [
+            {
+                "id": "efh-df1",
+                "type": "multiple_choice",
+                "question": "¿Qué módulo de Python contiene la función para eliminar archivos?",
+                "options": ["sys", "os", "file", "shutil"],
+                "correct": 1,
+                "explanation": "El módulo os contiene os.remove() y os.rmdir() para eliminar archivos y carpetas.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "efh-df2",
+                "type": "complete_code",
+                "question": "Completa para eliminar un archivo existente:",
+                "code_template": "import os\nos.___('archivo.txt')",
+                "correct_answer": "remove",
+                "explanation": "os.remove() elimina un archivo especificado por su ruta.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "efh-df3",
+                "type": "true_false",
+                "question": "La función os.path.exists('archivo.txt') permite verificar si un archivo existe antes de borrarlo.",
+                "correct": true,
+                "explanation": "os.path.exists() devuelve True si la ruta/archivo existe en el sistema.",
+                "difficulty": "easy"
+            }
+        ]
+    }
+}

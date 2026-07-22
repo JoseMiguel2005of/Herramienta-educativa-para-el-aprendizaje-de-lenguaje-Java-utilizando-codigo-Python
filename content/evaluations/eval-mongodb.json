@@ -1,0 +1,120 @@
+{
+    "id": "eval-mongodb",
+    "section_key": "cat_mongodb",
+    "title": "Evaluación Final: MongoDB y Bases de Datos NoSQL",
+    "description": "Evalúa tu dominio sobre colecciones, documentos BSON/JSON, consultas en PyMongo, inserción y actualización NoSQL.",
+    "passing_score": 70,
+    "questions_per_eval": 12,
+    "time_per_question": 120,
+    "lesson_questions": {
+        "mongo-getstarted": [
+            {
+                "id": "emg-gs1",
+                "type": "multiple_choice",
+                "question": "¿Qué controlador (driver) oficial de Python se utiliza para conectarse a MongoDB?",
+                "options": ["mongo-python", "PyMongo", "MongoDB-Py", "pymysql"],
+                "correct": 1,
+                "explanation": "PyMongo es la biblioteca oficial de Python para interactuar con bases de datos MongoDB.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "emg-gs2",
+                "type": "complete_code",
+                "question": "Completa el código para importar MongoClient desde PyMongo:",
+                "code_template": "from pymongo import ___",
+                "correct_answer": "MongoClient",
+                "explanation": "MongoClient se usa para establecer la conexión con el servidor de MongoDB.",
+                "difficulty": "easy"
+            }
+        ],
+        "mongo-createdb": [
+            {
+                "id": "emg-cdb1",
+                "type": "multiple_choice",
+                "question": "¿Cómo almacena MongoDB los datos estructuralmente?",
+                "options": ["Tablas con filas y columnas", "Documentos flexibles similares a JSON (BSON)", "Hojas de cálculo", "Archivos XML"],
+                "correct": 1,
+                "explanation": "MongoDB es una base de datos de documentos NoSQL que almacena datos en formato BSON (Binary JSON).",
+                "difficulty": "easy"
+            },
+            {
+                "id": "emg-cdb2",
+                "type": "true_false",
+                "question": "En MongoDB, el equivalente a una 'tabla' de SQL se denomina 'colección' (collection).",
+                "correct": true,
+                "explanation": "Las colecciones en MongoDB agrupan documentos, igual que las tablas en SQL agrupan filas.",
+                "difficulty": "easy"
+            }
+        ],
+        "mongo-insert": [
+            {
+                "id": "emg-ins1",
+                "type": "multiple_choice",
+                "question": "¿Qué método de PyMongo se usa para insertar un solo documento en una colección?",
+                "options": ["col.add()", "col.insert_one()", "col.save()", "col.push()"],
+                "correct": 1,
+                "explanation": "col.insert_one(documento) inserta un solo documento en la colección.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "emg-ins2",
+                "type": "complete_code",
+                "question": "Completa para insertar múltiples documentos en PyMongo:",
+                "code_template": "coleccion.___(lista_de_documentos)",
+                "correct_answer": "insert_many",
+                "explanation": "insert_many() recibe una lista de diccionarios e inserta múltiples documentos.",
+                "difficulty": "medium"
+            }
+        ],
+        "mongo-find": [
+            {
+                "id": "emg-fnd1",
+                "type": "multiple_choice",
+                "question": "¿Qué método devuelve el primer documento que coincide con la consulta en PyMongo?",
+                "options": ["col.find_one()", "col.find()", "col.get_first()", "col.search()"],
+                "correct": 0,
+                "explanation": "find_one() devuelve un solo documento (el primero que coincide) o None.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "emg-fnd2",
+                "type": "complete_code",
+                "question": "Completa el método para obtener todos los documentos que coinciden con un filtro:",
+                "code_template": "documentos = coleccion.___({'edad': 25})",
+                "correct_answer": "find",
+                "explanation": "find() devuelve un cursor iterable con todos los documentos coincidentes.",
+                "difficulty": "easy"
+            }
+        ],
+        "mongo-query": [
+            {
+                "id": "emg-qry1",
+                "type": "multiple_choice",
+                "question": "¿Qué operador de consulta de MongoDB significa 'mayor que' (greater than)?",
+                "options": ["$gt", "$greater", "$max", "$above"],
+                "correct": 0,
+                "explanation": "$gt es el operador NoSQL para 'greater than' (mayor que).",
+                "difficulty": "medium"
+            },
+            {
+                "id": "emg-qry2",
+                "type": "true_false",
+                "question": "Cada documento en MongoDB recibe automáticamente un campo único llamado '_id' si no se especifica uno.",
+                "correct": true,
+                "explanation": "MongoDB genera un ObjectId único en la clave '_id' como identificador primario del documento.",
+                "difficulty": "easy"
+            }
+        ],
+        "mongo-update": [
+            {
+                "id": "emg-upd1",
+                "type": "multiple_choice",
+                "question": "¿Qué operador atómico de MongoDB se utiliza dentro de update_one() para modificar el valor de un campo?",
+                "options": ["$set", "$update", "$change", "$modify"],
+                "correct": 0,
+                "explanation": "$set reemplaza el valor de un campo con el valor especificado.",
+                "difficulty": "medium"
+            }
+        ]
+    }
+}

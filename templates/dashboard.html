@@ -209,7 +209,13 @@
                         {'key': 'cat_python_tutorial', 'label': 'Python Tutorial'},
                         {'key': 'cat_python_functions', 'label': 'Funciones'},
                         {'key': 'cat_python_classes', 'label': 'Clases y POO'},
-                        {'key': 'cat_python_modules', 'label': 'Módulos'}
+                        {'key': 'cat_python_modules', 'label': 'Módulos'},
+                        {'key': 'cat_file_handling', 'label': 'Manejo de Archivos'},
+                        {'key': 'cat_numpy', 'label': 'NumPy'},
+                        {'key': 'cat_pandas', 'label': 'Pandas'},
+                        {'key': 'cat_scipy', 'label': 'SciPy'},
+                        {'key': 'cat_mysql', 'label': 'MySQL'},
+                        {'key': 'cat_mongodb', 'label': 'MongoDB'}
                     ] %}
                     {% for es in eval_sections %}
                     <div class="eval-dash-item" data-section="{{ es.key }}">
@@ -725,7 +731,10 @@
 <script>
 // Load evaluation statuses
 document.addEventListener('DOMContentLoaded', () => {
-    const sections = ['cat_python_tutorial', 'cat_python_functions', 'cat_python_classes', 'cat_python_modules'];
+    const sections = [
+        'cat_python_tutorial', 'cat_python_functions', 'cat_python_classes', 'cat_python_modules',
+        'cat_file_handling', 'cat_numpy', 'cat_pandas', 'cat_scipy', 'cat_mysql', 'cat_mongodb'
+    ];
     
     sections.forEach(key => {
         fetch(`/api/evaluacion/estado/${key}`)

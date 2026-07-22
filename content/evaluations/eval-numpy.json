@@ -1,0 +1,159 @@
+{
+    "id": "eval-numpy",
+    "section_key": "cat_numpy",
+    "title": "Evaluación Final: NumPy y Computación Numérica",
+    "description": "Evalúa tu dominio sobre arreglos multidimensionales (ndarray), slicing, ufuncs y operaciones estadísticas con NumPy.",
+    "passing_score": 70,
+    "questions_per_eval": 20,
+    "time_per_question": 120,
+    "lesson_questions": {
+        "np-intro": [
+            {
+                "id": "enp-in1",
+                "type": "multiple_choice",
+                "question": "¿Para qué se utiliza principalmente la biblioteca NumPy en Python?",
+                "options": ["Crear interfaces gráficas", "Trabajar con arreglos multidimensionales y cálculos numéricos de alto rendimiento", "Diseñar páginas web", "Gestionar conexiones a bases de datos"],
+                "correct": 1,
+                "explanation": "NumPy es la biblioteca fundamental para computación científica y manejo eficiente de arreglos multidimensionales.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "enp-in2",
+                "type": "complete_code",
+                "question": "Completa el alias estándar para importar NumPy:",
+                "code_template": "import numpy as ___",
+                "correct_answer": "np",
+                "explanation": "'import numpy as np' es la convención estándar en la comunidad Python.",
+                "difficulty": "easy"
+            }
+        ],
+        "np-create": [
+            {
+                "id": "enp-cr1",
+                "type": "multiple_choice",
+                "question": "¿Qué función crea un arreglo NumPy a partir de una lista de Python?",
+                "options": ["np.create()", "np.array()", "np.list()", "np.matrix()"],
+                "correct": 1,
+                "explanation": "np.array() convierte secuencias (como listas o tuplas) en arreglos ndarray de NumPy.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "enp-cr2",
+                "type": "multiple_choice",
+                "question": "¿Qué función crea un arreglo lleno de ceros?",
+                "options": ["np.zeros()", "np.empty()", "np.null()", "np.blank()"],
+                "correct": 0,
+                "explanation": "np.zeros(shape) devuelve un nuevo arreglo de la forma especificada lleno de ceros.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "enp-cr3",
+                "type": "complete_code",
+                "question": "Completa para crear un arreglo de enteros del 0 al 9:",
+                "code_template": "arr = np.___(10)",
+                "correct_answer": "arange",
+                "explanation": "np.arange(10) genera valores secuenciales similar a range() de Python.",
+                "difficulty": "medium"
+            }
+        ],
+        "np-indexing": [
+            {
+                "id": "enp-idx1",
+                "type": "multiple_choice",
+                "question": "Dado arr = np.array([[1, 2, 3], [4, 5, 6]]), ¿cómo se accede al elemento 5?",
+                "options": ["arr[5]", "arr[1, 1]", "arr[2, 2]", "arr[1][2]"],
+                "correct": 1,
+                "explanation": "El 5 está en la fila 1 y columna 1 (0-indexado). En NumPy se usa arr[1, 1].",
+                "difficulty": "medium"
+            },
+            {
+                "id": "enp-idx2",
+                "type": "true_false",
+                "question": "En NumPy, los arreglos deben contener elementos del mismo tipo de dato (homogéneos).",
+                "correct": true,
+                "explanation": "A diferencia de las listas de Python, los ndarrays de NumPy son de tipo de dato único para maximizar el rendimiento.",
+                "difficulty": "easy"
+            }
+        ],
+        "np-slicing": [
+            {
+                "id": "enp-slc1",
+                "type": "multiple_choice",
+                "question": "¿Cuál es el resultado de arr[1:4] si arr = np.array([10, 20, 30, 40, 50])?",
+                "options": ["[10, 20, 30]", "[20, 30, 40]", "[20, 30, 40, 50]", "[30, 40]"],
+                "correct": 1,
+                "explanation": "arr[1:4] toma índices 1, 2 y 3 (valores 20, 30, 40).",
+                "difficulty": "medium"
+            },
+            {
+                "id": "enp-slc2",
+                "type": "true_false",
+                "question": "Un slice de un arreglo en NumPy devuelve una copia independiente del arreglo original.",
+                "correct": false,
+                "explanation": "Un slice en NumPy devuelve una 'vista' (view). Modificar el slice modifica el arreglo original.",
+                "difficulty": "hard"
+            }
+        ],
+        "np-shape": [
+            {
+                "id": "enp-shp1",
+                "type": "multiple_choice",
+                "question": "¿Qué atributo devuelve la dimensión/forma de un arreglo NumPy (filas, columnas)?",
+                "options": [".size", ".dim", ".shape", ".length"],
+                "correct": 2,
+                "explanation": "El atributo .shape devuelve una tupla con el tamaño de cada dimensión.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "enp-shp2",
+                "type": "complete_code",
+                "question": "Completa el código para cambiar la forma de un arreglo de 12 elementos a 3x4:",
+                "code_template": "arr_2d = arr.___ (3, 4)",
+                "correct_answer": "reshape",
+                "explanation": "El método .reshape() cambia la forma de un arreglo sin alterar sus datos.",
+                "difficulty": "medium"
+            }
+        ],
+        "np-search": [
+            {
+                "id": "enp-src1",
+                "type": "multiple_choice",
+                "question": "¿Qué función devuelve los índices de los elementos que cumplen una condición?",
+                "options": ["np.find()", "np.where()", "np.filter()", "np.search()"],
+                "correct": 1,
+                "explanation": "np.where(condición) devuelve las posiciones donde la condición es True.",
+                "difficulty": "medium"
+            }
+        ],
+        "np-sort": [
+            {
+                "id": "enp-srt1",
+                "type": "complete_code",
+                "question": "Completa el código para ordenar un arreglo NumPy:",
+                "code_template": "arr_ordenado = np.___(arr)",
+                "correct_answer": "sort",
+                "explanation": "np.sort() devuelve una copia ordenada del arreglo.",
+                "difficulty": "easy"
+            }
+        ],
+        "np-arithmetic": [
+            {
+                "id": "enp-ari1",
+                "type": "multiple_choice",
+                "question": "¿Qué sucede al hacer arr1 + arr2 en NumPy?",
+                "options": ["Se concatenan los dos arreglos", "Se realiza una suma elemento a elemento", "Genera un error", "Se crea una lista de tuplas"],
+                "correct": 1,
+                "explanation": "Las operaciones aritméticas en NumPy se aplican vectorialmente (elemento a elemento).",
+                "difficulty": "easy"
+            },
+            {
+                "id": "enp-ari2",
+                "type": "true_false",
+                "question": "El broadcasting en NumPy permite operar entre arreglos de diferentes formas compatibles.",
+                "correct": true,
+                "explanation": "Broadcasting expande automáticamente dimensiones menores para hacer compatibles las operaciones.",
+                "difficulty": "medium"
+            }
+        ]
+    }
+}

@@ -1,0 +1,109 @@
+{
+    "id": "eval-scipy",
+    "section_key": "cat_scipy",
+    "title": "Evaluación Final: SciPy y Computación Científica",
+    "description": "Evalúa tu conocimiento sobre constantes físicas, optimizadores, matrices dispersas y pruebas estadísticas con SciPy.",
+    "passing_score": 70,
+    "questions_per_eval": 12,
+    "time_per_question": 120,
+    "lesson_questions": {
+        "sc-intro": [
+            {
+                "id": "esc-in1",
+                "type": "multiple_choice",
+                "question": "¿Qué es SciPy en el ecosistema de computación científica en Python?",
+                "options": ["Un framework web", "Una biblioteca basada en NumPy para algoritmos científicos y matemáticos avanzados", "Un motor de base de datos", "Un lenguaje de marcado"],
+                "correct": 1,
+                "explanation": "SciPy amplía NumPy proporcionando submódulos para optimización, integración, estadística, procesamiento de señales y más.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "esc-in2",
+                "type": "complete_code",
+                "question": "Completa para importar el módulo de constantes de SciPy:",
+                "code_template": "from scipy import ___",
+                "correct_answer": "constants",
+                "explanation": "scipy.constants contiene constantes científicas y físicas estándar.",
+                "difficulty": "easy"
+            }
+        ],
+        "sc-constants": [
+            {
+                "id": "esc-cst1",
+                "type": "multiple_choice",
+                "question": "¿Qué constante física se obtiene con constants.pi en SciPy?",
+                "options": ["El valor de Pi (π)", "La velocidad de la luz", "La constante de Planck", "La gravedad de la Tierra"],
+                "correct": 0,
+                "explanation": "constants.pi devuelve el valor matemático de π.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "esc-cst2",
+                "type": "true_false",
+                "question": "scipy.constants incluye factores de conversión entre unidades de medida (como de pulgadas a metros).",
+                "correct": true,
+                "explanation": "scipy.constants proporciona multiplicadores de conversión como inch, mile, kilo, etc.",
+                "difficulty": "medium"
+            }
+        ],
+        "sc-optimizers": [
+            {
+                "id": "esc-opt1",
+                "type": "multiple_choice",
+                "question": "¿Qué submódulo de SciPy contiene funciones para encontrar mínimos de funciones matemáticas?",
+                "options": ["scipy.stats", "scipy.optimize", "scipy.fft", "scipy.spatial"],
+                "correct": 1,
+                "explanation": "scipy.optimize proporciona algoritmos de optimización y minimización de funciones.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "esc-opt2",
+                "type": "complete_code",
+                "question": "Completa el nombre de la función principal para minimizar una función en scipy.optimize:",
+                "code_template": "from scipy.optimize import ___\nres = minimize(mi_funcion, x0)",
+                "correct_answer": "minimize",
+                "explanation": "optimize.minimize() es la función general para encontrar el mínimo de una función escalar de una o más variables.",
+                "difficulty": "medium"
+            }
+        ],
+        "sc-sparsedata": [
+            {
+                "id": "esc-sp1",
+                "type": "multiple_choice",
+                "question": "¿Qué es una matriz dispersa (sparse matrix)?",
+                "options": ["Una matriz llena de números decimales", "Una matriz donde la mayoría de los elementos son cero", "Una matriz de texto", "Una matriz de tres dimensiones"],
+                "correct": 1,
+                "explanation": "Una matriz dispersa contiene mayoritariamente ceros y se almacena en formatos especiales para ahorrar memoria.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "esc-sp2",
+                "type": "complete_code",
+                "question": "Completa el submódulo de SciPy para trabajar con matrices dispersas:",
+                "code_template": "from scipy import ___",
+                "correct_answer": "sparse",
+                "explanation": "scipy.sparse contiene estructuras y métodos optimizados para datos dispersos.",
+                "difficulty": "easy"
+            }
+        ],
+        "sc-sigtests": [
+            {
+                "id": "esc-sig1",
+                "type": "multiple_choice",
+                "question": "¿Qué submódulo de SciPy se utiliza para realizar pruebas de hipótesis estadísticas (t-test, ANOVA, etc.)?",
+                "options": ["scipy.stats", "scipy.math", "scipy.signal", "scipy.io"],
+                "correct": 0,
+                "explanation": "scipy.stats ofrece una amplia colección de distribuciones de probabilidad y pruebas de significancia estadística.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "esc-sig2",
+                "type": "true_false",
+                "question": "Un valor p (p-value) bajo en una prueba estadística sugiere rechazar la hipótesis nula.",
+                "correct": true,
+                "explanation": "Un p-value < 0.05 es la convención común para rechazar la hipótesis nula a favor de la alternativa.",
+                "difficulty": "medium"
+            }
+        ]
+    }
+}

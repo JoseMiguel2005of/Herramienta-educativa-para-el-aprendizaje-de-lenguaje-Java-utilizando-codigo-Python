@@ -1261,6 +1261,12 @@ SECTION_EVAL_MAP = {
     "cat_python_functions": "eval-python-functions",
     "cat_python_classes": "eval-python-classes",
     "cat_python_modules": "eval-python-modules",
+    "cat_file_handling": "eval-file-handling",
+    "cat_numpy": "eval-numpy",
+    "cat_pandas": "eval-pandas",
+    "cat_scipy": "eval-scipy",
+    "cat_mysql": "eval-mysql",
+    "cat_mongodb": "eval-mongodb",
 }
 
 

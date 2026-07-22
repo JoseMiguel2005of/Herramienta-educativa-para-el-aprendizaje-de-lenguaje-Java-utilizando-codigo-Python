@@ -1,0 +1,140 @@
+{
+    "id": "eval-mysql",
+    "section_key": "cat_mysql",
+    "title": "Evaluación Final: MySQL y Bases de Datos Relacionales",
+    "description": "Evalúa tu dominio sobre consultas SQL: CREATE, INSERT, SELECT, WHERE, JOIN, UPDATE y DELETE desde Python.",
+    "passing_score": 70,
+    "questions_per_eval": 15,
+    "time_per_question": 120,
+    "lesson_questions": {
+        "sql-getstarted": [
+            {
+                "id": "esql-gs1",
+                "type": "multiple_choice",
+                "question": "¿Qué conector oficial se utiliza frecuentemente para conectar Python con MySQL?",
+                "options": ["mysql-connector-python", "py-sql-db", "mysql-python-link", "connect-mysql"],
+                "correct": 0,
+                "explanation": "mysql.connector es el conector estándar de MySQL para Python.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "esql-gs2",
+                "type": "complete_code",
+                "question": "Completa el código para importar el conector de MySQL:",
+                "code_template": "import mysql.___ as mysql",
+                "correct_answer": "connector",
+                "explanation": "Se importa el módulo mysql.connector.",
+                "difficulty": "easy"
+            }
+        ],
+        "sql-select": [
+            {
+                "id": "esql-sel1",
+                "type": "multiple_choice",
+                "question": "¿Cuál es la sintaxis SQL correcta para seleccionar todas las columnas de la tabla 'usuarios'?",
+                "options": ["GET ALL FROM usuarios", "SELECT * FROM usuarios", "FETCH EVERYTHING usuarios", "SELECT ALL usuarios"],
+                "correct": 1,
+                "explanation": "SELECT * FROM tabla es la sentencia SQL estándar para recuperar todas las columnas.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "esql-sel2",
+                "type": "complete_code",
+                "question": "Completa la consulta SQL para seleccionar solo las columnas 'nombre' y 'email':",
+                "code_template": "___ nombre, email FROM clientes",
+                "correct_answer": "SELECT",
+                "explanation": "La palabra clave SELECT inicia la consulta de recuperación de datos.",
+                "difficulty": "easy"
+            }
+        ],
+        "sql-where": [
+            {
+                "id": "esql-whr1",
+                "type": "multiple_choice",
+                "question": "¿Qué cláusula SQL se utiliza para filtrar registros que cumplen una condición determinada?",
+                "options": ["HAVING", "FILTER", "WHERE", "CONDITION"],
+                "correct": 2,
+                "explanation": "La cláusula WHERE filtra las filas devueltas por una consulta SQL.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "esql-whr2",
+                "type": "true_false",
+                "question": "En SQL, la cláusula WHERE 'edad >= 18' devolverá a los usuarios con 18 años o más.",
+                "correct": true,
+                "explanation": ">= es el operador de comparación 'mayor o igual que'.",
+                "difficulty": "easy"
+            }
+        ],
+        "sql-insert": [
+            {
+                "id": "esql-ins1",
+                "type": "multiple_choice",
+                "question": "¿Qué palabra clave se usa para insertar nuevos registros en una tabla de MySQL?",
+                "options": ["ADD INTO", "INSERT INTO", "NEW RECORD", "PUT INTO"],
+                "correct": 1,
+                "explanation": "INSERT INTO nombre_tabla (columnas) VALUES (valores) inserta una nueva fila.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "esql-ins2",
+                "type": "true_false",
+                "question": "Después de realizar un INSERT o UPDATE en MySQL desde Python, se debe ejecutar db.commit() para guardar los cambios en la BD.",
+                "correct": true,
+                "explanation": "Sin commit(), las transacciones no se guardan permanentemente en la base de datos.",
+                "difficulty": "medium"
+            }
+        ],
+        "sql-update": [
+            {
+                "id": "esql-upd1",
+                "type": "multiple_choice",
+                "question": "¿Qué peligro existe al ejecutar UPDATE sin una cláusula WHERE?",
+                "options": ["Genera un error de sintaxis", "Se actualizan TODAS las filas de la tabla", "No actualiza nada", "Borra la tabla"],
+                "correct": 1,
+                "explanation": "Sin la cláusula WHERE, la sentencia UPDATE modifica todas las filas de la tabla indiscriminadamente.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "esql-upd2",
+                "type": "complete_code",
+                "question": "Completa la consulta SQL para modificar un registro:",
+                "code_template": "___ usuarios SET email = 'nuevo@email.com' WHERE id = 1",
+                "correct_answer": "UPDATE",
+                "explanation": "UPDATE se usa para modificar datos existentes.",
+                "difficulty": "easy"
+            }
+        ],
+        "sql-delete": [
+            {
+                "id": "esql-del1",
+                "type": "multiple_choice",
+                "question": "¿Cuál es la diferencia entre DELETE FROM tabla y DROP TABLE tabla?",
+                "options": ["Son idénticos", "DELETE elimina filas de la tabla; DROP TABLE borra la estructura completa de la tabla", "DELETE borra la base de datos; DROP borra la tabla", "DROP es solo para columnas"],
+                "correct": 1,
+                "explanation": "DELETE borra los datos dentro de la tabla. DROP TABLE borra la tabla completa junto con su esquema.",
+                "difficulty": "medium"
+            }
+        ],
+        "sql-join": [
+            {
+                "id": "esql-jn1",
+                "type": "multiple_choice",
+                "question": "¿Qué tipo de JOIN devuelve las filas cuando hay una coincidencia en AMBAS tablas?",
+                "options": ["LEFT JOIN", "INNER JOIN", "RIGHT JOIN", "FULL OUTER JOIN"],
+                "correct": 1,
+                "explanation": "INNER JOIN devuelve solo las filas que tienen valores coincidentes en ambas tablas.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "esql-jn2",
+                "type": "complete_code",
+                "question": "Completa la cláusula que especifica la condición de unión entre dos tablas:",
+                "code_template": "SELECT * FROM pedidos INNER JOIN clientes ___ pedidos.cliente_id = clientes.id",
+                "correct_answer": "ON",
+                "explanation": "La palabra clave ON define la condición de igualdad para la unión entre tablas.",
+                "difficulty": "medium"
+            }
+        ]
+    }
+}

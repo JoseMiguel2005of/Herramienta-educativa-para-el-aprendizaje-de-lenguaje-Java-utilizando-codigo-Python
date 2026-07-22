@@ -1,0 +1,147 @@
+{
+    "id": "eval-pandas",
+    "section_key": "cat_pandas",
+    "title": "Evaluación Final: Pandas y Análisis de Datos",
+    "description": "Evalúa tu dominio sobre Series, DataFrames, lectura de CSV/JSON, limpieza de datos, filtrado y estadística descriptiva con Pandas.",
+    "passing_score": 70,
+    "questions_per_eval": 15,
+    "time_per_question": 120,
+    "lesson_questions": {
+        "pd-intro": [
+            {
+                "id": "epd-in1",
+                "type": "multiple_choice",
+                "question": "¿Cuáles son las dos estructuras de datos principales en Pandas?",
+                "options": ["List y Dict", "Series y DataFrame", "Array y Matrix", "Table y Sheet"],
+                "correct": 1,
+                "explanation": "Series (1D) y DataFrame (2D) son las dos estructuras de datos fundamentales en Pandas.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "epd-in2",
+                "type": "complete_code",
+                "question": "Completa el alias estándar para importar Pandas:",
+                "code_template": "import pandas as ___",
+                "correct_answer": "pd",
+                "explanation": "'import pandas as pd' es la convención estándar en Python.",
+                "difficulty": "easy"
+            }
+        ],
+        "pd-series": [
+            {
+                "id": "epd-ser1",
+                "type": "multiple_choice",
+                "question": "¿Qué es una Serie (Series) en Pandas?",
+                "options": ["Una tabla bidimensional", "Un arreglo unidimensional etiquetado capaz de contener cualquier tipo de dato", "Un archivo de texto", "Una función gráfica"],
+                "correct": 1,
+                "explanation": "Una Serie es una columna etiquetada de 1 dimensión.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "epd-ser2",
+                "type": "complete_code",
+                "question": "Completa para crear una Serie a partir de una lista:",
+                "code_template": "s = pd.___([10, 20, 30])",
+                "correct_answer": "Series",
+                "explanation": "pd.Series() crea un objeto Serie.",
+                "difficulty": "easy"
+            }
+        ],
+        "pd-dataframes": [
+            {
+                "id": "epd-df1",
+                "type": "multiple_choice",
+                "question": "¿Qué es un DataFrame en Pandas?",
+                "options": ["Una lista de números", "Una estructura de datos bidimensional en forma de tabla con filas y columnas etiquetadas", "Un gráfico 2D", "Una consulta a base de datos"],
+                "correct": 1,
+                "explanation": "Un DataFrame es una tabla 2D con etiquetas en filas (índice) y columnas.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "epd-df2",
+                "type": "multiple_choice",
+                "question": "¿Qué método muestra las primeras N filas de un DataFrame?",
+                "options": [".top()", ".head()", ".first()", ".preview()"],
+                "correct": 1,
+                "explanation": ".head(n) devuelve las primeras n filas (por defecto 5).",
+                "difficulty": "easy"
+            },
+            {
+                "id": "epd-df3",
+                "type": "complete_code",
+                "question": "Completa el método para ver las últimas filas de un DataFrame:",
+                "code_template": "df.___()",
+                "correct_answer": "tail",
+                "explanation": ".tail() devuelve las últimas 5 filas del DataFrame.",
+                "difficulty": "easy"
+            }
+        ],
+        "pd-readcsv": [
+            {
+                "id": "epd-csv1",
+                "type": "multiple_choice",
+                "question": "¿Qué función de Pandas se utiliza para cargar un archivo CSV en un DataFrame?",
+                "options": ["pd.load_csv()", "pd.read_csv()", "pd.open_csv()", "pd.get_csv()"],
+                "correct": 1,
+                "explanation": "pd.read_csv('archivo.csv') lee un CSV y devuelve un DataFrame.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "epd-csv2",
+                "type": "true_false",
+                "question": "Se puede exportar un DataFrame a un archivo CSV usando el método .to_csv().",
+                "correct": true,
+                "explanation": "df.to_csv('salida.csv') guarda el DataFrame en formato CSV.",
+                "difficulty": "easy"
+            }
+        ],
+        "pd-analyze": [
+            {
+                "id": "epd-anz1",
+                "type": "multiple_choice",
+                "question": "¿Qué método calcula estadísticas descriptivas resumidas (media, std, min, max, etc.) para las columnas numéricas?",
+                "options": [".summary()", ".describe()", ".info()", ".stats()"],
+                "correct": 1,
+                "explanation": ".describe() genera estadísticas descriptivas resumidas de las columnas numéricas.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "epd-anz2",
+                "type": "multiple_choice",
+                "question": "¿Qué método imprime un resumen de la estructura del DataFrame (tipos de datos, memoria, nulos)?",
+                "options": [".describe()", ".info()", ".shape()", ".schema()"],
+                "correct": 1,
+                "explanation": ".info() muestra los nombres de columnas, recuento de no nulos, tipos de datos y uso de memoria.",
+                "difficulty": "medium"
+            }
+        ],
+        "pd-cleandata": [
+            {
+                "id": "epd-cln1",
+                "type": "multiple_choice",
+                "question": "¿Qué método elimina las filas que contienen valores nulos (NaN) en Pandas?",
+                "options": [".remove_null()", ".dropna()", ".clean()", ".delete_na()"],
+                "correct": 1,
+                "explanation": ".dropna() devuelve un DataFrame eliminando las filas con valores faltantes.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "epd-cln2",
+                "type": "complete_code",
+                "question": "Completa el método para rellenar valores nulos (NaN) con un valor específico:",
+                "code_template": "df.___ (0)",
+                "correct_answer": "fillna",
+                "explanation": ".fillna(valor) reemplaza los valores NaN con el valor especificado (ej. 0).",
+                "difficulty": "easy"
+            },
+            {
+                "id": "epd-cln3",
+                "type": "true_false",
+                "question": "El método df.duplicated() devuelve una Serie booleana indicando cuáles filas son duplicadas.",
+                "correct": true,
+                "explanation": "df.duplicated() identifica filas repetidas en un DataFrame.",
+                "difficulty": "medium"
+            }
+        ]
+    }
+}
