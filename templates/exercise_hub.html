@@ -23,7 +23,7 @@
             <span class="exercise-list-question">{{ ex.question | truncate(80) }}</span>
             <span class="exercise-list-status">
                 {% if (topic ~ '-' ~ loop.index) in completed_exercises %}
-                    ✅
+                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" style="color: var(--green);"><polyline points="20 6 9 17 4 12"></polyline></svg>
                 {% else %}
                     ○
                 {% endif %}
@@ -34,7 +34,7 @@
 
     <div class="exercise-hub-cta">
         <a href="{{ url_for('exercise_page', topic=topic, exercise_num=1) }}" class="btn-start-exercises">
-            Start Exercises ❯
+            Start Exercises
         </a>
     </div>
 </article>

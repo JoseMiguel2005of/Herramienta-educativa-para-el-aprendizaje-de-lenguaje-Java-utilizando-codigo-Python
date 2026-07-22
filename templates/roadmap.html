@@ -7,7 +7,10 @@
     <header class="skill-tree-header">
         <div class="header-left">
             <h1>
-                <span class="header-accent">🌳</span> SKILL_TREE
+                <div class="neu-icon-box" style="display:inline-flex; vertical-align:-3px; margin-right:0.5rem;">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                </div>
+                SKILL_TREE
             </h1>
             <p class="header-subtitle">>_ Explora las ramas del conocimiento. Desbloquea habilidades completando lecciones.</p>
         </div>
@@ -47,20 +50,7 @@
                         <div class="branch-left">
                             <span class="branch-chevron" id="chevron-{{ branch_id }}">▶</span>
                             <span class="branch-icon">
-                                {% if 'tutorial' in sec.label_key %}📘
-                                {% elif 'function' in sec.label_key %}⚙️
-                                {% elif 'class' in sec.label_key %}🏗️
-                                {% elif 'module' in sec.label_key %}📦
-                                {% elif 'file' in sec.label_key %}📁
-                                {% elif 'numpy' in sec.label_key %}🔢
-                                {% elif 'pandas' in sec.label_key %}🐼
-                                {% elif 'scipy' in sec.label_key %}🧪
-                                {% elif 'mysql' in sec.label_key %}🗄️
-                                {% elif 'mongo' in sec.label_key %}🍃
-                                {% elif 'reference' in sec.label_key %}📖
-                                {% elif 'exercise' in sec.label_key %}✏️
-                                {% else %}📗
-                                {% endif %}
+                                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
                             </span>
                             <span class="branch-name">{{ t[sec.label_key] | upper }}</span>
                         </div>
@@ -70,7 +60,7 @@
                             </div>
                             <span class="branch-ratio">{{ sec_completed | length }}/{{ sec_lessons | length }}</span>
                             {% if sec_pct == 100 %}
-                            <span class="branch-badge">✅</span>
+                            <span class="branch-badge" style="color: var(--green); font-weight:bold;">100%</span>
                             {% endif %}
                         </div>
                     </button>
@@ -94,11 +84,11 @@
                                        class="skill-node {{ 'completed' if is_completed else ('available' if is_available else 'locked') }}">
                                         <div class="node-icon">
                                             {% if is_completed %}
-                                                ✅
+                                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" style="color: var(--green);"><polyline points="20 6 9 17 4 12"></polyline></svg>
                                             {% elif is_available %}
-                                                🔵
+                                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" style="color: var(--python-color);"><circle cx="12" cy="12" r="10"></circle></svg>
                                             {% else %}
-                                                🔒
+                                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" style="color: var(--text-muted);"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                                             {% endif %}
                                         </div>
                                         <div class="node-info">

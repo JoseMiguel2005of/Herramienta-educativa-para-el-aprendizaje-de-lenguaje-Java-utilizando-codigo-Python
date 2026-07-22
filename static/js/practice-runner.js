@@ -91,7 +91,7 @@ sys.stderr = io.StringIO()
                 const item = document.createElement('div');
                 item.className = 'test-case-item ' + (isPass ? 'passed' : 'failed');
                 item.innerHTML = `
-                    <span class="test-icon">${isPass ? '✅' : '❌'}</span>
+                    <span class="test-icon">${isPass ? '✓' : '✗'}</span>
                     <span>${tc.input} → ${isPass ? expected : result + ' (esperado ' + expected + ')'}</span>
                 `;
                 testsList.appendChild(item);
@@ -99,7 +99,7 @@ sys.stderr = io.StringIO()
                 const item = document.createElement('div');
                 item.className = 'test-case-item failed';
                 item.innerHTML = `
-                    <span class="test-icon">❌</span>
+                    <span class="test-icon">✗</span>
                     <span>${tc.input} → Error: ${e.message}</span>
                 `;
                 testsList.appendChild(item);

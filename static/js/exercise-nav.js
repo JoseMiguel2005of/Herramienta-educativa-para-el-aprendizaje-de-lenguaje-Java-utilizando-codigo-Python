@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 showFeedback(isCorrect,
-                    isCorrect ? '✅ ¡Correcto! Buen trabajo.' : '❌ Incorrecto. La respuesta correcta está resaltada en verde.');
+                    isCorrect ? '¡Correcto! Buen trabajo.' : 'Incorrecto. La respuesta correcta está resaltada en verde.');
 
                 if (isCorrect) {
                     trackExerciseProgress(submitBtn.dataset.lesson, submitBtn.dataset.exerciseId);
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 showFeedback(allCorrect,
-                    allCorrect ? '✅ Correct! Well done.' : '❌ Not quite. Check the highlighted fields and try again.');
+                    allCorrect ? 'Correct! Well done.' : 'Not quite. Check the highlighted fields and try again.');
 
                 if (allCorrect) {
                     trackExerciseProgress(submitBtn.dataset.lesson, submitBtn.dataset.exerciseId);
@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
                 // In freeform mode, we just mark as attempted and let AI tutor help
-                showFeedback(true, '✅ Answer submitted! Use the hint button if you need guidance.');
+                showFeedback(true, 'Answer submitted! Use the hint button if you need guidance.');
                 trackExerciseProgress(submitBtn.dataset.lesson, submitBtn.dataset.exerciseId);
             }
         });
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (i === correctIndex) radio.checked = true;
                     }
                 });
-                showFeedback(true, '✅ Respuesta mostrada.');
+                showFeedback(true, 'Respuesta mostrada.');
             } else {
                 const templateArea = document.getElementById('exercise-template');
                 if (templateArea) {

@@ -52,10 +52,10 @@
 
             <div class="exercise-actions">
                 <button class="btn-exercise-submit" id="btn-submit-exercise" data-exercise-id="{{ current_exercise.id or (topic ~ '-' ~ exercise_num) }}" data-lesson="{{ topic }}">
-                    Submit Answer »
+                    Submit Answer
                 </button>
                 <button class="btn-exercise-hint" id="btn-hint" title="Obtener una pista">
-                    💡 Get a Hint
+                    Obtener Pista
                 </button>
                 <button class="btn-exercise-show" id="btn-show-answer">
                     Show Answer
@@ -66,7 +66,7 @@
 
             {% if current_exercise.hint %}
             <div class="exercise-hint-box" id="hint-box" hidden>
-                <div class="hint-header">💡 Hint</div>
+                <div class="hint-header">Pista</div>
                 <p class="hint-text">{{ current_exercise.hint }}</p>
             </div>
             {% endif %}
@@ -76,7 +76,7 @@
     <nav class="exercise-navigation">
         {% if exercise_num > 1 %}
         <a href="{{ url_for('exercise_page', topic=topic, exercise_num=exercise_num - 1) }}" class="exercise-nav-btn exercise-nav-prev">
-            ❮ Previous
+            Anterior
         </a>
         {% else %}
         <div></div>
@@ -84,11 +84,11 @@
 
         {% if exercise_num < total_exercises %}
         <a href="{{ url_for('exercise_page', topic=topic, exercise_num=exercise_num + 1) }}" class="exercise-nav-btn exercise-nav-next">
-            Next ❯
+            Siguiente
         </a>
         {% else %}
         <a href="{{ url_for('exercise_topic', topic=topic) }}" class="exercise-nav-btn exercise-nav-next exercise-nav-complete">
-            ✓ Complete!
+            ¡Completado!
         </a>
         {% endif %}
     </nav>

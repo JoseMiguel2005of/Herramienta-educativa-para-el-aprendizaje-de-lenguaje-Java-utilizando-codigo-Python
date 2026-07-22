@@ -266,13 +266,13 @@ document.addEventListener('DOMContentLoaded', () => {
         URL.revokeObjectURL(url);
 
         // Feedback
-        showExportFeedback('📥 Archivo descargado');
+        showExportFeedback('Archivo descargado');
     };
 
     window.copyJavaCode = function() {
         if (!lastJavaCode) return;
         navigator.clipboard.writeText(lastJavaCode).then(() => {
-            showExportFeedback('📋 Copiado al portapapeles');
+            showExportFeedback('Copiado al portapapeles');
         }).catch(() => {
             // Fallback for older browsers
             const ta = document.createElement('textarea');
@@ -281,7 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ta.select();
             document.execCommand('copy');
             document.body.removeChild(ta);
-            showExportFeedback('📋 Copiado al portapapeles');
+            showExportFeedback('Copiado al portapapeles');
         });
     };
 

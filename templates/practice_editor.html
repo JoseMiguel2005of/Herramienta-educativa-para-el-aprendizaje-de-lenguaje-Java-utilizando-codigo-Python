@@ -133,9 +133,9 @@
                 try {
                     await pyodide.runPythonAsync(userCode);
                 } catch(e) {
-                    output.innerHTML += `<br><span style="color:#f92672;">❌ Error de sintaxis o ejecución en tu código:</span><br><pre style="color:#f92672; margin-top:0.5rem;">${e.message}</pre>`;
+                    output.innerHTML += `<br><span style="color:#f92672;">[Error] Error de sintaxis o ejecución en tu código:</span><br><pre style="color:#f92672; margin-top:0.5rem;">${e.message}</pre>`;
                     btnRun.disabled = false;
-                    btnRun.textContent = "▶ EJECUTAR PRUEBAS";
+                    btnRun.textContent = "EJECUTAR PRUEBAS";
                     return;
                 }
 
@@ -145,9 +145,6 @@
                 
                 for(let i=0; i<testCases.length; i++) {
                     const test = testCases[i];
-                    // We run: result = eval(input), then compare with expected
-                    // For safety, we use Python's built-in assertion if possible, or manual check.
-                    // We need to compare representation or values.
                     
                     const testScript = `
 import json
@@ -167,14 +164,14 @@ json.dumps({"passed": _passed, "actual": _actual_repr})
                         const result = JSON.parse(resultJson);
                         
                         if(result.passed) {
-                            output.innerHTML += `<div style="color:#a6e22e; margin-top:0.5rem;">✅ Caso ${i+1}: ${test.input} == ${test.expected}</div>`;
+                            output.innerHTML += `<div style="color:#a6e22e; margin-top:0.5rem;">[PASÓ] Caso ${i+1}: ${test.input} == ${test.expected}</div>`;
                             passedCount++;
                         } else {
-                            output.innerHTML += `<div style="color:#f92672; margin-top:0.5rem;">❌ Caso ${i+1} Falló.<br>&nbsp;&nbsp;Entrada: ${test.input}<br>&nbsp;&nbsp;Esperado: ${test.expected}<br>&nbsp;&nbsp;Obtenido: ${result.actual}</div>`;
+                            output.innerHTML += `<div style="color:#f92672; margin-top:0.5rem;">[FALLÓ] Caso ${i+1} Falló.<br>&nbsp;&nbsp;Entrada: ${test.input}<br>&nbsp;&nbsp;Esperado: ${test.expected}<br>&nbsp;&nbsp;Obtenido: ${result.actual}</div>`;
                             allPassed = false;
                         }
                     } catch(e) {
-                        output.innerHTML += `<div style="color:#f92672; margin-top:0.5rem;">❌ Caso ${i+1} Falló con error interno de test.</div>`;
+                        output.innerHTML += `<div style="color:#f92672; margin-top:0.5rem;">[FALLÓ] Caso ${i+1} Falló con error interno de test.</div>`;
                         allPassed = false;
                     }
                 }

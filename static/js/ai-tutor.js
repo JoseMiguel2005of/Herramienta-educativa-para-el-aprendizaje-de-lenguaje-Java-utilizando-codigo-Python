@@ -17,20 +17,20 @@
         panel.innerHTML = `
             <div class="ai-tutor-header">
                 <div class="ai-tutor-title">
-                    <span class="ai-tutor-avatar">🤖</span>
+                    <span class="ai-tutor-avatar"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path></svg></span>
                     <span>AI TUTOR</span>
                 </div>
                 <button class="ai-tutor-close" id="ai-tutor-close" title="Cerrar">×</button>
             </div>
             <div class="ai-tutor-messages" id="ai-tutor-messages">
                 <div class="ai-msg ai-msg-bot">
-                    <span class="ai-msg-avatar">🤖</span>
+                    <span class="ai-msg-avatar"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path></svg></span>
                     <div class="ai-msg-content">
                         ¡Hola! Soy tu tutor de IA. Puedo ayudarte de dos formas:
                         <br><br>
-                        📊 <b>Analizar tu código</b> — escribe código en el editor y haz clic en "Analizar Código"
+                        <b>Analizar tu código</b> — escribe código en el editor y haz clic en "Analizar Código"
                         <br>
-                        💡 <b>Pistas en ejercicios</b> — si te trabas en un ejercicio, presiona "Pedir Pista"
+                        <b>Pistas en ejercicios</b> — si te trabas en un ejercicio, presiona "Pedir Pista"
                     </div>
                 </div>
             </div>
@@ -42,9 +42,10 @@
                 </button>
             </div>
             <div class="ai-tutor-actions">
-                <button id="ai-btn-analyze" class="ai-action-btn">📊 Analizar Código</button>
+                <button id="ai-btn-analyze" class="ai-action-btn">Analizar Código</button>
             </div>
         `;
+
         document.body.appendChild(panel);
         tutorPanel = panel;
 
@@ -65,7 +66,7 @@
         const btn = document.createElement('button');
         btn.id = 'ai-tutor-toggle';
         btn.className = 'ai-tutor-toggle';
-        btn.innerHTML = '🤖';
+        btn.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path></svg>';
         btn.title = 'Abrir AI Tutor';
         btn.addEventListener('click', toggleTutor);
         document.body.appendChild(btn);
@@ -89,7 +90,10 @@
         const msg = document.createElement('div');
         msg.className = `ai-msg ai-msg-${sender}`;
 
-        const avatar = sender === 'bot' ? '🤖' : '👤';
+        const avatar = sender === 'bot' 
+            ? '<svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path></svg>'
+            : '<svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>';
+
         msg.innerHTML = `
             <span class="ai-msg-avatar">${avatar}</span>
             <div class="ai-msg-content">${formatResponse(text)}</div>
@@ -164,7 +168,7 @@
     async function analyzeCode() {
         const code = getCurrentCode();
         if (!code.trim() || isLoading) {
-            addMessage('⚠️ Escribe algo de código en el editor primero.', 'bot');
+            addMessage('Escribe algo de código en el editor primero.', 'bot');
             return;
         }
 
@@ -172,7 +176,7 @@
             toggleTutor();
         }
 
-        addMessage('📊 Analiza mi código por favor', 'user');
+        addMessage('Analiza mi código por favor', 'user');
 
         await callTutor({
             code: code,
@@ -190,7 +194,7 @@
             tutorPanel.classList.add('open');
         }
 
-        addMessage(`💡 Necesito una pista para: "${exerciseQuestion}"`, 'user');
+        addMessage(`Necesito una pista para: "${exerciseQuestion}"`, 'user');
 
         await callTutor({
             code: userAnswer || '',
@@ -205,7 +209,7 @@
     async function callTutor(payload) {
         isLoading = true;
         const sendBtn = document.getElementById('ai-tutor-send-icon');
-        if (sendBtn) sendBtn.textContent = '⏳';
+        if (sendBtn) sendBtn.textContent = '...';
         
         addLoadingMessage();
 
@@ -222,11 +226,11 @@
             if (data.ok) {
                 addMessage(data.response, 'bot');
             } else {
-                addMessage(`⚠️ ${data.error || 'Error desconocido'}`, 'bot');
+                addMessage(`${data.error || 'Error desconocido'}`, 'bot');
             }
         } catch (err) {
             removeLoadingMessage();
-            addMessage('⚠️ No se pudo conectar con la IA. Verifica tu conexión.', 'bot');
+            addMessage('No se pudo conectar con la IA. Verifica tu conexión.', 'bot');
         } finally {
             isLoading = false;
             if (sendBtn) sendBtn.textContent = '➤';
@@ -250,7 +254,7 @@
 
             const hintBtn = document.createElement('button');
             hintBtn.className = 'btn-ai-hint';
-            hintBtn.innerHTML = '🤖 Pedir Pista';
+            hintBtn.innerHTML = 'Pedir Pista';
             hintBtn.addEventListener('click', () => {
                 // Try to get the user's current answer
                 let userAnswer = '';

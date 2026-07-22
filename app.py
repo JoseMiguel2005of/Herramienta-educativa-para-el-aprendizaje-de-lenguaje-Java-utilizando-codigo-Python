@@ -284,18 +284,18 @@ LESSON_CATEGORIES = [
             {
                 "label_key": "cat_section_quiz",
                 "lessons": [
-                    {"id": "quiz-python-basics", "icon": "🧩", "type": "quiz"},
-                    {"id": "quiz-python-strings", "icon": "🧩", "type": "quiz"},
-                    {"id": "quiz-python-collections", "icon": "🧩", "type": "quiz"},
-                    {"id": "quiz-python-control", "icon": "🧩", "type": "quiz"},
-                    {"id": "quiz-python-functions", "icon": "🧩", "type": "quiz"},
-                    {"id": "quiz-python-oop", "icon": "🧩", "type": "quiz"},
+                    {"id": "quiz-python-basics", "icon": "", "type": "quiz"},
+                    {"id": "quiz-python-strings", "icon": "", "type": "quiz"},
+                    {"id": "quiz-python-collections", "icon": "", "type": "quiz"},
+                    {"id": "quiz-python-control", "icon": "", "type": "quiz"},
+                    {"id": "quiz-python-functions", "icon": "", "type": "quiz"},
+                    {"id": "quiz-python-oop", "icon": "", "type": "quiz"},
                 ],
             },
             {
                 "label_key": "cat_section_examples",
                 "lessons": [
-                    {"id": "examples-hub", "icon": "📋", "type": "examples"}
+                    {"id": "examples-hub", "icon": "", "type": "examples"}
                 ],
             },
             {

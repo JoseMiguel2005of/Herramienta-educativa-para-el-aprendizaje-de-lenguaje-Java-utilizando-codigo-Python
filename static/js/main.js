@@ -251,6 +251,200 @@ function initExercises() {
                         input.classList.remove('input-correct');
                         input.classList.add('input-incorrect');
                         allCorrect = false;
+function initTranslator() {
+    const editor = document.getElementById("practice-editor");
+    const output = document.getElementById("translated-java");
+    const btnTranslate = document.getElementById("btn-translate");
+    const messagesBox = document.getElementById("translation-messages");
+    const errorsBox = document.getElementById("translation-errors");
+    const warningsBox = document.getElementById("translation-warnings");
+    const errorList = document.getElementById("error-list");
+    const warningList = document.getElementById("warning-list");
+
+    if (!editor || !output) return;
+
+    let debounceTimer = null;
+    let requestId = 0;
+
+    const translateCode = async () => {
+        const code = editor.value;
+        const currentRequest = ++requestId;
+
+        if (btnTranslate) {
+            btnTranslate.disabled = true;
+            btnTranslate.textContent =
+                (window.TRANSLATOR_LABELS && window.TRANSLATOR_LABELS.translating) || "Translating...";
+        }
+
+        try {
+            const payload = {
+                code: code,
+                lesson_id: window.currentLessonId || "unknown"
+            };
+
+            const response = await fetch("/api/traducir", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const data = await response.json();
+            if (currentRequest !== requestId) return;
+
+            output.textContent = data.java || "";
+            renderMessages(data.errors || [], data.warnings || []);
+        } catch (err) {
+            if (currentRequest !== requestId) return;
+            output.textContent = "";
+            renderMessages([err.message], []);
+        } finally {
+            if (btnTranslate) {
+                btnTranslate.disabled = false;
+                btnTranslate.textContent =
+                    btnTranslate.dataset.originalLabel || btnTranslate.textContent;
+            }
+        }
+    };
+
+    const renderMessages = (errors, warnings) => {
+        if (!messagesBox) return;
+
+        errorList.innerHTML = "";
+        warningList.innerHTML = "";
+
+        errors.forEach((msg) => {
+            const li = document.createElement("li");
+            li.textContent = msg;
+            errorList.appendChild(li);
+        });
+
+        warnings.forEach((msg) => {
+            const li = document.createElement("li");
+            li.textContent = msg;
+            warningList.appendChild(li);
+        });
+
+        errorsBox.hidden = errors.length === 0;
+        warningsBox.hidden = warnings.length === 0;
+        messagesBox.hidden = errors.length === 0 && warnings.length === 0;
+    };
+
+    const scheduleTranslate = () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(translateCode, 450);
+    };
+
+    if (btnTranslate) {
+        btnTranslate.dataset.originalLabel = btnTranslate.textContent;
+        btnTranslate.addEventListener("click", translateCode);
+    }
+
+    editor.addEventListener("input", scheduleTranslate);
+    translateCode();
+}
+
+function initCodeHover() {
+    const lines = document.querySelectorAll('.interactive-line');
+    const hoverExplanation = document.getElementById('hover-explanation');
+    const defaultExplanation = document.getElementById('default-explanation');
+
+    if (lines.length === 0 || !hoverExplanation || !defaultExplanation) return;
+
+    lines.forEach(line => {
+        line.addEventListener('mouseenter', () => {
+            const mappingId = line.getAttribute('data-mapping-id');
+            const explanationText = line.getAttribute('data-explanation');
+            
+            // Highlight matching lines
+            document.querySelectorAll(`.interactive-line[data-mapping-id="${mappingId}"]`).forEach(el => {
+                el.classList.add('active');
+            });
+            
+            // Show explanation
+            if (explanationText) {
+                defaultExplanation.style.display = 'none';
+                hoverExplanation.textContent = explanationText;
+                hoverExplanation.style.display = 'block';
+            }
+        });
+
+        line.addEventListener('mouseleave', () => {
+            const mappingId = line.getAttribute('data-mapping-id');
+            
+            // Remove highlight
+            document.querySelectorAll(`.interactive-line[data-mapping-id="${mappingId}"]`).forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Restore default explanation
+            hoverExplanation.style.display = 'none';
+            defaultExplanation.style.display = 'block';
+        });
+    });
+}
+
+function initExercises() {
+    // Comprobar respuesta
+    document.querySelectorAll('.btn-check-quiz').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const exerciseId = btn.getAttribute('data-exercise-id');
+            const lessonId = btn.getAttribute('data-lesson');
+            const exType = btn.getAttribute('data-type');
+            const card = document.getElementById('exercise-' + exerciseId);
+            const feedbackEl = document.getElementById('feedback-' + exerciseId);
+            if (!card || !feedbackEl) return;
+
+            let allCorrect = false;
+            let explanation = '';
+
+            if (exType === 'multiple-choice') {
+                // --- Multiple choice: check radio selection ---
+                const answerData = card.querySelector('.quiz-answer-data');
+                const correctIndex = answerData ? parseInt(answerData.getAttribute('data-correct')) : -1;
+                explanation = answerData ? answerData.getAttribute('data-explanation') || '' : '';
+
+                const selected = card.querySelector('input[type="radio"]:checked');
+                if (!selected) {
+                    feedbackEl.hidden = false;
+                    feedbackEl.className = 'exercise-feedback feedback-incorrect';
+                    feedbackEl.textContent = 'Por favor selecciona una opción antes de enviar.';
+                    return;
+                }
+
+                const selectedIndex = parseInt(selected.value);
+                allCorrect = (selectedIndex === correctIndex);
+
+                // Highlight options
+                card.querySelectorAll('.quiz-option-label').forEach((label, i) => {
+                    label.classList.remove('option-correct', 'option-incorrect');
+                    if (i === correctIndex) {
+                        label.classList.add('option-correct');
+                    } else if (i === selectedIndex && !allCorrect) {
+                        label.classList.add('option-incorrect');
+                    }
+                    // Disable all radios
+                    const radio = label.querySelector('input[type="radio"]');
+                    if (radio) radio.disabled = true;
+                });
+
+            } else if (exType === 'fill-blank' || !exType) {
+                // --- Fill in the blank: check text inputs ---
+                const inputs = card.querySelectorAll('.exercise-input');
+                allCorrect = true;
+                inputs.forEach(input => {
+                    const userAnswer = input.value.trim().toLowerCase().replace(/\s+/g, ' ');
+                    const correctAnswer = input.getAttribute('data-answer').trim().toLowerCase().replace(/\s+/g, ' ');
+                    if (userAnswer === correctAnswer) {
+                        input.classList.remove('input-incorrect');
+                        input.classList.add('input-correct');
+                    } else {
+                        input.classList.remove('input-correct');
+                        input.classList.add('input-incorrect');
+                        allCorrect = false;
                     }
                 });
 
@@ -295,15 +489,15 @@ function initExercises() {
             if (allCorrect) {
                 card.classList.add('correct');
                 feedbackEl.className = 'exercise-feedback feedback-correct';
-                feedbackEl.textContent = '✅ Correcto. Excelente trabajo.' + (explanation ? ' ' + explanation : '');
+                feedbackEl.textContent = 'Correcto. Excelente trabajo.' + (explanation ? ' ' + explanation : '');
                 btn.disabled = true;
             } else {
                 card.classList.add('incorrect');
                 feedbackEl.className = 'exercise-feedback feedback-incorrect';
                 if (exType === 'multiple-choice' || exType === 'find-error') {
-                    feedbackEl.textContent = '❌ Respuesta incorrecta.' + (explanation ? ' ' + explanation : ' Inténtalo de nuevo.');
+                    feedbackEl.textContent = 'Respuesta incorrecta.' + (explanation ? ' ' + explanation : ' Inténtalo de nuevo.');
                 } else {
-                    feedbackEl.textContent = '❌ Respuesta incorrecta. Revisa los campos marcados en rojo e inténtalo de nuevo.';
+                    feedbackEl.textContent = 'Respuesta incorrecta. Revisa los campos marcados en rojo e inténtalo de nuevo.';
                 }
             }
 
@@ -315,7 +509,7 @@ function initExercises() {
                     lesson_id: lessonId,
                     passed: allCorrect
                 })
-            }).catch(() => {});  // no bloqueamos si falla
+            }).catch(() => {});
         });
     });
 
@@ -356,7 +550,7 @@ function initExercises() {
                 if (feedbackEl) {
                     feedbackEl.hidden = false;
                     feedbackEl.className = 'exercise-feedback feedback-correct';
-                    feedbackEl.textContent = '✅ Respuesta mostrada.' + (explanation ? ' ' + explanation : '');
+                    feedbackEl.textContent = 'Respuesta mostrada.' + (explanation ? ' ' + explanation : '');
                 }
 
             } else {

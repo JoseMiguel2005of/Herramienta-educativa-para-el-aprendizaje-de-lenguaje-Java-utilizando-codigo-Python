@@ -87,7 +87,7 @@ function showXPNotification(xpText, title) {
     const toast = document.createElement('div');
     toast.className = 'xp-toast';
     toast.innerHTML = `
-        <div class="xp-toast-icon">⚡</div>
+        <div class="xp-toast-icon"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg></div>
         <div class="xp-toast-content">
             <span class="xp-toast-title">${title}</span>
             <span class="xp-toast-amount">${xpText}</span>
@@ -145,7 +145,9 @@ function showAchievementUnlockModal(achievements) {
         <div class="achievement-modal-content">
             <div class="achievement-modal-confetti" aria-hidden="true"></div>
             <div class="achievement-modal-header">
-                <span class="achievement-modal-star">🏆</span>
+                <div class="neu-icon-box" style="margin:0 auto 0.5rem; color:#FFD700;">
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+                </div>
                 <h2>¡Logro${achievements.length > 1 ? 's' : ''} Desbloqueado${achievements.length > 1 ? 's' : ''}!</h2>
             </div>
             <div class="achievement-modal-cards">

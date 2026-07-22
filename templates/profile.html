@@ -5,7 +5,12 @@
 {% block content %}
 <article class="telemetry-dashboard">
     <header class="telemetry-header">
-        <h1>👤 PERFIL</h1>
+        <h1 style="display:flex; align-items:center; gap:0.75rem;">
+            <div class="neu-icon-box">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </div>
+            PERFIL
+        </h1>
         <div class="system-status">
             <span class="status-indicator"></span>
             USER_DATA
@@ -18,7 +23,7 @@
     <div class="profile-layout">
 
         <!-- Profile Card -->
-        <div class="profile-card">
+        <div class="profile-card neu-card">
             <div class="profile-avatar-large">
                 {{ profile_user.username[0] | upper }}
             </div>
@@ -39,7 +44,7 @@
                 </div>
                 <div class="profile-stat">
                     <span class="profile-stat-num" style="color: #ff9800;">{{ summary.streak }}</span>
-                    <span class="profile-stat-label">RACHA 🔥</span>
+                    <span class="profile-stat-label">RACHA (DÍAS)</span>
                 </div>
                 <div class="profile-stat">
                     <span class="profile-stat-num">{{ summary.completed_lessons | length }}</span>

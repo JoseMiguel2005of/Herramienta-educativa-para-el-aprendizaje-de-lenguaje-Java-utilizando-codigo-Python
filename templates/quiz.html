@@ -7,16 +7,18 @@
     {# ===== START SCREEN ===== #}
     <div class="quiz-start-screen" id="quiz-start">
         <div class="quiz-start-card">
-            <div class="quiz-start-icon">🧩</div>
+            <div class="neu-icon-box" style="width: 52px; height: 52px; margin: 0 auto 1rem;">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </div>
             <h1 class="quiz-start-title">{{ quiz_data.title }}</h1>
             <p class="quiz-start-desc">{{ quiz_data.description }}</p>
             <div class="quiz-start-info">
                 <span class="quiz-info-badge">{{ quiz_data.questions | length }} Preguntas</span>
                 {% if quiz_data.time_limit %}
-                <span class="quiz-info-badge">⏱ {{ quiz_data.time_limit // 60 }} min</span>
+                <span class="quiz-info-badge">{{ quiz_data.time_limit // 60 }} min</span>
                 {% endif %}
             </div>
-            <button class="btn-quiz-start" id="btn-start-quiz">Comenzar Quiz ❯</button>
+            <button class="btn-quiz-start" id="btn-start-quiz">Comenzar Quiz</button>
         </div>
     </div>
 
@@ -54,14 +56,14 @@
         </div>
 
         <div class="quiz-actions">
-            <button class="btn-quiz-next" id="btn-quiz-next">Siguiente Pregunta ❯</button>
+            <button class="btn-quiz-next" id="btn-quiz-next">Siguiente Pregunta</button>
         </div>
     </div>
 
     {# ===== RESULTS SCREEN ===== #}
     <div class="quiz-results" id="quiz-results" hidden>
         <div class="quiz-results-card">
-            <h2 class="quiz-results-title">¡Quiz Completado! 🎉</h2>
+            <h2 class="quiz-results-title">¡Quiz Completado!</h2>
             <div class="quiz-score-circle" id="quiz-score-circle">
                 <svg viewBox="0 0 120 120">
                     <circle class="score-bg" cx="60" cy="60" r="54" />
