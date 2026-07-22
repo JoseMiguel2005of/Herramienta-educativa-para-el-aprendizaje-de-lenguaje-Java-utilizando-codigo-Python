@@ -91,7 +91,8 @@
 
         <div class="eval-questions-wrapper" id="eval-questions">
             {% for q in questions %}
-            <div class="eval-question-slide" data-question="{{ loop.index0 }}" data-qid="{{ q.id }}" data-type="{{ q.type }}" {% if not loop.first %}hidden{% endif %}>
+            {% set outer_loop_index = loop.index0 %}
+            <div class="eval-question-slide" data-question="{{ outer_loop_index }}" data-qid="{{ q.id }}" data-type="{{ q.type }}" {% if not loop.first %}hidden{% endif %}>
                 
                 <div class="eval-question-meta">
                     <span class="eval-q-number">Pregunta {{ loop.index }}</span>
@@ -111,7 +112,7 @@
                     <div class="eval-options-list">
                         {% for opt in q.options %}
                         <label class="eval-option">
-                            <input type="radio" name="eval_q{{ loop.parent.loop.index0 }}" value="{{ loop.index0 }}">
+                            <input type="radio" name="eval_q{{ outer_loop_index }}" value="{{ loop.index0 }}">
                             <span class="eval-option-marker"></span>
                             <span class="eval-option-content">{{ opt }}</span>
                         </label>
@@ -121,8 +122,8 @@
                     <div class="eval-code-block">
                         <pre class="eval-code-template"><code>{{ q.code_template }}</code></pre>
                         <div class="eval-code-input-wrap">
-                            <label for="code-input-{{ loop.index0 }}">Tu respuesta (reemplaza ___):</label>
-                            <input type="text" class="eval-code-input" id="code-input-{{ loop.index0 }}" 
+                            <label for="code-input-{{ outer_loop_index }}">Tu respuesta (reemplaza ___):</label>
+                            <input type="text" class="eval-code-input" id="code-input-{{ outer_loop_index }}" 
                                    placeholder="Escribe aquí..." autocomplete="off" spellcheck="false">
                         </div>
                     </div>
