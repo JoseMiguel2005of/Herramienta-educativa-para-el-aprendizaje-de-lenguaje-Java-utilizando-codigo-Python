@@ -47,10 +47,12 @@ else:
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + sqlite_path
 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-    "pool_pre_ping": True,
-    "pool_recycle": 300,
-}
+
+# pool_recycle only makes sense for PostgreSQL; SQLite uses NullPool
+engine_options = {"pool_pre_ping": True}
+if database_url:
+    engine_options["pool_recycle"] = 300
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = engine_options
 db.init_app(app)
 
 login_manager = LoginManager()
@@ -60,7 +62,11 @@ login_manager.init_app(app)
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    try:
+        return db.session.get(User, int(user_id))
+    except Exception:
+        db.session.rollback()
+        return None
 
 
 with app.app_context():
@@ -552,6 +558,7 @@ def get_current_user():
         return user
 
 
+@app.route("/api/progreso/ejercicio", methods=["POST"])
 def api_ejercicio():
     data = request.get_json(silent=True) or {}
     lesson_id = data.get("lesson_id", "unknown")
@@ -763,7 +770,16 @@ def login():
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
-        user = User.query.filter_by(username=username).first()
+
+        try:
+            user = User.query.filter_by(username=username).first()
+        except Exception:
+            db.session.rollback()
+            return render_template(
+                "login.html",
+                error="Error de conexión con la base de datos. Intenta de nuevo en unos segundos.",
+                categories=LESSON_CATEGORIES,
+            )
 
         if user and check_password_hash(user.password_hash, password):
             login_user(user)
@@ -801,22 +817,30 @@ def register():
                 categories=LESSON_CATEGORIES,
             )
 
-        if User.query.filter_by(username=username).first():
+        try:
+            if User.query.filter_by(username=username).first():
+                return render_template(
+                    "register.html",
+                    error="El usuario ya existe",
+                    categories=LESSON_CATEGORIES,
+                )
+
+            hashed_pw = generate_password_hash(password)
+            new_user = User(username=username, password_hash=hashed_pw, role=role)
+            db.session.add(new_user)
+            db.session.commit()
+
+            login_user(new_user)
+            return redirect(
+                url_for("teacher_dashboard" if role == "teacher" else "dashboard")
+            )
+        except Exception:
+            db.session.rollback()
             return render_template(
                 "register.html",
-                error="El usuario ya existe",
+                error="Error de conexión con la base de datos. Intenta de nuevo en unos segundos.",
                 categories=LESSON_CATEGORIES,
             )
-
-        hashed_pw = generate_password_hash(password)
-        new_user = User(username=username, password_hash=hashed_pw, role=role)
-        db.session.add(new_user)
-        db.session.commit()
-
-        login_user(new_user)
-        return redirect(
-            url_for("teacher_dashboard" if role == "teacher" else "dashboard")
-        )
 
     return render_template("register.html", categories=LESSON_CATEGORIES)
 
@@ -1594,6 +1618,13 @@ def api_evaluation_status(section_key):
 
     status = get_section_eval_status(current_user.id, section_key)
     return jsonify(status)
+
+
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    if exception:
+        db.session.rollback()
+    db.session.remove()
 
 
 if __name__ == "__main__":
