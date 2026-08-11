@@ -378,6 +378,15 @@ def index():
 
 @app.route("/leccion/<lesson_id>")
 def lesson(lesson_id):
+    if lesson_id.startswith("quiz-"):
+        return redirect(url_for("quiz", topic=lesson_id))
+    if lesson_id == "practice-hub":
+        return redirect(url_for("practice_list"))
+    if lesson_id == "examples-hub":
+        return redirect(url_for("examples"))
+    if lesson_id.startswith("ex-"):
+        return redirect(url_for("exercise_topic", topic=lesson_id))
+
     valid_ids = [lesson_item["id"] for lesson_item in LESSONS]
     if lesson_id not in valid_ids:
         lesson_id = "py-home"
@@ -468,6 +477,9 @@ def api_submit_practice():
     
     user = current_user
     
+    # Check if previously passed BEFORE adding the new submission
+    prev_passed = PracticeSubmission.query.filter_by(user_id=user.id, problem_id=problem_id, passed=True).first()
+
     submission = PracticeSubmission(
         user_id=user.id,
         problem_id=problem_id,
@@ -479,13 +491,26 @@ def api_submit_practice():
     db.session.add(submission)
     
     xp_gained = 0
-    if passed:
-        # Give XP only if not previously completed
-        prev_passed = PracticeSubmission.query.filter_by(user_id=user.id, problem_id=problem_id, passed=True).first()
-        if not prev_passed:
-            xp_gained = 50
-            record_daily_activity(user.id)
-            
+    if passed and not prev_passed:
+        xp_gained = 50
+        record_daily_activity(user.id)
+
+        # Update LessonProgress record for practice XP tracking
+        lp = LessonProgress.query.filter_by(
+            user_id=user.id, lesson_id=f"practice-{problem_id}"
+        ).first()
+        if not lp:
+            lp = LessonProgress(
+                user_id=user.id,
+                lesson_id=f"practice-{problem_id}",
+                completed=True,
+                score=xp_gained,
+                completed_at=datetime.utcnow()
+            )
+            db.session.add(lp)
+        else:
+            lp.score = (lp.score or 0) + xp_gained
+
     db.session.commit()
     
     new_stats = get_progress_summary(user)

@@ -121,15 +121,29 @@ sys.stderr = io.StringIO()
 
         // Track progress if all passed
         if (passed === total) {
-            fetch('/api/progreso/ejercicio', {
+            fetch('/api/submit_practice', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    lesson_id: 'practice',
-                    exercise_id: problemId,
-                    passed: true
+                    problem_id: problemId,
+                    code: editor.value,
+                    passed: true,
+                    tests_passed: passed,
+                    tests_total: total
                 })
-            }).catch(() => {});
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.ok && data.xp_gained > 0) {
+                    if (typeof window.showXPNotification === 'function') {
+                        window.showXPNotification(`+${data.xp_gained} XP`, '¡Laboratorio Completado!');
+                    }
+                    if (typeof window.fetchProgressSummary === 'function') {
+                        window.fetchProgressSummary();
+                    }
+                }
+            })
+            .catch(() => {});
         }
     });
 
