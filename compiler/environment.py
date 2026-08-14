@@ -39,6 +39,7 @@ class Environment:
         self.errors: List[str] = []
         self.warnings: List[str] = []
         self.needs_scanner = False
+        self.defined_classes: set = set()
 
         # Built-in types
         self.type_object = Type("Object")

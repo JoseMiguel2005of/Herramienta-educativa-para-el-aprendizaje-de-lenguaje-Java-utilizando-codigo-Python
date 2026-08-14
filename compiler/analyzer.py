@@ -37,6 +37,7 @@ class Analyzer(ast.NodeVisitor):
 
     def visit_ClassDef(self, node: ast.ClassDef):
         self.env.current_scope.classes[node.name] = node
+        self.env.defined_classes.add(node.name)
         self.env.push_scope(name=node.name)
         self.generic_visit(node)
         self.env.pop_scope()
@@ -183,6 +184,12 @@ class Analyzer(ast.NodeVisitor):
         elif isinstance(node, ast.IfExp):
             return self._infer_type(node.body)
         elif isinstance(node, ast.ListComp):
+            return Type("java.util.List", [self.env.type_object])
+        elif isinstance(node, ast.DictComp):
+            return Type("java.util.Map", [self.env.type_object, self.env.type_object])
+        elif isinstance(node, ast.SetComp):
+            return Type("java.util.Set", [self.env.type_object])
+        elif isinstance(node, ast.GeneratorExp):
             return Type("java.util.List", [self.env.type_object])
         elif isinstance(node, ast.Compare):
             return self.env.type_boolean

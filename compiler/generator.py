@@ -26,6 +26,8 @@ class Generator:
         self._current_class = None
         self._declared_vars: set = set()
         self._lambda_counter = 0
+        self._loop_else_counter = 0
+        self._yield_counter = 0
 
     def generate(self, tree: ast.AST) -> str:
         for node in tree.body:
@@ -91,6 +93,9 @@ class Generator:
                 # Docstring → comment
                 for docline in node.value.value.strip().split("\n"):
                     self._line(f"// {docline.strip()}")
+            elif isinstance(node.value, ast.Constant) and node.value.value is Ellipsis:
+                # Ellipsis (...) used as placeholder
+                self._line("// ...")
             else:
                 expr, _ = self._expr(node.value)
                 self._line(f"{expr};")
@@ -101,6 +106,10 @@ class Generator:
         elif isinstance(node, ast.While):
             self._visit_while(node)
         elif isinstance(node, ast.FunctionDef):
+            self._visit_function(node)
+        elif isinstance(node, ast.AsyncFunctionDef):
+            # Treat async functions as regular functions with a warning
+            self.env.warn("async def: Java no tiene equivalente directo; se tradujo como función normal.")
             self._visit_function(node)
         elif isinstance(node, ast.ClassDef):
             self._visit_class(node)
@@ -126,6 +135,8 @@ class Generator:
             self.env.warn("global/nonlocal: Java no tiene un equivalente directo; las variables se manejan por alcance de clase.")
         elif isinstance(node, ast.Import) or isinstance(node, ast.ImportFrom):
             self._visit_import(node)
+        elif hasattr(ast, "Match") and isinstance(node, ast.Match):
+            self._visit_match(node)
         else:
             self.env.warn(f"Sentencia '{type(node).__name__}' no tiene equivalente directo; se omitió.")
 
@@ -163,7 +174,18 @@ class Generator:
     def _visit_raise(self, node: ast.Raise):
         if node.exc:
             exc_expr, _ = self._expr(node.exc)
-            self._line(f"throw {exc_expr};")
+            # If it's a Call (e.g. raise ValueError("msg")), add 'new'
+            if isinstance(node.exc, ast.Call):
+                func_name = ""
+                if isinstance(node.exc.func, ast.Name):
+                    func_name = node.exc.func.id
+                elif isinstance(node.exc.func, ast.Attribute):
+                    func_name = node.exc.func.attr
+                java_exc = self._python_exception_to_java(func_name) if func_name else "RuntimeException"
+                args = [self._expr(arg)[0] for arg in node.exc.args]
+                self._line(f"throw new {java_exc}({', '.join(args)});")
+            else:
+                self._line(f"throw {exc_expr};")
         else:
             self._line("throw new RuntimeException();")
 
@@ -176,6 +198,31 @@ class Generator:
             names = ", ".join(a.name for a in node.names)
             self._line(f"// from {module} import {names} — no tiene equivalente directo en Java")
         self.env.warn("Los imports de Python no se traducen automáticamente al 100%.")
+
+    # ── BUG-1 FIX: match/case → switch ──────────────────────────────
+
+    def _visit_match(self, node):
+        """Translate Python match/case to Java switch."""
+        subject, _ = self._expr(node.subject)
+        self._line(f"switch ({subject}) {{")
+        self._indent += 1
+        for case in node.cases:
+            pattern = case.pattern
+            if hasattr(ast, "MatchValue") and isinstance(pattern, ast.MatchValue):
+                val, _ = self._expr(pattern.value)
+                self._line(f"case {val}:")
+            elif hasattr(ast, "MatchAs") and isinstance(pattern, ast.MatchAs) and pattern.name is None:
+                self._line("default:")
+            else:
+                self.env.warn(f"match pattern '{type(pattern).__name__}' no soportado; se usó default.")
+                self._line("default:")
+            self._indent += 1
+            for stmt in case.body:
+                self._visit_stmt(stmt)
+            self._line("break;")
+            self._indent -= 1
+        self._indent -= 1
+        self._line("}")
 
     def _visit_assign(self, node: ast.Assign):
         if len(node.targets) != 1:
@@ -212,20 +259,52 @@ class Generator:
             obj, _ = self._expr(target.value)
             self._line(f"{obj}.{target.attr} = {value_expr};")
 
+    # ── BUG-1 FIX: Swap detection with temp variables ───────────────
+
     def _visit_tuple_unpack(self, target: ast.Tuple, value: ast.AST):
         """Handle a, b = 1, 2  or  a, b = func()  etc."""
         if isinstance(value, ast.Tuple):
-            # Direct unpacking: a, b = 1, 2
-            for tgt, val in zip(target.elts, value.elts):
-                if isinstance(tgt, ast.Name):
+            # Check if this is a swap pattern (targets overlap with values)
+            target_names = {tgt.id for tgt in target.elts if isinstance(tgt, ast.Name)}
+            value_names = set()
+            for val in value.elts:
+                for node in ast.walk(val):
+                    if isinstance(node, ast.Name):
+                        value_names.add(node.id)
+
+            needs_temp = bool(target_names & value_names)
+
+            if needs_temp:
+                # Generate temp variables first
+                temps = []
+                for i, val in enumerate(value.elts):
                     val_expr, val_type = self._expr(val)
-                    name = tgt.id
-                    if name in self._declared_vars:
-                        self._line(f"{name} = {val_expr};")
-                    else:
-                        self._declared_vars.add(name)
-                        t = self.env.current_scope.get_var(name) or val_type
-                        self._line(f"{t} {name} = {val_expr};")
+                    tmp_name = f"_temp{i}"
+                    t = val_type
+                    self._line(f"{t} {tmp_name} = {val_expr};")
+                    temps.append(tmp_name)
+                # Then assign from temps
+                for tgt, tmp in zip(target.elts, temps):
+                    if isinstance(tgt, ast.Name):
+                        name = tgt.id
+                        if name in self._declared_vars:
+                            self._line(f"{name} = {tmp};")
+                        else:
+                            self._declared_vars.add(name)
+                            t = self.env.current_scope.get_var(name) or Type("Object")
+                            self._line(f"{t} {name} = {tmp};")
+            else:
+                # Direct unpacking: a, b = 1, 2
+                for tgt, val in zip(target.elts, value.elts):
+                    if isinstance(tgt, ast.Name):
+                        val_expr, val_type = self._expr(val)
+                        name = tgt.id
+                        if name in self._declared_vars:
+                            self._line(f"{name} = {val_expr};")
+                        else:
+                            self._declared_vars.add(name)
+                            t = self.env.current_scope.get_var(name) or val_type
+                            self._line(f"{t} {name} = {val_expr};")
         elif isinstance(value, ast.Call):
             # a, b = func() → can't really unpack in Java; generate temp + indexed access
             val_expr, _ = self._expr(value)
@@ -355,10 +434,20 @@ class Generator:
         else:
             self._line("}")
 
+    # ── BUG-12 FIX: for...else with boolean flag ────────────────────
+
     def _visit_for(self, node: ast.For):
+        has_else = bool(node.orelse)
+        flag_name = None
+
+        if has_else:
+            self._loop_else_counter += 1
+            flag_name = f"_loopCompleted{self._loop_else_counter}"
+            self._line(f"boolean {flag_name} = true;")
+
         iter_expr = node.iter
 
-        # ── for i, v in enumerate(lst): ──
+        # ── BUG-13 FIX: for i, v in enumerate(lst, start=N): ──
         if (isinstance(node.target, ast.Tuple)
             and isinstance(iter_expr, ast.Call)
             and isinstance(iter_expr.func, ast.Name)
@@ -370,13 +459,27 @@ class Generator:
                 val_name = elts[1].id
                 iterable_args = iter_expr.args
                 iterable, _ = self._expr(iterable_args[0]) if iterable_args else ("/* ? */", Type("Object"))
-                self._line(f"for (int {idx_name} = 0; {idx_name} < {iterable}.size(); {idx_name}++) {{")
+
+                # Check for start= keyword argument
+                start_val = "0"
+                for kw in iter_expr.keywords:
+                    if kw.arg == "start":
+                        start_val, _ = self._expr(kw.value)
+
+                self._line(f"for (int {idx_name} = {start_val}; {idx_name} < {iterable}.size() + {start_val}; {idx_name}++) {{")
                 self._indent += 1
-                self._line(f"var {val_name} = {iterable}.get({idx_name});")
+                self._line(f"var {val_name} = {iterable}.get({idx_name} - {start_val});")
                 for stmt in node.body:
                     self._visit_stmt(stmt)
                 self._indent -= 1
                 self._line("}")
+                if has_else:
+                    self._line(f"if ({flag_name}) {{")
+                    self._indent += 1
+                    for stmt in node.orelse:
+                        self._visit_stmt(stmt)
+                    self._indent -= 1
+                    self._line("}")
                 return
 
         # ── for k, v in dict.items(): ──
@@ -399,6 +502,13 @@ class Generator:
                     self._visit_stmt(stmt)
                 self._indent -= 1
                 self._line("}")
+                if has_else:
+                    self._line(f"if ({flag_name}) {{")
+                    self._indent += 1
+                    for stmt in node.orelse:
+                        self._visit_stmt(stmt)
+                    self._indent -= 1
+                    self._line("}")
                 return
 
         # ── for x, y in zip(a, b): ──
@@ -422,6 +532,13 @@ class Generator:
                     self._visit_stmt(stmt)
                 self._indent -= 1
                 self._line("}")
+                if has_else:
+                    self._line(f"if ({flag_name}) {{")
+                    self._indent += 1
+                    for stmt in node.orelse:
+                        self._visit_stmt(stmt)
+                    self._indent -= 1
+                    self._line("}")
                 return
 
         # ── Simple target ──
@@ -439,6 +556,13 @@ class Generator:
                     self._visit_stmt(stmt)
                 self._indent -= 1
                 self._line("}")
+                if has_else:
+                    self._line(f"if ({flag_name}) {{")
+                    self._indent += 1
+                    for stmt in node.orelse:
+                        self._visit_stmt(stmt)
+                    self._indent -= 1
+                    self._line("}")
                 return
             self.env.error("Bucle for con target no soportado")
             return
@@ -472,7 +596,26 @@ class Generator:
         self._indent -= 1
         self._line("}")
 
+        # BUG-12: for...else
+        if has_else:
+            self._line(f"if ({flag_name}) {{")
+            self._indent += 1
+            for stmt in node.orelse:
+                self._visit_stmt(stmt)
+            self._indent -= 1
+            self._line("}")
+
+    # ── BUG-12 FIX: while...else with boolean flag ──────────────────
+
     def _visit_while(self, node: ast.While):
+        has_else = bool(node.orelse)
+        flag_name = None
+
+        if has_else:
+            self._loop_else_counter += 1
+            flag_name = f"_loopCompleted{self._loop_else_counter}"
+            self._line(f"boolean {flag_name} = true;")
+
         cond, _ = self._expr(node.test)
         self._line(f"while ({cond}) {{")
         self._indent += 1
@@ -481,7 +624,17 @@ class Generator:
         self._indent -= 1
         self._line("}")
 
-    def _visit_function(self, node: ast.FunctionDef):
+        if has_else:
+            self._line(f"if ({flag_name}) {{")
+            self._indent += 1
+            for stmt in node.orelse:
+                self._visit_stmt(stmt)
+            self._indent -= 1
+            self._line("}")
+
+    # ── BUG-14 FIX: Default params → generate overloads ─────────────
+
+    def _visit_function(self, node):
         # Handle decorators as comments
         for dec in node.decorator_list:
             dec_expr, _ = self._expr(dec)
@@ -519,17 +672,6 @@ class Generator:
         if node.args.kwarg:
             self.env.warn(f"**{node.args.kwarg.arg}: Java no soporta **kwargs. Se omitió.")
 
-        # Handle default values as comments
-        defaults = node.args.defaults
-        if defaults:
-            num_no_default = len(node.args.args) - len(defaults)
-            for i, default in enumerate(defaults):
-                arg_idx = num_no_default + i
-                if arg_idx < len(node.args.args):
-                    arg_name = node.args.args[arg_idx].arg
-                    default_expr, _ = self._expr(default)
-                    self.env.warn(f"Parámetro '{arg_name}' tiene valor por defecto = {default_expr}. Java no soporta valores por defecto; se requiere sobrecarga.")
-
         # Infer return type
         return_type = "void"
         if node.returns and isinstance(node.returns, ast.Name):
@@ -547,13 +689,43 @@ class Generator:
             "return_type": return_type,
         })
 
+        # BUG-14: Generate overloads for default parameter values
+        defaults = node.args.defaults
+        if defaults:
+            num_no_default = len(node.args.args) - len(defaults)
+            # Filter out 'self' params
+            non_self_args = [a for a in node.args.args if a.arg != "self"]
+            num_no_default_filtered = len(non_self_args) - len(defaults)
+
+            for d in range(len(defaults)):
+                # Generate overload with (num_no_default + d) params
+                overload_count = num_no_default_filtered + d
+                overload_params = params[:overload_count]
+
+                # Build call args: the params we have + the defaults
+                call_args = [p[1] for p in overload_params]
+                for di in range(d, len(defaults)):
+                    default_expr, _ = self._expr(defaults[di])
+                    call_args.append(default_expr)
+
+                overload_body = [f"    return {node.name}({', '.join(call_args)});"]
+                if return_type == "void":
+                    overload_body = [f"    {node.name}({', '.join(call_args)});"]
+
+                self.methods.append({
+                    "name": node.name,
+                    "params": overload_params,
+                    "body": overload_body,
+                    "return_type": return_type,
+                })
+
         self._current_lines = saved_lines
         self._indent = saved_indent
         self._in_function = False
         self._declared_vars = saved_declared
         self.env.pop_scope()
 
-    def _has_return_value(self, node: ast.FunctionDef) -> bool:
+    def _has_return_value(self, node) -> bool:
         """Check recursively if the function has a return statement with a value."""
         for child in ast.walk(node):
             if isinstance(child, ast.Return) and child.value is not None:
@@ -573,6 +745,8 @@ class Generator:
         }
         return mapping.get(type_name, type_name)
 
+    # ── BUG-4 FIX: Track class names for 'new' keyword ──────────────
+
     def _visit_class(self, node: ast.ClassDef):
         saved_lines = self._current_lines
         saved_indent = self._indent
@@ -582,6 +756,9 @@ class Generator:
         self._current_lines = class_lines
         self._indent = 1
         self._declared_vars = set()
+
+        # Track class name for 'new' keyword generation
+        self.env.defined_classes.add(node.name)
 
         # Handle decorators
         for dec in node.decorator_list:
@@ -630,6 +807,38 @@ class Generator:
                         self._visit_stmt(s)
                     self._indent -= 1
                     self._line("}")
+                elif stmt.name == "__len__":
+                    self._line("public int size() {")
+                    self._indent += 1
+                    for s in stmt.body:
+                        self._visit_stmt(s)
+                    self._indent -= 1
+                    self._line("}")
+                elif stmt.name == "__getitem__":
+                    self._line("public Object get(int idx) {")
+                    self._indent += 1
+                    for s in stmt.body:
+                        self._visit_stmt(s)
+                    self._indent -= 1
+                    self._line("}")
+                elif stmt.name == "__add__":
+                    params = []
+                    for arg in stmt.args.args[1:]:
+                        params.append(f"{node.name} {arg.arg}")
+                    self._line(f"public {node.name} add({', '.join(params)}) {{")
+                    self._indent += 1
+                    for s in stmt.body:
+                        self._visit_stmt(s)
+                    self._indent -= 1
+                    self._line("}")
+                elif stmt.name == "__hash__":
+                    self._line("@Override")
+                    self._line("public int hashCode() {")
+                    self._indent += 1
+                    for s in stmt.body:
+                        self._visit_stmt(s)
+                    self._indent -= 1
+                    self._line("}")
                 else:
                     params = []
                     for arg in stmt.args.args[1:]:  # skip self
@@ -669,11 +878,18 @@ class Generator:
         else:
             self._line("return;")
 
+    # ── BUG-11 FIX: try/except/else/finally ──────────────────────────
+
     def _visit_try(self, node: ast.Try):
         self._line("try {")
         self._indent += 1
         for stmt in node.body:
             self._visit_stmt(stmt)
+        # BUG-11: else block goes inside try (runs when no exception)
+        if node.orelse:
+            self._line("// else (runs if no exception)")
+            for stmt in node.orelse:
+                self._visit_stmt(stmt)
         self._indent -= 1
 
         for handler in node.handlers:
@@ -714,6 +930,7 @@ class Generator:
             "StopIteration": "java.util.NoSuchElementException",
             "NotImplementedError": "UnsupportedOperationException",
             "OverflowError": "ArithmeticException",
+            "Exception": "Exception",
         }
         return mapping.get(name, "Exception")
 
@@ -795,6 +1012,18 @@ class Generator:
         if isinstance(node, ast.ListComp):
             return self._expr_listcomp(node)
 
+        # ── BUG-15 FIX: Dict comprehension ──
+        if isinstance(node, ast.DictComp):
+            return self._expr_dictcomp(node)
+
+        # ── BUG-16 FIX: Set comprehension ──
+        if isinstance(node, ast.SetComp):
+            return self._expr_setcomp(node)
+
+        # ── NEW-6 FIX: Generator expression ──
+        if isinstance(node, ast.GeneratorExp):
+            return self._expr_generatorexp(node)
+
         # ── Lambda ──
         if isinstance(node, ast.Lambda):
             return self._expr_lambda(node)
@@ -807,6 +1036,23 @@ class Generator:
         # ── Slice ──
         if isinstance(node, ast.Slice):
             return self._expr_slice(node)
+
+        # ── BUG-10 FIX: Walrus operator := (NamedExpr) ──
+        if hasattr(ast, "NamedExpr") and isinstance(node, ast.NamedExpr):
+            return self._expr_named(node)
+
+        # ── BUG-9 FIX: Yield ──
+        if isinstance(node, ast.Yield):
+            if node.value:
+                val, vt = self._expr(node.value)
+                return f"/* yield {val} */", vt
+            return "/* yield */", Type("Object")
+
+        if isinstance(node, ast.YieldFrom):
+            if node.value:
+                val, _ = self._expr(node.value)
+                return f"/* yield from {val} */", Type("Object")
+            return "/* yield from */", Type("Object")
 
         self.env.warn(f"Expresión '{type(node).__name__}' no soportada completamente.")
         return "/* no traducido */", Type("Object")
@@ -829,6 +1075,11 @@ class Generator:
                 .replace("\r", "\\r")
             )
             return f'"{escaped}"', Type("String")
+        if isinstance(node.value, bytes):
+            escaped = str(node.value)[2:-1]
+            return f'"{escaped}".getBytes()', Type("byte[]")
+        if node.value is Ellipsis:
+            return "/* ... */", Type("Object")
         return "null", Type("Object")
 
     def _expr_name(self, node: ast.Name) -> Tuple[str, Type]:
@@ -844,6 +1095,8 @@ class Generator:
 
         t = self.env.current_scope.get_var(node.id) or Type("Object")
         return node.id, t
+
+    # ── BUG-3 FIX: List repetition [0] * 10 ─────────────────────────
 
     def _expr_binop(self, node: ast.BinOp) -> Tuple[str, Type]:
         left, lt = self._expr(node.left)
@@ -861,6 +1114,17 @@ class Generator:
                 return f"{left}.repeat({right})", Type("String")
             if rt.name == "String":
                 return f"{right}.repeat({left})", Type("String")
+            # BUG-3: List repetition: [0] * 10
+            if "List" in str(lt.name) or "java.util.List" in str(lt.name):
+                self.imports.add("java.util.Collections")
+                self.imports.add("java.util.ArrayList")
+                self.imports.add("java.util.List")
+                return f"new ArrayList<>(Collections.nCopies({right}, {left}.get(0)))", Type("java.util.List")
+            if "List" in str(rt.name) or "java.util.List" in str(rt.name):
+                self.imports.add("java.util.Collections")
+                self.imports.add("java.util.ArrayList")
+                self.imports.add("java.util.List")
+                return f"new ArrayList<>(Collections.nCopies({left}, {right}.get(0)))", Type("java.util.List")
 
         # String concatenation with +
         if isinstance(node.op, ast.Add):
@@ -948,16 +1212,46 @@ class Generator:
             return f"new ArrayList<>(Arrays.asList({elements}))", Type("java.util.List")
         return "new ArrayList<>()", Type("java.util.List")
 
+    # ── BUG-18 FIX: Dict merge {**a, **b} ───────────────────────────
+
     def _expr_dict(self, node: ast.Dict) -> Tuple[str, Type]:
-        """Handle dict literals with actual data."""
+        """Handle dict literals with actual data, including **unpacking."""
         self.imports.add("java.util.HashMap")
         self.imports.add("java.util.Map")
 
         if not node.keys:
             return "new HashMap<>()", Type("java.util.Map")
 
-        # Use Map.of() for small dicts (<=10 entries), otherwise HashMap with puts
-        if len(node.keys) <= 10 and all(k is not None for k in node.keys):
+        # Check if there's any dict unpacking (**dict)
+        has_unpack = any(k is None for k in node.keys)
+
+        if has_unpack:
+            # BUG-18: Generate HashMap with putAll for dict unpacking
+            self._lambda_counter += 1
+            method_name = f"_dictMerge{self._lambda_counter}"
+            body_lines = []
+            body_lines.append("    Map<Object, Object> _result = new HashMap<>();")
+            for k, v in zip(node.keys, node.values):
+                if k is None:
+                    # **dict unpacking
+                    v_expr, _ = self._expr(v)
+                    body_lines.append(f"    _result.putAll({v_expr});")
+                else:
+                    k_expr, _ = self._expr(k)
+                    v_expr, _ = self._expr(v)
+                    body_lines.append(f"    _result.put({k_expr}, {v_expr});")
+            body_lines.append("    return _result;")
+
+            self.methods.append({
+                "name": method_name,
+                "params": [],
+                "body": body_lines,
+                "return_type": "Map<Object, Object>",
+            })
+            return f"{method_name}()", Type("java.util.Map")
+
+        # Use Map.of() for small dicts (<=10 entries)
+        if len(node.keys) <= 10:
             pairs = []
             for k, v in zip(node.keys, node.values):
                 k_expr, _ = self._expr(k)
@@ -965,16 +1259,24 @@ class Generator:
                 pairs.append(f"{k_expr}, {v_expr}")
             return f"new HashMap<>(Map.of({', '.join(pairs)}))", Type("java.util.Map")
         else:
-            # For large dicts we'd need a helper; for now use Map.of with a warning
-            self.env.warn("Diccionario grande: Map.of() soporta hasta 10 pares. Se genera igualmente.")
-            pairs = []
+            # For large dicts, generate a helper method
+            self._lambda_counter += 1
+            method_name = f"_dictInit{self._lambda_counter}"
+            body_lines = ["    Map<Object, Object> _result = new HashMap<>();"]
             for k, v in zip(node.keys, node.values):
                 if k is None:
                     continue
                 k_expr, _ = self._expr(k)
                 v_expr, _ = self._expr(v)
-                pairs.append(f"{k_expr}, {v_expr}")
-            return f"new HashMap<>(Map.of({', '.join(pairs)}))", Type("java.util.Map")
+                body_lines.append(f"    _result.put({k_expr}, {v_expr});")
+            body_lines.append("    return _result;")
+            self.methods.append({
+                "name": method_name,
+                "params": [],
+                "body": body_lines,
+                "return_type": "Map<Object, Object>",
+            })
+            return f"{method_name}()", Type("java.util.Map")
 
     def _expr_set(self, node: ast.Set) -> Tuple[str, Type]:
         self.imports.add("java.util.HashSet")
@@ -985,14 +1287,24 @@ class Generator:
             return f"new HashSet<>(Arrays.asList({elements}))", Type("java.util.Set")
         return "new HashSet<>()", Type("java.util.Set")
 
+    # ── BUG-2 FIX: String slicing uses .substring() ─────────────────
+
     def _expr_subscript(self, node: ast.Subscript) -> Tuple[str, Type]:
         val, t = self._expr(node.value)
-        
+
         # Handle slicing: lst[1:3]
         if isinstance(node.slice, ast.Slice):
             lower = self._expr(node.slice.lower)[0] if node.slice.lower else "0"
-            upper = self._expr(node.slice.upper)[0] if node.slice.upper else f"{val}.size()"
-            return f"{val}.subList({lower}, {upper})", t
+            if t.name == "String":
+                # BUG-2 FIX: Use .substring() for strings
+                if node.slice.upper:
+                    upper = self._expr(node.slice.upper)[0]
+                    return f"{val}.substring({lower}, {upper})", Type("String")
+                else:
+                    return f"{val}.substring({lower})", Type("String")
+            else:
+                upper = self._expr(node.slice.upper)[0] if node.slice.upper else f"{val}.size()"
+                return f"{val}.subList({lower}, {upper})", t
 
         idx, _ = self._expr(node.slice)
 
@@ -1021,14 +1333,25 @@ class Generator:
                 parts.append(f'"{escaped}"')
             elif isinstance(value, ast.FormattedValue):
                 e, _ = self._expr(value.value)
-                parts.append(f"String.valueOf({e})")
+                if value.format_spec:
+                    # Handle format specs like :.2f
+                    if isinstance(value.format_spec, ast.JoinedStr):
+                        fmt_parts = []
+                        for fv in value.format_spec.values:
+                            if isinstance(fv, ast.Constant):
+                                fmt_parts.append(str(fv.value))
+                        fmt = "".join(fmt_parts)
+                        parts.append(f'String.format("%{fmt}", {e})')
+                    else:
+                        parts.append(f"String.valueOf({e})")
+                else:
+                    parts.append(f"String.valueOf({e})")
         return " + ".join(parts) if parts else '""', Type("String")
 
     def _expr_listcomp(self, node: ast.ListComp) -> Tuple[str, Type]:
         """
         [expr for var in iter if cond]
-        → generates an inline helper or an IIFE-like pattern.
-        For simplicity, we generate a method and call it.
+        → generates a helper method.
         """
         self.imports.add("java.util.ArrayList")
         self.imports.add("java.util.List")
@@ -1089,6 +1412,180 @@ class Generator:
 
         return f"{method_name}()", Type("java.util.List")
 
+    # ── BUG-15 FIX: Dict comprehension ──────────────────────────────
+
+    def _expr_dictcomp(self, node: ast.DictComp) -> Tuple[str, Type]:
+        """{k: v for k in iter} → helper method returning HashMap."""
+        self.imports.add("java.util.HashMap")
+        self.imports.add("java.util.Map")
+
+        self._lambda_counter += 1
+        method_name = f"_dictComp{self._lambda_counter}"
+
+        body_lines = []
+        body_lines.append("    Map<Object, Object> _result = new HashMap<>();")
+
+        gen = node.generators[0]
+        if isinstance(gen.target, ast.Name):
+            var_name = gen.target.id
+        else:
+            var_name = "_item"
+
+        # Check if it's a range call
+        if (isinstance(gen.iter, ast.Call)
+            and isinstance(gen.iter.func, ast.Name)
+            and gen.iter.func.id == "range"):
+            range_args = [self._expr(a)[0] for a in gen.iter.args]
+            if len(range_args) == 1:
+                body_lines.append(f"    for (int {var_name} = 0; {var_name} < {range_args[0]}; {var_name}++) {{")
+            elif len(range_args) == 2:
+                body_lines.append(f"    for (int {var_name} = {range_args[0]}; {var_name} < {range_args[1]}; {var_name}++) {{")
+            else:
+                body_lines.append(f"    for (int {var_name} = {range_args[0]}; {var_name} < {range_args[1]}; {var_name} += {range_args[2]}) {{")
+        else:
+            iter_expr, _ = self._expr(gen.iter)
+            body_lines.append(f"    for (var {var_name} : {iter_expr}) {{")
+
+        # Conditions
+        conditions = gen.ifs
+        key_expr, _ = self._expr(node.key)
+        val_expr, _ = self._expr(node.value)
+
+        if conditions:
+            cond_parts = [self._expr(c)[0] for c in conditions]
+            combined = " && ".join(cond_parts)
+            body_lines.append(f"        if ({combined}) {{")
+            body_lines.append(f"            _result.put({key_expr}, {val_expr});")
+            body_lines.append("        }")
+        else:
+            body_lines.append(f"        _result.put({key_expr}, {val_expr});")
+
+        body_lines.append("    }")
+        body_lines.append("    return _result;")
+
+        self.methods.append({
+            "name": method_name,
+            "params": [],
+            "body": body_lines,
+            "return_type": "Map<Object, Object>",
+        })
+
+        return f"{method_name}()", Type("java.util.Map")
+
+    # ── BUG-16 FIX: Set comprehension ───────────────────────────────
+
+    def _expr_setcomp(self, node: ast.SetComp) -> Tuple[str, Type]:
+        """{x for x in iter} → helper method returning HashSet."""
+        self.imports.add("java.util.HashSet")
+        self.imports.add("java.util.Set")
+
+        self._lambda_counter += 1
+        method_name = f"_setComp{self._lambda_counter}"
+
+        body_lines = []
+        body_lines.append("    Set<Object> _result = new HashSet<>();")
+
+        gen = node.generators[0]
+        if isinstance(gen.target, ast.Name):
+            var_name = gen.target.id
+        else:
+            var_name = "_item"
+
+        if (isinstance(gen.iter, ast.Call)
+            and isinstance(gen.iter.func, ast.Name)
+            and gen.iter.func.id == "range"):
+            range_args = [self._expr(a)[0] for a in gen.iter.args]
+            if len(range_args) == 1:
+                body_lines.append(f"    for (int {var_name} = 0; {var_name} < {range_args[0]}; {var_name}++) {{")
+            elif len(range_args) == 2:
+                body_lines.append(f"    for (int {var_name} = {range_args[0]}; {var_name} < {range_args[1]}; {var_name}++) {{")
+            else:
+                body_lines.append(f"    for (int {var_name} = {range_args[0]}; {var_name} < {range_args[1]}; {var_name} += {range_args[2]}) {{")
+        else:
+            iter_expr, _ = self._expr(gen.iter)
+            body_lines.append(f"    for (var {var_name} : {iter_expr}) {{")
+
+        conditions = gen.ifs
+        elt_expr, _ = self._expr(node.elt)
+
+        if conditions:
+            cond_parts = [self._expr(c)[0] for c in conditions]
+            combined = " && ".join(cond_parts)
+            body_lines.append(f"        if ({combined}) {{")
+            body_lines.append(f"            _result.add({elt_expr});")
+            body_lines.append("        }")
+        else:
+            body_lines.append(f"        _result.add({elt_expr});")
+
+        body_lines.append("    }")
+        body_lines.append("    return _result;")
+
+        self.methods.append({
+            "name": method_name,
+            "params": [],
+            "body": body_lines,
+            "return_type": "Set<Object>",
+        })
+
+        return f"{method_name}()", Type("java.util.Set")
+
+    # ── NEW-6 FIX: Generator expression ─────────────────────────────
+
+    def _expr_generatorexp(self, node: ast.GeneratorExp) -> Tuple[str, Type]:
+        """Treat generator expressions like list comprehensions."""
+        self.imports.add("java.util.ArrayList")
+        self.imports.add("java.util.List")
+
+        self._lambda_counter += 1
+        method_name = f"_genExpr{self._lambda_counter}"
+
+        body_lines = []
+        body_lines.append("    List<Object> _result = new ArrayList<>();")
+
+        gen = node.generators[0]
+        if isinstance(gen.target, ast.Name):
+            var_name = gen.target.id
+        else:
+            var_name = "_item"
+
+        if (isinstance(gen.iter, ast.Call)
+            and isinstance(gen.iter.func, ast.Name)
+            and gen.iter.func.id == "range"):
+            range_args = [self._expr(a)[0] for a in gen.iter.args]
+            if len(range_args) == 1:
+                body_lines.append(f"    for (int {var_name} = 0; {var_name} < {range_args[0]}; {var_name}++) {{")
+            elif len(range_args) == 2:
+                body_lines.append(f"    for (int {var_name} = {range_args[0]}; {var_name} < {range_args[1]}; {var_name}++) {{")
+            else:
+                body_lines.append(f"    for (int {var_name} = {range_args[0]}; {var_name} < {range_args[1]}; {var_name} += {range_args[2]}) {{")
+        else:
+            iter_expr, _ = self._expr(gen.iter)
+            body_lines.append(f"    for (var {var_name} : {iter_expr}) {{")
+
+        conditions = gen.ifs
+        elt_expr, _ = self._expr(node.elt)
+
+        if conditions:
+            cond_parts = [self._expr(c)[0] for c in conditions]
+            combined = " && ".join(cond_parts)
+            body_lines.append(f"        if ({combined}) {{")
+            body_lines.append(f"            _result.add({elt_expr});")
+            body_lines.append("        }")
+        else:
+            body_lines.append(f"        _result.add({elt_expr});")
+
+        body_lines.append("    }")
+        body_lines.append("    return _result;")
+
+        self.methods.append({
+            "name": method_name,
+            "params": [],
+            "body": body_lines,
+            "return_type": "List<Object>",
+        })
+
+        return f"{method_name}()", Type("java.util.List")
+
     def _expr_lambda(self, node: ast.Lambda) -> Tuple[str, Type]:
         """
         lambda x: x + 1 → generates a helper method and returns its name.
@@ -1124,10 +1621,29 @@ class Generator:
             parts.append(self._expr(node.upper)[0])
         return ":".join(parts), Type("Object")
 
+    # ── BUG-10 FIX: Walrus operator := ──────────────────────────────
+
+    def _expr_named(self, node) -> Tuple[str, Type]:
+        """Handle walrus operator: (n := expr) → assign n, then use n."""
+        name = node.target.id
+        val_expr, val_type = self._expr(node.value)
+        # Declare the variable if not already declared
+        if name not in self._declared_vars:
+            self._declared_vars.add(name)
+            t = val_type
+            self._line(f"{t} {name} = {val_expr};")
+        else:
+            self._line(f"{name} = {val_expr};")
+        return name, val_type
+
     # ── Call handling ───────────────────────────────────────────────
 
     def _call(self, node: ast.Call) -> Tuple[str, Type]:
         if isinstance(node.func, ast.Name):
+            # BUG-4: Check if calling a user-defined class → add 'new'
+            if node.func.id in self.env.defined_classes:
+                args = [self._expr(arg)[0] for arg in node.args]
+                return f"new {node.func.id}({', '.join(args)})", Type(node.func.id)
             return self._call_builtin(node)
         if isinstance(node.func, ast.Attribute):
             return self._call_method(node)
@@ -1168,6 +1684,11 @@ class Generator:
         # ── len ──
         if name == "len":
             if args:
+                # Detect string vs collection
+                arg_node = node.args[0]
+                _, arg_type = self._expr(arg_node)
+                if arg_type.name == "String":
+                    return f"{args[0]}.length()", Type("int")
                 return f"{args[0]}.size()", Type("int")
             return "0", Type("int")
 
@@ -1187,16 +1708,48 @@ class Generator:
         if name == "round":
             return f"Math.round({args[0]})", Type("long")
         if name == "sum":
-            # No direct Java equivalent; approximate
-            return f"/* sum */ {args[0]}.stream().mapToInt(Integer::intValue).sum()", Type("int")
+            # Check if argument is a generator expression
+            if node.args and isinstance(node.args[0], ast.GeneratorExp):
+                gen_expr, _ = self._expr_generatorexp(node.args[0])
+                return f"{gen_expr}.stream().mapToInt(x -> (int) x).sum()", Type("int")
+            return f"{args[0]}.stream().mapToInt(x -> (int) x).sum()", Type("int")
 
-        # ── sorted ──
+        # ── BUG-8 FIX: sorted with key ──
         if name == "sorted":
             self.imports.add("java.util.Collections")
             self.imports.add("java.util.ArrayList")
             self.imports.add("java.util.List")
             if args:
-                return f"new ArrayList<>({args[0]}) {{ {{ Collections.sort(this); }} }}", Type("java.util.List")
+                # Check for key= keyword argument
+                key_func = None
+                reverse = False
+                for kw in node.keywords:
+                    if kw.arg == "key":
+                        key_func, _ = self._expr(kw.value)
+                    if kw.arg == "reverse":
+                        if isinstance(kw.value, ast.Constant) and kw.value.value:
+                            reverse = True
+
+                self._lambda_counter += 1
+                method_name = f"_sorted{self._lambda_counter}"
+                body_lines = [f"    List<Object> _result = new ArrayList<>({args[0]});"]
+                if key_func:
+                    self.imports.add("java.util.Comparator")
+                    body_lines.append(f"    _result.sort(Comparator.comparing(x -> {key_func}(x)));")
+                else:
+                    body_lines.append("    Collections.sort(_result);")
+
+                if reverse:
+                    body_lines.append("    Collections.reverse(_result);")
+                body_lines.append("    return _result;")
+
+                self.methods.append({
+                    "name": method_name,
+                    "params": [],
+                    "body": body_lines,
+                    "return_type": "List<Object>",
+                })
+                return f"{method_name}()", Type("java.util.List")
             return "new ArrayList<>()", Type("java.util.List")
 
         # ── reversed ──
@@ -1204,7 +1757,21 @@ class Generator:
             self.imports.add("java.util.Collections")
             self.imports.add("java.util.ArrayList")
             if args:
-                return f"new ArrayList<>({args[0]}) {{ {{ Collections.reverse(this); }} }}", Type("java.util.List")
+                self._lambda_counter += 1
+                method_name = f"_reversed{self._lambda_counter}"
+                body_lines = [
+                    f"    List<Object> _result = new ArrayList<>({args[0]});",
+                    "    Collections.reverse(_result);",
+                    "    return _result;",
+                ]
+                self.imports.add("java.util.List")
+                self.methods.append({
+                    "name": method_name,
+                    "params": [],
+                    "body": body_lines,
+                    "return_type": "List<Object>",
+                })
+                return f"{method_name}()", Type("java.util.List")
 
         # ── isinstance ──
         if name == "isinstance" and len(args) == 2:
@@ -1214,9 +1781,46 @@ class Generator:
         if name == "type":
             return f"{args[0]}.getClass()", Type("Class")
 
+        # ── BUG-5 FIX: map() → stream().map().collect() ──
+        if name == "map":
+            if len(args) >= 2:
+                self.imports.add("java.util.stream.Collectors")
+                self.imports.add("java.util.List")
+                self.imports.add("java.util.ArrayList")
+                func_name = args[0]
+                iterable = args[1]
+                return (f"new ArrayList<>({iterable}.stream().map(x -> {func_name}(x))"
+                        f".collect(Collectors.toList()))"), Type("java.util.List")
+
+        # ── BUG-6 FIX: filter() → stream().filter().collect() ──
+        if name == "filter":
+            if len(args) >= 2:
+                self.imports.add("java.util.stream.Collectors")
+                self.imports.add("java.util.List")
+                self.imports.add("java.util.ArrayList")
+                func_name = args[0]
+                iterable = args[1]
+                return (f"new ArrayList<>({iterable}.stream()"
+                        f".filter(x -> (boolean) {func_name}(x))"
+                        f".collect(Collectors.toList()))"), Type("java.util.List")
+
+        # ── BUG-7 FIX: any() / all() ──
+        if name == "any":
+            if node.args and isinstance(node.args[0], ast.GeneratorExp):
+                gen_expr, _ = self._expr_generatorexp(node.args[0])
+                return f"{gen_expr}.stream().anyMatch(x -> (boolean) x)", Type("boolean")
+            if args:
+                return f"{args[0]}.stream().anyMatch(x -> (boolean) x)", Type("boolean")
+
+        if name == "all":
+            if node.args and isinstance(node.args[0], ast.GeneratorExp):
+                gen_expr, _ = self._expr_generatorexp(node.args[0])
+                return f"{gen_expr}.stream().allMatch(x -> (boolean) x)", Type("boolean")
+            if args:
+                return f"{args[0]}.stream().allMatch(x -> (boolean) x)", Type("boolean")
+
         # ── range ──
         if name == "range":
-            # range is typically used in for-loops, but if used standalone
             self.env.warn("range() usado fuera de un bucle for; aproximación generada.")
             return f"/* range({', '.join(args)}) */", Type("Object")
 
@@ -1245,6 +1849,80 @@ class Generator:
                 return f"new ArrayList<>({args[0]})", Type("java.util.List")
             return "new ArrayList<>()", Type("java.util.List")
 
+        # ── NEW-2 FIX: chr() / ord() ──
+        if name == "chr":
+            return f"String.valueOf((char) ({args[0]}))", Type("String")
+        if name == "ord":
+            return f"(int) ({args[0]}).charAt(0)", Type("int")
+
+        # ── NEW-3 FIX: hex() / oct() / bin() ──
+        if name == "hex":
+            return f'"0x" + Integer.toHexString({args[0]})', Type("String")
+        if name == "oct":
+            return f'"0o" + Integer.toOctalString({args[0]})', Type("String")
+        if name == "bin":
+            return f'"0b" + Integer.toBinaryString({args[0]})', Type("String")
+
+        # ── NEW-4 FIX: pow() ──
+        if name == "pow":
+            if len(args) == 2:
+                return f"(int) Math.pow({args[0]}, {args[1]})", Type("int")
+            elif len(args) == 3:
+                return f"((int) Math.pow({args[0]}, {args[1]}) % {args[2]})", Type("int")
+
+        # ── NEW-5 FIX: divmod() ──
+        if name == "divmod":
+            if len(args) == 2:
+                self.imports.add("java.util.ArrayList")
+                self.imports.add("java.util.Arrays")
+                self.imports.add("java.util.List")
+                return f"new ArrayList<>(Arrays.asList({args[0]} / {args[1]}, {args[0]} % {args[1]}))", Type("java.util.List")
+
+        # ── hash() ──
+        if name == "hash":
+            if args:
+                return f"{args[0]}.hashCode()", Type("int")
+
+        # ── id() ──
+        if name == "id":
+            if args:
+                return f"System.identityHashCode({args[0]})", Type("int")
+
+        # ── callable() ──
+        if name == "callable":
+            self.env.warn("callable() no tiene equivalente exacto en Java.")
+            if args:
+                return f"/* callable({args[0]}) */ true", Type("boolean")
+
+        # ── eval/exec ──
+        if name == "eval" or name == "exec":
+            self.env.warn(f"{name}() no tiene equivalente en Java; requiere motor de scripting.")
+            return f"/* {name}({', '.join(args)}) */", Type("Object")
+
+        # ── super() ──
+        if name == "super":
+            return "super", Type("Object")
+
+        # ── hasattr/getattr/setattr ──
+        if name == "hasattr":
+            self.env.warn("hasattr() → se usó reflexión genérica.")
+            return f"/* hasattr({', '.join(args)}) */ true", Type("boolean")
+        if name == "getattr":
+            self.env.warn("getattr() → se usó reflexión genérica.")
+            return f"/* getattr({', '.join(args)}) */", Type("Object")
+        if name == "setattr":
+            self.env.warn("setattr() → se usó reflexión genérica.")
+            return f"/* setattr({', '.join(args)}) */", Type("void")
+
+        # ── frozenset ──
+        if name == "frozenset":
+            self.imports.add("java.util.Collections")
+            self.imports.add("java.util.HashSet")
+            self.imports.add("java.util.Set")
+            if args:
+                return f"Collections.unmodifiableSet(new HashSet<>({args[0]}))", Type("java.util.Set")
+            return "Collections.unmodifiableSet(new HashSet<>())", Type("java.util.Set")
+
         # ── User-defined function call ──
         return f"{name}({', '.join(args)})", Type("Object")
 
@@ -1272,7 +1950,14 @@ class Generator:
             "title": (None, [], Type("String")),  # Special handling
             "isdigit": ("matches", ['"\\\\d+"'], Type("boolean")),
             "isalpha": ("matches", ['"[a-zA-Z]+"'], Type("boolean")),
+            "isalnum": ("matches", ['"[a-zA-Z0-9]+"'], Type("boolean")),
+            "isspace": ("matches", ['"\\\\s+"'], Type("boolean")),
             "format": (None, args, Type("String")),  # Special handling
+            "encode": (None, args, Type("byte[]")),  # Special handling
+            "zfill": (None, args, Type("String")),  # Special handling
+            "center": (None, args, Type("String")),  # Special handling
+            "ljust": (None, args, Type("String")),  # Special handling
+            "rjust": (None, args, Type("String")),  # Special handling
         }
 
         if method in string_methods:
@@ -1296,6 +1981,26 @@ class Generator:
 
             if method == "format":
                 return f"String.format({obj}, {', '.join(args)})", ret_type
+
+            if method == "encode":
+                charset = args[0] if args else '"UTF-8"'
+                return f"{obj}.getBytes({charset})", ret_type
+
+            if method == "zfill":
+                if args:
+                    return f"String.format(\"%{args[0]}s\", {obj}).replace(' ', '0')", ret_type
+
+            if method == "center":
+                if args:
+                    return f"String.format(\"%-\" + {args[0]} + \"s\", String.format(\"%\" + ({args[0]} + {obj}.length()) / 2 + \"s\", {obj}))", ret_type
+
+            if method == "ljust":
+                if args:
+                    return f"String.format(\"%-\" + {args[0]} + \"s\", {obj})", ret_type
+
+            if method == "rjust":
+                if args:
+                    return f"String.format(\"%\" + {args[0]} + \"s\", {obj})", ret_type
 
             if java_method:
                 return f"{obj}.{java_method}({', '.join(java_args if java_args != args else args)})", ret_type
@@ -1371,6 +2076,52 @@ class Generator:
 
             if java_method:
                 return f"{obj}.{java_method}({', '.join(java_args if java_args != args else args)})", ret_type
+
+        # ── Set methods ──
+        set_methods = {
+            "add": ("add", args, Type("void")),
+            "remove": ("remove", args, Type("void")),
+            "discard": ("remove", args, Type("void")),
+            "union": (None, args, Type("java.util.Set")),
+            "intersection": (None, args, Type("java.util.Set")),
+            "difference": (None, args, Type("java.util.Set")),
+            "issubset": ("containsAll", args, Type("boolean")),
+        }
+
+        if method in set_methods:
+            java_method, java_args, ret_type = set_methods[method]
+
+            if method == "union" and args:
+                self.imports.add("java.util.HashSet")
+                self.imports.add("java.util.Set")
+                return f"new HashSet<>({obj}) {{ {{ addAll({args[0]}); }} }}", ret_type
+
+            if method == "intersection" and args:
+                self.imports.add("java.util.HashSet")
+                self.imports.add("java.util.Set")
+                return f"new HashSet<>({obj}) {{ {{ retainAll({args[0]}); }} }}", ret_type
+
+            if method == "difference" and args:
+                self.imports.add("java.util.HashSet")
+                self.imports.add("java.util.Set")
+                return f"new HashSet<>({obj}) {{ {{ removeAll({args[0]}); }} }}", ret_type
+
+            if method == "issubset":
+                return f"{args[0]}.containsAll({obj})", ret_type
+
+            if java_method:
+                return f"{obj}.{java_method}({', '.join(java_args if java_args != args else args)})", ret_type
+
+        # ── Deque methods ──
+        if method == "appendleft":
+            return f"{obj}.addFirst({args[0]})" if args else f"{obj}.addFirst(null)", Type("void")
+        if method == "popleft":
+            return f"{obj}.removeFirst()", Type("Object")
+
+        # ── most_common (Counter) ──
+        if method == "most_common":
+            self.env.warn("Counter.most_common() no tiene equivalente directo en Java.")
+            return f"/* {obj}.most_common({', '.join(args)}) */", Type("Object")
 
         # ── Fallback: pass through ──
         return f"{obj}.{method}({', '.join(args)})", Type("Object")
