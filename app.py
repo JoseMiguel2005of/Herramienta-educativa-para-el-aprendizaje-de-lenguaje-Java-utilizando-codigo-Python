@@ -454,6 +454,7 @@ def lesson(lesson_id):
 
 # ===== PRACTICE LAB (Sprint 5 — 2.3) =====
 @app.route("/practica")
+@app.route("/practice")
 def practice_list():
     data = load_practice_problems()
     problems = data.get("problems", [])
