@@ -36,7 +36,14 @@ database_url = os.environ.get("DATABASE_URL")
 if database_url:
     if database_url.startswith("postgres://"):
         database_url = database_url.replace("postgres://", "postgresql://", 1)
+    if "sslmode=" not in database_url and "localhost" not in database_url and "127.0.0.1" not in database_url:
+        separator = "&" if "?" in database_url else "?"
+        database_url = f"{database_url}{separator}sslmode=require"
     app.config["SQLALCHEMY_DATABASE_URI"] = database_url
+    engine_options = {
+        "pool_pre_ping": True,
+        "pool_recycle": 280,
+    }
 else:
     # On Vercel serverless, working directory is read-only (/var/task), write SQLite to /tmp
     is_vercel = os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME")
@@ -47,13 +54,9 @@ else:
             os.path.abspath(os.path.dirname(__file__)), "database_v2.sqlite"
         )
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + sqlite_path
+    engine_options = {"pool_pre_ping": True}
 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-# pool_recycle only makes sense for PostgreSQL; SQLite uses NullPool
-engine_options = {"pool_pre_ping": True}
-if database_url:
-    engine_options["pool_recycle"] = 300
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = engine_options
 db.init_app(app)
 
@@ -66,16 +69,21 @@ login_manager.init_app(app)
 def load_user(user_id):
     try:
         return db.session.get(User, int(user_id))
-    except Exception:
+    except Exception as e:
+        print(f"[ERROR in load_user]: {e}", flush=True)
         db.session.rollback()
         return None
 
 
-with app.app_context():
-    try:
-        db.create_all()
-    except Exception as e:
-        print(f"[WARNING] db.create_all failed during initialization: {e}")
+def init_db():
+    with app.app_context():
+        try:
+            db.create_all()
+            print("[INFO] db.create_all() executed successfully.", flush=True)
+        except Exception as e:
+            print(f"[WARNING] db.create_all failed during startup: {e}", flush=True)
+
+init_db()
 
 LESSON_CATEGORIES = [
     {
@@ -789,24 +797,63 @@ def roadmap():
 # --- RUTAS DE AUTENTICACIÓN (Fase 7) ---
 
 
+@app.route("/api/db-status")
+def api_db_status():
+    """Diagnóstico del estado de la base de datos en Vercel."""
+    db_type = "postgresql" if database_url else "sqlite"
+    uri_masked = app.config.get("SQLALCHEMY_DATABASE_URI", "")
+    if "@" in uri_masked:
+        prefix, rest = uri_masked.split("@", 1)
+        scheme = prefix.split("://")[0]
+        uri_masked = f"{scheme}://****:****@{rest}"
+
+    status = {
+        "ok": False,
+        "db_type": db_type,
+        "uri": uri_masked,
+        "is_vercel": bool(os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME")),
+        "tables": [],
+        "user_count": 0,
+        "error": None,
+    }
+
+    try:
+        db.create_all()
+        status["tables"] = list(db.metadata.tables.keys())
+        status["user_count"] = User.query.count()
+        status["ok"] = True
+    except Exception as e:
+        print(f"[ERROR in api_db_status]: {e}", flush=True)
+        status["error"] = str(e)
+
+    return jsonify(status)
+
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for("dashboard"))
 
     if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "")
 
         try:
             user = User.query.filter_by(username=username).first()
-        except Exception:
+        except Exception as e:
+            print(f"[ERROR in login]: {e}", flush=True)
             db.session.rollback()
-            return render_template(
-                "login.html",
-                error="Error de conexión con la base de datos. Intenta de nuevo en unos segundos.",
-                categories=LESSON_CATEGORIES,
-            )
+            try:
+                db.create_all()
+                user = User.query.filter_by(username=username).first()
+            except Exception as e2:
+                print(f"[CRITICAL in login retry]: {e2}", flush=True)
+                db.session.rollback()
+                return render_template(
+                    "login.html",
+                    error="Error de conexión con la base de datos. Si estás en Vercel, verifica que tu DATABASE_URL esté configurada o revisa /api/db-status.",
+                    categories=LESSON_CATEGORIES,
+                )
 
         if user and check_password_hash(user.password_hash, password):
             login_user(user)
@@ -829,12 +876,17 @@ def register():
         return redirect(url_for("dashboard"))
 
     if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
-        role = request.form.get(
-            "role", "student"
-        )
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "")
+        role = request.form.get("role", "student")
         teacher_code = request.form.get("teacher_code", "").strip()
+
+        if not username or not password:
+            return render_template(
+                "register.html",
+                error="El nombre de usuario y contraseña son requeridos.",
+                categories=LESSON_CATEGORIES,
+            )
 
         # Validate teacher code (4.10)
         if role == "teacher" and teacher_code != TEACHER_SECRET_CODE:
@@ -845,13 +897,30 @@ def register():
             )
 
         try:
-            if User.query.filter_by(username=username).first():
+            existing = User.query.filter_by(username=username).first()
+        except Exception as e:
+            print(f"[ERROR in register query]: {e}", flush=True)
+            db.session.rollback()
+            try:
+                db.create_all()
+                existing = User.query.filter_by(username=username).first()
+            except Exception as e2:
+                print(f"[CRITICAL in register retry]: {e2}", flush=True)
+                db.session.rollback()
                 return render_template(
                     "register.html",
-                    error="El usuario ya existe",
+                    error="Error de conexión con la base de datos. Si estás en Vercel, verifica que tu DATABASE_URL esté configurada o revisa /api/db-status.",
                     categories=LESSON_CATEGORIES,
                 )
 
+        if existing:
+            return render_template(
+                "register.html",
+                error="El usuario ya existe",
+                categories=LESSON_CATEGORIES,
+            )
+
+        try:
             hashed_pw = generate_password_hash(password)
             new_user = User(username=username, password_hash=hashed_pw, role=role)
             db.session.add(new_user)
@@ -861,11 +930,12 @@ def register():
             return redirect(
                 url_for("teacher_dashboard" if role == "teacher" else "dashboard")
             )
-        except Exception:
+        except Exception as e:
+            print(f"[ERROR in register commit]: {e}", flush=True)
             db.session.rollback()
             return render_template(
                 "register.html",
-                error="Error de conexión con la base de datos. Intenta de nuevo en unos segundos.",
+                error="Error al guardar el usuario en la base de datos. Intenta de nuevo.",
                 categories=LESSON_CATEGORIES,
             )
 
