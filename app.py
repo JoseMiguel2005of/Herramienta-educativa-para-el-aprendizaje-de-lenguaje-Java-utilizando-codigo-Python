@@ -33,6 +33,8 @@ TEACHER_SECRET_CODE = os.environ.get("TEACHER_SECRET_CODE", "profesor2024")
 
 # Database Configuration
 database_url = os.environ.get("DATABASE_URL")
+is_vercel = bool(os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"))
+
 if database_url:
     if database_url.startswith("postgres://"):
         database_url = database_url.replace("postgres://", "postgresql://", 1)
@@ -40,13 +42,24 @@ if database_url:
         separator = "&" if "?" in database_url else "?"
         database_url = f"{database_url}{separator}sslmode=require"
     app.config["SQLALCHEMY_DATABASE_URI"] = database_url
-    engine_options = {
-        "pool_pre_ping": True,
-        "pool_recycle": 280,
-    }
+
+    if is_vercel:
+        # Serverless: use NullPool so each invocation opens/closes its own connection
+        # This prevents accumulating idle connections that exhaust Supabase's pool_size limit
+        from sqlalchemy.pool import NullPool
+        engine_options = {
+            "pool_pre_ping": True,
+            "poolclass": NullPool,
+        }
+    else:
+        engine_options = {
+            "pool_pre_ping": True,
+            "pool_size": 2,
+            "max_overflow": 3,
+            "pool_recycle": 280,
+        }
 else:
     # On Vercel serverless, working directory is read-only (/var/task), write SQLite to /tmp
-    is_vercel = os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME")
     if is_vercel:
         sqlite_path = "/tmp/database_v2.sqlite"
     else:
@@ -409,14 +422,19 @@ def lesson(lesson_id):
     prereq_lesson_id = None
     prereq_lesson_title = None
     if prev_lesson and lesson_id != "py-home":
-        user = get_current_user()
-        prev_completed = LessonProgress.query.filter_by(
-            user_id=user.id, lesson_id=prev_lesson, completed=True
-        ).first()
-        if not prev_completed:
-            prereq_warning = True
-            prereq_lesson_id = prev_lesson
-            prereq_lesson_title = get_lesson_title(prev_lesson) or prev_lesson
+        try:
+            user = get_current_user()
+            if user and user.id:
+                prev_completed = LessonProgress.query.filter_by(
+                    user_id=user.id, lesson_id=prev_lesson, completed=True
+                ).first()
+                if not prev_completed:
+                    prereq_warning = True
+                    prereq_lesson_id = prev_lesson
+                    prereq_lesson_title = get_lesson_title(prev_lesson) or prev_lesson
+        except Exception as e:
+            print(f"[WARNING] Prerequisite check failed (DB issue): {e}", flush=True)
+            db.session.rollback()
 
     return render_template(
         "lesson.html",
