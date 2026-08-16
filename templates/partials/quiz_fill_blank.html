@@ -1,8 +1,29 @@
+{% set is_sql = current_lesson and current_lesson.startswith('sql-') %}
+{% set is_scipy = current_lesson and current_lesson.startswith('sc-') %}
+{% set is_pandas = current_lesson and current_lesson.startswith('pd-') %}
+{% set is_mongo = current_lesson and current_lesson.startswith('mongo-') %}
+{% set is_java = ex.target_lang == 'java' or ex.is_translation %}
+
+{% if is_java and ex.python_code %}
 <div class="exercise-python-ref">
     <span class="lang-badge python-badge" style="font-size:0.75rem;">Python</span>
     <code>{{ ex.python_code }}</code>
 </div>
+{% endif %}
+
 <div class="exercise-code-area">
+    {% if is_java %}
     <span class="lang-badge java-badge" style="font-size:0.75rem;">Java</span>
+    {% elif is_sql %}
+    <span class="lang-badge" style="font-size:0.75rem; background: linear-gradient(135deg, #00758F, #F29111);">SQL</span>
+    {% elif is_scipy %}
+    <span class="lang-badge" style="font-size:0.75rem; background: linear-gradient(135deg, #0054a6, #13b5ea);">SciPy</span>
+    {% elif is_pandas %}
+    <span class="lang-badge" style="font-size:0.75rem; background: linear-gradient(135deg, #150458, #E70488);">Pandas</span>
+    {% elif is_mongo %}
+    <span class="lang-badge" style="font-size:0.75rem; background: linear-gradient(135deg, #13AA52, #001E2B);">MongoDB</span>
+    {% else %}
+    <span class="lang-badge python-badge" style="font-size:0.75rem;">Python</span>
+    {% endif %}
     <div class="exercise-template">{{ ex.template_html | safe }}</div>
 </div>

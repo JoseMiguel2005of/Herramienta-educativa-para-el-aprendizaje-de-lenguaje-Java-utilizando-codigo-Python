@@ -2,10 +2,11 @@
     <p class="find-error-instruction">Haz click en la línea que contiene el error.</p>
     <div class="find-error-code">
         {% set lines = ex.code.split('\n') %}
+        {% set lang_class = 'language-java' if (ex.lang == 'java' or ex.target_lang == 'java') else 'language-python' %}
         {% for line in lines %}
         <div class="error-line" data-line-index="{{ loop.index0 }}">
             <span class="line-number">{{ loop.index }}</span>
-            <code class="language-java">{{ line }}</code>
+            <code class="{{ lang_class }}">{{ line }}</code>
         </div>
         {% endfor %}
     </div>

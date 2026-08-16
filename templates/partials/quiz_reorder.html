@@ -1,10 +1,11 @@
 <div class="quiz-reorder">
     <p class="reorder-instruction">Arrastra las líneas para ordenarlas correctamente.</p>
     <ul class="reorder-list" id="reorder-list-{{ ex.id }}">
+        {% set lang_class = 'language-java' if (ex.lang == 'java' or ex.target_lang == 'java') else 'language-python' %}
         {% for line_index in ex.shuffled_order %}
         <li class="reorder-item" draggable="true" data-original-index="{{ line_index }}">
             <span class="drag-handle">☰</span>
-            <code class="language-java">{{ ex.lines[line_index] }}</code>
+            <code class="{{ lang_class }}">{{ ex.lines[line_index] }}</code>
         </li>
         {% endfor %}
     </ul>
