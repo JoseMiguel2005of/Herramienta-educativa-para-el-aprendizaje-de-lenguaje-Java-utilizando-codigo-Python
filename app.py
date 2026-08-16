@@ -1,5 +1,7 @@
-import os
+import csv
+from io import StringIO
 import json
+import os
 import random
 from datetime import date, datetime, timedelta
 from dotenv import load_dotenv
@@ -7,7 +9,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import requests as http_requests
-from flask import (Flask, jsonify, redirect, render_template, request, session,
+from flask import (Flask, Response, jsonify, redirect, render_template, request, session,
                    url_for)
 from flask_login import (LoginManager, current_user, login_required,
                          login_user, logout_user)
@@ -947,10 +949,6 @@ def teacher_delete_student(student_id):
 
 
 # ===== CSV EXPORT (Sprint 4 — 4.7) =====
-import csv
-from io import StringIO
-from flask import Response
-
 @app.route("/profesor/export/csv")
 @login_required
 def teacher_export_csv():

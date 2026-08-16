@@ -82,14 +82,6 @@ def get_reference(category):
     return ref.get(category, [])
 
 
-def invalidate_cache():
-    """Invalida todo el cache (útil si se editan JSONs en caliente)."""
-    load_ui_strings.cache_clear()
-    load_reference_data.cache_clear()
-    load_lesson.cache_clear()
-    load_all_lesson_ids.cache_clear()
-
-
 # ===== QUIZ, EXAMPLES, PRACTICE LOADERS =====
 
 QUIZZES_DIR = os.path.join(CONTENT_DIR, "quizzes")
@@ -189,5 +181,20 @@ def get_evaluation_for_section(section_key):
         if data and data.get("section_key") == section_key:
             return data
     return None
+
+
+def invalidate_cache():
+    """Invalida todo el cache (útil si se editan JSONs en caliente)."""
+    load_ui_strings.cache_clear()
+    load_reference_data.cache_clear()
+    load_lesson.cache_clear()
+    load_all_lesson_ids.cache_clear()
+    load_quiz.cache_clear()
+    load_all_quizzes.cache_clear()
+    load_examples_catalog.cache_clear()
+    load_practice_problems.cache_clear()
+    load_evaluation.cache_clear()
+    load_all_evaluations.cache_clear()
+
 
 
