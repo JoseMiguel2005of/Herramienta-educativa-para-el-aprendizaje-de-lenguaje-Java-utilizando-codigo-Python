@@ -2,7 +2,8 @@
     <p class="find-error-instruction">Haz click en la línea que contiene el error.</p>
     <div class="find-error-code">
         {% set lines = ex.code.split('\n') %}
-        {% set lang_class = 'language-java' if (ex.lang == 'java' or ex.target_lang == 'java') else 'language-python' %}
+        {% set is_python_lesson = current_lesson and (current_lesson.startswith('py-') or current_lesson.startswith('ref-') or current_lesson.startswith('ex-')) %}
+        {% set lang_class = 'language-python' if is_python_lesson else 'language-java' %}
         {% for line in lines %}
         <div class="error-line" data-line-index="{{ loop.index0 }}">
             <span class="line-number">{{ loop.index }}</span>

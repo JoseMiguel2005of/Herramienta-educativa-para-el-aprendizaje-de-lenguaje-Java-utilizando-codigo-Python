@@ -1,10 +1,13 @@
+{# Detect language from the current lesson ID prefix #}
+{% set is_python = current_lesson and current_lesson.startswith('py-') %}
 {% set is_sql = current_lesson and current_lesson.startswith('sql-') %}
 {% set is_scipy = current_lesson and current_lesson.startswith('sc-') %}
 {% set is_pandas = current_lesson and current_lesson.startswith('pd-') %}
 {% set is_mongo = current_lesson and current_lesson.startswith('mongo-') %}
-{% set is_java = ex.target_lang == 'java' or ex.is_translation %}
+{% set is_ref = current_lesson and current_lesson.startswith('ref-') %}
 
-{% if is_java and ex.python_code %}
+{# Only show Python reference code for Java translation exercises (none currently) #}
+{% if not is_python and not is_sql and not is_scipy and not is_pandas and not is_mongo and not is_ref and ex.python_code %}
 <div class="exercise-python-ref">
     <span class="lang-badge python-badge" style="font-size:0.75rem;">Python</span>
     <code>{{ ex.python_code }}</code>
@@ -12,9 +15,7 @@
 {% endif %}
 
 <div class="exercise-code-area">
-    {% if is_java %}
-    <span class="lang-badge java-badge" style="font-size:0.75rem;">Java</span>
-    {% elif is_sql %}
+    {% if is_sql %}
     <span class="lang-badge" style="font-size:0.75rem; background: linear-gradient(135deg, #00758F, #F29111);">SQL</span>
     {% elif is_scipy %}
     <span class="lang-badge" style="font-size:0.75rem; background: linear-gradient(135deg, #0054a6, #13b5ea);">SciPy</span>
