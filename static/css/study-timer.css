@@ -1,0 +1,466 @@
+/* ============================================================
+   STUDY TIMER / CRONÓMETRO DE ESTUDIO (Py2Java Focus Mode)
+   ============================================================ */
+
+/* Topbar timer button */
+.study-timer-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    background: rgba(0, 229, 255, 0.08);
+    border: 1px solid rgba(0, 229, 255, 0.25);
+    color: var(--text, #e6edf3);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.study-timer-btn:hover {
+    background: rgba(0, 229, 255, 0.16);
+    border-color: #00e5ff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 229, 255, 0.2);
+}
+
+.study-timer-btn.running {
+    border-color: rgba(46, 204, 113, 0.6);
+    background: rgba(46, 204, 113, 0.1);
+    color: #4ade80;
+}
+
+.study-timer-btn.running .timer-icon {
+    animation: timer-pulse 2s infinite ease-in-out;
+}
+
+.study-timer-btn.goal-reached {
+    border-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    animation: gold-glow 2s infinite alternate;
+}
+
+.timer-goal-pill {
+    font-size: 0.72rem;
+    opacity: 0.75;
+    color: var(--text-muted, #8b949e);
+}
+
+@keyframes timer-pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.18); opacity: 0.75; }
+}
+
+@keyframes gold-glow {
+    0% { box-shadow: 0 0 5px rgba(245, 158, 11, 0.3); }
+    100% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.7); }
+}
+
+/* Modal / Dropdown Dialog */
+.study-timer-modal {
+    position: fixed;
+    top: 60px;
+    right: 20px;
+    width: 320px;
+    max-width: 90vw;
+    background: rgba(13, 17, 23, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(0, 229, 255, 0.15);
+    padding: 1.25rem;
+    z-index: 1000;
+    font-family: 'Inter', sans-serif;
+    color: #e6edf3;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-10px) scale(0.97);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.study-timer-modal.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+}
+
+[data-theme="light"] .study-timer-modal {
+    background: rgba(255, 255, 255, 0.97);
+    border-color: rgba(0, 0, 0, 0.12);
+    color: #1f2328;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 117, 143, 0.15);
+}
+
+/* Header */
+.timer-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 0.6rem;
+}
+
+[data-theme="light"] .timer-modal-header {
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+.timer-modal-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.timer-modal-close {
+    background: transparent;
+    border: none;
+    color: #8b949e;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.timer-modal-close:hover {
+    color: #f85149;
+}
+
+/* Clock Display Area */
+.timer-clock-area {
+    text-align: center;
+    margin: 1rem 0;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="light"] .timer-clock-area {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.06);
+}
+
+.timer-big-clock {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 2.3rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #00e5ff;
+    text-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+}
+
+[data-theme="light"] .timer-big-clock {
+    color: #00758f;
+    text-shadow: none;
+}
+
+.timer-status-badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    margin-top: 0.3rem;
+    background: rgba(255, 255, 255, 0.1);
+    color: #8b949e;
+}
+
+.timer-status-badge.active {
+    background: rgba(46, 204, 113, 0.2);
+    color: #4ade80;
+}
+
+.timer-status-badge.goal-met {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+}
+
+/* Progress bar */
+.timer-progress-wrap {
+    margin: 0.75rem 0 1rem;
+}
+
+.timer-progress-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #8b949e;
+    margin-bottom: 0.3rem;
+}
+
+.timer-progress-bar-bg {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+[data-theme="light"] .timer-progress-bar-bg {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+.timer-progress-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #00e5ff, #4ade80);
+    border-radius: 10px;
+    transition: width 0.4s ease;
+}
+
+.timer-progress-bar-fill.gold {
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+
+/* Controls */
+.timer-controls-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.timer-btn-action {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.55rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-timer-start {
+    background: #238636;
+    color: #ffffff;
+}
+
+.btn-timer-start:hover {
+    background: #2ea043;
+    transform: translateY(-1px);
+}
+
+.btn-timer-pause {
+    background: #d29922;
+    color: #ffffff;
+}
+
+.btn-timer-pause:hover {
+    background: #e3b341;
+}
+
+.btn-timer-reset {
+    background: rgba(255, 255, 255, 0.08);
+    color: #8b949e;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+[data-theme="light"] .btn-timer-reset {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #656d76;
+}
+
+.btn-timer-reset:hover {
+    background: rgba(248, 81, 73, 0.15);
+    color: #f85149;
+    border-color: #f85149;
+}
+
+/* Goal Presets */
+.timer-presets-section {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="light"] .timer-presets-section {
+    border-top-color: rgba(0, 0, 0, 0.08);
+}
+
+.timer-section-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #8b949e;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.timer-preset-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.6rem;
+}
+
+.timer-chip {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    color: #c9d1d9;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+[data-theme="light"] .timer-chip {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #24292f;
+}
+
+.timer-chip:hover, .timer-chip.active {
+    background: rgba(0, 229, 255, 0.15);
+    border-color: #00e5ff;
+    color: #00e5ff;
+    transform: translateY(-1px);
+}
+
+[data-theme="light"] .timer-chip:hover, [data-theme="light"] .timer-chip.active {
+    background: rgba(0, 117, 143, 0.12);
+    border-color: #00758f;
+    color: #00758f;
+}
+
+/* Custom Goal Input */
+.timer-custom-goal {
+    display: flex;
+    gap: 0.4rem;
+}
+
+.timer-custom-input {
+    flex: 1;
+    padding: 0.35rem 0.6rem;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    color: #e6edf3;
+    font-size: 0.82rem;
+    font-family: inherit;
+}
+
+[data-theme="light"] .timer-custom-input {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.15);
+    color: #1f2328;
+}
+
+.timer-btn-set-goal {
+    padding: 0.35rem 0.75rem;
+    background: rgba(0, 229, 255, 0.15);
+    border: 1px solid rgba(0, 229, 255, 0.35);
+    border-radius: 6px;
+    color: #00e5ff;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+[data-theme="light"] .timer-btn-set-goal {
+    background: rgba(0, 117, 143, 0.1);
+    border-color: #00758f;
+    color: #00758f;
+}
+
+.timer-btn-set-goal:hover {
+    background: #00e5ff;
+    color: #0d1117;
+}
+
+/* Sound Toggle */
+.timer-sound-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.75rem;
+    font-size: 0.78rem;
+    color: #8b949e;
+}
+
+.timer-sound-toggle {
+    cursor: pointer;
+    font-size: 0.82rem;
+    color: #c9d1d9;
+    background: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+/* Celebration Toast */
+.study-celebration-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    border: 2px solid #f59e0b;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    color: #fef3c7;
+    box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3), 0 20px 40px rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    max-width: 380px;
+    animation: toast-slide-in 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes toast-slide-in {
+    from { transform: translateY(100px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.celebration-icon {
+    font-size: 2rem;
+    animation: tada 1s ease infinite;
+}
+
+.celebration-body h4 {
+    margin: 0 0 0.2rem 0;
+    font-size: 0.95rem;
+    color: #fbbf24;
+}
+
+.celebration-body p {
+    margin: 0;
+    font-size: 0.82rem;
+    color: #e5e7eb;
+    line-height: 1.4;
+}
+
+.celebration-close {
+    background: none;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 0.2rem;
+    margin-left: auto;
+}
+
+@keyframes tada {
+    0% { transform: scale(1); }
+    10%, 20% { transform: scale(0.9) rotate(-3deg); }
+    30%, 50%, 70%, 90% { transform: scale(1.1) rotate(3deg); }
+    40%, 60%, 80% { transform: scale(1.1) rotate(-3deg); }
+    100% { transform: scale(1) rotate(0); }
+}

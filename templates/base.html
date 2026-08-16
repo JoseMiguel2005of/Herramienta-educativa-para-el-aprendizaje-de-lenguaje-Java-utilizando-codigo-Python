@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/quizzes.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/ai-tutor.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/study-timer.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -39,6 +40,11 @@
             </a>
 
             <div class="topbar-actions">
+                <button type="button" id="btn-study-timer" class="term-btn study-timer-btn" title="Modo Estudio (Fijar meta de tiempo)">
+                    <span class="timer-icon">⏱️</span>
+                    <span id="study-timer-display" class="timer-digits">00:00</span>
+                    <span id="study-timer-goal-pill" class="timer-goal-pill" style="display:none;">/ 25m</span>
+                </button>
                 <button type="button" id="btn-theme-toggle" class="term-btn" title="Cambiar tema" onclick="toggleTheme()">
                     <span id="theme-icon">🌙</span>
                 </button>
@@ -252,6 +258,7 @@
     <script src="{{ url_for('static', filename='js/progress.js') }}"></script>
     <script src="{{ url_for('static', filename='js/ai-tutor.js') }}"></script>
     <script src="{{ url_for('static', filename='js/search.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/study-timer.js') }}"></script>
     <script>
         function toggleSection(id) {
             var content = document.getElementById(id);
