@@ -10,7 +10,10 @@
             "title": "¿Qué es la Significación Estadística?",
             "text": "SciPy nos proporciona el módulo <code>scipy.stats</code> que contiene funciones útiles para realizar pruebas de hipótesis estadísticas, como el <i>T-Test</i>. En estas pruebas, generalmente calculamos un valor <b>p</b> (p-value).",
             "notes": [
-                {"type": "note", "text": "Si el valor p (p-value) es pequeño (usualmente < 0.05), podemos rechazar la hipótesis nula, lo que significa que nuestros resultados son estadísticamente significativos."}
+                {
+                    "type": "note",
+                    "text": "Si el valor p (p-value) es pequeño (usualmente < 0.05), podemos rechazar la hipótesis nula, lo que significa que nuestros resultados son estadísticamente significativos."
+                }
             ]
         },
         {
@@ -22,7 +25,7 @@
     "code_mappings": [
         {
             "id": "sc-sigtests-1",
-            "section": "T-Test de 2 Muestras",
+            "section": "T-Test (Prueba T)",
             "python": "import numpy as np\nfrom scipy.stats import ttest_ind\n\n# Dos muestras de datos aleatorios\nmuestr1 = np.random.normal(size=100)\nmuestr2 = np.random.normal(size=100)\n\n# Realizar la prueba T (T-Test)\nestadistico, p_valor = ttest_ind(muestr1, muestr2)\nprint(\"P-Value:\", p_valor)",
             "java": "import org.apache.commons.math3.stat.inference.TTest;\n\ndouble[] muestr1 = { ... };\ndouble[] muestr2 = { ... };\n\nTTest tTest = new TTest();\n// Devuelve el p-value para las dos muestras independientes\ndouble p_valor = tTest.homoscedasticTTest(muestr1, muestr2);\nSystem.out.println(\"P-Value: \" + p_valor);",
             "explanation": "Al igual que con la interpolación, Java depende de la librería Apache Commons Math (o similares) para tener funciones equivalentes a las ricas pruebas estadísticas integradas en SciPy."
@@ -33,7 +36,12 @@
             "id": "ex-sc-sigtests-1",
             "type": "multiple-choice",
             "question": "En las pruebas de significación estadística, ¿qué significa un valor p (p-value) menor a 0.05 generalmente?",
-            "options": ["Que hubo un error en los datos", "Que se acepta la hipótesis nula", "Que los resultados son estadísticamente significativos", "Que las medias son exactamente iguales"],
+            "options": [
+                "Que hubo un error en los datos",
+                "Que se acepta la hipótesis nula",
+                "Que los resultados son estadísticamente significativos",
+                "Que las medias son exactamente iguales"
+            ],
             "correct": 2
         },
         {

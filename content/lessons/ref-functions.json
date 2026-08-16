@@ -20,7 +20,7 @@
     "code_mappings": [
         {
             "id": "ref-fn-1",
-            "section": "Ejemplo Combinado",
+            "section": "Tabla de Referencia",
             "python": "nums = [3, 1, 4, 1, 5, 9]\nprint(len(nums))      # 6\nprint(min(nums))      # 1\nprint(max(nums))      # 9\nprint(sorted(nums))   # [1, 1, 3, 4, 5, 9]\nprint(sum(nums))      # 23",
             "java": "List<Integer> nums = Arrays.asList(3, 1, 4, 1, 5, 9);\nSystem.out.println(nums.size());           // 6\nSystem.out.println(Collections.min(nums)); // 1\nSystem.out.println(Collections.max(nums)); // 9\nCollections.sort(nums);\nSystem.out.println(nums);                  // [1, 1, 3, 4, 5, 9]",
             "explanation": "Python ofrece funciones como sum() y sorted() directamente. Java depende de Collections y streams."

@@ -20,7 +20,7 @@
     "code_mappings": [
         {
             "id": "ref-exc-1",
-            "section": "Manejo de Excepciones",
+            "section": "Tabla de Equivalencias",
             "python": "try:\n    x = int('abc')\nexcept ValueError as e:\n    print(f'Error: {e}')\nfinally:\n    print('Siempre se ejecuta')",
             "java": "try {\n    int x = Integer.parseInt(\"abc\");\n} catch (NumberFormatException e) {\n    System.out.println(\"Error: \" + e.getMessage());\n} finally {\n    System.out.println(\"Siempre se ejecuta\");\n}",
             "explanation": "Ambos lenguajes usan try/catch(except)/finally. Los nombres de excepciones varian."

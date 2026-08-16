@@ -1,38 +1,60 @@
 {
     "id": "py-intro",
     "title": "Introducción a Python",
-    "intro": "Python es un lenguaje de programación de propósito general, popular, versátil y muy fácil de aprender.",
+    "intro": "Python es un lenguaje de programación de alto nivel, interpretado, dinámico y de propósito general. Es mundialmente reconocido por su sintaxis limpia, legible y elegante, lo que lo convierte en la mejor opción tanto para principiantes como para expertos en la industria.",
     "python_desc": "Código Python para Introducción",
     "java_desc": "Equivalente en Java para Introducción",
-    "explanation": "",
+    "explanation": "Python se enfoca en la legibilidad y simplicidad, mientras que Java ofrece tipado estático y estructura formal orientada a objetos.",
     "sections": [
         {
             "title": "¿Qué es Python?",
-            "text": "Python fue creado por Guido van Rossum y lanzado en 1991. Se usa ampliamente para desarrollo web (del lado del servidor), desarrollo de software, matemáticas y secuencias de comandos de sistemas (scripting).",
-            "notes": []
+            "text": "Python fue creado por <b>Guido van Rossum</b> en los Países Bajos y lanzado por primera vez en 1991. Su filosofía de diseño enfatiza la legibilidad del código mediante el uso de una indentación significativa.<br><br>Python es un lenguaje <b>multiparadigma</b>, lo que significa que soporta programación orientada a objetos, programación estructurada y programación funcional.<br><br><b>¿Para qué se utiliza Python hoy en día?</b><ul><li><b>Inteligencia Artificial y Ciencia de Datos:</b> Machine Learning, Deep Learning, análisis estadístico y visualización.</li><li><b>Desarrollo Web Backend:</b> Creación de APIs y servidores con frameworks como Django, FastAPI y Flask.</li><li><b>Automatización y Scripting:</b> Tareas repetitivas, web scraping y administración de sistemas.</li><li><b>Desarrollo de Software y Prototipado Rápido:</b> Construcción rápida de aplicaciones funcionales.</li></ul>",
+            "notes": [
+                {
+                    "type": "tip",
+                    "text": "Python es actualmente uno de los lenguajes de programación <b>más populares y demandados del mundo</b> según los índices TIOBE y GitHub Octoverse."
+                },
+                {
+                    "type": "note",
+                    "text": "Python es un lenguaje <b>interpretado</b>: no necesitas compilar tu código a binario antes de ejecutarlo. El intérprete lee y ejecuta las instrucciones línea por línea."
+                }
+            ]
         },
         {
-            "title": "¿Por qué Python?",
-            "text": "Python funciona en diferentes plataformas (Windows, Mac, Linux). Tiene una sintaxis simple parecida al idioma inglés, lo que permite a los desarrolladores escribir programas con menos líneas que en otros lenguajes de programación.",
+            "title": "¿Por qué aprender Python?",
+            "text": "A diferencia de lenguajes más verbosos, Python fue diseñado para parecerse al idioma inglés natural. Esto permite a los desarrolladores resolver problemas complejos escribiendo <b>entre 3 y 5 veces menos líneas de código</b>.<br><br><b>Principales ventajas de Python:</b><ul><li><b>Curva de aprendizaje suave:</b> Menos reglas sintácticas y símbolos que memorizar.</li><li><b>Multiplataforma:</b> El mismo código funciona en Windows, macOS, Linux y Raspberry Pi sin cambios.</li><li><b>Ecosistema gigantesco:</b> Miles de librerías gratuitas disponibles a través de <code>pip</code> (PyPI).</li><li><b>Gran comunidad global:</b> Abundante documentación, tutoriales y soporte.</li></ul>",
             "notes": [
-                {"type": "note", "text": "Python se ejecuta en un sistema <b>interpretado</b>. Esto significa que el código se puede ejecutar tan pronto como se escribe, ideal para prototipos rápidos."}
+                {
+                    "type": "note",
+                    "text": "En Python, una simple línea como <code>print('Hola, Mundo')</code> es un programa completo y ejecutable. En otros lenguajes se requiere declarar clases, métodos estáticos y parámetros del sistema."
+                }
             ]
         },
         {
             "title": "Comparación con Java",
-            "text": "Mientras que Java es estrictamente tipado y requiere definir el tipo de cada variable, Python usa tipado dinámico. Además, Java es un lenguaje compilado (a bytecode) antes de ejecutarse.",
+            "text": "Java y Python son dos de los lenguajes más influyentes de la historia, pero abordan la programación con filosofías distintas:<br><br><ul><li><b>Tipado Dinámico vs Estático:</b> En Python no necesitas declarar el tipo de dato de una variable (<code>x = 10</code>). En Java, debes especificar el tipo exacto (<code>int x = 10;</code>).</li><li><b>Indentación vs Llaves:</b> Python usa espacios/indentación para definir qué código va dentro de una función o bloque. Java usa llaves <code>{}</code> y punto y coma <code>;</code> al final de cada instrucción.</li><li><b>Ejecución:</b> Python se ejecuta directamente con el intérprete. Java se compila primero a <i>bytecode</i> (<code>javac</code>) y luego se ejecuta en la Máquina Virtual de Java (JVM).</li></ul>",
             "notes": [
-                {"type": "tip", "text": "En Python, los bloques de código se definen usando <b>indentación</b> (espacios al principio de la línea). Java usa <b>llaves</b> <code>{}</code>."}
+                {
+                    "type": "tip",
+                    "text": "Aprender Python primero te da una base lógica sólida para luego dominar Java y entender cómo funcionan los tipos estrictos y las arquitecturas empresariales."
+                }
             ]
         }
     ],
     "code_mappings": [
         {
             "id": "py-intro-1",
-            "section": "Sintaxis Básica",
-            "python": "print(\"¡Hola, Mundo!\")",
-            "java": "public class Main {\n  public static void main(String[] args) {\n    System.out.println(\"¡Hola, Mundo!\");\n  }\n}",
-            "explanation": "Como puedes ver, Python requiere mucho menos código de preparación para lograr la misma salida."
+            "section": "¿Qué es Python?",
+            "python": "# Tu primer programa en Python:\nprint(\"¡Hola, Mundo!\")",
+            "java": "// En Java necesitas una clase y un método main:\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println(\"¡Hola, Mundo!\");\n    }\n}",
+            "explanation": "Observa la diferencia de simplicidad: Python solo necesita 1 línea con <code>print()</code>, mientras que Java requiere declarar una clase y el método <code>main</code>."
+        },
+        {
+            "id": "py-intro-2",
+            "section": "Comparación con Java",
+            "python": "# Variables en Python (Tipado Dinámico)\nnombre = \"Carlos\"\nedad = 22\nprint(f\"{nombre} tiene {edad} años\")",
+            "java": "// Variables en Java (Tipado Estático)\nString nombre = \"Carlos\";\nint edad = 22;\nSystem.out.println(nombre + \" tiene \" + edad + \" años\");",
+            "explanation": "En Python las variables se crean directamente asignando un valor con <code>=</code>. En Java debes anteceder siempre el tipo de dato (<code>String</code>, <code>int</code>)."
         }
     ],
     "exercises": [
@@ -40,8 +62,17 @@
             "id": "ex-py-intro-1",
             "type": "multiple-choice",
             "question": "¿Cómo se definen los bloques de código (como los que van dentro de un condicional o función) en Python?",
-            "options": ["Usando corchetes []", "Usando indentación (espacios)", "Usando llaves {}", "Usando paréntesis ()"],
-            "correct": 1
+            "options": ["Usando corchetes []", "Usando indentación (espacios al inicio de línea)", "Usando llaves {}", "Usando punto y coma ;"],
+            "correct": 1,
+            "explanation": "Python utiliza la indentación (espacios en blanco) obligatoria para definir la estructura y anidación de los bloques de código, a diferencia de Java o C que usan llaves {}."
+        },
+        {
+            "id": "ex-py-intro-2",
+            "type": "multiple-choice",
+            "question": "¿Cuál de las siguientes afirmaciones describe mejor el sistema de tipos de Python en comparación con Java?",
+            "options": ["Python es de tipado estático y Java es dinámico", "Ambos lenguajes requieren declarar el tipo de cada variable", "Python usa tipado dinámico y Java usa tipado estático", "Ninguno de los dos lenguajes permite el uso de variables"],
+            "correct": 2,
+            "explanation": "Python infiere automáticamente el tipo de dato al asignar un valor (tipado dinámico), mientras que Java requiere que definas explícitamente el tipo de cada variable (tipado estático)."
         }
     ]
 }

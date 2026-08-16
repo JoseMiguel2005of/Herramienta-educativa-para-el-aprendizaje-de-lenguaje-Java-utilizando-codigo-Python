@@ -20,7 +20,7 @@
     "code_mappings": [
         {
             "id": "ref-str-1",
-            "section": "Ejemplo Completo",
+            "section": "Tabla de Referencia",
             "python": "txt = '  Hola Mundo  '\nprint(txt.strip())        # 'Hola Mundo'\nprint(txt.upper())        # '  HOLA MUNDO  '\nprint(txt.replace('Mundo', 'Python'))\nprint(txt.split())",
             "java": "String txt = \"  Hola Mundo  \";\nSystem.out.println(txt.trim());          // \"Hola Mundo\"\nSystem.out.println(txt.toUpperCase());   // \"  HOLA MUNDO  \"\nSystem.out.println(txt.replace(\"Mundo\", \"Python\"));\nSystem.out.println(txt.split(\" \"));",
             "explanation": "Los metodos de strings son muy similares entre Python y Java, con diferencias menores en los nombres."

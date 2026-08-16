@@ -10,7 +10,10 @@
             "title": "¿Qué son los Datos Dispersos?",
             "text": "Los datos <b>densos</b> son arreglos donde la mayoría de los valores no son cero. Los datos <b>dispersos</b> (sparse) son arreglos donde la mayoría de los elementos son cero.",
             "notes": [
-                {"type": "note", "text": "Almacenar ceros consume mucha memoria innecesaria. El módulo <code>scipy.sparse</code> comprime estas matrices omitiendo los ceros, ahorrando tiempo y memoria valiosa."}
+                {
+                    "type": "note",
+                    "text": "Almacenar ceros consume mucha memoria innecesaria. El módulo <code>scipy.sparse</code> comprime estas matrices omitiendo los ceros, ahorrando tiempo y memoria valiosa."
+                }
             ]
         },
         {
@@ -22,7 +25,7 @@
     "code_mappings": [
         {
             "id": "sc-sparsedata-1",
-            "section": "Crear una Matriz CSR",
+            "section": "Tipos Comunes de Matrices Dispersas",
             "python": "import numpy as np\nfrom scipy.sparse import csr_matrix\n\n# Un arreglo numpy con muchos ceros\narr = np.array([0, 0, 0, 0, 0, 1, 1, 0, 2])\n\n# Convertir a matriz dispersa CSR\nmatriz_dispersa = csr_matrix(arr)\n\nprint(matriz_dispersa)",
             "java": "// En Java puro sin librerías tendrías que crear una estructura propia.\nclass SparseMatrix {\n    // Usualmente guardarías un Map de (Fila, Columna) -> Valor\n    // o implementar el algoritmo CSR manualmente (arreglos de valores, índices y punteros).\n}",
             "explanation": "Al imprimir la matriz CSR en SciPy, solo te mostrará las posiciones y los valores de los elementos que NO son cero. Java estándar carece de estructuras predefinidas para esto, requiriendo su implementación manual o vía librerías."
@@ -33,7 +36,12 @@
             "id": "ex-sc-sparsedata-1",
             "type": "multiple-choice",
             "question": "¿Cuál es la ventaja principal de usar Matrices Dispersas para almacenar datos llenos de ceros?",
-            "options": ["El código se ve más bonito", "Ahorran memoria al no guardar cada elemento nulo (cero)", "Cambian automáticamente los ceros por unos", "Obligan al procesador a ser más veloz"],
+            "options": [
+                "El código se ve más bonito",
+                "Ahorran memoria al no guardar cada elemento nulo (cero)",
+                "Cambian automáticamente los ceros por unos",
+                "Obligan al procesador a ser más veloz"
+            ],
             "correct": 1
         },
         {

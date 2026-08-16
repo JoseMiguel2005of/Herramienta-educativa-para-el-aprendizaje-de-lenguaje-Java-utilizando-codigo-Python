@@ -1,42 +1,62 @@
 {
     "id": "sql-select",
     "title": "MySQL - Selección (Select)",
-    "intro": "Para seleccionar y leer registros en MySQL, usa la instrucción 'SELECT'.",
+    "intro": "Para consultar y leer registros en una base de datos MySQL, se utiliza la instrucción estándar SQL 'SELECT'.",
     "python_desc": "Extraer Datos en Python",
     "java_desc": "Equivalente en Java",
-    "explanation": "",
+    "explanation": "Python ofrece <code>fetchall()</code> para obtener todos los registros como una lista y <code>fetchone()</code> para el primer registro. Java itera a través de un cursor <code>ResultSet</code>.",
     "sections": [
         {
             "title": "Seleccionar y Fetch",
-            "text": "Usamos la sentencia <code>SELECT</code> para consultar información. Posteriormente usamos el método <code>fetchall()</code> del cursor de Python, el cual extrae todas las filas del resultado de la última declaración ejecutada.",
+            "text": "Usamos la sentencia <code>SELECT</code> para consultar información. Posteriormente usamos el método <code>fetchall()</code> del cursor de Python, el cual extrae todas las filas del resultado de la última declaración ejecutada en forma de lista de tuplas.",
             "notes": [
-                {"type": "note", "text": "En Java no tienes un método <code>fetchall()</code> que vuelque todos los registros a una lista nativa en una línea. Debes usar un bucle `while(rs.next())`."}
+                {
+                    "type": "note",
+                    "text": "En Java no existe un método <code>fetchall()</code> que vuelque todos los registros automáticamente a una lista. Debes recorrer un cursor activo mediante un bucle <code>while (rs.next())</code>."
+                },
+                {
+                    "type": "tip",
+                    "text": "Si tu consulta puede devolver miles o millones de registros, usar <code>fetchall()</code> cargará todos los datos en la memoria RAM. En esos casos es mejor iterar el cursor directamente: <code>for fila in micursor:</code>."
+                }
             ]
         },
         {
             "title": "Seleccionar Una Sola Fila",
-            "text": "Si solo estás interesado en un único registro, puedes usar el método <code>fetchone()</code> del cursor.",
-            "notes": []
+            "text": "Si solo estás interesado en obtener un único registro (por ejemplo, buscar un usuario por su ID), puedes usar el método <code>fetchone()</code> del cursor. Este método devuelve únicamente la primera fila coincidente o <code>None</code> si no hubo resultados.",
+            "notes": [
+                {
+                    "type": "tip",
+                    "text": "En Java, para leer una sola fila simplemente llamas a <code>rs.next()</code> una única vez dentro de un <code>if (rs.next())</code>."
+                }
+            ]
         }
     ],
     "code_mappings": [
         {
             "id": "sql-select-1",
             "section": "Seleccionar y Fetch",
-            "python": "import mysql.connector\n\nmydb = mysql.connector.connect(host=\"localhost\", user=\"user\", password=\"pass\", database=\"mibase\")\nmicursor = mydb.cursor()\n\nmicursor.execute(\"SELECT * FROM clientes\")\n\n# fetchall() obtiene todas las filas como una Lista de Tuplas:\nresultado = micursor.fetchall()\n\nfor fila in resultado:\n  print(fila)",
-            "java": "import java.sql.Connection;\nimport java.sql.DriverManager;\nimport java.sql.ResultSet;\nimport java.sql.Statement;\n\npublic class Main {\n  public static void main(String[] args) throws Exception {\n      Connection conn = DriverManager.getConnection(\"jdbc:mysql://localhost/mibase\", \"user\", \"pass\");\n      Statement stmt = conn.createStatement();\n      \n      ResultSet rs = stmt.executeQuery(\"SELECT * FROM clientes\");\n      \n      while (rs.next()) {\n          // En Java debes acceder manualmente a las columnas por nombre o índice\n          String nombre = rs.getString(\"nombre\");\n          String direc = rs.getString(\"direccion\");\n          System.out.println(\"Nombre: \" + nombre + \", Dir: \" + direc);\n      }\n  }\n}",
-            "explanation": "El método `fetchall()` de Python abstrae completamente el manejo de estado de los cursores, entregando una lista común y silvestre. Java requiere lidiar con la persistencia en red llamando a `.next()` en tiempo real."
+            "python": "import mysql.connector\n\nmydb = mysql.connector.connect(host=\"localhost\", user=\"user\", password=\"pass\", database=\"mibase\")\nmicursor = mydb.cursor()\n\nmicursor.execute(\"SELECT * FROM clientes\")\n\n# fetchall() obtiene todas las filas como una Lista de Tuplas:\nresultado = micursor.fetchall()\n\nfor fila in resultado:\n    print(fila)",
+            "java": "import java.sql.Connection;\nimport java.sql.DriverManager;\nimport java.sql.ResultSet;\nimport java.sql.Statement;\n\npublic class Main {\n    public static void main(String[] args) throws Exception {\n        Connection conn = DriverManager.getConnection(\"jdbc:mysql://localhost/mibase\", \"user\", \"pass\");\n        Statement stmt = conn.createStatement();\n        \n        ResultSet rs = stmt.executeQuery(\"SELECT * FROM clientes\");\n        \n        while (rs.next()) {\n            String nombre = rs.getString(\"nombre\");\n            String direc = rs.getString(\"direccion\");\n            System.out.println(\"Nombre: \" + nombre + \", Dir: \" + direc);\n        }\n    }\n}",
+            "explanation": "El método <code>fetchall()</code> de Python extrae todas las filas y las convierte en una lista iterable. Java requiere navegar el objeto <code>ResultSet</code> con <code>.next()</code>."
+        },
+        {
+            "id": "sql-select-2",
+            "section": "Seleccionar Una Sola Fila",
+            "python": "# Obtener solo el primer registro coincidente:\nmicursor.execute(\"SELECT * FROM clientes WHERE id = 1\")\nprimer_cliente = micursor.fetchone()\n\nif primer_cliente:\n    print(f\"Cliente encontrado: {primer_cliente}\")",
+            "java": "// En Java usamos if (rs.next()) para leer solo el primer registro:\nResultSet rs = stmt.executeQuery(\"SELECT * FROM clientes WHERE id = 1\");\nif (rs.next()) {\n    System.out.println(\"Cliente encontrado: \" + rs.getString(\"nombre\"));\n}",
+            "explanation": "<code>fetchone()</code> devuelve una tupla con la primera fila o <code>None</code> si la tabla está vacía o no hubo coincidencia."
         }
     ],
     "exercises": [
         {
             "id": "ex-sql-select-1",
             "type": "fill-blank",
-            "question": "Llama a la función del cursor que obtiene y devuelve todas las filas de la base de datos.",
+            "question": "Llama a la función del cursor que obtiene y devuelve todas las filas resultantes de la consulta.",
             "template": "resultado = micursor.__________()",
             "template_html": "resultado = micursor.<input type='text' class='exercise-input' data-answer='fetchall' placeholder='__________'>()",
             "python_code": "resultado = micursor.fetchall()",
-            "answer": "fetchall"
+            "answer": "fetchall",
+            "explanation": "El método fetchall() recupera todos los registros restantes del conjunto de resultados de una consulta."
         }
     ]
 }

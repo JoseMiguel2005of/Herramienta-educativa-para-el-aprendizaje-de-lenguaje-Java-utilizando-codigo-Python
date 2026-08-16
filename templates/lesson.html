@@ -145,6 +145,68 @@
     </div>
     {% endfor %}
 
+    {# Fallback for any code mappings not explicitly matched to a section title #}
+    {% set section_titles = lesson.sections | map(attribute='title') | list %}
+    {% for mapping in lesson.code_mappings %}
+    {% if mapping.section not in section_titles %}
+    <div class="w3-example section-example" style="margin-top: 1.5rem;">
+        <h3>{{ mapping.section or t.get('example_label', 'Example') }}</h3>
+        <button class="btn-diff-toggle"
+            style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 0.25rem 0.7rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; cursor: pointer; margin-bottom: 0.5rem; transition: all 0.2s;">🔍
+            Ver diferencias</button>
+        <section class="code-comparison" {% if current_category=='java2py' %}style="flex-direction: row-reverse;" {% endif %}>
+            <div class="code-panel code-panel-python">
+                <div class="code-panel-header">
+                    <span class="lang-badge python-badge">{{ t.python_label }}</span>
+                    <button class="btn-copy" data-target="py-{{ mapping.id }}" data-copied="{{ t.copied }}">
+                        {{ t.copy_code }}
+                    </button>
+                </div>
+                <div class="code-block-interactive" id="py-{{ mapping.id }}">
+                    <div class="code-line interactive-line" data-mapping-id="{{ mapping.id }}"
+                        data-explanation="{{ mapping.explanation }}">
+                        <pre><code class="language-python">{{ mapping.python }}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-panel code-panel-java">
+                <div class="code-panel-header">
+                    <span class="lang-badge java-badge">{{ t.java_label }}</span>
+                    <button class="btn-copy" data-target="java-{{ mapping.id }}" data-copied="{{ t.copied }}">
+                        {{ t.copy_code }}
+                    </button>
+                </div>
+                <div class="code-block-interactive" id="java-{{ mapping.id }}">
+                    <div class="code-line interactive-line" data-mapping-id="{{ mapping.id }}"
+                        data-explanation="{{ mapping.explanation }}">
+                        <pre><code class="language-java">{{ mapping.java }}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        {% if mapping.explanation %}
+        <div class="w3-note">
+            <p>{{ mapping.explanation | safe }}</p>
+        </div>
+        {% endif %}
+
+        {% if mapping.python %}
+        <div class="example-run-container" style="margin-bottom: 1rem;">
+            <button class="btn-run-example"
+                onclick="runExampleCode(this, `{{ mapping.python | replace('`', '\`') | replace('\\', '\\\\') }}`)"
+                style="background: transparent; border: 1px solid var(--python-color); color: var(--python-color); padding: 0.3rem 0.8rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; cursor: pointer; transition: all 0.2s;">
+                ▶ Ejecutar ejemplo
+            </button>
+            <pre class="example-output"
+                style="display:none; background: #000; color: var(--text); padding: 0.5rem 0.75rem; margin-top: 0.5rem; border-left: 3px solid var(--python-color); font-size: 0.85rem; border-radius: 2px; max-height: 120px; overflow-y: auto;"><code></code></pre>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    {% endfor %}
+
     {# Global explanation (if any, for enriched lessons) #}
     {% if lesson.explanation %}
     <div class="w3-note" style="margin-top: 2rem;">
@@ -286,7 +348,7 @@
             espacios en blanco.</p>
 
         {% for ex in lesson_data.exercises %}
-        <div class="exercise-card" id="exercise-{{ ex.id }}">
+        <div class="exercise-card" id="exercise-{{ ex.id }}" data-explanation="{{ ex.explanation | default('', true) }}" data-hint="{{ ex.hint | default('', true) }}">
             <div class="exercise-header">
                 <span class="exercise-badge">Ejercicio {{ loop.index }}</span>
             </div>
@@ -640,7 +702,8 @@
     // ===== DIFF HIGHLIGHTING (Sprint 3 — 2.5) =====
     document.querySelectorAll('.btn-diff-toggle').forEach(btn => {
         btn.addEventListener('click', () => {
-            const comparison = btn.closest('.code-comparison');
+            const example = btn.closest('.w3-example') || btn.parentElement;
+            const comparison = example ? example.querySelector('.code-comparison') : null;
             if (!comparison) return;
 
             const pyEl = comparison.querySelector('.code-panel-python code');
@@ -649,9 +712,9 @@
 
             const isActive = btn.classList.toggle('diff-active');
             if (isActive) {
-                btn.textContent = '✓ Diff activado';
-                btn.style.borderColor = 'var(--green)';
-                btn.style.color = 'var(--green)';
+                btn.textContent = '✓ Ocultar diferencias';
+                btn.style.borderColor = 'var(--green, #00e5ff)';
+                btn.style.color = 'var(--green, #00e5ff)';
                 highlightDiff(pyEl, javaEl);
             } else {
                 btn.textContent = '🔍 Ver diferencias';
@@ -664,6 +727,13 @@
     });
 
     function highlightDiff(pyEl, javaEl) {
+        if (!pyEl.getAttribute('data-orig-html')) {
+            pyEl.setAttribute('data-orig-html', pyEl.innerHTML);
+        }
+        if (!javaEl.getAttribute('data-orig-html')) {
+            javaEl.setAttribute('data-orig-html', javaEl.innerHTML);
+        }
+
         const pyLines = pyEl.textContent.split('\n');
         const javaLines = javaEl.textContent.split('\n');
         const maxLines = Math.max(pyLines.length, javaLines.length);
@@ -672,15 +742,15 @@
         let javaHtml = '';
 
         for (let i = 0; i < maxLines; i++) {
-            const pyLine = pyLines[i] || '';
-            const javaLine = javaLines[i] || '';
+            const pyLine = pyLines[i] !== undefined ? pyLines[i] : '';
+            const javaLine = javaLines[i] !== undefined ? javaLines[i] : '';
 
-            if (pyLine.trim() === javaLine.trim()) {
-                pyHtml += `<span class="diff-same">${escapeHtmlDiff(pyLine)}</span>\n`;
-                javaHtml += `<span class="diff-same">${escapeHtmlDiff(javaLine)}</span>\n`;
+            if (pyLine.trim() !== '' && pyLine.trim() === javaLine.trim()) {
+                pyHtml += `<span class="diff-line diff-same">${escapeHtmlDiff(pyLine)}</span>\n`;
+                javaHtml += `<span class="diff-line diff-same">${escapeHtmlDiff(javaLine)}</span>\n`;
             } else {
-                pyHtml += `<span class="diff-changed">${escapeHtmlDiff(pyLine)}</span>\n`;
-                javaHtml += `<span class="diff-changed">${escapeHtmlDiff(javaLine)}</span>\n`;
+                pyHtml += `<span class="diff-line diff-changed diff-py">${escapeHtmlDiff(pyLine || ' ')}</span>\n`;
+                javaHtml += `<span class="diff-line diff-changed diff-java">${escapeHtmlDiff(javaLine || ' ')}</span>\n`;
             }
         }
 
@@ -689,7 +759,10 @@
     }
 
     function removeDiffHighlight(el) {
-        el.textContent = el.textContent; // Strip HTML, keep text
+        const orig = el.getAttribute('data-orig-html');
+        if (orig) {
+            el.innerHTML = orig;
+        }
     }
 
     function escapeHtmlDiff(str) {

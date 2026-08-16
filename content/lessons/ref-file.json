@@ -25,7 +25,7 @@
     "code_mappings": [
         {
             "id": "ref-file-1",
-            "section": "Lectura de Archivo",
+            "section": "Tabla de Referencia",
             "python": "with open('datos.txt', 'r') as f:\n    contenido = f.read()\n    print(contenido)",
             "java": "try (BufferedReader reader = new BufferedReader(new FileReader(\"datos.txt\"))) {\n    String line;\n    while ((line = reader.readLine()) != null) {\n        System.out.println(line);\n    }\n}",
             "explanation": "Python con 'with' y Java con try-with-resources ambos garantizan el cierre automatico del archivo."

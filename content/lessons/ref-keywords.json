@@ -25,7 +25,7 @@
     "code_mappings": [
         {
             "id": "ref-kw-1",
-            "section": "Ejemplo de Keywords",
+            "section": "Comparacion con Java",
             "python": "# Keywords de Python en uso:\nfor i in range(5):       # for, in\n    if i > 2:            # if\n        break            # break\n    elif i == 0:         # elif\n        continue         # continue\n    else:                # else\n        pass             # pass",
             "java": "// Keywords de Java equivalentes:\nfor (int i = 0; i < 5; i++) {  // for\n    if (i > 2) {               // if\n        break;                 // break\n    } else if (i == 0) {       // else if\n        continue;              // continue\n    } else {                   // else\n        // pass (no existe)\n    }\n}",
             "explanation": "Python usa elif en lugar de 'else if' de Java. Python tiene pass (no hacer nada); Java no lo necesita."

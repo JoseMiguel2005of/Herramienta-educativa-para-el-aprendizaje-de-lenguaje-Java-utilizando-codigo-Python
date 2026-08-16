@@ -25,7 +25,7 @@
     "code_mappings": [
         {
             "id": "ref-lists-1",
-            "section": "Ejemplo Completo",
+            "section": "Tabla de Referencia",
             "python": "frutas = ['manzana', 'banana']\nfrutas.append('cereza')\nfrutas.insert(1, 'naranja')\nfrutas.sort()\nprint(frutas)\nfrutas.pop()\nprint(len(frutas))",
             "java": "ArrayList<String> frutas = new ArrayList<>(Arrays.asList(\"manzana\", \"banana\"));\nfrutas.add(\"cereza\");\nfrutas.add(1, \"naranja\");\nCollections.sort(frutas);\nSystem.out.println(frutas);\nfrutas.remove(frutas.size() - 1);\nSystem.out.println(frutas.size());",
             "explanation": "Python usa metodos directos. Java usa ArrayList + Collections para operaciones como sort y reverse."

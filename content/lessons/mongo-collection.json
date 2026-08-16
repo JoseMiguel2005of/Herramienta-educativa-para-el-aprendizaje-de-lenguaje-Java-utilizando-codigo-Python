@@ -10,7 +10,10 @@
             "title": "¿Qué es una Colección?",
             "text": "En bases de datos SQL como MySQL o PostgreSQL, los datos se almacenan en <b>Tablas</b>. En MongoDB (que es NoSQL), los datos se almacenan en <b>Colecciones</b>.",
             "notes": [
-                {"type": "note", "text": "A diferencia de las tablas SQL, una colección de MongoDB no exige una estructura o esquema fijo. Distintos documentos dentro de la misma colección pueden tener campos completamente diferentes."}
+                {
+                    "type": "note",
+                    "text": "A diferencia de las tablas SQL, una colección de MongoDB no exige una estructura o esquema fijo. Distintos documentos dentro de la misma colección pueden tener campos completamente diferentes."
+                }
             ]
         },
         {
@@ -22,14 +25,14 @@
     "code_mappings": [
         {
             "id": "mongo-collection-1",
-            "section": "Acceder a una Colección",
+            "section": "Crear una Colección (Implícito)",
             "python": "import pymongo\n\nmyclient = pymongo.MongoClient(\"mongodb://localhost:27017/\")\nmydb = myclient[\"miBaseDeDatos\"]\n\n# Acceder (o crear) la colección 'clientes'\nmycol = mydb[\"clientes\"]",
             "java": "import com.mongodb.client.MongoClient;\nimport com.mongodb.client.MongoClients;\nimport com.mongodb.client.MongoDatabase;\nimport com.mongodb.client.MongoCollection;\nimport org.bson.Document;\n\nMongoClient mongoClient = MongoClients.create(\"mongodb://localhost:27017\");\nMongoDatabase database = mongoClient.getDatabase(\"miBaseDeDatos\");\n\n// Acceder a la colección 'clientes'\nMongoCollection<Document> collection = database.getCollection(\"clientes\");",
             "explanation": "En ambos lenguajes, el acceso a una colección se hace referenciando la base de datos y luego solicitando la colección por su nombre en formato de cadena (string)."
         },
         {
             "id": "mongo-collection-2",
-            "section": "Verificar si la colección existe",
+            "section": "Crear una Colección (Implícito)",
             "python": "collist = mydb.list_collection_names()\nif \"clientes\" in collist:\n  print(\"¡La colección existe!\")",
             "java": "boolean exists = false;\nfor (String name : database.listCollectionNames()) {\n    if (name.equals(\"clientes\")) {\n        exists = true;\n        break;\n    }\n}\nif (exists) {\n    System.out.println(\"¡La colección existe!\");\n}",
             "explanation": "Para verificar la existencia de una colección, obtenemos la lista de nombres de colecciones y verificamos si la que buscamos está dentro de la lista."
@@ -40,7 +43,12 @@
             "id": "ex-mongo-collection-1",
             "type": "multiple-choice",
             "question": "¿A qué concepto de base de datos relacional (SQL) equivale una 'Colección' en MongoDB?",
-            "options": ["Una Base de datos", "Una Tabla", "Una Fila", "Una Columna"],
+            "options": [
+                "Una Base de datos",
+                "Una Tabla",
+                "Una Fila",
+                "Una Columna"
+            ],
             "correct": 1
         },
         {

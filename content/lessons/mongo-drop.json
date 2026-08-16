@@ -10,7 +10,10 @@
             "title": "Eliminar la Colección",
             "text": "El método <code>drop()</code> se utiliza para borrar permanentemente una colección de la base de datos.",
             "notes": [
-                {"type": "warning", "text": "Eliminar una colección borrará por completo todos los datos en ella. Asegúrate de que esto es lo que quieres hacer."}
+                {
+                    "type": "warning",
+                    "text": "Eliminar una colección borrará por completo todos los datos en ella. Asegúrate de que esto es lo que quieres hacer."
+                }
             ]
         },
         {
@@ -22,7 +25,7 @@
     "code_mappings": [
         {
             "id": "mongo-drop-1",
-            "section": "Llamada al método drop()",
+            "section": "El valor de retorno de drop()",
             "python": "import pymongo\n\nmyclient = pymongo.MongoClient(\"mongodb://localhost:27017/\")\nmydb = myclient[\"miBaseDeDatos\"]\nmycol = mydb[\"clientes\"]\n\n# Eliminar la colección y almacenar si fue exitoso\neliminado = mycol.drop()\nprint(\"Colección eliminada:\", eliminado)",
             "java": "import com.mongodb.client.MongoClient;\nimport com.mongodb.client.MongoClients;\nimport com.mongodb.client.MongoDatabase;\nimport com.mongodb.client.MongoCollection;\nimport org.bson.Document;\n\nMongoClient mongoClient = MongoClients.create(\"mongodb://localhost:27017\");\nMongoDatabase database = mongoClient.getDatabase(\"miBaseDeDatos\");\nMongoCollection<Document> collection = database.getCollection(\"clientes\");\n\n// Eliminar la colección\ncollection.drop();\nSystem.out.println(\"Colección eliminada.\");",
             "explanation": "El método se llama 'drop()' en ambas tecnologías. En Python devuelve un booleano, mientras que el controlador síncrono estándar de Java a menudo simplemente ejecuta la orden y lanza excepción si hay error grave, o ignora si no existía (dependiendo de la implementación)."
@@ -33,7 +36,12 @@
             "id": "ex-mongo-drop-1",
             "type": "multiple-choice",
             "question": "¿Qué devuelve el método drop() en el conector pymongo si la colección que se intentó eliminar no existía?",
-            "options": ["Error", "True", "False", "None"],
+            "options": [
+                "Error",
+                "True",
+                "False",
+                "None"
+            ],
             "correct": 2
         },
         {

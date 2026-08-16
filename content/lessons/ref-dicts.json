@@ -30,7 +30,7 @@
     "code_mappings": [
         {
             "id": "ref-dicts-1",
-            "section": "Uso Completo",
+            "section": "Tabla de Referencia",
             "python": "persona = {'nombre': 'Ana', 'edad': 25}\nprint(persona.get('nombre'))     # Ana\nprint(persona.keys())            # dict_keys(['nombre', 'edad'])\npersona.update({'ciudad': 'Lima'})\nprint(persona.items())           # pares clave-valor",
             "java": "HashMap<String, Object> persona = new HashMap<>();\npersona.put(\"nombre\", \"Ana\");\npersona.put(\"edad\", 25);\nSystem.out.println(persona.get(\"nombre\")); // Ana\nSystem.out.println(persona.keySet());      // [nombre, edad]\npersona.put(\"ciudad\", \"Lima\");\nSystem.out.println(persona.entrySet());    // pares",
             "explanation": "Python usa metodos con nombres cortos. Java usa la clase HashMap con metodos mas descriptivos pero equivalentes."
