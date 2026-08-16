@@ -133,14 +133,54 @@
         if (el) el.remove();
     }
 
-    // ===== Format response (basic markdown) =====
+    // ===== Format response (markdown) =====
+    function escapeHtml(str) {
+        return str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
     function formatResponse(text) {
-        return text
-            .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
-            .replace(/\*(.*?)\*/g, '<i>$1</i>')
-            .replace(/`([^`]+)`/g, '<code>$1</code>')
-            .replace(/```(\w+)?\n?([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
-            .replace(/\n/g, '<br>');
+        if (!text) return '';
+
+        // Extract code blocks first to protect their formatting
+        const codeBlocks = [];
+        let cleanText = text.replace(/```(\w+)?\n?([\s\S]*?)```/g, (match, lang, code) => {
+            const placeholder = `__CODE_BLOCK_${codeBlocks.length}__`;
+            codeBlocks.push(`<pre><code>${escapeHtml(code.trim())}</code></pre>`);
+            return placeholder;
+        });
+
+        // Inline code
+        cleanText = cleanText.replace(/`([^`]+)`/g, (match, inline) => {
+            return `<code>${escapeHtml(inline)}</code>`;
+        });
+
+        // Headers
+        cleanText = cleanText.replace(/^### (.*$)/gim, '<h4 class="ai-msg-h4">$1</h4>');
+        cleanText = cleanText.replace(/^## (.*$)/gim, '<h3 class="ai-msg-h3">$1</h3>');
+        cleanText = cleanText.replace(/^# (.*$)/gim, '<h2 class="ai-msg-h2">$1</h2>');
+
+        // Horizontal rules
+        cleanText = cleanText.replace(/^---$/gim, '<hr class="ai-msg-hr">');
+
+        // Bold and italic
+        cleanText = cleanText.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+        cleanText = cleanText.replace(/\*(.*?)\*/g, '<i>$1</i>');
+
+        // List items
+        cleanText = cleanText.replace(/^\s*[-*]\s+(.*$)/gim, '<li class="ai-msg-li">$1</li>');
+
+        // Line breaks
+        cleanText = cleanText.replace(/\n/g, '<br>');
+
+        // Restore code blocks
+        codeBlocks.forEach((block, index) => {
+            cleanText = cleanText.replace(`__CODE_BLOCK_${index}__`, block);
+        });
+
+        return cleanText;
     }
 
     // ===== Get the current code from the editor =====

@@ -193,6 +193,39 @@
     color: var(--text);
 }
 
+.ai-msg-content h2, .ai-msg-content .ai-msg-h2 {
+    font-size: 0.95rem;
+    color: var(--text, #fff);
+    margin: 0.6rem 0 0.3rem;
+    font-weight: 700;
+}
+
+.ai-msg-content h3, .ai-msg-content .ai-msg-h3 {
+    font-size: 0.88rem;
+    color: var(--green, #00e5ff);
+    margin: 0.5rem 0 0.25rem;
+    font-weight: 600;
+}
+
+.ai-msg-content h4, .ai-msg-content .ai-msg-h4 {
+    font-size: 0.82rem;
+    color: var(--green, #00e5ff);
+    margin: 0.4rem 0 0.2rem;
+    font-weight: 600;
+}
+
+.ai-msg-content hr, .ai-msg-content .ai-msg-hr {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 0.5rem 0;
+}
+
+.ai-msg-content li, .ai-msg-content .ai-msg-li {
+    margin-left: 1rem;
+    margin-bottom: 0.2rem;
+    list-style-type: disc;
+}
+
 /* Loading animation */
 .ai-loading-dots span {
     animation: dotBlink 1.4s infinite;

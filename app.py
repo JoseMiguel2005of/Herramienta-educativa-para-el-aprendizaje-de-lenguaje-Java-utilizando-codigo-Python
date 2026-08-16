@@ -1222,9 +1222,9 @@ REGLAS:
                 "contents": [
                     {"parts": [{"text": system_prompt + "\n\n" + user_message}]}
                 ],
-                "generationConfig": {"temperature": 0.7, "maxOutputTokens": 500},
+                "generationConfig": {"temperature": 0.7, "maxOutputTokens": 2048},
             },
-            timeout=15,
+            timeout=25,
         )
         if resp.status_code == 429:
             return jsonify(
