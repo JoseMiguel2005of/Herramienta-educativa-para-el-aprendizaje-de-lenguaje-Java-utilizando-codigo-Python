@@ -7,6 +7,7 @@
     const TUTOR_PANEL_ID = 'ai-tutor-panel';
     let tutorPanel = null;
     let isLoading = false;
+    let conversationHistory = [];
 
     // ===== Create the AI Tutor Panel =====
     function createTutorPanel() {
@@ -87,6 +88,12 @@
         const container = document.getElementById('ai-tutor-messages');
         if (!container) return;
 
+        // Keep rolling history of last 8 messages
+        conversationHistory.push({ role: sender, text: text });
+        if (conversationHistory.length > 8) {
+            conversationHistory = conversationHistory.slice(-8);
+        }
+
         const msg = document.createElement('div');
         msg.className = `ai-msg ai-msg-${sender}`;
 
@@ -160,7 +167,8 @@
             code: getCurrentCode(),
             lesson_id: getLessonId(),
             question: question,
-            mode: 'analyze'
+            mode: 'chat',
+            history: conversationHistory
         });
     }
 
@@ -181,7 +189,8 @@
         await callTutor({
             code: code,
             lesson_id: getLessonId(),
-            mode: 'analyze'
+            mode: 'analyze',
+            history: conversationHistory
         });
     }
 
@@ -201,7 +210,8 @@
             lesson_id: getLessonId(),
             question: '',
             mode: 'hint',
-            exercise_question: exerciseQuestion
+            exercise_question: exerciseQuestion,
+            history: conversationHistory
         });
     }
 

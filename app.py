@@ -1151,40 +1151,69 @@ def api_ai_tutor():
     data = request.get_json(silent=True) or {}
     user_code = data.get("code", "")
     lesson_id = data.get("lesson_id", "")
-    question = data.get("question", "")
-    mode = data.get("mode", "analyze")  # 'analyze' or 'hint'
+    question = data.get("question", "").strip()
+    mode = data.get("mode", "chat" if question else "analyze")  # 'chat', 'analyze', 'hint'
     exercise_question = data.get("exercise_question", "")
+    history = data.get("history", [])
 
     # Load lesson context
     lesson_data = get_lesson(lesson_id)
     lesson_title = lesson_data.get("title", lesson_id)
     lesson_intro = lesson_data.get("intro", "")
 
+    history_context = ""
+    if isinstance(history, list) and history:
+        history_lines = []
+        for h in history[-4:]:
+            if isinstance(h, dict):
+                role = "Estudiante" if h.get("role") == "user" else "Tutor IA"
+                txt = h.get("text", "").strip()
+                if txt:
+                    history_lines.append(f"{role}: {txt}")
+        if history_lines:
+            history_context = "Historial reciente de la conversación:\n" + "\n".join(history_lines) + "\n\n"
+
     if mode == "hint":
-        system_prompt = f"""Eres un tutor de programación amigable para estudiantes que aprenden Python y Java.
-Estás ayudando con un ejercicio de la lección \"{lesson_title}\".
+        system_prompt = f"""Eres un tutor de programación amigable y pedagógico para estudiantes que aprenden Python y Java.
+Estás ayudando con un ejercicio de la lección "{lesson_title}".
 Contexto de la lección: {lesson_intro}
 
 REGLAS ESTRICTAS:
-- NUNCA des la respuesta directa al ejercicio.
-- Da pistas progresivas que guíen al estudiante.
+- NUNCA des la respuesta directa ni el código resuelto completo al ejercicio.
+- Da pistas progresivas y conceptuales que guíen al estudiante para que lo resuelva por sí mismo.
 - Usa analogías simples si es posible.
 - Responde en español.
 - Sé breve (máximo 3-4 oraciones).
 - Usa emojis para ser más amigable."""
-        user_message = f"Pregunta del ejercicio: {exercise_question}\n\nMi código/respuesta: {user_code}\n\nMi duda: {question if question else 'No entiendo cómo resolverlo'}"
-    else:
+        user_message = f"Pregunta del ejercicio: {exercise_question}\n\nIntento/código del estudiante: {user_code}\n\nDuda del estudiante: {question if question else 'No entiendo cómo resolverlo'}"
+
+    elif mode == "chat" or question:
+        system_prompt = f"""Eres un tutor de programación inteligente, didáctico y amigable para estudiantes de Python y Java.
+Estás en la lección "{lesson_title}".
+Contexto de la lección: {lesson_intro}
+
+REGLAS PRINCIPALES:
+- Tu prioridad número uno es responder DIRECTA y CLARAMENTE a la PREGUNTA o DUDA planteada por el estudiante.
+- Si el estudiante pregunta sobre conceptos, sintaxis o dudas específicas (por ejemplo: el uso de comas, comillas, llaves, f-strings, concatenación, print, tipos de variables, etc.), explícale el porqué con paciencia y dale ejemplos sencillos.
+- NO te limites a felicitar el código del editor; concéntrate en resolver la duda del estudiante.
+- Si hay código en el editor, úsalo como contexto solo si la pregunta se refiere a él.
+- Responde en español de forma estructurada, pedagógica y fácil de entender."""
+
+        context_code = f"\n\nCódigo actual en el editor (solo para contexto si aplica):\n```python\n{user_code}\n```" if user_code.strip() else ""
+        user_message = f"{history_context}Pregunta del estudiante: {question}{context_code}"
+
+    else:  # mode == "analyze"
         system_prompt = f"""Eres un analizador de código Python/Java para estudiantes.
-Estás en la lección \"{lesson_title}\".
+Estás en la lección "{lesson_title}".
 
 REGLAS:
 - Analiza el código del estudiante y da feedback constructivo.
-- Señala errores, mejoras de estilo y buenas prácticas.
+- Señala errores, mejoras de estilo y buenas prácticas de forma clara y pedagógica.
+- Si el código está bien, felicita al estudiante y dale un consejo o tip de mejora.
 - Responde en español.
-- Sé breve y directo (máximo 5-6 oraciones).
-- Usa emojis para ser más amigable.
-- Si el código está bien, felicita al estudiante."""
-        user_message = f"Analiza este código:\n```python\n{user_code}\n```\n{('Mi pregunta: ' + question) if question else ''}"
+- Sé breve y directo (máximo 4-5 oraciones).
+- Usa emojis para ser más amigable."""
+        user_message = f"Analiza este código:\n```python\n{user_code}\n```"
 
     try:
         resp = http_requests.post(
