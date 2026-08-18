@@ -3,7 +3,7 @@ from io import StringIO
 import json
 import os
 import random
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -26,10 +26,13 @@ from search_index import search_lessons
 from translator import translate
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "tesis-python-java-educativo-fallback")
+_secret = os.environ.get("SECRET_KEY")
+if not _secret:
+    _secret = os.urandom(32).hex()
+    print("[AVISO] SECRET_KEY no configurada. Usando clave temporal.", flush=True)
+app.secret_key = _secret
 
-# Teacher registration secret code (4.10)
-TEACHER_SECRET_CODE = os.environ.get("TEACHER_SECRET_CODE", "profesor2024")
+TEACHER_SECRET_CODE = os.environ.get("TEACHER_SECRET_CODE", "")
 
 # Database Configuration
 database_url = os.environ.get("DATABASE_URL")
@@ -417,7 +420,7 @@ def lesson(lesson_id):
     current_category = get_lesson_category(lesson_id)
     current_category_id = current_category["id"] if current_category else "py2java"
 
-    # Prerequisite check (Sprint 3 — 2.10)
+    # Verificar prerrequisito
     prereq_warning = False
     prereq_lesson_id = None
     prereq_lesson_title = None
@@ -452,7 +455,7 @@ def lesson(lesson_id):
     )
 
 
-# ===== PRACTICE LAB (Sprint 5 — 2.3) =====
+# --- Laboratorio de práctica ---
 @app.route("/practica")
 @app.route("/practice")
 def practice_list():
@@ -534,7 +537,7 @@ def api_submit_practice():
                 lesson_id=f"practice-{problem_id}",
                 completed=True,
                 score=xp_gained,
-                completed_at=datetime.utcnow()
+                completed_at=datetime.now(timezone.utc)
             )
             db.session.add(lp)
         else:
@@ -554,7 +557,7 @@ def api_submit_practice():
         "streak": new_stats["streak"]
     })
 
-# ===== GLOSSARY (Sprint 3 — 2.8) =====
+# --- Glosario ---
 @app.route("/glosario")
 def glossary():
     return render_template(
@@ -589,27 +592,16 @@ def api_translate():
 
 
 def get_current_user():
+    """Retorna el usuario autenticado o None."""
     if current_user.is_authenticated:
         return current_user
     user_id = session.get("user_id")
     if user_id:
         try:
-            user = User.query.get(user_id)
-            if user:
-                return user
+            return db.session.get(User, user_id)
         except Exception:
             pass
-
-    user = User(username=f"Estudiante_{os.urandom(3).hex()}", password_hash="")
-    try:
-        db.session.add(user)
-        db.session.commit()
-        session["user_id"] = user.id
-        return user
-    except Exception as e:
-        db.session.rollback()
-        print(f"[WARNING] Error creating anonymous user: {e}")
-        return user
+    return None
 
 
 @app.route("/api/progreso/ejercicio", methods=["POST"])
@@ -646,7 +638,6 @@ def api_ejercicio():
                 db.session.add(lp)
             lp.score = (lp.score or 0) + xp_gained
 
-    # Record daily activity for streak (1.1)
     if passed:
         record_daily_activity(user.id)
 
@@ -671,17 +662,16 @@ def api_leccion():
 
     xp_gained = 0
     if not lp:
-        lp = LessonProgress(user_id=user.id, lesson_id=lesson_id, completed=True, score=0, completed_at=datetime.utcnow())
+        lp = LessonProgress(user_id=user.id, lesson_id=lesson_id, completed=True, score=0, completed_at=datetime.now(timezone.utc))
         db.session.add(lp)
         xp_gained = 10
         lp.score = (lp.score or 0) + xp_gained
     elif not lp.completed:
         lp.completed = True
-        lp.completed_at = datetime.utcnow()
+        lp.completed_at = datetime.now(timezone.utc)
         xp_gained = 10
         lp.score = (lp.score or 0) + xp_gained
 
-    # Record daily activity for streak (1.1)
     record_daily_activity(user.id)
 
     db.session.commit()
@@ -691,7 +681,7 @@ def api_leccion():
 
 
 def record_daily_activity(user_id):
-    """Record that user was active today for streak tracking (1.1)."""
+    """Registra la actividad diaria del usuario para el cálculo de racha."""
     if not user_id:
         return
     today = date.today()
@@ -704,7 +694,7 @@ def record_daily_activity(user_id):
 
 
 def calculate_streak(user_id):
-    """Calculate current consecutive day streak for a user (1.1)."""
+    """Calcula la racha de días consecutivos de actividad."""
     if not user_id:
         return 0
     streaks = (
@@ -791,12 +781,12 @@ def api_buscar():
 
 
 @app.route("/dashboard")
+@login_required
 def dashboard():
-    user = get_current_user()
-    summary = get_progress_summary(user)
+    summary = get_progress_summary(current_user)
     return render_template(
         "dashboard.html",
-        user=user,
+        user=current_user,
         summary=summary,
         categories=LESSON_CATEGORIES,
         lessons=LESSONS,
@@ -805,20 +795,23 @@ def dashboard():
 
 
 @app.route("/roadmap")
+@login_required
 def roadmap():
-    user = get_current_user()
-    summary = get_progress_summary(user)
+    summary = get_progress_summary(current_user)
     return render_template(
         "roadmap.html", categories=LESSON_CATEGORIES, summary=summary, page="roadmap"
     )
 
 
-# --- RUTAS DE AUTENTICACIÓN (Fase 7) ---
+# --- Autenticación ---
 
 
 @app.route("/api/db-status")
+@login_required
 def api_db_status():
-    """Diagnóstico del estado de la base de datos en Vercel."""
+    """Diagnóstico de la base de datos (solo profesores)."""
+    if current_user.role != "teacher":
+        return jsonify({"ok": False, "error": "No autorizado"}), 403
     db_type = "postgresql" if database_url else "sqlite"
     uri_masked = app.config.get("SQLALCHEMY_DATABASE_URI", "")
     if "@" in uri_masked:
@@ -907,8 +900,7 @@ def register():
                 categories=LESSON_CATEGORIES,
             )
 
-        # Validate teacher code (4.10)
-        if role == "teacher" and teacher_code != TEACHER_SECRET_CODE:
+        if role == "teacher" and (not TEACHER_SECRET_CODE or teacher_code != TEACHER_SECRET_CODE):
             return render_template(
                 "register.html",
                 error="Código de profesor incorrecto. Contacta al administrador.",
@@ -978,7 +970,7 @@ def teacher_dashboard():
     students = User.query.filter_by(role="student").all()
     student_stats = []
     
-    # Aggregated metrics for dashboard (Sprint 4)
+    # Métricas agregadas
     total_xp = 0
     total_completed = 0
     level_counts = {}
@@ -1004,7 +996,6 @@ def teacher_dashboard():
             }
         )
 
-    # Sort students by XP descending
     student_stats.sort(key=lambda x: x["total_xp"], reverse=True)
 
     metrics = {
@@ -1028,7 +1019,7 @@ def teacher_delete_student(student_id):
     if current_user.role != "teacher":
         return jsonify({"success": False, "error": "No autorizado"}), 403
         
-    student = User.query.get(student_id)
+    student = db.session.get(User, student_id)
     if student and student.role == "student":
         db.session.delete(student)
         db.session.commit()
@@ -1037,7 +1028,7 @@ def teacher_delete_student(student_id):
     return jsonify({"success": False, "error": "Estudiante no encontrado"}), 404
 
 
-# ===== CSV EXPORT (Sprint 4 — 4.7) =====
+# --- Exportar CSV ---
 @app.route("/profesor/export/csv")
 @login_required
 def teacher_export_csv():
@@ -1073,25 +1064,24 @@ def teacher_export_csv():
     )
 
 
-# ===== LEADERBOARD (Sprint 2 — 1.2) =====
+# --- Tabla de posiciones ---
 @app.route("/leaderboard")
 def leaderboard():
     students = User.query.filter_by(role="student").all()
     board = []
     for s in students:
         summary = get_progress_summary(s)
-        level = (summary["total_xp"] // 100) + 1
+        lvl_info = get_level_info(summary["total_xp"])
         board.append({
             "id": s.id,
             "username": s.username,
             "total_xp": summary["total_xp"],
-            "level": level,
+            "level": lvl_info["level"],
             "completed": len(summary["completed_lessons"]),
             "streak": summary["streak"],
         })
     board.sort(key=lambda x: x["total_xp"], reverse=True)
 
-    # Assign rank
     for i, entry in enumerate(board):
         entry["rank"] = i + 1
 
@@ -1105,7 +1095,7 @@ def leaderboard():
     )
 
 
-# ===== PROFILE (Sprint 2 — 1.6) =====
+# --- Perfil de usuario ---
 @app.route("/perfil")
 @app.route("/perfil/<username>")
 def profile(username=None):
@@ -1117,9 +1107,9 @@ def profile(username=None):
         return redirect(url_for("login"))
 
     summary = get_progress_summary(user)
-    level = (summary["total_xp"] // 100) + 1
+    level = get_level_info(summary["total_xp"])["level"]
 
-    # Recent activity: last 10 completed lessons
+    # Últimas lecciones completadas
     recent = (
         LessonProgress.query.filter_by(user_id=user.id, completed=True)
         .order_by(LessonProgress.completed_at.desc())
@@ -1153,7 +1143,7 @@ def profile(username=None):
     )
 
 
-# ===== CERTIFICATE (Sprint 2 — 1.10) =====
+# --- Certificado ---
 @app.route("/certificado/<section_id>")
 @login_required
 def certificate(section_id):
@@ -1196,7 +1186,7 @@ def certificate(section_id):
     )
 
 
-# ===== THEME TOGGLE (Sprint 2 — 1.9) =====
+# --- Tema visual ---
 @app.route("/api/theme", methods=["POST"])
 def toggle_theme():
     data = request.get_json(silent=True) or {}
@@ -1224,7 +1214,7 @@ def traductor():
     )
 
 
-# --- AI TUTOR (Gemini API) ---
+# --- Tutor IA ---
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
@@ -1337,7 +1327,7 @@ REGLAS:
     except Exception as e:
         return jsonify({"ok": False, "error": f"Error al conectar con la IA: {str(e)}"})
 
-# --- W3SCHOOLS STYLE ROUTES ---
+# --- Ejercicios y quizzes ---
 
 @app.route("/ejercicios/<topic>")
 def exercise_topic(topic):
@@ -1349,7 +1339,7 @@ def exercise_topic(topic):
     user = get_current_user()
     completed_exercises = []
     
-    if user.is_authenticated:
+    if user and user.is_authenticated:
         attempts = ExerciseAttempt.query.filter_by(user_id=user.id, lesson_id=topic, passed=True).all()
         completed_exercises = [f"{a.lesson_id}-{a.exercise_id}" for a in attempts]
         
@@ -1457,7 +1447,7 @@ def inject_globals():
     }
 
 
-# ===== ADAPTIVE SECTION EVALUATIONS =====
+# --- Evaluaciones por sección ---
 
 # Maps section label_keys to their evaluation file IDs
 SECTION_EVAL_MAP = {
@@ -1650,23 +1640,20 @@ def api_evaluation_result():
     user = current_user
     score = 0
     total = len(question_ids)
-    details = {}  # Per-lesson breakdown
+    details = {}
+
+    eval_data = get_evaluation_for_section(section_key)
+    question_source_map = {}
+    if eval_data:
+        for lesson_id, qs in eval_data.get("lesson_questions", {}).items():
+            for q in qs:
+                question_source_map[q["id"]] = lesson_id
 
     for qid in question_ids:
         key_data = answer_key.get(qid, {})
         user_answer = answers.get(qid)
         correct_val = key_data.get("correct")
-
-        # Determine source lesson from question ID pattern
-        # Find the question's source lesson from the eval data
-        eval_data = get_evaluation_for_section(section_key)
-        source_lesson = ""
-        if eval_data:
-            for lesson_id, qs in eval_data.get("lesson_questions", {}).items():
-                for q in qs:
-                    if q["id"] == qid:
-                        source_lesson = lesson_id
-                        break
+        source_lesson = question_source_map.get(qid, "")
 
         if source_lesson not in details:
             details[source_lesson] = {"correct": 0, "total": 0, "lesson_title": get_lesson_title(source_lesson)}
@@ -1675,16 +1662,13 @@ def api_evaluation_result():
 
         is_correct = False
         if isinstance(correct_val, bool):
-            # true/false question
             is_correct = (user_answer == correct_val)
         elif isinstance(correct_val, int):
-            # multiple choice
             try:
                 is_correct = (int(user_answer) == correct_val)
             except (ValueError, TypeError):
                 is_correct = False
         elif isinstance(correct_val, str):
-            # complete code
             is_correct = (str(user_answer).strip().lower() == correct_val.strip().lower())
 
         if is_correct:
@@ -1728,7 +1712,7 @@ def api_evaluation_result():
             if not lp:
                 lp = LessonProgress(
                     user_id=user.id, lesson_id=f"eval-{section_key}",
-                    completed=True, score=xp_gained, completed_at=datetime.utcnow()
+                    completed=True, score=xp_gained, completed_at=datetime.now(timezone.utc)
                 )
                 db.session.add(lp)
             record_daily_activity(user.id)

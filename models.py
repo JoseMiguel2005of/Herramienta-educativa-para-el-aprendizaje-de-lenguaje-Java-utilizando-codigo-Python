@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
-from datetime import datetime
+from datetime import datetime, timezone
 
 db = SQLAlchemy()
 
@@ -12,7 +12,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(20), default="student")  # 'student' or 'teacher'
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     # Relaciones
     progress = db.relationship("LessonProgress", backref="user", lazy=True, cascade="all, delete-orphan")
@@ -49,7 +49,7 @@ class ExerciseAttempt(db.Model):
     exercise_id = db.Column(db.String(100), nullable=False)
     passed = db.Column(db.Boolean, default=False)
     answer = db.Column(db.Text, nullable=True)
-    attempted_at = db.Column(db.DateTime, default=datetime.utcnow)
+    attempted_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
 
 class Achievement(db.Model):
@@ -58,7 +58,7 @@ class Achievement(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     badge_id = db.Column(db.String(100), nullable=False)
-    unlocked_at = db.Column(db.DateTime, default=datetime.utcnow)
+    unlocked_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
 
 class DailyStreak(db.Model):
@@ -79,7 +79,7 @@ class QuizResult(db.Model):
     score = db.Column(db.Integer, default=0)
     total = db.Column(db.Integer, default=0)
     time_taken = db.Column(db.Integer, nullable=True)
-    completed_at = db.Column(db.DateTime, default=datetime.utcnow)
+    completed_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
 
 class PracticeSubmission(db.Model):
@@ -92,7 +92,7 @@ class PracticeSubmission(db.Model):
     passed = db.Column(db.Boolean, default=False)
     tests_passed = db.Column(db.Integer, default=0)
     tests_total = db.Column(db.Integer, default=0)
-    submitted_at = db.Column(db.DateTime, default=datetime.utcnow)
+    submitted_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
 
 class SectionEvaluation(db.Model):
@@ -108,4 +108,4 @@ class SectionEvaluation(db.Model):
     time_taken = db.Column(db.Integer, nullable=True)
     attempt_number = db.Column(db.Integer, default=1)
     details_json = db.Column(db.Text, nullable=True)
-    completed_at = db.Column(db.DateTime, default=datetime.utcnow)
+    completed_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
