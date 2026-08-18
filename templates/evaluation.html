@@ -81,7 +81,7 @@
             <div class="eval-header-top">
                 <h2 class="eval-title-small">{{ eval_data.title }}</h2>
                 <div class="eval-timer" id="eval-timer">
-                    <span class="timer-icon">⏱</span>
+                    <span class="timer-icon"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></span>
                     <span class="timer-value" id="timer-value">{{ (time_limit // 60) }}:00</span>
                 </div>
             </div>
@@ -181,7 +181,7 @@
             <p class="eval-results-detail" id="eval-results-detail"></p>
 
             <div class="eval-xp-badge" id="eval-xp-badge" hidden>
-                <span class="xp-icon">⚡</span>
+                <span class="xp-icon"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></span>
                 <span class="xp-text" id="eval-xp-text">+100 XP</span>
             </div>
 
@@ -194,8 +194,8 @@
             </div>
 
             <div class="eval-results-actions">
-                <button class="btn-eval-retry" id="btn-eval-retry">🔄 Reintentar</button>
-                <a href="{{ url_for('dashboard') }}" class="btn-eval-dashboard">📊 Dashboard</a>
+                <button class="btn-eval-retry" id="btn-eval-retry">Reintentar</button>
+                <a href="{{ url_for('dashboard') }}" class="btn-eval-dashboard">Dashboard</a>
             </div>
         </div>
     </div>

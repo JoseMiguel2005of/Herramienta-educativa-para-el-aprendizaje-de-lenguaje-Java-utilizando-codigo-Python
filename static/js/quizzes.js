@@ -122,7 +122,7 @@ function switchQuizLanguage(lang) {
             if (viewPy) viewPy.style.display = 'none';
             if (viewJava) viewJava.style.display = 'block';
             if (modeBadge) {
-                modeBadge.textContent = '☕ Java Mode';
+                modeBadge.textContent = 'Modo Java';
                 modeBadge.className = 'exercise-mode-indicator lang-badge java-badge';
             }
         } else {
@@ -131,7 +131,7 @@ function switchQuizLanguage(lang) {
             if (viewPy) viewPy.style.display = 'block';
             if (viewJava) viewJava.style.display = 'none';
             if (modeBadge) {
-                modeBadge.textContent = '🐍 Python Mode';
+                modeBadge.textContent = 'Modo Python';
                 modeBadge.className = 'exercise-mode-indicator lang-badge python-badge';
             }
         }
@@ -177,7 +177,7 @@ function checkQuiz(exerciseId, type, btn) {
             if (btn) btn.disabled = true;
         } else {
             const expText = cardExplanation || cardHint || "Revisa la sintaxis requerida y los campos resaltados en rojo.";
-            message = `❌ <b>Hay errores en tu respuesta.</b><div class="exercise-explanation-box"><b>Orientación:</b> ${expText}</div>`;
+            message = `<b>Hay errores en tu respuesta.</b><div class="exercise-explanation-box"><b>Orientación:</b> ${expText}</div>`;
         }
     } 
     else if (type === 'multiple-choice') {
@@ -206,7 +206,7 @@ function checkQuiz(exerciseId, type, btn) {
             message = "¡Correcto! " + (explanation ? `<div class="exercise-explanation-box"><b>Explicación:</b> ${explanation}</div>` : "");
             if (btn) btn.disabled = true;
         } else {
-            message = "❌ <b>Opción incorrecta.</b> " + (explanation ? `<div class="exercise-explanation-box"><b>Explicación:</b> ${explanation}</div>` : "Esa opción no es la adecuada.");
+            message = "<b>Opción incorrecta.</b> " + (explanation ? `<div class="exercise-explanation-box"><b>Explicación:</b> ${explanation}</div>` : "Esa opción no es la adecuada.");
         }
     }
     else if (type === 'reorder') {
@@ -223,7 +223,7 @@ function checkQuiz(exerciseId, type, btn) {
             message = "¡Correcto! El código está ordenado perfectamente." + (cardExplanation ? `<div class="exercise-explanation-box"><b>Explicación:</b> ${cardExplanation}</div>` : "");
             if (btn) btn.disabled = true;
         } else {
-            message = "❌ <b>El orden no es el correcto.</b> Recuerda el flujo lógico de ejecución.";
+            message = "<b>El orden no es el correcto.</b> Recuerda el flujo lógico de ejecución.";
         }
     }
     else if (type === 'find-error') {
@@ -242,7 +242,7 @@ function checkQuiz(exerciseId, type, btn) {
             message = "¡Correcto! " + (explanation ? `<div class="exercise-explanation-box"><b>Explicación:</b> ${explanation}</div>` : "Has identificado la línea con el error.");
             if (btn) btn.disabled = true;
         } else {
-            message = "❌ <b>Línea incorrecta.</b> El error sintáctico o lógico no se encuentra en esa línea.";
+            message = "<b>Línea incorrecta.</b> El error sintáctico o lógico no se encuentra en esa línea.";
         }
     }
 
@@ -349,7 +349,7 @@ function showFeedback(element, isCorrect, messageHtml, card, exerciseId) {
             const helpBtn = document.createElement('button');
             helpBtn.type = 'button';
             helpBtn.className = 'btn-ask-ai-error';
-            helpBtn.innerHTML = '<span style="font-size:1rem;">🤖</span> <b>¿Por qué me equivoqué?</b> (Explicación con Tutor IA)';
+            helpBtn.innerHTML = '<b>¿Por qué me equivoqué?</b> (Explicación con Tutor IA)';
             
             helpBtn.addEventListener('click', () => {
                 let userAnswer = '';

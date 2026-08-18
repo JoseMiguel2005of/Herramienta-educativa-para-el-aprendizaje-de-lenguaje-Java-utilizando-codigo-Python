@@ -117,7 +117,7 @@
         const toast = document.createElement('div');
         toast.className = 'study-celebration-toast';
         toast.innerHTML = `
-            <div class="celebration-icon">🎉</div>
+            <div class="celebration-icon"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" fill="none" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.45 1-1 1H8c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h8c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1h-1c-.55 0-1-.45-1-1v-2.34"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"></path></svg></div>
             <div class="celebration-body">
                 <h4>¡Objetivo de Estudio Cumplido!</h4>
                 <p>Has alcanzado tu meta de <b>${state.targetMinutes} minutos</b> de estudio. Tu reloj sigue activo registrando el tiempo extra.</p>
@@ -261,7 +261,7 @@
         if (goalPill) {
             if (state.targetMinutes > 0) {
                 goalPill.style.display = 'inline';
-                goalPill.textContent = isGoalMet ? `🎯 ¡Meta!` : `/ ${state.targetMinutes}m`;
+                goalPill.textContent = isGoalMet ? `Meta Alcanzada` : `/ ${state.targetMinutes}m`;
             } else {
                 goalPill.style.display = 'none';
             }
@@ -277,14 +277,14 @@
                 const overtimeMinutes = Math.floor((state.accumulatedSeconds - targetSeconds) / 60);
                 modalStatusBadge.className = 'timer-status-badge goal-met';
                 modalStatusBadge.textContent = overtimeMinutes > 0 
-                    ? `🎯 ¡Meta Cumplida! (+${overtimeMinutes} min extra)` 
-                    : `🎯 ¡Meta Alcanzada! (${state.targetMinutes}m)`;
+                    ? `Meta Cumplida (+${overtimeMinutes} min extra)` 
+                    : `Meta Alcanzada (${state.targetMinutes}m)`;
             } else if (state.isRunning) {
                 modalStatusBadge.className = 'timer-status-badge active';
-                modalStatusBadge.textContent = '● Sesión Activa';
+                modalStatusBadge.textContent = 'Sesión Activa';
             } else {
                 modalStatusBadge.className = 'timer-status-badge';
-                modalStatusBadge.textContent = '⏸ En Pausa';
+                modalStatusBadge.textContent = 'En Pausa';
             }
         }
 
@@ -306,10 +306,10 @@
         if (startBtn) {
             if (state.isRunning) {
                 startBtn.className = 'timer-btn-action btn-timer-pause';
-                startBtn.innerHTML = '<span>⏸</span> Pausar';
+                startBtn.innerHTML = '<span><svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg></span> Pausar';
             } else {
                 startBtn.className = 'timer-btn-action btn-timer-start';
-                startBtn.innerHTML = '<span>▶</span> Continuar';
+                startBtn.innerHTML = '<span><svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></span> Continuar';
             }
         }
 
@@ -330,7 +330,7 @@
         modal.innerHTML = `
             <div class="timer-modal-header">
                 <div class="timer-modal-title">
-                    <span>⏱️</span>
+                    <span><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></span>
                     <span>Modo Estudio</span>
                 </div>
                 <button type="button" class="timer-modal-close" id="btn-close-timer-modal">&times;</button>
@@ -338,7 +338,7 @@
 
             <div class="timer-clock-area">
                 <div class="timer-big-clock" id="timer-modal-clock">00:00</div>
-                <div class="timer-status-badge active" id="timer-status-badge">● Sesión Activa</div>
+                <div class="timer-status-badge active" id="timer-status-badge">Sesión Activa</div>
             </div>
 
             <div class="timer-progress-wrap">
@@ -353,10 +353,10 @@
 
             <div class="timer-controls-row">
                 <button type="button" class="timer-btn-action btn-timer-pause" id="btn-timer-start-toggle">
-                    <span>⏸</span> Pausar
+                    <span><svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg></span> Pausar
                 </button>
                 <button type="button" class="timer-btn-action btn-timer-reset" id="btn-timer-reset" title="Reiniciar tiempo">
-                    <span>🔄</span> Reiniciar
+                    Reiniciar
                 </button>
             </div>
 
@@ -378,7 +378,7 @@
                 <div class="timer-sound-row">
                     <span>Sonido al completar:</span>
                     <button type="button" id="btn-toggle-sound" class="timer-sound-toggle">
-                        <span id="sound-icon">🔔</span> <span id="sound-text">Activado</span>
+                        <span id="sound-icon"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></span> <span id="sound-text">Activado</span>
                     </button>
                 </div>
             </div>
@@ -435,7 +435,9 @@
         const soundText = document.getElementById('sound-text');
 
         function updateSoundUI() {
-            soundIcon.textContent = state.soundEnabled ? '🔔' : '🔕';
+            soundIcon.innerHTML = state.soundEnabled 
+                ? '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>'
+                : '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M13.73 21a2 2 0 0 1-3.46 0"></path><path d="M18.63 13A17.88 17.88 0 0 1 18 8"></path><path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14"></path><path d="M18 8a6 6 0 0 0-9.33-5"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>';
             soundText.textContent = state.soundEnabled ? 'Activado' : 'Silenciado';
         }
 

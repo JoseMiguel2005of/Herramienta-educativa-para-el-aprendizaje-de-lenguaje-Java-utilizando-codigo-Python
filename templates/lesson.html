@@ -20,7 +20,7 @@
     {# ===== PREREQUISITE WARNING (Sprint 3 — 2.10) ===== #}
     {% if prereq_warning %}
     <div class="prereq-banner">
-        <span class="prereq-icon">⚠️</span>
+        <span class="prereq-icon"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></span>
         <div class="prereq-text">
             <strong>Lección previa no completada</strong>
             <span>Se recomienda completar primero: <a href="{{ url_for('lesson', lesson_id=prereq_lesson_id) }}"
@@ -86,7 +86,7 @@
             <h3>{{ t.get('example_label', 'Example') }}</h3>
             {% endif %}
             <button class="btn-diff-toggle"
-                style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 0.25rem 0.7rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; cursor: pointer; margin-bottom: 0.5rem; transition: all 0.2s;">🔍
+                style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 0.25rem 0.7rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; cursor: pointer; margin-bottom: 0.5rem; transition: all 0.2s;">
                 Ver diferencias</button>
             <section class="code-comparison" {% if current_category=='java2py' %}style="flex-direction: row-reverse;" {%
                 endif %}>
@@ -152,7 +152,7 @@
     <div class="w3-example section-example" style="margin-top: 1.5rem;">
         <h3>{{ mapping.section or t.get('example_label', 'Example') }}</h3>
         <button class="btn-diff-toggle"
-            style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 0.25rem 0.7rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; cursor: pointer; margin-bottom: 0.5rem; transition: all 0.2s;">🔍
+            style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 0.25rem 0.7rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; cursor: pointer; margin-bottom: 0.5rem; transition: all 0.2s;">
             Ver diferencias</button>
         <section class="code-comparison" {% if current_category=='java2py' %}style="flex-direction: row-reverse;" {% endif %}>
             <div class="code-panel code-panel-python">
@@ -290,11 +290,11 @@
                     <span class="lang-badge python-badge">{{ t.python_label }}</span>
                     <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                         <button type="button" id="btn-run-python" class="btn-translate"
-                            style="background: var(--python-color); color: #000; border: none; padding: 0.4rem 1rem; border-radius: 4px; font-weight: bold; cursor: pointer;">▶
+                            style="background: var(--python-color); color: #000; border: none; padding: 0.4rem 1rem; border-radius: 4px; font-weight: bold; cursor: pointer;">
                             Ejecutar Python</button>
                         <button type="button" id="btn-restore-editor" class="btn-translate"
                             style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 0.4rem 0.8rem; border-radius: 4px; font-weight: bold; cursor: pointer;"
-                            title="Restaurar código original">↩️ Restaurar</button>
+                            title="Restaurar código original">Restaurar</button>
                     </div>
                 </div>
                 {% set editor_code = lesson.python_code %}
@@ -353,10 +353,10 @@
                 <span class="quiz-lang-label" style="font-size: 0.75rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; margin-right: 0.4rem;">MODO:</span>
                 <div class="quiz-lang-switch-group">
                     <button type="button" class="quiz-lang-btn active" data-lang="python" title="Evaluar con preguntas de Python">
-                        🐍 Python
+                        Python
                     </button>
                     <button type="button" class="quiz-lang-btn" data-lang="java" title="Evaluar con preguntas equivalentes de Java">
-                        ☕ Java
+                        Java
                     </button>
                 </div>
             </div>
@@ -372,7 +372,7 @@
             <div class="exercise-header">
                 <span class="exercise-badge">Ejercicio {{ loop.index }}</span>
                 {% if ex.question_java or ex.template_html_java or ex.options_java %}
-                <span class="exercise-mode-indicator lang-badge python-badge" style="font-size: 0.7rem;">🐍 Python Mode</span>
+                <span class="exercise-mode-indicator lang-badge python-badge" style="font-size: 0.7rem;">Modo Python</span>
                 {% endif %}
             </div>
 
@@ -688,7 +688,7 @@
         const codeEl = outputEl.querySelector('code');
 
         outputEl.style.display = 'block';
-        codeEl.textContent = '⌛ Ejecutando...';
+        codeEl.textContent = 'Ejecutando...';
         btn.disabled = true;
 
         try {
@@ -745,7 +745,7 @@
                 btn.style.color = 'var(--green, #00e5ff)';
                 highlightDiff(pyEl, javaEl);
             } else {
-                btn.textContent = '🔍 Ver diferencias';
+                btn.textContent = 'Ver diferencias';
                 btn.style.borderColor = '';
                 btn.style.color = '';
                 removeDiffHighlight(pyEl);

@@ -55,11 +55,11 @@
                 <input type="text" id="ai-tutor-input" class="ai-tutor-input" 
                        placeholder="Escribe tu duda sobre Python o Java..." autocomplete="off">
                 <button id="ai-tutor-send" class="ai-tutor-send" title="Enviar pregunta">
-                    <span id="ai-tutor-send-icon">➤</span>
+                    <span id="ai-tutor-send-icon"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></span>
                 </button>
             </div>
             <div class="ai-tutor-actions">
-                <button id="ai-btn-analyze" class="ai-action-btn">🔍 Analizar Código del Editor</button>
+                <button id="ai-btn-analyze" class="ai-action-btn">Analizar Código del Editor</button>
             </div>
         `;
 
@@ -386,14 +386,14 @@
             if (data.ok) {
                 addMessage(data.response, 'bot');
             } else {
-                addMessage(`⚠️ ${data.error || 'Ocurrió un error inesperado al consultar la IA.'}`, 'bot');
+                addMessage(data.error || 'Ocurrió un error inesperado al consultar el Tutor.', 'bot');
             }
         } catch (err) {
             removeLoadingMessage();
-            addMessage('⚠️ No se pudo conectar con el servicio de IA. Verifica tu conexión a internet.', 'bot');
+            addMessage('No se pudo conectar con el servicio de tutoría. Verifica tu conexión a internet.', 'bot');
         } finally {
             isLoading = false;
-            if (sendBtn) sendBtn.textContent = '➤';
+            if (sendBtn) sendBtn.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>';
         }
     }
 
@@ -413,7 +413,7 @@
 
             const hintBtn = document.createElement('button');
             hintBtn.className = 'btn-ai-hint';
-            hintBtn.innerHTML = '💡 Pedir Pista';
+            hintBtn.innerHTML = 'Pedir Pista';
             hintBtn.addEventListener('click', () => {
                 let userAnswer = '';
                 const inputs = card.querySelectorAll('input[type="text"], textarea');

@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // UI feedback
             const originalText = btnRun.textContent;
-            btnRun.textContent = "⌛ Ejecutando...";
+            btnRun.textContent = "Ejecutando...";
             btnRun.disabled = true;
             
             try {

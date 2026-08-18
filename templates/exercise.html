@@ -27,13 +27,13 @@
             
             {% if current_exercise.question_java or current_exercise.template_html_java or current_exercise.options_java %}
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 0.5rem; border-bottom: 1px dashed var(--border); padding-bottom: 0.75rem;">
-                <span class="exercise-mode-indicator lang-badge python-badge" style="font-size: 0.75rem;">🐍 Modo Python</span>
+                <span class="exercise-mode-indicator lang-badge python-badge" style="font-size: 0.75rem;">Modo Python</span>
                 <div class="quiz-lang-switch-group">
                     <button type="button" class="quiz-lang-btn active" data-lang="python" onclick="switchStandaloneExerciseLang('python')">
-                        🐍 Python
+                        Python
                     </button>
                     <button type="button" class="quiz-lang-btn" data-lang="java" onclick="switchStandaloneExerciseLang('java')">
-                        ☕ Java
+                        Java
                     </button>
                 </div>
             </div>
@@ -104,7 +104,7 @@
                     Comprobar Respuesta
                 </button>
                 <button class="btn-exercise-hint" id="btn-hint" title="Obtener una pista">
-                    💡 Pista
+                    Pista
                 </button>
                 <button class="btn-exercise-show" id="btn-show-answer">
                     Ver Solución

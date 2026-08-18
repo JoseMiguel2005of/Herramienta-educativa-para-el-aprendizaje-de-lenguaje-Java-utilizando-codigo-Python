@@ -78,7 +78,7 @@ function initTranslator() {
 
         if (btnTranslate && isManual) {
             btnTranslate.disabled = true;
-            btnTranslate.innerHTML = '<span>⚡ Transpilando...</span>';
+            btnTranslate.innerHTML = '<span>Transpilando...</span>';
         }
 
         try {
@@ -116,10 +116,10 @@ function initTranslator() {
             }
 
             if (btnTranslate && isManual) {
-                btnTranslate.innerHTML = '<span>✅ ¡Traducido!</span>';
+                btnTranslate.innerHTML = '<span>¡Traducido!</span>';
                 setTimeout(() => {
                     btnTranslate.disabled = false;
-                    btnTranslate.innerHTML = btnTranslate.dataset.originalLabel || '⚡ Transpilar a Java';
+                    btnTranslate.innerHTML = btnTranslate.dataset.originalLabel || 'Transpilar a Java';
                 }, 1400);
             }
         } catch (err) {
@@ -128,7 +128,7 @@ function initTranslator() {
             renderMessages([err.message], []);
             if (btnTranslate && isManual) {
                 btnTranslate.disabled = false;
-                btnTranslate.innerHTML = btnTranslate.dataset.originalLabel || '⚡ Transpilar a Java';
+                btnTranslate.innerHTML = btnTranslate.dataset.originalLabel || 'Transpilar a Java';
             }
         }
     };

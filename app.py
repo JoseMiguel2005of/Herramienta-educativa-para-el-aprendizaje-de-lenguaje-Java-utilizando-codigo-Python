@@ -968,8 +968,8 @@ def send_recovery_email(to_email, username, code):
         <p style="color: #555; font-size: 14px; line-height: 1.5;">Hemos recibido una solicitud para recordar tu nombre de usuario y restablecer tu contraseña.</p>
         
         <div style="background: #f4f6f8; padding: 16px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #4CAF50;">
-            <p style="margin: 0 0 10px 0; font-size: 15px;">👤 <strong>Tu nombre de usuario es:</strong> <span style="font-size: 16px; color: #1e88e5; font-weight: bold;">{username}</span></p>
-            <p style="margin: 0; font-size: 15px;">🔑 <strong>Código de verificación:</strong> <span style="font-size: 20px; font-weight: bold; letter-spacing: 4px; color: #2e7d32; display: block; margin-top: 6px; font-family: monospace;">{code}</span></p>
+            <p style="margin: 0 0 10px 0; font-size: 15px;"><strong>Tu nombre de usuario es:</strong> <span style="font-size: 16px; color: #1e88e5; font-weight: bold;">{username}</span></p>
+            <p style="margin: 0; font-size: 15px;"><strong>Código de verificación:</strong> <span style="font-size: 20px; font-weight: bold; letter-spacing: 4px; color: #2e7d32; display: block; margin-top: 6px; font-family: monospace;">{code}</span></p>
         </div>
         
         <p style="font-size: 13px; color: #777; line-height: 1.4;">Este código expirará en <strong>15 minutos</strong>. Si no solicitaste este cambio, puedes ignorar este correo de forma segura.</p>

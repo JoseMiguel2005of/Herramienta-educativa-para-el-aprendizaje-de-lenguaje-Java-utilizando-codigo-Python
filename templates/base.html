@@ -42,12 +42,12 @@
 
             <div class="topbar-actions">
                 <button type="button" id="btn-study-timer" class="term-btn study-timer-btn" title="Modo Estudio (Fijar meta de tiempo)">
-                    <span class="timer-icon">⏱️</span>
+                    <span class="timer-icon"><svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></span>
                     <span id="study-timer-display" class="timer-digits">00:00</span>
                     <span id="study-timer-goal-pill" class="timer-goal-pill" style="display:none;">/ 25m</span>
                 </button>
                 <button type="button" id="btn-theme-toggle" class="term-btn" title="Cambiar tema" onclick="toggleTheme()">
-                    <span id="theme-icon">🌙</span>
+                    <span id="theme-icon"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg></span>
                 </button>
                 <button type="button" id="btn-open-search" class="term-btn" title="Buscar (Ctrl+K)">
                     <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -317,6 +317,11 @@
         }
 
         // Theme Toggle (Sprint 2 — 1.9)
+        const THEME_ICONS = {
+            dark: '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>',
+            light: '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>'
+        };
+
         function toggleTheme() {
             const html = document.documentElement;
             const current = html.getAttribute('data-theme') || 'dark';
@@ -327,7 +332,7 @@
 
             // Update icon
             const icon = document.getElementById('theme-icon');
-            if (icon) icon.textContent = next === 'dark' ? '🌙' : '☀️';
+            if (icon) icon.innerHTML = THEME_ICONS[next] || THEME_ICONS.dark;
 
             // Persist to localStorage
             localStorage.setItem('py2java_theme', next);
@@ -346,7 +351,7 @@
             if (saved) {
                 document.documentElement.setAttribute('data-theme', saved);
                 const icon = document.getElementById('theme-icon');
-                if (icon) icon.textContent = saved === 'dark' ? '🌙' : '☀️';
+                if (icon) icon.innerHTML = THEME_ICONS[saved] || THEME_ICONS.dark;
             }
         })();
     </script>

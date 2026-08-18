@@ -13,7 +13,7 @@
         },
         {
             "title": "¿Cómo empezar?",
-            "text": "<ul><li>📖 Navega por las lecciones en el menú lateral</li><li>✍️ Usa el editor de práctica para experimentar</li><li>🏆 Completa ejercicios para ganar XP y logros</li><li>🗺️ Consulta tu progreso en el Dashboard y el Roadmap</li></ul>",
+            "text": "<ul><li>Navega por las lecciones en el menú lateral</li><li>Usa el editor de práctica para experimentar</li><li>Completa ejercicios para ganar XP y logros</li><li>Consulta tu progreso en el Dashboard y el Roadmap</li></ul>",
             "notes": [
                 {"type": "tip", "text": "¡Comienza con la siguiente lección: <b>Introducción a Python</b>!"}
             ]

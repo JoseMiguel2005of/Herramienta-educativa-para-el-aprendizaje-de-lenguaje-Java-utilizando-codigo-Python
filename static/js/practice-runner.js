@@ -55,7 +55,7 @@ sys.stderr = io.StringIO()
     // Run button
     document.getElementById('btn-run-code')?.addEventListener('click', async () => {
         outputWrapper.hidden = false;
-        outputEl.textContent = '⏳ Ejecutando...';
+        outputEl.textContent = 'Ejecutando...';
         const result = await runCode(editor.value);
         outputEl.textContent = result.output || '(Sin salida)';
         outputEl.style.color = result.error ? '#ef5350' : '#e0e0e0';
@@ -64,7 +64,7 @@ sys.stderr = io.StringIO()
     // Submit button - run tests
     document.getElementById('btn-submit-code')?.addEventListener('click', async () => {
         outputWrapper.hidden = false;
-        outputEl.textContent = '⏳ Ejecutando pruebas...';
+        outputEl.textContent = 'Ejecutando pruebas...';
         testsWrapper.hidden = false;
         testsList.innerHTML = '';
 

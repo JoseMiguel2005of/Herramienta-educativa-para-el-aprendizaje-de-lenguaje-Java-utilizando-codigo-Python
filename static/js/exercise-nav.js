@@ -33,7 +33,7 @@ function switchStandaloneExerciseLang(lang) {
         if (viewPy) viewPy.style.display = 'none';
         if (viewJava) viewJava.style.display = 'block';
         if (indicator) {
-            indicator.textContent = '☕ Modo Java';
+            indicator.textContent = 'Modo Java';
             indicator.className = 'exercise-mode-indicator lang-badge java-badge';
         }
     } else {
@@ -42,7 +42,7 @@ function switchStandaloneExerciseLang(lang) {
         if (viewPy) viewPy.style.display = 'block';
         if (viewJava) viewJava.style.display = 'none';
         if (indicator) {
-            indicator.textContent = '🐍 Modo Python';
+            indicator.textContent = 'Modo Python';
             indicator.className = 'exercise-mode-indicator lang-badge python-badge';
         }
     }
