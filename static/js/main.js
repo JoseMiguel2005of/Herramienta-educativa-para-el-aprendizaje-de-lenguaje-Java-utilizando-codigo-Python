@@ -72,14 +72,13 @@ function initTranslator() {
     let debounceTimer = null;
     let requestId = 0;
 
-    const translateCode = async () => {
+    const translateCode = async (isManual = false) => {
         const code = editor.value;
         const currentRequest = ++requestId;
 
-        if (btnTranslate) {
+        if (btnTranslate && isManual) {
             btnTranslate.disabled = true;
-            btnTranslate.textContent =
-                (window.TRANSLATOR_LABELS && window.TRANSLATOR_LABELS.translating) || "Translating...";
+            btnTranslate.innerHTML = '<span>⚡ Transpilando...</span>';
         }
 
         try {
@@ -101,17 +100,35 @@ function initTranslator() {
             const data = await response.json();
             if (currentRequest !== requestId) return;
 
-            output.textContent = data.java || "";
+            output.textContent = data.java || "// No se generó salida Java";
             renderMessages(data.errors || [], data.warnings || []);
+
+            const panel = output.closest('.translator-panel');
+            if (panel && isManual) {
+                panel.classList.remove('transpile-glow');
+                void panel.offsetWidth; // Trigger reflow
+                panel.classList.add('transpile-glow');
+
+                // Si está en pantalla pequeña, hacer scroll al resultado
+                if (window.innerWidth < 800) {
+                    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }
+
+            if (btnTranslate && isManual) {
+                btnTranslate.innerHTML = '<span>✅ ¡Traducido!</span>';
+                setTimeout(() => {
+                    btnTranslate.disabled = false;
+                    btnTranslate.innerHTML = btnTranslate.dataset.originalLabel || '⚡ Transpilar a Java';
+                }, 1400);
+            }
         } catch (err) {
             if (currentRequest !== requestId) return;
-            output.textContent = "";
+            output.textContent = "// Error al procesar la traducción";
             renderMessages([err.message], []);
-        } finally {
-            if (btnTranslate) {
+            if (btnTranslate && isManual) {
                 btnTranslate.disabled = false;
-                btnTranslate.textContent =
-                    btnTranslate.dataset.originalLabel || btnTranslate.textContent;
+                btnTranslate.innerHTML = btnTranslate.dataset.originalLabel || '⚡ Transpilar a Java';
             }
         }
     };
@@ -141,16 +158,16 @@ function initTranslator() {
 
     const scheduleTranslate = () => {
         clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(translateCode, 450);
+        debounceTimer = setTimeout(() => translateCode(false), 400);
     };
 
     if (btnTranslate) {
-        btnTranslate.dataset.originalLabel = btnTranslate.textContent;
-        btnTranslate.addEventListener("click", translateCode);
+        btnTranslate.dataset.originalLabel = btnTranslate.innerHTML.trim();
+        btnTranslate.addEventListener("click", () => translateCode(true));
     }
 
     editor.addEventListener("input", scheduleTranslate);
-    translateCode();
+    translateCode(false);
 }
 
 function initCodeHover() {
