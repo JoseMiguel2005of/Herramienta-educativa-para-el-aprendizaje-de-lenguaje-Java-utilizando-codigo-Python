@@ -100,16 +100,21 @@ def init_db():
     with app.app_context():
         try:
             db.create_all()
-            # Migración automática: asegura que la columna email exista en users
-            try:
-                with db.engine.begin() as conn:
-                    conn.execute(db.text("ALTER TABLE users ADD COLUMN IF NOT EXISTS email VARCHAR(120)"))
-            except Exception:
+            # Migración automática: asegura que email, failed_login_attempts y locked_until existan en users
+            for col_def in [
+                "email VARCHAR(120)",
+                "failed_login_attempts INTEGER DEFAULT 0",
+                "locked_until TIMESTAMP"
+            ]:
                 try:
                     with db.engine.begin() as conn:
-                        conn.execute(db.text("ALTER TABLE users ADD COLUMN email VARCHAR(120)"))
+                        conn.execute(db.text(f"ALTER TABLE users ADD COLUMN IF NOT EXISTS {col_def}"))
                 except Exception:
-                    pass
+                    try:
+                        with db.engine.begin() as conn:
+                            conn.execute(db.text(f"ALTER TABLE users ADD COLUMN {col_def}"))
+                    except Exception:
+                        pass
             print("[INFO] db.create_all() y migraciones ejecutadas con éxito.", flush=True)
         except Exception as e:
             print(f"[WARNING] db.create_all falló durante el inicio: {e}", flush=True)
@@ -882,17 +887,62 @@ def login():
                     categories=LESSON_CATEGORIES,
                 )
 
-        if user and check_password_hash(user.password_hash, password):
+        if not user:
+            return render_template(
+                "login.html",
+                error="Usuario o contraseña incorrectos.",
+                categories=LESSON_CATEGORIES,
+            )
+
+        now_utc = datetime.now(timezone.utc)
+
+        # 1. Verificar si la cuenta está bloqueada temporalmente
+        if user.locked_until:
+            user_lock = user.locked_until
+            if user_lock.tzinfo is None:
+                user_lock = user_lock.replace(tzinfo=timezone.utc)
+
+            if user_lock > now_utc:
+                remaining_seconds = int((user_lock - now_utc).total_seconds())
+                remaining_mins = max(1, (remaining_seconds + 59) // 60)
+                return render_template(
+                    "login.html",
+                    error=f"Cuenta bloqueada temporalmente por seguridad tras 3 intentos fallidos. Intenta de nuevo en {remaining_mins} minuto(s) o usa la opción de recuperar contraseña.",
+                    categories=LESSON_CATEGORIES,
+                )
+            else:
+                user.failed_login_attempts = 0
+                user.locked_until = None
+                db.session.commit()
+
+        # 2. Contraseña correcta -> restablecer intentos y loguear
+        if check_password_hash(user.password_hash, password):
+            user.failed_login_attempts = 0
+            user.locked_until = None
+            db.session.commit()
             login_user(user)
             return redirect(
                 url_for("teacher_dashboard" if user.role == "teacher" else "dashboard")
             )
 
-        return render_template(
-            "login.html",
-            error="Usuario o contraseña incorrectos",
-            categories=LESSON_CATEGORIES,
-        )
+        # 3. Contraseña incorrecta -> Incrementar contador de intentos fallidos
+        user.failed_login_attempts = (user.failed_login_attempts or 0) + 1
+        if user.failed_login_attempts >= 3:
+            user.locked_until = now_utc + timedelta(minutes=10)
+            db.session.commit()
+            return render_template(
+                "login.html",
+                error="Has alcanzado el límite de 3 intentos fallidos. Tu cuenta ha sido bloqueada temporalmente por 10 minutos por seguridad. Puedes usar '¿Olvidaste tu contraseña o usuario?' para restablecerla de inmediato.",
+                categories=LESSON_CATEGORIES,
+            )
+        else:
+            remaining = 3 - user.failed_login_attempts
+            db.session.commit()
+            return render_template(
+                "login.html",
+                error=f"Usuario o contraseña incorrectos. Te quedan {remaining} intento(s) antes del bloqueo de cuenta.",
+                categories=LESSON_CATEGORIES,
+            )
 
     return render_template("login.html", categories=LESSON_CATEGORIES)
 
@@ -1154,8 +1204,10 @@ def reset_password():
                 categories=LESSON_CATEGORIES
             )
 
-        # Actualizar contraseña y marcar código
+        # Actualizar contraseña, desbloquear cuenta y marcar código como usado
         user.password_hash = generate_password_hash(new_password)
+        user.failed_login_attempts = 0
+        user.locked_until = None
         reset_record.used = True
         db.session.commit()
 
