@@ -1536,10 +1536,9 @@ Contexto de la lección: {lesson_intro}
 REGLAS ESTRICTAS:
 - NUNCA des la respuesta directa ni el código resuelto completo al ejercicio.
 - Da pistas progresivas y conceptuales que guíen al estudiante para que lo resuelva por sí mismo.
-- Usa analogías simples si es posible.
-- Responde en español.
-- Sé breve (máximo 3-4 oraciones).
-- Usa emojis para ser más amigable."""
+- Usa analogías simples y comprensibles.
+- Responde en español de forma completa y concisa (máximo 3-4 oraciones).
+- Concluye siempre tu idea para que la respuesta nunca quede cortada."""
         user_message = f"Pregunta del ejercicio: {exercise_question}\n\nIntento/código del estudiante: {user_code}\n\nDuda del estudiante: {question if question else 'No entiendo cómo resolverlo'}"
 
     elif mode == "chat" or question:
@@ -1548,11 +1547,12 @@ Estás en la lección "{lesson_title}".
 Contexto de la lección: {lesson_intro}
 
 REGLAS PRINCIPALES:
-- Tu prioridad número uno es responder DIRECTA y CLARAMENTE a la PREGUNTA o DUDA planteada por el estudiante.
-- Si el estudiante pregunta sobre conceptos, sintaxis o dudas específicas (por ejemplo: el uso de comas, comillas, llaves, f-strings, concatenación, print, tipos de variables, etc.), explícale el porqué con paciencia y dale ejemplos sencillos.
-- NO te limites a felicitar el código del editor; concéntrate en resolver la duda del estudiante.
-- Si hay código en el editor, úsalo como contexto solo si la pregunta se refiere a él.
-- Responde en español de forma estructurada, pedagógica y fácil de entender."""
+- Responde DIRECTA, CLARA y CONCRETAMENTE a la PREGUNTA o DUDA planteada por el estudiante.
+- Sé didáctico pero sintético: explica el concepto en 2-3 párrafos claros y directos con ejemplos cortos de código.
+- NUNCA te extiendas innecesariamente con introducciones vacías ni rodeos.
+- Concluye SIEMPRE tu explicación y ejemplos para que tu respuesta sea 100% completa y no quede cortada a la mitad.
+- Si el estudiante pregunta sobre sintaxis (comas, llaves, f-strings, concatenación, print, tipos de variables), explícaselo con un ejemplo sencillo de 'Correcto vs Incorrecto'.
+- Responde siempre en español."""
 
         context_code = f"\n\nCódigo actual en el editor (solo para contexto si aplica):\n```python\n{user_code}\n```" if user_code.strip() else ""
         user_message = f"{history_context}Pregunta del estudiante: {question}{context_code}"
@@ -1562,42 +1562,52 @@ REGLAS PRINCIPALES:
 Estás en la lección "{lesson_title}".
 
 REGLAS:
-- Analiza el código del estudiante y da feedback constructivo.
+- Analiza el código del estudiante y da feedback constructivo y directo.
 - Señala errores, mejoras de estilo y buenas prácticas de forma clara y pedagógica.
-- Si el código está bien, felicita al estudiante y dale un consejo o tip de mejora.
-- Responde en español.
-- Sé breve y directo (máximo 4-5 oraciones).
-- Usa emojis para ser más amigable."""
+- Si el código está bien, felicita al estudiante y dale un consejo o tip de mejora conciso.
+- Responde en español de forma completa y directa (máximo 3-4 párrafos estructurados)."""
         user_message = f"Analiza este código:\n```python\n{user_code}\n```"
 
     try:
+        payload = {
+            "contents": [
+                {"parts": [{"text": system_prompt + "\n\n" + user_message}]}
+            ],
+            "generationConfig": {
+                "temperature": 0.7,
+                "maxOutputTokens": 8192
+            }
+        }
+
         resp = http_requests.post(
             f"{GEMINI_API_URL}?key={GEMINI_API_KEY}",
-            json={
-                "contents": [
-                    {"parts": [{"text": system_prompt + "\n\n" + user_message}]}
-                ],
-                "generationConfig": {"temperature": 0.7, "maxOutputTokens": 2048},
-            },
-            timeout=25,
+            json=payload,
+            timeout=30,
         )
         if resp.status_code == 429:
             return jsonify(
                 {
                     "ok": False,
-                    "error": "Límite de peticiones alcanzado (Error 429). Por favor, espera un minuto o verifica si tu API Key tiene cuota disponible.",
+                    "error": "Límite de peticiones alcanzado (Error 429). Por favor, espera un momento antes de volver a preguntar.",
                 }
             )
 
         resp.raise_for_status()
         result = resp.json()
-        ai_text = result["candidates"][0]["content"]["parts"][0]["text"]
+        
+        candidates = result.get("candidates", [])
+        if candidates and "content" in candidates[0] and "parts" in candidates[0]["content"]:
+            parts = candidates[0]["content"]["parts"]
+            ai_text = "".join([p.get("text", "") for p in parts if "text" in p])
+        else:
+            ai_text = "No se pudo generar una respuesta. Por favor formula tu pregunta nuevamente."
+
         return jsonify({"ok": True, "response": ai_text})
     except http_requests.exceptions.Timeout:
         return jsonify(
             {
                 "ok": False,
-                "error": "La IA tardó demasiado en responder. Intenta de nuevo.",
+                "error": "La IA tardó demasiado en responder. Intenta formular una pregunta más específica.",
             }
         )
     except Exception as e:
