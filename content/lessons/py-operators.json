@@ -10,7 +10,10 @@
             "title": "Operadores Aritméticos",
             "text": "Los operadores aritméticos realizan operaciones matemáticas comunes: suma, resta, multiplicación, división, módulo, exponenciación y división entera.",
             "notes": [
-                {"type": "note", "text": "Python tiene el operador de exponenciación <code>**</code> que no existe en Java. En Java se usa <code>Math.pow()</code>."}
+                {
+                    "type": "note",
+                    "text": "Python tiene el operador de exponenciación <code>**</code> que no existe en Java. En Java se usa <code>Math.pow()</code>."
+                }
             ]
         },
         {
@@ -22,14 +25,20 @@
             "title": "Operadores de Comparación",
             "text": "Se usan para comparar dos valores. Devuelven <code>True</code> o <code>False</code>.",
             "notes": [
-                {"type": "tip", "text": "En Python, puedes encadenar comparaciones: <code>1 < x < 10</code>. En Java esto no es válido; necesitarías <code>x > 1 && x < 10</code>."}
+                {
+                    "type": "tip",
+                    "text": "En Python, puedes encadenar comparaciones: <code>1 < x < 10</code>. En Java esto no es válido; necesitarías <code>x > 1 && x < 10</code>."
+                }
             ]
         },
         {
             "title": "Operadores Lógicos",
             "text": "Los operadores lógicos combinan condiciones. Python usa las palabras <code>and</code>, <code>or</code>, <code>not</code> en lugar de símbolos.",
             "notes": [
-                {"type": "note", "text": "Java usa símbolos: <code>&&</code> (and), <code>||</code> (or), <code>!</code> (not). Python usa palabras en inglés, lo cual es más legible."}
+                {
+                    "type": "note",
+                    "text": "Java usa símbolos: <code>&&</code> (and), <code>||</code> (or), <code>!</code> (not). Python usa palabras en inglés, lo cual es más legible."
+                }
             ]
         }
     ],
@@ -71,14 +80,37 @@
             "template": "resultado = 2 _____ 3",
             "template_html": "resultado = 2 <input type='text' class='exercise-input' data-answer='**' placeholder='___'> 3",
             "python_code": "resultado = 2 ** 3",
-            "answer": "**"
+            "answer": "**",
+            "question_java": "¿Cuál es el operador lógico 'Y' (AND) en Java?",
+            "options_java": [
+                "&&",
+                "and",
+                "&",
+                "AND"
+            ],
+            "correct_java": 0,
+            "explanation_java": "Java utiliza '&&' para el operador lógico AND con cortocircuito."
         },
         {
             "id": "ex-op-2",
             "type": "multiple-choice",
             "question": "¿Cuál operador lógico se usa en Python para 'Y'?",
-            "options": ["&&", "and", "&", "AND"],
-            "correct": 1
+            "options": [
+                "&&",
+                "and",
+                "&",
+                "AND"
+            ],
+            "correct": 1,
+            "question_java": "¿Cuál es el operador lógico 'O' (OR) en Java?",
+            "options_java": [
+                "||",
+                "or",
+                "|",
+                "OR"
+            ],
+            "correct_java": 0,
+            "explanation_java": "Java utiliza '||' para el operador lógico OR."
         },
         {
             "id": "ex-op-3",
@@ -87,7 +119,12 @@
             "template": "print(10 _____ 3)",
             "template_html": "print(10 <input type='text' class='exercise-input' data-answer='%' placeholder='___'> 3)",
             "python_code": "print(10 % 3)",
-            "answer": "%"
+            "answer": "%",
+            "question_java": "En Java, calcula el resto (módulo) de dividir 10 entre 3.",
+            "template_java": "int resto = 10 _____ 3;",
+            "template_html_java": "int resto = 10 <input type='text' class='exercise-input' data-answer='%' placeholder='___'> 3;",
+            "answer_java": "%",
+            "explanation_java": "Tanto Java como Python usan el operador '%' para obtener el residuo de la división."
         }
     ]
 }

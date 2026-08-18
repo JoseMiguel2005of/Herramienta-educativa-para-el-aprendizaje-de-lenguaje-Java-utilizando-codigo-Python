@@ -10,21 +10,30 @@
             "title": "Definir Strings",
             "text": "Los strings en Python se definen usando comillas simples <code>'...'</code> o comillas dobles <code>\"...\"</code>. Ambas son equivalentes.",
             "notes": [
-                {"type": "note", "text": "En Java, solo se usan comillas dobles <code>\"...\"</code> para strings. Las comillas simples <code>'c'</code> son exclusivas para el tipo <code>char</code> (un solo carácter)."}
+                {
+                    "type": "note",
+                    "text": "En Java, solo se usan comillas dobles <code>\"...\"</code> para strings. Las comillas simples <code>'c'</code> son exclusivas para el tipo <code>char</code> (un solo carácter)."
+                }
             ]
         },
         {
             "title": "Strings Multilínea",
             "text": "Puedes crear strings que ocupen varias líneas usando triple comillas: <code>'''...'''</code> o <code>\"\"\"...\"\"\"</code>.",
             "notes": [
-                {"type": "tip", "text": "Los strings multilínea también se usan como <b>docstrings</b> para documentar funciones y clases en Python."}
+                {
+                    "type": "tip",
+                    "text": "Los strings multilínea también se usan como <b>docstrings</b> para documentar funciones y clases en Python."
+                }
             ]
         },
         {
             "title": "Acceder a Caracteres",
             "text": "Los strings en Python son <b>arrays de caracteres</b>. Puedes acceder a cada carácter usando su índice entre corchetes <code>[]</code>. El primer carácter tiene índice <code>0</code>.",
             "notes": [
-                {"type": "warning", "text": "En Java se usa el método <code>.charAt(index)</code> en lugar de corchetes. Usar <code>[]</code> en un String de Java causa error."}
+                {
+                    "type": "warning",
+                    "text": "En Java se usa el método <code>.charAt(index)</code> en lugar de corchetes. Usar <code>[]</code> en un String de Java causa error."
+                }
             ]
         },
         {
@@ -36,7 +45,10 @@
             "title": "Verificar Contenido",
             "text": "Puedes verificar si una palabra o frase existe dentro de un string usando las palabras clave <code>in</code> y <code>not in</code>.",
             "notes": [
-                {"type": "note", "text": "En Java se usa el método <code>.contains()</code> del objeto String para lograr lo mismo."}
+                {
+                    "type": "note",
+                    "text": "En Java se usa el método <code>.contains()</code> del objeto String para lograr lo mismo."
+                }
             ]
         }
     ],
@@ -85,14 +97,33 @@
             "template": "txt = \"Hola\"\nprint(txt[_____])",
             "template_html": "txt = \"Hola\"<br>print(txt[<input type='text' class='exercise-input' data-answer='0' placeholder='___'>])",
             "python_code": "txt = \"Hola\"\nprint(txt[0])",
-            "answer": "0"
+            "answer": "0",
+            "question_java": "En Java, obtén el carácter en la posición 0 del String <code>txt = \"Hola\"</code>.",
+            "template_java": "char c = txt._____(0);",
+            "template_html_java": "char c = txt.<input type='text' class='exercise-input' data-answer='charAt' placeholder='___'>(0);",
+            "answer_java": "charAt",
+            "explanation_java": "En Java no se puede usar corchetes con Strings; se usa el método .charAt(indice)."
         },
         {
             "id": "ex-str-2",
             "type": "multiple-choice",
             "question": "¿Cuál función devuelve la longitud de un string en Python?",
-            "options": ["length()", "len()", "size()", "count()"],
-            "correct": 1
+            "options": [
+                "length()",
+                "len()",
+                "size()",
+                "count()"
+            ],
+            "correct": 1,
+            "question_java": "¿Cuál método devuelve la longitud de un String en Java?",
+            "options_java": [
+                "txt.length()",
+                "len(txt)",
+                "txt.size()",
+                "txt.count()"
+            ],
+            "correct_java": 0,
+            "explanation_java": "En Java, los objetos String tienen el método .length() con paréntesis."
         },
         {
             "id": "ex-str-3",
@@ -101,7 +132,12 @@
             "template": "print(\"mundo\" _____ txt)",
             "template_html": "print(\"mundo\" <input type='text' class='exercise-input' data-answer='in' placeholder='___'> txt)",
             "python_code": "print(\"mundo\" in txt)",
-            "answer": "in"
+            "answer": "in",
+            "question_java": "En Java, comprueba si el String <code>txt</code> contiene la palabra <code>\"mundo\"</code>.",
+            "template_java": "boolean res = txt._____(\"mundo\");",
+            "template_html_java": "boolean res = txt.<input type='text' class='exercise-input' data-answer='contains' placeholder='___'>(\"mundo\");",
+            "answer_java": "contains",
+            "explanation_java": "El método .contains() de Java verifica si una subsecuencia de texto está presente."
         }
     ]
 }

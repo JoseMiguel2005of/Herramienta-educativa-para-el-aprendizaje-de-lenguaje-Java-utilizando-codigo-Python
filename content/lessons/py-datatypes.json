@@ -10,7 +10,10 @@
             "title": "Tipos Incorporados",
             "text": "Python tiene los siguientes tipos de datos incorporados por defecto: texto (<code>str</code>), numéricos (<code>int</code>, <code>float</code>, <code>complex</code>), secuencias (<code>list</code>, <code>tuple</code>, <code>range</code>), mappings (<code>dict</code>), conjuntos (<code>set</code>, <code>frozenset</code>), y booleanos (<code>bool</code>).",
             "notes": [
-                {"type": "note", "text": "Java tiene <b>tipos primitivos</b> (<code>int</code>, <code>double</code>, <code>boolean</code>, <code>char</code>) y <b>clases wrapper</b> (<code>Integer</code>, <code>Double</code>, <code>Boolean</code>, <code>String</code>). Python no tiene esta distinción."}
+                {
+                    "type": "note",
+                    "text": "Java tiene <b>tipos primitivos</b> (<code>int</code>, <code>double</code>, <code>boolean</code>, <code>char</code>) y <b>clases wrapper</b> (<code>Integer</code>, <code>Double</code>, <code>Boolean</code>, <code>String</code>). Python no tiene esta distinción."
+                }
             ]
         },
         {
@@ -22,14 +25,20 @@
             "title": "Asignación Automática",
             "text": "En Python, el tipo de dato se asigna automáticamente cuando asignas un valor a una variable. No necesitas declararlo explícitamente.",
             "notes": [
-                {"type": "tip", "text": "Esto se llama <b>tipado dinámico</b>. Java usa <b>tipado estático</b>: debes declarar el tipo antes de usar una variable."}
+                {
+                    "type": "tip",
+                    "text": "Esto se llama <b>tipado dinámico</b>. Java usa <b>tipado estático</b>: debes declarar el tipo antes de usar una variable."
+                }
             ]
         },
         {
             "title": "Especificar el Tipo",
             "text": "Si quieres especificar el tipo de dato, puedes usar funciones de casting como <code>str()</code>, <code>int()</code>, <code>float()</code>, <code>list()</code>, <code>dict()</code>, etc.",
             "notes": [
-                {"type": "warning", "text": "No todos los castings son válidos. Por ejemplo, <code>int(\"hola\")</code> producirá un <code>ValueError</code>."}
+                {
+                    "type": "warning",
+                    "text": "No todos los castings son válidos. Por ejemplo, <code>int(\"hola\")</code> producirá un <code>ValueError</code>."
+                }
             ]
         }
     ],
@@ -68,8 +77,22 @@
             "id": "ex-dt-1",
             "type": "multiple-choice",
             "question": "¿Cuál es el tipo de dato de <code>x = 5.0</code> en Python?",
-            "options": ["int", "float", "str", "double"],
-            "correct": 1
+            "options": [
+                "int",
+                "float",
+                "str",
+                "double"
+            ],
+            "correct": 1,
+            "question_java": "¿Cuál es el tipo de dato en Java para números enteros de 32 bits?",
+            "options_java": [
+                "int",
+                "Integer",
+                "long",
+                "float"
+            ],
+            "correct_java": 0,
+            "explanation_java": "'int' es el tipo primitivo estándar para enteros en Java."
         },
         {
             "id": "ex-dt-2",
@@ -78,7 +101,16 @@
             "template": "print(_____(x))",
             "template_html": "print(<input type='text' class='exercise-input' data-answer='type' placeholder='___'>(x))",
             "python_code": "print(type(x))",
-            "answer": "type"
+            "answer": "type",
+            "question_java": "¿Cuál es el tipo de dato en Java para valores lógicos (verdadero/falso)?",
+            "options_java": [
+                "boolean",
+                "bool",
+                "Boolean_t",
+                "bit"
+            ],
+            "correct_java": 0,
+            "explanation_java": "Java utiliza la palabra clave 'boolean' (en minúscula para primitivo) en vez de 'bool'."
         },
         {
             "id": "ex-dt-3",

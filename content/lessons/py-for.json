@@ -10,7 +10,10 @@
             "title": "For Básico",
             "text": "El bucle <code>for</code> en Python itera directamente sobre los elementos de una secuencia. No necesitas un contador ni índices.",
             "notes": [
-                {"type": "note", "text": "El <code>for</code> de Python es similar al <b>for-each</b> de Java (<code>for (Type x : colección)</code>), no al <code>for</code> clásico con contador."}
+                {
+                    "type": "note",
+                    "text": "El <code>for</code> de Python es similar al <b>for-each</b> de Java (<code>for (Type x : colección)</code>), no al <code>for</code> clásico con contador."
+                }
             ]
         },
         {
@@ -22,21 +25,30 @@
             "title": "La Función range()",
             "text": "Para repetir un bloque un número específico de veces, usa <code>range()</code>. Genera una secuencia de números.",
             "notes": [
-                {"type": "tip", "text": "<code>range(6)</code> genera <code>0, 1, 2, 3, 4, 5</code> (no incluye el 6). Puedes especificar inicio, fin y paso: <code>range(2, 10, 2)</code>."}
+                {
+                    "type": "tip",
+                    "text": "<code>range(6)</code> genera <code>0, 1, 2, 3, 4, 5</code> (no incluye el 6). Puedes especificar inicio, fin y paso: <code>range(2, 10, 2)</code>."
+                }
             ]
         },
         {
             "title": "Break y Continue",
             "text": "<code>break</code> termina el bucle antes de que haya recorrido todos los elementos. <code>continue</code> salta a la siguiente iteración.",
             "notes": [
-                {"type": "note", "text": "<code>break</code> y <code>continue</code> funcionan exactamente igual en Python y Java."}
+                {
+                    "type": "note",
+                    "text": "<code>break</code> y <code>continue</code> funcionan exactamente igual en Python y Java."
+                }
             ]
         },
         {
             "title": "For con Else",
             "text": "Python tiene una característica única: un bloque <code>else</code> después de un <code>for</code>. Se ejecuta cuando el bucle termina normalmente (sin <code>break</code>).",
             "notes": [
-                {"type": "warning", "text": "Java <b>no</b> tiene <code>for...else</code>. Esta es una característica exclusiva de Python."}
+                {
+                    "type": "warning",
+                    "text": "Java <b>no</b> tiene <code>for...else</code>. Esta es una característica exclusiva de Python."
+                }
             ]
         }
     ],
@@ -85,14 +97,29 @@
             "template": "for i in _____(5):\n    print(i)",
             "template_html": "for i in <input type='text' class='exercise-input' data-answer='range' placeholder='___'>(5):<br>&nbsp;&nbsp;&nbsp;&nbsp;print(i)",
             "python_code": "for i in range(5):\n    print(i)",
-            "answer": "range"
+            "answer": "range",
+            "question_java": "En Java, completa el bucle for mejorado (for-each) para recorrer un array <code>String[] frutas</code>.",
+            "template_java": "for (String f _____ frutas) {\n    System.out.println(f);\n}",
+            "template_html_java": "for (String f <input type='text' class='exercise-input' data-answer=':' placeholder='___'> frutas) {<br>&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(f);<br>}",
+            "answer_java": ":",
+            "explanation_java": "En Java el bucle for-each utiliza dos puntos (:) para separar el elemento de la colección."
         },
         {
             "id": "ex-for-2",
             "type": "multiple-choice",
             "question": "¿Qué hace <code>continue</code> dentro de un bucle?",
-            "options": ["Termina el bucle", "Salta a la siguiente iteración", "Reinicia el bucle", "Pausa el bucle"],
-            "correct": 1
+            "options": [
+                "Termina el bucle",
+                "Salta a la siguiente iteración",
+                "Reinicia el bucle",
+                "Pausa el bucle"
+            ],
+            "correct": 1,
+            "question_java": "En Java, escribe el bucle tradicional para iterar <code>i</code> desde 0 hasta 4.",
+            "template_java": "for (int i = 0; i < 5; _____ ) {\n    System.out.println(i);\n}",
+            "template_html_java": "for (int i = 0; i < 5; <input type='text' class='exercise-input' data-answer='i++' placeholder='___'>) {<br>&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(i);<br>}",
+            "answer_java": "i++",
+            "explanation_java": "En Java el incremento se suele expresar con el operador post-incremento 'i++'."
         },
         {
             "id": "ex-for-3",

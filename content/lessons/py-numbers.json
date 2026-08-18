@@ -10,14 +10,20 @@
             "title": "Tipos Numéricos",
             "text": "Python tiene tres tipos numéricos: <code>int</code> (enteros sin límite de tamaño), <code>float</code> (decimales con punto flotante) y <code>complex</code> (números complejos con parte imaginaria).",
             "notes": [
-                {"type": "note", "text": "Java tiene más tipos numéricos: <code>byte</code>, <code>short</code>, <code>int</code>, <code>long</code>, <code>float</code>, <code>double</code>. Python simplifica esto con solo <code>int</code> y <code>float</code>."}
+                {
+                    "type": "note",
+                    "text": "Java tiene más tipos numéricos: <code>byte</code>, <code>short</code>, <code>int</code>, <code>long</code>, <code>float</code>, <code>double</code>. Python simplifica esto con solo <code>int</code> y <code>float</code>."
+                }
             ]
         },
         {
             "title": "Enteros (int)",
             "text": "Los enteros en Python pueden ser de cualquier longitud — no tienen límite de tamaño (a diferencia de Java donde <code>int</code> tiene un máximo de ~2 mil millones).",
             "notes": [
-                {"type": "tip", "text": "Para números muy grandes en Java, necesitas <code>long</code> o <code>BigInteger</code>. En Python, simplemente funciona."}
+                {
+                    "type": "tip",
+                    "text": "Para números muy grandes en Java, necesitas <code>long</code> o <code>BigInteger</code>. En Python, simplemente funciona."
+                }
             ]
         },
         {
@@ -29,7 +35,10 @@
             "title": "Conversión entre Tipos",
             "text": "Puedes convertir entre tipos numéricos usando <code>int()</code>, <code>float()</code> y <code>complex()</code>.",
             "notes": [
-                {"type": "warning", "text": "No puedes convertir un número complejo a int o float. Hacerlo generará un <code>TypeError</code>."}
+                {
+                    "type": "warning",
+                    "text": "No puedes convertir un número complejo a int o float. Hacerlo generará un <code>TypeError</code>."
+                }
             ]
         },
         {
@@ -80,8 +89,22 @@
             "id": "ex-num-1",
             "type": "multiple-choice",
             "question": "¿Cuál es el tipo de <code>x = 3.14</code> en Python?",
-            "options": ["int", "float", "double", "decimal"],
-            "correct": 1
+            "options": [
+                "int",
+                "float",
+                "double",
+                "decimal"
+            ],
+            "correct": 1,
+            "question_java": "¿Cuál es el tipo de dato por defecto para números con decimales en Java (ej: 3.14)?",
+            "options_java": [
+                "double",
+                "float",
+                "decimal",
+                "int"
+            ],
+            "correct_java": 0,
+            "explanation_java": "En Java, los literales decimales como 3.14 son de tipo 'double' por defecto (64 bits)."
         },
         {
             "id": "ex-num-2",
@@ -90,7 +113,12 @@
             "template": "x = _____(2.8)",
             "template_html": "x = <input type='text' class='exercise-input' data-answer='int' placeholder='___'>(2.8)",
             "python_code": "x = int(2.8)",
-            "answer": "int"
+            "answer": "int",
+            "question_java": "Haz casting explícito para convertir el double <code>2.8</code> a un entero en Java.",
+            "template_java": "int x = (_____) 2.8;",
+            "template_html_java": "int x = (<input type='text' class='exercise-input' data-answer='int' placeholder='___'>) 2.8;",
+            "answer_java": "int",
+            "explanation_java": "En Java el casting primitivo se realiza anteponiendo el tipo entre paréntesis: (int) 2.8."
         }
     ]
 }

@@ -10,14 +10,20 @@
             "title": "Crear un Diccionario",
             "text": "Los diccionarios se crean usando llaves <code>{}</code> y pares <code>clave: valor</code>. Las claves deben ser únicas e inmutables (usualmente strings).",
             "notes": [
-                {"type": "note", "text": "En Java, el equivalente más común es <code>HashMap</code> o <code>Map</code>. Python ofrece una sintaxis literal mucho más limpia."}
+                {
+                    "type": "note",
+                    "text": "En Java, el equivalente más común es <code>HashMap</code> o <code>Map</code>. Python ofrece una sintaxis literal mucho más limpia."
+                }
             ]
         },
         {
             "title": "Acceder a Elementos",
             "text": "Puedes acceder a un valor refiriéndote a su clave entre corchetes <code>[]</code>, o usando el método <code>get()</code>.",
             "notes": [
-                {"type": "tip", "text": "El método <code>get()</code> es más seguro porque devuelve <code>None</code> si la clave no existe, mientras que usar <code>[]</code> lanzará un error."}
+                {
+                    "type": "tip",
+                    "text": "El método <code>get()</code> es más seguro porque devuelve <code>None</code> si la clave no existe, mientras que usar <code>[]</code> lanzará un error."
+                }
             ]
         },
         {
@@ -34,7 +40,10 @@
             "title": "Iterar un Diccionario",
             "text": "Puedes iterar sobre las claves, los valores, o ambos a la vez usando el método <code>items()</code>.",
             "notes": [
-                {"type": "warning", "text": "En Java iterar un Map es más verboso (usando <code>Map.Entry</code>). Python lo hace natural con <code>for clave, valor in dict.items():</code>."}
+                {
+                    "type": "warning",
+                    "text": "En Java iterar un Map es más verboso (usando <code>Map.Entry</code>). Python lo hace natural con <code>for clave, valor in dict.items():</code>."
+                }
             ]
         }
     ],
@@ -83,7 +92,12 @@
             "template": "x = carro._____(\"modelo\")",
             "template_html": "x = carro.<input type='text' class='exercise-input' data-answer='get' placeholder='___'>(\"modelo\")",
             "python_code": "x = carro.get(\"modelo\")",
-            "answer": "get"
+            "answer": "get",
+            "question_java": "En Java, almacena el par clave-valor <code>(\"modelo\", \"Mustang\")</code> en un <code>HashMap<String, String> auto</code>.",
+            "template_java": "auto._____(\"modelo\", \"Mustang\");",
+            "template_html_java": "auto.<input type='text' class='exercise-input' data-answer='put' placeholder='___'>(\"modelo\", \"Mustang\");",
+            "answer_java": "put",
+            "explanation_java": "En Java HashMap se usa .put(clave, valor) para insertar o actualizar elementos."
         },
         {
             "id": "ex-dict-2",
@@ -92,14 +106,33 @@
             "template": "carro[_____] = 2020",
             "template_html": "carro[<input type='text' class='exercise-input' data-answer='\"año\"' placeholder='___'>] = 2020",
             "python_code": "carro[\"año\"] = 2020",
-            "answer": "\"año\""
+            "answer": "\"año\"",
+            "question_java": "En Java, obtén el valor asociado a la clave <code>\"modelo\"</code> en el HashMap <code>auto</code>.",
+            "template_java": "String mod = auto._____(\"modelo\");",
+            "template_html_java": "String mod = auto.<input type='text' class='exercise-input' data-answer='get' placeholder='___'>(\"modelo\");",
+            "answer_java": "get",
+            "explanation_java": "En Java HashMap se utiliza .get(clave) para recuperar el valor asociado."
         },
         {
             "id": "ex-dict-3",
             "type": "multiple-choice",
             "question": "¿Qué método se usa para eliminar un elemento de un diccionario en Python?",
-            "options": ["delete()", "remove()", "pop()", "clear()"],
-            "correct": 2
+            "options": [
+                "delete()",
+                "remove()",
+                "pop()",
+                "clear()"
+            ],
+            "correct": 2,
+            "question_java": "¿Cuál es la estructura de datos equivalente a un diccionario (dict) de Python en Java?",
+            "options_java": [
+                "HashMap<K, V>",
+                "ArrayList<T>",
+                "HashSet<T>",
+                "Tuple<K, V>"
+            ],
+            "correct_java": 0,
+            "explanation_java": "HashMap es la colección asociativa de pares clave-valor estándar en Java."
         }
     ]
 }

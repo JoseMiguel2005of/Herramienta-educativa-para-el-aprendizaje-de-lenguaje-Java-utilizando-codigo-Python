@@ -10,21 +10,30 @@
             "title": "Indentación",
             "text": "Python usa la <b>indentación</b> (espacios al inicio de la línea) para definir bloques de código. Es obligatoria — no es solo un estilo visual.",
             "notes": [
-                {"type": "warning", "text": "Mezclar tabs y espacios causa errores. Se recomienda usar <b>4 espacios</b> por nivel de indentación. Java usa llaves <code>{}</code> y la indentación es opcional."}
+                {
+                    "type": "warning",
+                    "text": "Mezclar tabs y espacios causa errores. Se recomienda usar <b>4 espacios</b> por nivel de indentación. Java usa llaves <code>{}</code> y la indentación es opcional."
+                }
             ]
         },
         {
             "title": "Punto y Coma",
             "text": "Python <b>no</b> requiere punto y coma al final de cada línea. El fin de línea es suficiente para terminar una sentencia.",
             "notes": [
-                {"type": "note", "text": "En Java, el punto y coma <code>;</code> es <b>obligatorio</b> al final de cada sentencia. Olvidarlo causa un error de compilación."}
+                {
+                    "type": "note",
+                    "text": "En Java, el punto y coma <code>;</code> es <b>obligatorio</b> al final de cada sentencia. Olvidarlo causa un error de compilación."
+                }
             ]
         },
         {
             "title": "Ejecutar Python",
             "text": "Python se ejecuta directamente desde la línea de comandos. También puedes usar el modo interactivo escribiendo <code>python</code> en la terminal.",
             "notes": [
-                {"type": "tip", "text": "Java requiere dos pasos: <b>compilar</b> (<code>javac archivo.java</code>) y luego <b>ejecutar</b> (<code>java Archivo</code>). Python solo necesita un paso: <code>python archivo.py</code>."}
+                {
+                    "type": "tip",
+                    "text": "Java requiere dos pasos: <b>compilar</b> (<code>javac archivo.java</code>) y luego <b>ejecutar</b> (<code>java Archivo</code>). Python solo necesita un paso: <code>python archivo.py</code>."
+                }
             ]
         }
     ],
@@ -56,15 +65,43 @@
             "id": "ex-syntax-1",
             "type": "multiple-choice",
             "question": "¿Qué usa Python para definir bloques de código?",
-            "options": ["Llaves {}", "Indentación (espacios)", "Paréntesis ()", "Punto y coma ;"],
-            "correct": 1
+            "options": [
+                "Llaves {}",
+                "Indentación (espacios)",
+                "Paréntesis ()",
+                "Punto y coma ;"
+            ],
+            "correct": 1,
+            "question_java": "¿Qué carácter es OBLIGATORIO al final de casi todas las sentencias en Java?",
+            "options_java": [
+                "Punto y coma (;)",
+                "Dos puntos (:)",
+                "Punto (.)",
+                "Ninguno, basta un salto de línea"
+            ],
+            "correct_java": 0,
+            "explanation_java": "En Java cada instrucción debe finalizar con punto y coma (;). En Python no es necesario."
         },
         {
             "id": "ex-syntax-2",
             "type": "multiple-choice",
             "question": "¿Cuántos pasos necesita Java para ejecutar un programa?",
-            "options": ["1 (ejecutar)", "2 (compilar y ejecutar)", "3 (escribir, compilar, ejecutar)", "0 (se ejecuta solo)"],
-            "correct": 1
+            "options": [
+                "1 (ejecutar)",
+                "2 (compilar y ejecutar)",
+                "3 (escribir, compilar, ejecutar)",
+                "0 (se ejecuta solo)"
+            ],
+            "correct": 1,
+            "question_java": "¿Cuál es la estructura mínima necesaria para ejecutar un programa en Java?",
+            "options_java": [
+                "Una clase que contenga el método public static void main(String[] args)",
+                "Solo una línea con System.out.println()",
+                "Un archivo sin clases",
+                "Una función llamada def main()"
+            ],
+            "correct_java": 0,
+            "explanation_java": "Todo programa ejecutable en Java debe estar dentro de una clase y contener el método punto de entrada 'public static void main'."
         }
     ]
 }

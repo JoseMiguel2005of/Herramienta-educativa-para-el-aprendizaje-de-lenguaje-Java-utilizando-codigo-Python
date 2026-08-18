@@ -10,14 +10,20 @@
             "title": "Crear un Set",
             "text": "Los sets se escriben con llaves <code>{}</code>. Los elementos aparecen en un orden aleatorio cada vez que los usas, por lo que no puedes acceder a ellos por índice.",
             "notes": [
-                {"type": "note", "text": "En Java, el equivalente principal es <code>HashSet</code>. Ambos lenguajes usan llaves para representar conjuntos matemáticos lógicos de elementos únicos."}
+                {
+                    "type": "note",
+                    "text": "En Java, el equivalente principal es <code>HashSet</code>. Ambos lenguajes usan llaves para representar conjuntos matemáticos lógicos de elementos únicos."
+                }
             ]
         },
         {
             "title": "Elementos Únicos",
             "text": "Los sets no pueden tener dos elementos con el mismo valor. Los valores duplicados serán ignorados automáticamente al crear o actualizar el set.",
             "notes": [
-                {"type": "tip", "text": "Un truco común en Python para eliminar duplicados de una lista es convertirla a set y luego volver a lista: <code>list(set(mi_lista))</code>."}
+                {
+                    "type": "tip",
+                    "text": "Un truco común en Python para eliminar duplicados de una lista es convertirla a set y luego volver a lista: <code>list(set(mi_lista))</code>."
+                }
             ]
         },
         {
@@ -29,7 +35,10 @@
             "title": "Eliminar Elementos",
             "text": "Para eliminar un elemento, usa <code>remove()</code> o <code>discard()</code>.",
             "notes": [
-                {"type": "warning", "text": "Si el elemento no existe, <code>remove()</code> lanzará un error, mientras que <code>discard()</code> no lanzará ningún error."}
+                {
+                    "type": "warning",
+                    "text": "Si el elemento no existe, <code>remove()</code> lanzará un error, mientras que <code>discard()</code> no lanzará ningún error."
+                }
             ]
         }
     ],
@@ -68,8 +77,18 @@
             "id": "ex-set-1",
             "type": "multiple-choice",
             "question": "¿Cuál es una característica principal de los Sets?",
-            "options": ["Están ordenados", "Se acceden por índice", "No permiten duplicados", "Son inmutables"],
-            "correct": 2
+            "options": [
+                "Están ordenados",
+                "Se acceden por índice",
+                "No permiten duplicados",
+                "Son inmutables"
+            ],
+            "correct": 2,
+            "question_java": "En Java, agrega el elemento <code>\"naranja\"</code> a un <code>HashSet<String> frutas</code>.",
+            "template_java": "frutas._____(\"naranja\");",
+            "template_html_java": "frutas.<input type='text' class='exercise-input' data-answer='add' placeholder='___'>(\"naranja\");",
+            "answer_java": "add",
+            "explanation_java": "En Java Set se utiliza el método .add() para insertar elementos únicos."
         },
         {
             "id": "ex-set-2",
@@ -78,7 +97,16 @@
             "template": "frutas._____(\"naranja\")",
             "template_html": "frutas.<input type='text' class='exercise-input' data-answer='add' placeholder='___'>(\"naranja\")",
             "python_code": "frutas.add(\"naranja\")",
-            "answer": "add"
+            "answer": "add",
+            "question_java": "¿Cuál es la clase estándar más común para implementar la interfaz Set en Java?",
+            "options_java": [
+                "HashSet",
+                "SetList",
+                "ArraySet",
+                "DictSet"
+            ],
+            "correct_java": 0,
+            "explanation_java": "HashSet es la implementación más utilizada de la interfaz Set en la librería estándar de Java."
         },
         {
             "id": "ex-set-3",
@@ -87,7 +115,12 @@
             "template": "frutas._____(\"banana\")",
             "template_html": "frutas.<input type='text' class='exercise-input' data-answer='discard' placeholder='___'>(\"banana\")",
             "python_code": "frutas.discard(\"banana\")",
-            "answer": "discard"
+            "answer": "discard",
+            "question_java": "En Java, elimina <code>\"banana\"</code> de un HashSet <code>frutas</code>.",
+            "template_java": "frutas._____(\"banana\");",
+            "template_html_java": "frutas.<input type='text' class='exercise-input' data-answer='remove' placeholder='___'>(\"banana\");",
+            "answer_java": "remove",
+            "explanation_java": "El método .remove() elimina el elemento especificado del Set si está presente."
         }
     ]
 }

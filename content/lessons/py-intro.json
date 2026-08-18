@@ -62,17 +62,45 @@
             "id": "ex-py-intro-1",
             "type": "multiple-choice",
             "question": "¿Cómo se definen los bloques de código (como los que van dentro de un condicional o función) en Python?",
-            "options": ["Usando corchetes []", "Usando indentación (espacios al inicio de línea)", "Usando llaves {}", "Usando punto y coma ;"],
+            "options": [
+                "Usando corchetes []",
+                "Usando indentación (espacios al inicio de línea)",
+                "Usando llaves {}",
+                "Usando punto y coma ;"
+            ],
             "correct": 1,
-            "explanation": "Python utiliza la indentación (espacios en blanco) obligatoria para definir la estructura y anidación de los bloques de código, a diferencia de Java o C que usan llaves {}."
+            "explanation": "Python utiliza la indentación (espacios en blanco) obligatoria para definir la estructura y anidación de los bloques de código, a diferencia de Java o C que usan llaves {}.",
+            "question_java": "¿Cómo se delimitan los bloques de código (dentro de métodos, clases o condicionales) en Java?",
+            "options_java": [
+                "Usando llaves { }",
+                "Usando indentación obligatoria",
+                "Usando paréntesis ( )",
+                "Usando corchetes [ ]"
+            ],
+            "correct_java": 0,
+            "explanation_java": "En Java, los bloques de código se delimitan explícitamente mediante llaves { }, mientras que en Python se usa la indentación."
         },
         {
             "id": "ex-py-intro-2",
             "type": "multiple-choice",
             "question": "¿Cuál de las siguientes afirmaciones describe mejor el sistema de tipos de Python en comparación con Java?",
-            "options": ["Python es de tipado estático y Java es dinámico", "Ambos lenguajes requieren declarar el tipo de cada variable", "Python usa tipado dinámico y Java usa tipado estático", "Ninguno de los dos lenguajes permite el uso de variables"],
+            "options": [
+                "Python es de tipado estático y Java es dinámico",
+                "Ambos lenguajes requieren declarar el tipo de cada variable",
+                "Python usa tipado dinámico y Java usa tipado estático",
+                "Ninguno de los dos lenguajes permite el uso de variables"
+            ],
             "correct": 2,
-            "explanation": "Python infiere automáticamente el tipo de dato al asignar un valor (tipado dinámico), mientras que Java requiere que definas explícitamente el tipo de cada variable (tipado estático)."
+            "explanation": "Python infiere automáticamente el tipo de dato al asignar un valor (tipado dinámico), mientras que Java requiere que definas explícitamente el tipo de cada variable (tipado estático).",
+            "question_java": "¿Cuál de las siguientes afirmaciones describe mejor el sistema de tipos de Java frente a Python?",
+            "options_java": [
+                "Java usa tipado estático y compilado; Python usa tipado dinámico e interpretado",
+                "Ambos usan tipado dinámico",
+                "Java no requiere declarar tipos",
+                "Python compila directamente a código máquina"
+            ],
+            "correct_java": 0,
+            "explanation_java": "Java requiere declarar el tipo de cada variable antes de usarla (tipado estático), mientras que Python infiere el tipo dinámicamente en tiempo de ejecución."
         }
     ]
 }

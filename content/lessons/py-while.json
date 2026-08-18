@@ -10,7 +10,10 @@
             "title": "While Básico",
             "text": "El bucle <code>while</code> ejecuta su bloque de código mientras la condición sea <code>True</code>. Debes asegurarte de que la condición eventualmente sea <code>False</code>, o el bucle será infinito.",
             "notes": [
-                {"type": "warning", "text": "Recuerda <b>incrementar la variable</b> del bucle, de lo contrario obtendrás un <b>bucle infinito</b> que nunca terminará."}
+                {
+                    "type": "warning",
+                    "text": "Recuerda <b>incrementar la variable</b> del bucle, de lo contrario obtendrás un <b>bucle infinito</b> que nunca terminará."
+                }
             ]
         },
         {
@@ -27,7 +30,10 @@
             "title": "While con Else",
             "text": "Al igual que el <code>for</code>, Python permite un bloque <code>else</code> después del <code>while</code>. Se ejecuta cuando la condición se vuelve falsa (no cuando se usa <code>break</code>).",
             "notes": [
-                {"type": "note", "text": "Java <b>no</b> tiene <code>while...else</code>. Esta es otra característica exclusiva de Python."}
+                {
+                    "type": "note",
+                    "text": "Java <b>no</b> tiene <code>while...else</code>. Esta es otra característica exclusiva de Python."
+                }
             ]
         }
     ],
@@ -69,14 +75,33 @@
             "template": "i = 0\n_____ i < 5:\n    print(i)\n    i += 1",
             "template_html": "i = 0<br><input type='text' class='exercise-input' data-answer='while' placeholder='___'> i < 5:<br>&nbsp;&nbsp;&nbsp;&nbsp;print(i)<br>&nbsp;&nbsp;&nbsp;&nbsp;i += 1",
             "python_code": "i = 0\nwhile i < 5:\n    print(i)\n    i += 1",
-            "answer": "while"
+            "answer": "while",
+            "question_java": "Completa el bucle en Java para iterar mientras <code>i < 5</code>.",
+            "template_java": "int i = 0;\n_____(i < 5) {\n    System.out.println(i);\n    i++;\n}",
+            "template_html_java": "int i = 0;<br><input type='text' class='exercise-input' data-answer='while' placeholder='___'>(i < 5) {<br>&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(i);<br>&nbsp;&nbsp;&nbsp;&nbsp;i++;<br>}",
+            "answer_java": "while",
+            "explanation_java": "En Java el bucle while evalúa una condición booleana entre paréntesis."
         },
         {
             "id": "ex-while-2",
             "type": "multiple-choice",
             "question": "¿Qué pasa si olvidas incrementar la variable en un bucle while?",
-            "options": ["Error de sintaxis", "Bucle infinito", "El bucle no se ejecuta", "Se incrementa sola"],
-            "correct": 1
+            "options": [
+                "Error de sintaxis",
+                "Bucle infinito",
+                "El bucle no se ejecuta",
+                "Se incrementa sola"
+            ],
+            "correct": 1,
+            "question_java": "En Java, ¿cuál es la estructura de bucle que garantiza ejecutarse al menos una vez antes de comprobar la condición?",
+            "options_java": [
+                "do-while",
+                "while",
+                "for",
+                "foreach"
+            ],
+            "correct_java": 0,
+            "explanation_java": "El bucle 'do { ... } while (condicion);' ejecuta el bloque de código antes de evaluar la condición."
         }
     ]
 }

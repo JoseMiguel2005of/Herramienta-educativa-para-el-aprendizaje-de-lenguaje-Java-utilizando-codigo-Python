@@ -10,28 +10,40 @@
             "title": "Crear una Clase",
             "text": "Para crear una clase usa la palabra clave <code>class</code>. Las clases son plantillas para crear objetos.",
             "notes": [
-                {"type": "note", "text": "En Java, <b>todo</b> el código debe estar dentro de una clase. En Python, las clases son opcionales — puedes escribir código sin clases."}
+                {
+                    "type": "note",
+                    "text": "En Java, <b>todo</b> el código debe estar dentro de una clase. En Python, las clases son opcionales — puedes escribir código sin clases."
+                }
             ]
         },
         {
             "title": "Crear un Objeto",
             "text": "Un objeto es una instancia de una clase. Se crea llamando a la clase como si fuera una función.",
             "notes": [
-                {"type": "tip", "text": "Python no usa la palabra <code>new</code>. En Java sí: <code>Persona p = new Persona()</code>."}
+                {
+                    "type": "tip",
+                    "text": "Python no usa la palabra <code>new</code>. En Java sí: <code>Persona p = new Persona()</code>."
+                }
             ]
         },
         {
             "title": "El Método __init__",
             "text": "El método <code>__init__()</code> es el <b>constructor</b>. Se ejecuta automáticamente cuando se crea un nuevo objeto y se usa para inicializar las propiedades.",
             "notes": [
-                {"type": "note", "text": "En Java, el constructor tiene el <b>mismo nombre que la clase</b>. En Python siempre se llama <code>__init__</code>."}
+                {
+                    "type": "note",
+                    "text": "En Java, el constructor tiene el <b>mismo nombre que la clase</b>. En Python siempre se llama <code>__init__</code>."
+                }
             ]
         },
         {
             "title": "El Parámetro self",
             "text": "El parámetro <code>self</code> es una referencia a la instancia actual de la clase. Se usa para acceder a las variables y métodos del objeto.",
             "notes": [
-                {"type": "warning", "text": "<code>self</code> debe ser el <b>primer parámetro</b> de todos los métodos de la clase. En Java, el equivalente es <code>this</code> y es implícito (no se declara como parámetro)."}
+                {
+                    "type": "warning",
+                    "text": "<code>self</code> debe ser el <b>primer parámetro</b> de todos los métodos de la clase. En Java, el equivalente es <code>this</code> y es implícito (no se declara como parámetro)."
+                }
             ]
         },
         {
@@ -85,14 +97,33 @@
             "template": "_____ Carro:\n    color = \"rojo\"",
             "template_html": "<input type='text' class='exercise-input' data-answer='class' placeholder='___'> Carro:<br>&nbsp;&nbsp;&nbsp;&nbsp;color = \"rojo\"",
             "python_code": "class Carro:\n    color = \"rojo\"",
-            "answer": "class"
+            "answer": "class",
+            "question_java": "En Java, declara una clase llamada <code>Persona</code>.",
+            "template_java": "public _____ Persona {\n    int edad;\n}",
+            "template_html_java": "public <input type='text' class='exercise-input' data-answer='class' placeholder='___'> Persona {<br>&nbsp;&nbsp;&nbsp;&nbsp;int edad;<br>}",
+            "answer_java": "class",
+            "explanation_java": "Tanto Java como Python usan la palabra clave 'class' para definir nuevas clases."
         },
         {
             "id": "ex-class-2",
             "type": "multiple-choice",
             "question": "¿Cuál es el equivalente de <code>self</code> en Java?",
-            "options": ["self", "this", "me", "my"],
-            "correct": 1
+            "options": [
+                "self",
+                "this",
+                "me",
+                "my"
+            ],
+            "correct": 1,
+            "question_java": "En Java, ¿cómo se crea una nueva instancia de la clase <code>Persona</code>?",
+            "options_java": [
+                "Persona p = new Persona();",
+                "p = Persona()",
+                "Persona p = Persona();",
+                "create Persona();"
+            ],
+            "correct_java": 0,
+            "explanation_java": "En Java es obligatorio usar el operador 'new' para instanciar objetos."
         },
         {
             "id": "ex-class-3",

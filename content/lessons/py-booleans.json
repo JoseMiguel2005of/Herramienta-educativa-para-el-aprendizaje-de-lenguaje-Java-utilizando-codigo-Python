@@ -10,7 +10,10 @@
             "title": "Valores Booleanos",
             "text": "En Python, los booleanos son <code>True</code> y <code>False</code> (con mayúscula inicial). Se usan principalmente para evaluar condiciones.",
             "notes": [
-                {"type": "note", "text": "En Java los booleanos son <code>true</code> y <code>false</code> (minúscula). Python los escribe con mayúscula inicial."}
+                {
+                    "type": "note",
+                    "text": "En Java los booleanos son <code>true</code> y <code>false</code> (minúscula). Python los escribe con mayúscula inicial."
+                }
             ]
         },
         {
@@ -22,14 +25,20 @@
             "title": "La Función bool()",
             "text": "La función <code>bool()</code> te permite evaluar cualquier valor y obtener <code>True</code> o <code>False</code>.",
             "notes": [
-                {"type": "tip", "text": "Casi cualquier valor es <code>True</code>. Solo son <code>False</code>: <code>0</code>, <code>\"\"</code>, <code>[]</code>, <code>{}</code>, <code>None</code> y <code>False</code> mismo."}
+                {
+                    "type": "tip",
+                    "text": "Casi cualquier valor es <code>True</code>. Solo son <code>False</code>: <code>0</code>, <code>\"\"</code>, <code>[]</code>, <code>{}</code>, <code>None</code> y <code>False</code> mismo."
+                }
             ]
         },
         {
             "title": "Valores Falsy",
             "text": "Algunos valores son considerados <code>False</code> cuando se evalúan como booleanos. Esto incluye valores vacíos, cero, y <code>None</code>.",
             "notes": [
-                {"type": "warning", "text": "Java no convierte automáticamente otros tipos a boolean. <code>if (0)</code> no compila en Java, pero <code>if 0:</code> funciona en Python (es <code>False</code>)."}
+                {
+                    "type": "warning",
+                    "text": "Java no convierte automáticamente otros tipos a boolean. <code>if (0)</code> no compila en Java, pero <code>if 0:</code> funciona en Python (es <code>False</code>)."
+                }
             ]
         }
     ],
@@ -68,15 +77,43 @@
             "id": "ex-bool-1",
             "type": "multiple-choice",
             "question": "¿Cuál es el resultado de <code>bool(0)</code>?",
-            "options": ["True", "False", "0", "Error"],
-            "correct": 1
+            "options": [
+                "True",
+                "False",
+                "0",
+                "Error"
+            ],
+            "correct": 1,
+            "question_java": "¿Cómo se escriben los literales booleanos en Java?",
+            "options_java": [
+                "true y false (en minúsculas)",
+                "True y False (con mayúscula inicial)",
+                "TRUE y FALSE",
+                "1 y 0 exclusivamente"
+            ],
+            "correct_java": 0,
+            "explanation_java": "En Java los valores booleanos son palabras reservadas escritas en minúsculas: 'true' y 'false'."
         },
         {
             "id": "ex-bool-2",
             "type": "multiple-choice",
             "question": "¿Cuál de estos valores es <code>True</code> en Python?",
-            "options": ["bool(\"\")", "bool(0)", "bool(None)", "bool(\"Hola\")"],
-            "correct": 3
+            "options": [
+                "bool(\"\")",
+                "bool(0)",
+                "bool(None)",
+                "bool(\"Hola\")"
+            ],
+            "correct": 3,
+            "question_java": "En Java, ¿cuál es el resultado de la comparación <code>10 > 9</code>?",
+            "options_java": [
+                "true",
+                "True",
+                "1",
+                "TRUE"
+            ],
+            "correct_java": 0,
+            "explanation_java": "Las operaciones de comparación en Java devuelven el tipo primitivo boolean 'true' o 'false'."
         }
     ]
 }

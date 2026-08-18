@@ -10,14 +10,20 @@
             "title": "¿Qué es Casting?",
             "text": "Hay momentos en que necesitas especificar o cambiar el tipo de dato de una variable. Python es un lenguaje orientado a objetos y usa funciones constructoras para el casting.",
             "notes": [
-                {"type": "note", "text": "Java distingue entre <b>casting implícito</b> (widening: int → double) y <b>casting explícito</b> (narrowing: double → int). Python siempre usa funciones explícitas."}
+                {
+                    "type": "note",
+                    "text": "Java distingue entre <b>casting implícito</b> (widening: int → double) y <b>casting explícito</b> (narrowing: double → int). Python siempre usa funciones explícitas."
+                }
             ]
         },
         {
             "title": "Convertir a Entero",
             "text": "La función <code>int()</code> convierte a entero. Puede recibir un float (trunca los decimales) o un string que represente un número entero.",
             "notes": [
-                {"type": "warning", "text": "<code>int(\"3.14\")</code> causará error. Para convertir un string decimal a entero, primero conviértelo a float: <code>int(float(\"3.14\"))</code>."}
+                {
+                    "type": "warning",
+                    "text": "<code>int(\"3.14\")</code> causará error. Para convertir un string decimal a entero, primero conviértelo a float: <code>int(float(\"3.14\"))</code>."
+                }
             ]
         },
         {
@@ -29,7 +35,10 @@
             "title": "Convertir a String",
             "text": "La función <code>str()</code> convierte cualquier valor a su representación como texto.",
             "notes": [
-                {"type": "tip", "text": "Esto es especialmente útil cuando necesitas concatenar números con texto usando <code>+</code>."}
+                {
+                    "type": "tip",
+                    "text": "Esto es especialmente útil cuando necesitas concatenar números con texto usando <code>+</code>."
+                }
             ]
         }
     ],
@@ -64,14 +73,33 @@
             "template": "x = _____(\"5\")",
             "template_html": "x = <input type='text' class='exercise-input' data-answer='int' placeholder='___'>(\"5\")",
             "python_code": "x = int(\"5\")",
-            "answer": "int"
+            "answer": "int",
+            "question_java": "En Java, convierte la cadena <code>\"5\"</code> al número entero <code>5</code> usando la clase Integer.",
+            "template_java": "int x = Integer._____(\"5\");",
+            "template_html_java": "int x = Integer.<input type='text' class='exercise-input' data-answer='parseInt' placeholder='___'>(\"5\");",
+            "answer_java": "parseInt",
+            "explanation_java": "Integer.parseInt() analiza un String y devuelve su valor numérico como tipo int en Java."
         },
         {
             "id": "ex-cast-2",
             "type": "multiple-choice",
             "question": "¿Cuál es el resultado de <code>int(2.9)</code>?",
-            "options": ["3", "2", "2.9", "Error"],
-            "correct": 1
+            "options": [
+                "3",
+                "2",
+                "2.9",
+                "Error"
+            ],
+            "correct": 1,
+            "question_java": "¿Qué valor devuelve la conversión <code>(int) 2.9</code> en Java?",
+            "options_java": [
+                "2 (trunca los decimales)",
+                "3 (redondea)",
+                "2.9",
+                "Error de compilación"
+            ],
+            "correct_java": 0,
+            "explanation_java": "El casting a (int) en Java descarta la parte decimal sin redondear, resultando en 2."
         }
     ]
 }

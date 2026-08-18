@@ -15,21 +15,30 @@
             "title": "Clase Hija",
             "text": "Para crear una clase que hereda de otra, pasa el nombre de la clase padre como parámetro entre paréntesis.",
             "notes": [
-                {"type": "note", "text": "Python: <code>class Hija(Padre)</code>. Java: <code>class Hija extends Padre</code>. Misma idea, diferente sintaxis."}
+                {
+                    "type": "note",
+                    "text": "Python: <code>class Hija(Padre)</code>. Java: <code>class Hija extends Padre</code>. Misma idea, diferente sintaxis."
+                }
             ]
         },
         {
             "title": "La Función super()",
             "text": "<code>super()</code> permite a la clase hija acceder a los métodos y propiedades de la clase padre. Es especialmente útil en el constructor.",
             "notes": [
-                {"type": "tip", "text": "En Java, <code>super()</code> funciona igual. Debe ser la <b>primera línea</b> del constructor de la clase hija."}
+                {
+                    "type": "tip",
+                    "text": "En Java, <code>super()</code> funciona igual. Debe ser la <b>primera línea</b> del constructor de la clase hija."
+                }
             ]
         },
         {
             "title": "Sobreescribir Métodos",
             "text": "La clase hija puede <b>sobreescribir</b> (override) métodos de la clase padre definiendo un método con el mismo nombre.",
             "notes": [
-                {"type": "note", "text": "Java usa la anotación <code>@Override</code> para indicar que un método sobreescribe al del padre. Python no necesita anotaciones."}
+                {
+                    "type": "note",
+                    "text": "Java usa la anotación <code>@Override</code> para indicar que un método sobreescribe al del padre. Python no necesita anotaciones."
+                }
             ]
         }
     ],
@@ -71,14 +80,33 @@
             "template": "class Estudiante(_____):\n    pass",
             "template_html": "class Estudiante(<input type='text' class='exercise-input' data-answer='Persona' placeholder='___'>):<br>&nbsp;&nbsp;&nbsp;&nbsp;pass",
             "python_code": "class Estudiante(Persona):\n    pass",
-            "answer": "Persona"
+            "answer": "Persona",
+            "question_java": "En Java, completa la clase <code>Estudiante</code> para que herede de <code>Persona</code>.",
+            "template_java": "public class Estudiante _____ Persona {\n}",
+            "template_html_java": "public class Estudiante <input type='text' class='exercise-input' data-answer='extends' placeholder='___'> Persona {<br>}",
+            "answer_java": "extends",
+            "explanation_java": "En Java la herencia de clases se declara con la palabra clave 'extends'."
         },
         {
             "id": "ex-inherit-2",
             "type": "multiple-choice",
             "question": "¿Cuál palabra clave usa Java para la herencia?",
-            "options": ["inherits", "extends", "implements", "super"],
-            "correct": 1
+            "options": [
+                "inherits",
+                "extends",
+                "implements",
+                "super"
+            ],
+            "correct": 1,
+            "question_java": "¿Qué palabra clave usa Java para invocar al constructor de la clase padre (superclase)?",
+            "options_java": [
+                "super()",
+                "super.__init__()",
+                "parent()",
+                "base()"
+            ],
+            "correct_java": 0,
+            "explanation_java": "En Java 'super()' llama directamente al constructor de la superclase."
         }
     ]
 }

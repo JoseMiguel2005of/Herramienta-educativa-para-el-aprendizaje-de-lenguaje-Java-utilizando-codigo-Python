@@ -10,14 +10,20 @@
             "title": "F-Strings (Formateo Literal)",
             "text": "Introducidos en Python 3.6, los f-strings ofrecen una sintaxis muy legible. Simplemente coloca una <code>f</code> antes de las comillas y pon las variables entre llaves <code>{}</code>.",
             "notes": [
-                {"type": "tip", "text": "Los f-strings no solo aceptan variables, también puedes poner <b>expresiones completas</b> u operaciones matemáticas dentro de las llaves."}
+                {
+                    "type": "tip",
+                    "text": "Los f-strings no solo aceptan variables, también puedes poner <b>expresiones completas</b> u operaciones matemáticas dentro de las llaves."
+                }
             ]
         },
         {
             "title": "El Método format() (Antiguo)",
             "text": "Antes de los f-strings, la forma principal de formatear era el método <code>.format()</code>. Todavía es muy utilizado en código antiguo.",
             "notes": [
-                {"type": "note", "text": "En Java usas <code>String.format()</code> que se parece más al estilo antiguo del lenguaje C con <code>%s</code> y <code>%d</code>."}
+                {
+                    "type": "note",
+                    "text": "En Java usas <code>String.format()</code> que se parece más al estilo antiguo del lenguaje C con <code>%s</code> y <code>%d</code>."
+                }
             ]
         },
         {
@@ -57,14 +63,37 @@
             "template": "x = 5\nprint(____\"El número es {x}\")",
             "template_html": "x = 5<br>print(<input type='text' class='exercise-input' data-answer='f' placeholder='___'>\"El número es {x}\")",
             "python_code": "x = 5\nprint(f\"El número es {x}\")",
-            "answer": "f"
+            "answer": "f",
+            "question_java": "En Java, ¿qué método de String se usa para formatear texto similar a <code>String.format(\"Edad: %d\", edad)</code>?",
+            "options_java": [
+                "String.format()",
+                "String.f()",
+                "String.interpolate()",
+                "String.concat()"
+            ],
+            "correct_java": 0,
+            "explanation_java": "String.format() permite componer cadenas con especificadores como %s, %d, %f en Java."
         },
         {
             "id": "ex-strf-2",
             "type": "multiple-choice",
             "question": "¿Qué método se usaba principalmente en Python antes de los f-strings?",
-            "options": ["concat()", "String.format()", "format()", "interpolate()"],
-            "correct": 2
+            "options": [
+                "concat()",
+                "String.format()",
+                "format()",
+                "interpolate()"
+            ],
+            "correct": 2,
+            "question_java": "En Java, ¿cómo se concatena un texto y un número en un System.out.println?",
+            "options_java": [
+                "System.out.println(\"Edad: \" + edad);",
+                "System.out.println(f\"Edad: {edad}\");",
+                "System.out.println(\"Edad: \", edad);",
+                "print(\"Edad: \" + edad);"
+            ],
+            "correct_java": 0,
+            "explanation_java": "En Java el operador '+' concatena automáticamente cadenas con variables de otros tipos."
         }
     ]
 }

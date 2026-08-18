@@ -1,4 +1,11 @@
+// quizzes.js - Soporte completo para evaluación en Python y Java
+
+let currentQuizLanguage = localStorage.getItem('py2java_quiz_lang') || 'python';
+
 document.addEventListener('DOMContentLoaded', () => {
+    // Inicializar idioma guardado
+    initQuizLanguageSelector();
+
     // === MULTIPLE CHOICE ===
     document.body.addEventListener('change', (e) => {
         if (e.target.matches('.quiz-option-label input[type="radio"]')) {
@@ -72,9 +79,64 @@ document.addEventListener('DOMContentLoaded', () => {
             const exerciseId = btn.dataset.exerciseId;
             const type = btn.dataset.type || 'fill-blank';
             showAnswer(exerciseId, type);
+        } else if (e.target.matches('.quiz-lang-btn')) {
+            const lang = e.target.dataset.lang;
+            if (lang) switchQuizLanguage(lang);
         }
     });
 });
+
+// Selector de Idioma para los Quizzes
+function initQuizLanguageSelector() {
+    const saved = localStorage.getItem('py2java_quiz_lang') || 'python';
+    switchQuizLanguage(saved);
+}
+
+function switchQuizLanguage(lang) {
+    currentQuizLanguage = lang;
+    localStorage.setItem('py2java_quiz_lang', lang);
+
+    // Actualizar botones de la barra
+    document.querySelectorAll('.quiz-lang-btn').forEach(btn => {
+        if (btn.dataset.lang === lang) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    // Actualizar tarjetas de ejercicios
+    document.querySelectorAll('.exercise-card').forEach(card => {
+        const hasJava = card.dataset.hasJava === 'true';
+        const qPy = card.querySelector('.exercise-question-python');
+        const qJava = card.querySelector('.exercise-question-java');
+        const viewPy = card.querySelector('.exercise-lang-python');
+        const viewJava = card.querySelector('.exercise-lang-java');
+        const modeBadge = card.querySelector('.exercise-mode-indicator');
+        const feedback = card.querySelector('.exercise-feedback');
+        if (feedback) feedback.hidden = true;
+
+        if (lang === 'java' && hasJava) {
+            if (qPy) qPy.style.display = 'none';
+            if (qJava) qJava.style.display = 'block';
+            if (viewPy) viewPy.style.display = 'none';
+            if (viewJava) viewJava.style.display = 'block';
+            if (modeBadge) {
+                modeBadge.textContent = '☕ Java Mode';
+                modeBadge.className = 'exercise-mode-indicator lang-badge java-badge';
+            }
+        } else {
+            if (qPy) qPy.style.display = 'block';
+            if (qJava) qJava.style.display = 'none';
+            if (viewPy) viewPy.style.display = 'block';
+            if (viewJava) viewJava.style.display = 'none';
+            if (modeBadge) {
+                modeBadge.textContent = '🐍 Python Mode';
+                modeBadge.className = 'exercise-mode-indicator lang-badge python-badge';
+            }
+        }
+    });
+}
 
 function checkQuiz(exerciseId, type, btn) {
     const card = document.getElementById('exercise-' + exerciseId);
@@ -82,11 +144,20 @@ function checkQuiz(exerciseId, type, btn) {
     const feedback = card.querySelector('.exercise-feedback');
     let isCorrect = false;
     let message = "";
-    const cardExplanation = card.dataset.explanation || "";
+    
+    // Obtener vista activa (Python o Java)
+    const isJavaActive = currentQuizLanguage === 'java' && card.dataset.hasJava === 'true';
+    const activeView = isJavaActive 
+        ? (card.querySelector('.exercise-lang-java') || card)
+        : (card.querySelector('.exercise-lang-python') || card);
+
+    const cardExplanation = isJavaActive 
+        ? (card.dataset.explanationJava || card.dataset.explanation || "") 
+        : (card.dataset.explanation || "");
     const cardHint = card.dataset.hint || "";
 
     if (type === 'fill-blank') {
-        const inputs = card.querySelectorAll('.exercise-input');
+        const inputs = activeView.querySelectorAll('.exercise-input');
         isCorrect = true;
         inputs.forEach(input => {
             const answer = input.dataset.answer ? input.dataset.answer.trim().toLowerCase().replace(/\s+/g, ' ') : '';
@@ -101,7 +172,8 @@ function checkQuiz(exerciseId, type, btn) {
             }
         });
         if (isCorrect) {
-            message = "¡Correcto! Excelente trabajo." + (cardExplanation ? `<div class="exercise-explanation-box"><b>Explicación:</b> ${cardExplanation}</div>` : "");
+            const langLabel = isJavaActive ? "Java" : "Python";
+            message = `¡Correcto en ${langLabel}! Excelente trabajo.` + (cardExplanation ? `<div class="exercise-explanation-box"><b>Explicación:</b> ${cardExplanation}</div>` : "");
             if (btn) btn.disabled = true;
         } else {
             const expText = cardExplanation || cardHint || "Revisa la sintaxis requerida y los campos resaltados en rojo.";
@@ -109,19 +181,19 @@ function checkQuiz(exerciseId, type, btn) {
         }
     } 
     else if (type === 'multiple-choice') {
-        const selected = card.querySelector('input[type="radio"]:checked');
+        const selected = activeView.querySelector('input[type="radio"]:checked');
         if (!selected) {
             showFeedback(feedback, false, "Por favor selecciona una opción antes de comprobar.", card, exerciseId);
             return;
         }
-        const dataDiv = card.querySelector('.quiz-answer-data');
+        const dataDiv = activeView.querySelector('.quiz-answer-data');
         const correctIndex = dataDiv ? dataDiv.dataset.correct : "-1";
         const explanation = (dataDiv && dataDiv.dataset.explanation) ? dataDiv.dataset.explanation : cardExplanation;
         
         isCorrect = (selected.value === correctIndex);
         
-        // Highlight options visually
-        card.querySelectorAll('.quiz-option-label').forEach((label, i) => {
+        // Resaltar opciones seleccionadas
+        activeView.querySelectorAll('.quiz-option-label').forEach((label, i) => {
             label.classList.remove('option-correct', 'option-incorrect');
             if (i.toString() === correctIndex) {
                 label.classList.add('option-correct');
@@ -134,10 +206,11 @@ function checkQuiz(exerciseId, type, btn) {
             message = "¡Correcto! " + (explanation ? `<div class="exercise-explanation-box"><b>Explicación:</b> ${explanation}</div>` : "");
             if (btn) btn.disabled = true;
         } else {
-            message = "❌ <b>Opción incorrecta.</b> " + (explanation ? `<div class="exercise-explanation-box"><b>Explicación:</b> ${explanation}</div>` : "Esa opción no es la adecuada según los conceptos vistos en la lección.");
+            message = "❌ <b>Opción incorrecta.</b> " + (explanation ? `<div class="exercise-explanation-box"><b>Explicación:</b> ${explanation}</div>` : "Esa opción no es la adecuada.");
         }
     }
     else if (type === 'reorder') {
+        const list = card.querySelector('.reorder-list');
         const items = card.querySelectorAll('.reorder-item');
         isCorrect = true;
         items.forEach((item, index) => {
@@ -150,7 +223,7 @@ function checkQuiz(exerciseId, type, btn) {
             message = "¡Correcto! El código está ordenado perfectamente." + (cardExplanation ? `<div class="exercise-explanation-box"><b>Explicación:</b> ${cardExplanation}</div>` : "");
             if (btn) btn.disabled = true;
         } else {
-            message = "❌ <b>El orden no es el correcto.</b> Recuerda el flujo lógico de ejecución de las instrucciones.";
+            message = "❌ <b>El orden no es el correcto.</b> Recuerda el flujo lógico de ejecución.";
         }
     }
     else if (type === 'find-error') {
@@ -179,7 +252,7 @@ function checkQuiz(exerciseId, type, btn) {
         window.trackProgress(btn.dataset.lesson, exerciseId);
     }
     
-    // Register attempt
+    // Registrar progreso
     if (btn && btn.dataset.lesson) {
         fetch('/api/progreso/ejercicio', {
             method: 'POST',
@@ -196,10 +269,18 @@ function checkQuiz(exerciseId, type, btn) {
 function showAnswer(exerciseId, type) {
     const card = document.getElementById('exercise-' + exerciseId);
     if (!card) return;
-    const cardExplanation = card.dataset.explanation || "";
+    
+    const isJavaActive = currentQuizLanguage === 'java' && card.dataset.hasJava === 'true';
+    const activeView = isJavaActive 
+        ? (card.querySelector('.exercise-lang-java') || card)
+        : (card.querySelector('.exercise-lang-python') || card);
+
+    const cardExplanation = isJavaActive 
+        ? (card.dataset.explanationJava || card.dataset.explanation || "") 
+        : (card.dataset.explanation || "");
     
     if (type === 'fill-blank') {
-        const inputs = card.querySelectorAll('.exercise-input');
+        const inputs = activeView.querySelectorAll('.exercise-input');
         inputs.forEach(input => {
             input.value = input.dataset.answer || '';
             input.classList.remove('input-incorrect');
@@ -207,12 +288,12 @@ function showAnswer(exerciseId, type) {
         });
     }
     else if (type === 'multiple-choice') {
-        const dataDiv = card.querySelector('.quiz-answer-data');
+        const dataDiv = activeView.querySelector('.quiz-answer-data');
         const correctIndex = dataDiv ? dataDiv.dataset.correct : "-1";
-        const correctRadio = card.querySelector(`input[type="radio"][value="${correctIndex}"]`);
+        const correctRadio = activeView.querySelector(`input[type="radio"][value="${correctIndex}"]`);
         if (correctRadio) {
             correctRadio.checked = true;
-            card.querySelectorAll('.quiz-option-label').forEach((lbl, i) => {
+            activeView.querySelectorAll('.quiz-option-label').forEach((lbl, i) => {
                 lbl.classList.remove('selected', 'option-incorrect');
                 if (i.toString() === correctIndex) {
                     lbl.classList.add('option-correct');
@@ -255,10 +336,12 @@ function showFeedback(element, isCorrect, messageHtml, card, exerciseId) {
         element.classList.remove('feedback-correct');
         element.classList.add('feedback-incorrect');
 
-        // Add AI Tutor explanation button if available
+        // Botón de ayuda con el Tutor IA
         if (card && exerciseId && window.AITutor) {
-            const questionEl = card.querySelector('.exercise-question');
-            const questionText = questionEl ? questionEl.textContent.trim() : '';
+            const qPy = card.querySelector('.exercise-question-python');
+            const qJava = card.querySelector('.exercise-question-java');
+            const isJava = currentQuizLanguage === 'java' && card.dataset.hasJava === 'true';
+            const questionText = (isJava && qJava) ? qJava.textContent.trim() : (qPy ? qPy.textContent.trim() : '');
             
             const helpWrap = document.createElement('div');
             helpWrap.style.marginTop = '0.5rem';
@@ -279,7 +362,7 @@ function showFeedback(element, isCorrect, messageHtml, card, exerciseId) {
                     inputs.forEach(inp => { if (inp.value) userAnswer += inp.value + ' '; });
                 }
                 const promptDetail = userAnswer.trim() 
-                    ? `Mi respuesta fue: "${userAnswer.trim()}". ¿Por qué es incorrecta y qué concepto debo repasar?` 
+                    ? `Mi respuesta en ${isJava ? 'Java' : 'Python'} fue: "${userAnswer.trim()}". ¿Por qué es incorrecta y qué concepto debo repasar?` 
                     : 'No entendí cómo resolver este ejercicio, ¿me das una pista conceptual?';
                 window.AITutor.hint(exerciseId, questionText, promptDetail);
             });

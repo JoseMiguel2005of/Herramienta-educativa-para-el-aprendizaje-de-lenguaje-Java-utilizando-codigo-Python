@@ -10,14 +10,20 @@
             "title": "Crear Variables",
             "text": "Python no tiene un comando para declarar variables. Una variable se crea en el momento en que le asignas un valor por primera vez. No necesitas declarar el tipo — Python lo detecta automáticamente.",
             "notes": [
-                {"type": "tip", "text": "Python usa <b>tipado dinámico</b>: no declaras tipos. Java usa <b>tipado estático</b>: debes especificar <code>int</code>, <code>String</code>, etc."}
+                {
+                    "type": "tip",
+                    "text": "Python usa <b>tipado dinámico</b>: no declaras tipos. Java usa <b>tipado estático</b>: debes especificar <code>int</code>, <code>String</code>, etc."
+                }
             ]
         },
         {
             "title": "Tipado Dinámico",
             "text": "En Python, una variable puede cambiar de tipo después de haber sido creada. Esto no es posible en Java, donde el tipo se fija al momento de la declaración.",
             "notes": [
-                {"type": "warning", "text": "En Java, intentar asignar un <code>String</code> a una variable declarada como <code>int</code> causará un <b>error de compilación</b>."}
+                {
+                    "type": "warning",
+                    "text": "En Java, intentar asignar un <code>String</code> a una variable declarada como <code>int</code> causará un <b>error de compilación</b>."
+                }
             ]
         },
         {
@@ -29,14 +35,20 @@
             "title": "Obtener el Tipo",
             "text": "Puedes obtener el tipo de dato de cualquier variable con la función <code>type()</code>. Esto es especialmente útil para depuración y cuando trabajas con datos de fuentes externas.",
             "notes": [
-                {"type": "note", "text": "En Java, el equivalente es <code>variable.getClass().getSimpleName()</code> para objetos, pero los tipos primitivos (<code>int</code>, <code>double</code>) no tienen este método directamente."}
+                {
+                    "type": "note",
+                    "text": "En Java, el equivalente es <code>variable.getClass().getSimpleName()</code> para objetos, pero los tipos primitivos (<code>int</code>, <code>double</code>) no tienen este método directamente."
+                }
             ]
         },
         {
             "title": "Case-Sensitive",
             "text": "Los nombres de variables en Python (y en Java) son <b>sensibles a mayúsculas y minúsculas</b>. Esto significa que <code>edad</code>, <code>Edad</code> y <code>EDAD</code> son tres variables completamente diferentes.",
             "notes": [
-                {"type": "warning", "text": "<code>edad</code> y <code>Edad</code> son dos variables distintas. Ten cuidado con las mayúsculas para evitar bugs difíciles de encontrar."}
+                {
+                    "type": "warning",
+                    "text": "<code>edad</code> y <code>Edad</code> son dos variables distintas. Ten cuidado con las mayúsculas para evitar bugs difíciles de encontrar."
+                }
             ]
         }
     ],
@@ -85,14 +97,33 @@
             "template": "_____ = \"Volvo\"",
             "template_html": "<input type='text' class='exercise-input' data-answer='carName' placeholder='___'> = \"Volvo\"",
             "python_code": "carName = \"Volvo\"",
-            "answer": "carName"
+            "answer": "carName",
+            "question_java": "En Java, declara una variable de tipo String llamada <code>carName</code> con valor <code>\"Volvo\"</code>.",
+            "template_java": "String _____ = \"Volvo\";",
+            "template_html_java": "String <input type='text' class='exercise-input' data-answer='carName' placeholder='___'> = \"Volvo\";",
+            "answer_java": "carName",
+            "explanation_java": "En Java debes anteponer el tipo de dato (String) seguido del nombre de la variable."
         },
         {
             "id": "ex-var-2",
             "type": "multiple-choice",
             "question": "¿Cuál es la forma correcta de obtener el tipo de una variable en Python?",
-            "options": ["typeof(x)", "type(x)", "x.getType()", "typeOf x"],
-            "correct": 1
+            "options": [
+                "typeof(x)",
+                "type(x)",
+                "x.getType()",
+                "typeOf x"
+            ],
+            "correct": 1,
+            "question_java": "¿Cuál es la forma correcta de obtener el tipo de un objeto en Java?",
+            "options_java": [
+                "x.getClass().getSimpleName()",
+                "type(x)",
+                "typeof(x)",
+                "x.getType()"
+            ],
+            "correct_java": 0,
+            "explanation_java": "En Java los objetos tienen el método getClass().getSimpleName() para inspeccionar su clase."
         },
         {
             "id": "ex-var-3",
@@ -101,7 +132,12 @@
             "template": "x = _____(3)",
             "template_html": "x = <input type='text' class='exercise-input' data-answer='str' placeholder='___'>(3)",
             "python_code": "x = str(3)",
-            "answer": "str"
+            "answer": "str",
+            "question_java": "Convierte el entero <code>3</code> a String en Java usando <code>String.valueOf()</code>.",
+            "template_java": "String x = String._____(3);",
+            "template_html_java": "String x = String.<input type='text' class='exercise-input' data-answer='valueOf' placeholder='___'>(3);",
+            "answer_java": "valueOf",
+            "explanation_java": "String.valueOf() es el método estándar en Java para convertir tipos numéricos a texto."
         }
     ]
 }

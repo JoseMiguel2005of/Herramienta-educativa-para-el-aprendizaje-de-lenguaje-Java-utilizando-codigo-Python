@@ -10,14 +10,20 @@
             "title": "La Sentencia If",
             "text": "La sentencia <code>if</code> ejecuta un bloque de código solo si la condición es verdadera. Python usa la <b>indentación</b> (espacios) para definir el bloque, no llaves <code>{}</code>.",
             "notes": [
-                {"type": "warning", "text": "La indentación es <b>obligatoria</b> en Python. Si no indentas el bloque del <code>if</code>, obtendrás un <code>IndentationError</code>. Java usa llaves <code>{}</code> y la indentación es opcional (pero recomendada)."}
+                {
+                    "type": "warning",
+                    "text": "La indentación es <b>obligatoria</b> en Python. Si no indentas el bloque del <code>if</code>, obtendrás un <code>IndentationError</code>. Java usa llaves <code>{}</code> y la indentación es opcional (pero recomendada)."
+                }
             ]
         },
         {
             "title": "Elif",
             "text": "La palabra clave <code>elif</code> (abreviación de 'else if') permite verificar múltiples condiciones en secuencia.",
             "notes": [
-                {"type": "note", "text": "Java usa <code>else if</code> (dos palabras). Python lo abrevia como <code>elif</code> (una sola palabra)."}
+                {
+                    "type": "note",
+                    "text": "Java usa <code>else if</code> (dos palabras). Python lo abrevia como <code>elif</code> (una sola palabra)."
+                }
             ]
         },
         {
@@ -29,7 +35,10 @@
             "title": "If en Una Línea",
             "text": "Python permite escribir sentencias <code>if</code> cortas en una sola línea, conocido como <b>operador ternario</b>.",
             "notes": [
-                {"type": "tip", "text": "Java también tiene operador ternario: <code>condición ? valor1 : valor2</code>. La sintaxis de Python es más legible: <code>valor1 if condición else valor2</code>."}
+                {
+                    "type": "tip",
+                    "text": "Java también tiene operador ternario: <code>condición ? valor1 : valor2</code>. La sintaxis de Python es más legible: <code>valor1 if condición else valor2</code>."
+                }
             ]
         }
     ],
@@ -71,14 +80,33 @@
             "template": "_____ x > y:\n    print(\"Hola\")",
             "template_html": "<input type='text' class='exercise-input' data-answer='if' placeholder='___'> x > y:<br>&nbsp;&nbsp;&nbsp;&nbsp;print(\"Hola\")",
             "python_code": "if x > y:\n    print(\"Hola\")",
-            "answer": "if"
+            "answer": "if",
+            "question_java": "En Java, completa la condición para ejecutar el bloque si <code>x</code> es mayor que <code>y</code>.",
+            "template_java": "_____(x > y) {\n    System.out.println(\"Hola\");\n}",
+            "template_html_java": "<input type='text' class='exercise-input' data-answer='if' placeholder='___'>(x > y) {<br>&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(\"Hola\");<br>}",
+            "answer_java": "if",
+            "explanation_java": "En Java las condiciones deben ir obligatoriamente entre paréntesis después de la palabra 'if'."
         },
         {
             "id": "ex-if-2",
             "type": "multiple-choice",
             "question": "¿Cuál es la palabra clave de Python equivalente a <code>else if</code> de Java?",
-            "options": ["elseif", "elif", "else if", "elsif"],
-            "correct": 1
+            "options": [
+                "elseif",
+                "elif",
+                "else if",
+                "elsif"
+            ],
+            "correct": 1,
+            "question_java": "¿Cómo se escribe la cláusula alternativa condicional (elif de Python) en Java?",
+            "options_java": [
+                "else if",
+                "elif",
+                "elseif",
+                "elsif"
+            ],
+            "correct_java": 0,
+            "explanation_java": "En Java se escribe separado como dos palabras: 'else if'."
         },
         {
             "id": "ex-if-3",
@@ -87,7 +115,12 @@
             "template": "resultado = \"par\" _____ x % 2 == 0 else \"impar\"",
             "template_html": "resultado = \"par\" <input type='text' class='exercise-input' data-answer='if' placeholder='___'> x % 2 == 0 else \"impar\"",
             "python_code": "resultado = \"par\" if x % 2 == 0 else \"impar\"",
-            "answer": "if"
+            "answer": "if",
+            "question_java": "Completa el operador ternario en Java: <code>String res = (x % 2 == 0) _____ \"par\" : \"impar\";</code>",
+            "template_java": "String res = (x % 2 == 0) _____ \"par\" : \"impar\";",
+            "template_html_java": "String res = (x % 2 == 0) <input type='text' class='exercise-input' data-answer='?' placeholder='___'> \"par\" : \"impar\";",
+            "answer_java": "?",
+            "explanation_java": "Java utiliza el operador ternario clásico 'condicion ? valorSiVerdadero : valorSiFalso'."
         }
     ]
 }

@@ -1,11 +1,29 @@
-<div class="quiz-multiple-choice">
-    <div class="quiz-options">
-        {% for option in ex.options %}
-        <label class="quiz-option-label">
-            <input type="radio" name="quiz_{{ ex.id }}" value="{{ loop.index0 }}">
-            <span class="quiz-option-text">{{ option }}</span>
-        </label>
-        {% endfor %}
+<div class="exercise-lang-view exercise-lang-python">
+    <div class="quiz-multiple-choice">
+        <div class="quiz-options">
+            {% for option in ex.options %}
+            <label class="quiz-option-label">
+                <input type="radio" name="quiz_{{ ex.id }}_py" value="{{ loop.index0 }}">
+                <span class="quiz-option-text">{{ option }}</span>
+            </label>
+            {% endfor %}
+        </div>
+        <div class="quiz-answer-data" data-correct="{{ ex.correct }}" data-explanation="{{ ex.explanation | default('', true) }}" hidden></div>
     </div>
-    <div class="quiz-answer-data" data-correct="{{ ex.correct }}" data-explanation="{{ ex.explanation }}" hidden></div>
 </div>
+
+{% if ex.options_java %}
+<div class="exercise-lang-view exercise-lang-java" style="display: none;">
+    <div class="quiz-multiple-choice">
+        <div class="quiz-options">
+            {% for option in ex.options_java %}
+            <label class="quiz-option-label">
+                <input type="radio" name="quiz_{{ ex.id }}_java" value="{{ loop.index0 }}">
+                <span class="quiz-option-text">{{ option }}</span>
+            </label>
+            {% endfor %}
+        </div>
+        <div class="quiz-answer-data" data-correct="{{ ex.correct_java | default(ex.correct, true) }}" data-explanation="{{ ex.explanation_java | default(ex.explanation, true) }}" hidden></div>
+    </div>
+</div>
+{% endif %}

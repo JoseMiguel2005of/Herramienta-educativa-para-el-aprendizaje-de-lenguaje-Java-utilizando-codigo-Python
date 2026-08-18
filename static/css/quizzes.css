@@ -326,7 +326,7 @@
 .error-line.selected {
     background: rgba(239, 83, 80, 0.2);
     border-left: 3px solid #ef5350;
-    margin-left: -4px; /* to compensate for the border */
+    margin-left: -4px;
 }
 
 .error-line .line-number {
@@ -334,4 +334,70 @@
     user-select: none;
     width: 2rem;
     text-align: right;
+}
+
+/* =============================================
+   BARRA SELECTORA DE IDIOMA EN QUIZZES
+   ============================================= */
+.quiz-lang-selector-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.quiz-lang-switch-group {
+    display: inline-flex;
+    background: var(--bg-code, #12151E);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 3px;
+    gap: 4px;
+}
+
+.quiz-lang-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted, #8E9AAF);
+    padding: 0.35rem 0.85rem;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.quiz-lang-btn:hover {
+    color: var(--text, #E2E8F0);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.quiz-lang-btn.active[data-lang="python"] {
+    background: rgba(0, 229, 255, 0.15);
+    color: var(--python-color, #00E5FF);
+    border: 1px solid rgba(0, 229, 255, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 229, 255, 0.2);
+}
+
+.quiz-lang-btn.active[data-lang="java"] {
+    background: rgba(255, 75, 110, 0.18);
+    color: var(--java-color, #FF4B6E);
+    border: 1px solid rgba(255, 75, 110, 0.4);
+    box-shadow: 0 2px 8px rgba(255, 75, 110, 0.25);
+}
+
+.exercise-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.java-badge {
+    background: linear-gradient(135deg, #FF4B6E, #D92B50);
+    color: #FFFFFF !important;
+}
+
+.exercise-mode-indicator {
+    transition: all 0.3s ease;
 }

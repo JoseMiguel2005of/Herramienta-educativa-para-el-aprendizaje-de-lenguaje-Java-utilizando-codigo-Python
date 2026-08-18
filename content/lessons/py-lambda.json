@@ -10,7 +10,10 @@
             "title": "Sintaxis Lambda",
             "text": "La sintaxis es <code>lambda argumentos : expresión</code>. La expresión se ejecuta y su resultado se devuelve automáticamente.",
             "notes": [
-                {"type": "tip", "text": "Las funciones lambda son ideales para funciones pequeñas y de una sola línea. Para lógica compleja, usa <code>def</code>."}
+                {
+                    "type": "tip",
+                    "text": "Las funciones lambda son ideales para funciones pequeñas y de una sola línea. Para lógica compleja, usa <code>def</code>."
+                }
             ]
         },
         {
@@ -22,7 +25,10 @@
             "title": "Lambda como Argumento",
             "text": "El verdadero poder de las lambda se muestra cuando las usas como argumentos dentro de otras funciones.",
             "notes": [
-                {"type": "note", "text": "Java también tiene expresiones lambda desde Java 8: <code>(x) -> x * 2</code>. Se usan con interfaces funcionales."}
+                {
+                    "type": "note",
+                    "text": "Java también tiene expresiones lambda desde Java 8: <code>(x) -> x * 2</code>. Se usan con interfaces funcionales."
+                }
             ]
         }
     ],
@@ -57,14 +63,37 @@
             "template": "x = _____ a : a + 5",
             "template_html": "x = <input type='text' class='exercise-input' data-answer='lambda' placeholder='___'> a : a + 5",
             "python_code": "x = lambda a : a + 5",
-            "answer": "lambda"
+            "answer": "lambda",
+            "question_java": "¿Cuál es la sintaxis de una expresión Lambda (función flecha) en Java?",
+            "options_java": [
+                "(a) -> a + 5",
+                "lambda a: a + 5",
+                "function(a) => a + 5",
+                "def (a): a + 5"
+            ],
+            "correct_java": 0,
+            "explanation_java": "Java utiliza el operador flecha '->' para definir expresiones lambda desde Java 8."
         },
         {
             "id": "ex-lambda-2",
             "type": "multiple-choice",
             "question": "¿Cuántas expresiones puede tener una función lambda?",
-            "options": ["Ninguna", "Una", "Ilimitadas", "Dos"],
-            "correct": 1
+            "options": [
+                "Ninguna",
+                "Una",
+                "Ilimitadas",
+                "Dos"
+            ],
+            "correct": 1,
+            "question_java": "¿Qué interfaz funcional estándar de Java representa una función que recibe un valor y devuelve un resultado?",
+            "options_java": [
+                "Function<T, R>",
+                "Consumer<T>",
+                "Supplier<T>",
+                "Predicate<T>"
+            ],
+            "correct_java": 0,
+            "explanation_java": "Function<T, R> es la interfaz funcional estándar en java.util.function para transformar T en R."
         }
     ]
 }

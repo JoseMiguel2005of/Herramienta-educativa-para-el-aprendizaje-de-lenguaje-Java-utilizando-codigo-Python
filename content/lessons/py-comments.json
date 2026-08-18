@@ -10,14 +10,20 @@
             "title": "Comentarios de Una Línea",
             "text": "Los comentarios empiezan con <code>#</code>. Python ignorará todo lo que esté después del <code>#</code> en esa línea.",
             "notes": [
-                {"type": "note", "text": "Java usa <code>//</code> para comentarios de una línea. Python usa <code>#</code>."}
+                {
+                    "type": "note",
+                    "text": "Java usa <code>//</code> para comentarios de una línea. Python usa <code>#</code>."
+                }
             ]
         },
         {
             "title": "Comentarios Multilínea",
             "text": "Python no tiene una sintaxis oficial para comentarios multilínea, pero puedes usar un string multilínea con triple comillas <code>\"\"\"...\"\"\"</code>.",
             "notes": [
-                {"type": "tip", "text": "Java sí tiene comentarios multilínea oficiales: <code>/* ... */</code>. Los docstrings de Python (<code>\"\"\"...\"\"\"</code>) tienen un propósito adicional: documentar funciones."}
+                {
+                    "type": "tip",
+                    "text": "Java sí tiene comentarios multilínea oficiales: <code>/* ... */</code>. Los docstrings de Python (<code>\"\"\"...\"\"\"</code>) tienen un propósito adicional: documentar funciones."
+                }
             ]
         },
         {
@@ -57,14 +63,37 @@
             "template": "_____ Esto es un comentario",
             "template_html": "<input type='text' class='exercise-input' data-answer='#' placeholder='___'> Esto es un comentario",
             "python_code": "# Esto es un comentario",
-            "answer": "#"
+            "answer": "#",
+            "question_java": "¿Cómo se escribe un comentario de una sola línea en Java?",
+            "options_java": [
+                "// Este es un comentario",
+                "# Este es un comentario",
+                "/* Este es un comentario",
+                "<!-- Comentario -->"
+            ],
+            "correct_java": 0,
+            "explanation_java": "Java usa doble barra diagonal (//) para comentarios de una línea. Python usa numeral (#)."
         },
         {
             "id": "ex-comm-2",
             "type": "multiple-choice",
             "question": "¿Cuál es la sintaxis de comentarios multilínea en Java?",
-            "options": ["# ... #", "// ... //", "/* ... */", "\"\"\" ... \"\"\""],
-            "correct": 2
+            "options": [
+                "# ... #",
+                "// ... //",
+                "/* ... */",
+                "\"\"\" ... \"\"\""
+            ],
+            "correct": 2,
+            "question_java": "¿Cómo se escribe un comentario multilínea en Java?",
+            "options_java": [
+                "/* Comentario multilínea */",
+                "''' Comentario multilínea '''",
+                "### Comentario ###",
+                "// Comentario multilínea //"
+            ],
+            "correct_java": 0,
+            "explanation_java": "En Java se usan los delimitadores /* y */ para comentarios de bloque o multilínea."
         }
     ]
 }

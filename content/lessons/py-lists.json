@@ -10,14 +10,20 @@
             "title": "Crear Listas",
             "text": "Las listas se crean usando corchetes <code>[]</code>. Pueden contener elementos de cualquier tipo de dato, e incluso mezclar tipos diferentes.",
             "notes": [
-                {"type": "note", "text": "En Java, las listas se crean con <code>ArrayList</code> y solo pueden contener objetos (no primitivos directamente). Además, generalmente son de un solo tipo."}
+                {
+                    "type": "note",
+                    "text": "En Java, las listas se crean con <code>ArrayList</code> y solo pueden contener objetos (no primitivos directamente). Además, generalmente son de un solo tipo."
+                }
             ]
         },
         {
             "title": "Acceder a Elementos",
             "text": "Accedes a los elementos de una lista usando su número de índice. El primer elemento tiene índice <code>0</code>. También puedes usar índices negativos: <code>-1</code> se refiere al último elemento.",
             "notes": [
-                {"type": "tip", "text": "Los índices negativos son exclusivos de Python. En Java deberás calcular <code>lista.size() - 1</code> para acceder al último elemento."}
+                {
+                    "type": "tip",
+                    "text": "Los índices negativos son exclusivos de Python. En Java deberás calcular <code>lista.size() - 1</code> para acceder al último elemento."
+                }
             ]
         },
         {
@@ -29,14 +35,20 @@
             "title": "Agregar Elementos",
             "text": "Para agregar elementos al final de una lista usa <code>append()</code>. Para insertar en una posición específica usa <code>insert()</code>.",
             "notes": [
-                {"type": "note", "text": "En Java, <code>ArrayList</code> usa <code>.add()</code> para agregar al final y <code>.add(index, element)</code> para insertar en posición."}
+                {
+                    "type": "note",
+                    "text": "En Java, <code>ArrayList</code> usa <code>.add()</code> para agregar al final y <code>.add(index, element)</code> para insertar en posición."
+                }
             ]
         },
         {
             "title": "Longitud y Recorrer",
             "text": "Usa <code>len()</code> para saber cuántos elementos tiene una lista. Para recorrer sus elementos, usa un bucle <code>for</code>.",
             "notes": [
-                {"type": "tip", "text": "Python permite recorrer listas directamente con <code>for item in lista</code>. En Java se usa el for-each: <code>for (Type item : lista)</code>."}
+                {
+                    "type": "tip",
+                    "text": "Python permite recorrer listas directamente con <code>for item in lista</code>. En Java se usa el for-each: <code>for (Type item : lista)</code>."
+                }
             ]
         }
     ],
@@ -85,14 +97,33 @@
             "template": "frutas._____(\"naranja\")",
             "template_html": "frutas.<input type='text' class='exercise-input' data-answer='append' placeholder='___'>(\"naranja\")",
             "python_code": "frutas.append(\"naranja\")",
-            "answer": "append"
+            "answer": "append",
+            "question_java": "En Java, agrega el elemento <code>\"naranja\"</code> a un <code>ArrayList<String> frutas</code>.",
+            "template_java": "frutas._____(\"naranja\");",
+            "template_html_java": "frutas.<input type='text' class='exercise-input' data-answer='add' placeholder='___'>(\"naranja\");",
+            "answer_java": "add",
+            "explanation_java": "En Java ArrayList se usa el método .add() para insertar elementos (equivalente a .append() en Python)."
         },
         {
             "id": "ex-list-2",
             "type": "multiple-choice",
             "question": "¿Cuál es el resultado de <code>frutas[-1]</code> si <code>frutas = [\"a\", \"b\", \"c\"]</code>?",
-            "options": ["\"a\"", "\"b\"", "\"c\"", "Error"],
-            "correct": 2
+            "options": [
+                "\"a\"",
+                "\"b\"",
+                "\"c\"",
+                "Error"
+            ],
+            "correct": 2,
+            "question_java": "¿Cómo se obtiene la cantidad de elementos de un ArrayList en Java?",
+            "options_java": [
+                "frutas.size()",
+                "len(frutas)",
+                "frutas.length",
+                "frutas.count()"
+            ],
+            "correct_java": 0,
+            "explanation_java": "En Java ArrayList se usa el método .size(), a diferencia de arrays primitivos que usan .length."
         },
         {
             "id": "ex-list-3",
@@ -101,7 +132,12 @@
             "template": "print(_____(nums))",
             "template_html": "print(<input type='text' class='exercise-input' data-answer='len' placeholder='___'>(nums))",
             "python_code": "print(len(nums))",
-            "answer": "len"
+            "answer": "len",
+            "question_java": "En Java, obtén el primer elemento (índice 0) de un ArrayList <code>frutas</code>.",
+            "template_java": "String f = frutas._____(0);",
+            "template_html_java": "String f = frutas.<input type='text' class='exercise-input' data-answer='get' placeholder='___'>(0);",
+            "answer_java": "get",
+            "explanation_java": "En Java ArrayList se accede a los elementos mediante el método .get(indice)."
         }
     ]
 }

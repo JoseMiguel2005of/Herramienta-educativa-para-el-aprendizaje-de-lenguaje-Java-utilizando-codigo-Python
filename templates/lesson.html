@@ -343,16 +343,45 @@
     {% set lesson_data = get_lesson(current_lesson) %}
     {% if lesson_data and lesson_data.exercises %}
     <section class="exercises-section" id="exercises-section">
-        <h2 class="exercises-title">Ponte a prueba</h2>
-        <p class="exercises-intro">Completa los siguientes ejercicios para verificar tu comprensión. Escribe en los
-            espacios en blanco.</p>
+        <div class="exercises-header-wrapper" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px dashed var(--border); padding-bottom: 1rem;">
+            <div>
+                <h2 class="exercises-title" style="margin: 0 0 0.3rem 0;">Ponte a prueba</h2>
+                <p class="exercises-intro" style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">
+                    Evalúa tu comprensión respondiendo en el lenguaje de tu preferencia.
+                </p>
+            </div>
+            <div class="quiz-lang-selector-bar">
+                <span class="quiz-lang-label" style="font-size: 0.75rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; margin-right: 0.4rem;">MODO:</span>
+                <div class="quiz-lang-switch-group">
+                    <button type="button" class="quiz-lang-btn active" data-lang="python" title="Evaluar con preguntas de Python">
+                        🐍 Python
+                    </button>
+                    <button type="button" class="quiz-lang-btn" data-lang="java" title="Evaluar con preguntas equivalentes de Java">
+                        ☕ Java
+                    </button>
+                </div>
+            </div>
+        </div>
 
         {% for ex in lesson_data.exercises %}
-        <div class="exercise-card" id="exercise-{{ ex.id }}" data-explanation="{{ ex.explanation | default('', true) }}" data-hint="{{ ex.hint | default('', true) }}">
+        <div class="exercise-card" id="exercise-{{ ex.id }}" 
+             data-explanation="{{ ex.explanation | default('', true) }}" 
+             data-explanation-java="{{ ex.explanation_java | default(ex.explanation, true) }}"
+             data-hint="{{ ex.hint | default('', true) }}"
+             data-has-java="{% if ex.question_java or ex.template_html_java or ex.options_java %}true{% else %}false{% endif %}">
+            
             <div class="exercise-header">
                 <span class="exercise-badge">Ejercicio {{ loop.index }}</span>
+                {% if ex.question_java or ex.template_html_java or ex.options_java %}
+                <span class="exercise-mode-indicator lang-badge python-badge" style="font-size: 0.7rem;">🐍 Python Mode</span>
+                {% endif %}
             </div>
-            <p class="exercise-question">{{ ex.question }}</p>
+
+            <p class="exercise-question exercise-question-python">{{ ex.question }}</p>
+            {% if ex.question_java %}
+            <p class="exercise-question exercise-question-java" style="display: none;">{{ ex.question_java }}</p>
+            {% endif %}
+
             {% if ex.type == 'multiple-choice' %}
             {% include 'partials/quiz_multiple_choice.html' %}
             {% elif ex.type == 'reorder' %}
@@ -366,10 +395,10 @@
             <div class="exercise-controls">
                 <button class="btn-check btn-check-quiz" data-exercise-id="{{ ex.id }}" data-type="{{ ex.type }}"
                     data-lesson="{{ current_lesson }}">
-                    Submit Answer
+                    Comprobar Respuesta
                 </button>
                 <button class="btn-show-answer btn-show-answer-quiz" data-exercise-id="{{ ex.id }}"
-                    data-type="{{ ex.type }}">Show Answer</button>
+                    data-type="{{ ex.type }}">Ver Solución</button>
             </div>
             <div class="exercise-feedback" id="feedback-{{ ex.id }}" hidden></div>
         </div>
