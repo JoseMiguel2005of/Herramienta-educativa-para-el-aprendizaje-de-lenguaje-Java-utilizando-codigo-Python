@@ -504,8 +504,37 @@ body::before {
     color: var(--green);
 }
 
-.btn-ghost:active {
-    box-shadow: var(--neu-pressed);
+#btn-theme-toggle {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+#btn-theme-toggle::before {
+    display: none !important;
+    content: none !important;
+}
+
+#theme-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+}
+
+#theme-icon svg {
+    display: block;
+    width: 16px;
+    height: 16px;
 }
 
 [data-theme="light"] .theme-icon-dark,
@@ -594,24 +623,24 @@ body::before {
     border-bottom: 1px dashed var(--border);
 }
 
-.term-btn {
+.term-commands .term-btn {
     display: block;
     padding: 0.3rem 1rem;
     text-decoration: none;
     transition: background 0.1s;
 }
 
-.term-btn:hover {
+.term-commands .term-btn:hover {
     background: var(--bg-secondary);
     color: var(--topbar-text) !important;
 }
 
-.term-btn::before {
+.term-commands .term-btn::before {
     content: "> ";
     opacity: 0;
 }
 
-.term-btn:hover::before {
+.term-commands .term-btn:hover::before {
     opacity: 1;
 }
 
