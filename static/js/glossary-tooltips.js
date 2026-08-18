@@ -434,6 +434,10 @@ const GLOSSARY_MASTER = [
     }
 ];
 
+if (typeof window !== 'undefined') {
+    window.GLOSSARY_MASTER = GLOSSARY_MASTER;
+}
+
 // Función para inicializar los tooltips en la página actual
 function initGlossaryTooltips() {
     // Contenedores a los que se les aplicarán los tooltips interactivos
