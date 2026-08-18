@@ -121,52 +121,20 @@
 </style>
 
 <script>
-const GLOSSARY = [
-    { term: 'Variable', alt: 'variable', def: 'Nombre que almacena un dato en memoria. En Python no se declara tipo; en Java sí.', tags: ['básico', 'python', 'java'] },
-    { term: 'Función', alt: 'function', def: 'Bloque de código reutilizable que realiza una tarea específica. Se define con def en Python y con tipo de retorno en Java.', tags: ['básico', 'python', 'java'] },
-    { term: 'Clase', alt: 'class', def: 'Plantilla para crear objetos con atributos y métodos. Ambos lenguajes usan la palabra class.', tags: ['OOP', 'python', 'java'] },
-    { term: 'Lista', alt: 'list / ArrayList', def: 'Colección ordenada y mutable de elementos. En Python es list, en Java es ArrayList.', tags: ['colecciones', 'python', 'java'] },
-    { term: 'Diccionario', alt: 'dict / HashMap', def: 'Colección de pares clave-valor. En Python es dict, en Java es HashMap.', tags: ['colecciones', 'python', 'java'] },
-    { term: 'Tupla', alt: 'tuple', def: 'Colección ordenada e inmutable. Exclusiva de Python, no tiene equivalente directo en Java.', tags: ['colecciones', 'python'] },
-    { term: 'String', alt: 'str / String', def: 'Cadena de texto, secuencia de caracteres. Inmutable en ambos lenguajes.', tags: ['tipos', 'python', 'java'] },
-    { term: 'Booleano', alt: 'bool / boolean', def: 'Tipo de dato con valores True/False (Python) o true/false (Java).', tags: ['tipos', 'python', 'java'] },
-    { term: 'Bucle', alt: 'loop (for/while)', def: 'Estructura que repite un bloque de código. Python usa for...in, Java usa for(;;).', tags: ['control', 'python', 'java'] },
-    { term: 'Condicional', alt: 'if/elif/else', def: 'Estructura que ejecuta código según una condición. Python usa elif, Java usa else if.', tags: ['control', 'python', 'java'] },
-    { term: 'Herencia', alt: 'inheritance', def: 'Cuando una clase adquiere propiedades de otra. Python usa class Hijo(Padre), Java usa extends.', tags: ['OOP', 'python', 'java'] },
-    { term: 'Módulo', alt: 'module / package', def: 'Archivo Python con funciones reutilizables. En Java, se organizan en paquetes (packages).', tags: ['estructura', 'python', 'java'] },
-    { term: 'Excepción', alt: 'exception', def: 'Error que ocurre durante la ejecución. Python usa try/except, Java usa try/catch.', tags: ['errores', 'python', 'java'] },
-    { term: 'Iterador', alt: 'iterator', def: 'Objeto que permite recorrer una secuencia elemento a elemento.', tags: ['avanzado', 'python', 'java'] },
-    { term: 'Lambda', alt: 'lambda / arrow function', def: 'Función anónima de una sola expresión. Python: lambda x: x*2. Java: x -> x*2.', tags: ['avanzado', 'python', 'java'] },
-    { term: 'Recursión', alt: 'recursion', def: 'Función que se llama a sí misma para resolver subproblemas.', tags: ['avanzado', 'python', 'java'] },
-    { term: 'Parámetro', alt: 'parameter', def: 'Variable en la definición de una función que recibe un valor.', tags: ['básico', 'python', 'java'] },
-    { term: 'Argumento', alt: 'argument', def: 'Valor que se pasa a una función al llamarla.', tags: ['básico', 'python', 'java'] },
-    { term: 'Indentación', alt: 'indentation', def: 'Espacios al inicio de línea que definen bloques en Python. En Java se usan llaves {}.', tags: ['sintaxis', 'python'] },
-    { term: 'Array', alt: 'array / int[]', def: 'Estructura de datos de tamaño fijo que almacena elementos del mismo tipo. Más común en Java.', tags: ['colecciones', 'java'] },
-    { term: 'Int', alt: 'int / Integer', def: 'Tipo de dato para números enteros. Python tiene precisión ilimitada; Java tiene 32 bits.', tags: ['tipos', 'python', 'java'] },
-    { term: 'Float', alt: 'float / double', def: 'Tipo de dato para números decimales. Python usa float, Java diferencia float y double.', tags: ['tipos', 'python', 'java'] },
-    { term: 'None / Null', alt: 'None / null', def: 'Valor nulo. Python usa None, Java usa null.', tags: ['tipos', 'python', 'java'] },
-    { term: 'Set', alt: 'set / HashSet', def: 'Colección sin duplicados ni orden definido.', tags: ['colecciones', 'python', 'java'] },
-    { term: 'Método', alt: 'method', def: 'Función definida dentro de una clase, opera sobre los datos del objeto.', tags: ['OOP', 'python', 'java'] },
-    { term: 'Objeto', alt: 'object / instance', def: 'Instancia de una clase, con estado y comportamiento propio.', tags: ['OOP', 'python', 'java'] },
-    { term: 'Import', alt: 'import', def: 'Instrucción para incluir módulos o librerías externas en el código.', tags: ['estructura', 'python', 'java'] },
-    { term: 'Constructor', alt: '__init__ / Constructor', def: 'Método especial que inicializa un objeto. Python: __init__. Java: mismo nombre que la clase.', tags: ['OOP', 'python', 'java'] },
-    { term: 'List Comprehension', alt: 'comprehension', def: 'Sintaxis compacta de Python para crear listas: [x*2 for x in range(5)]. Sin equivalente directo en Java.', tags: ['avanzado', 'python'] },
-    { term: 'Static', alt: 'static / @staticmethod', def: 'Miembro que pertenece a la clase, no a la instancia. Java: static. Python: @staticmethod.', tags: ['OOP', 'python', 'java'] },
-    { term: 'Interface', alt: 'interface / ABC', def: 'Contrato que define métodos sin implementación. Java: interface. Python: ABC (Abstract Base Class).', tags: ['OOP', 'avanzado', 'java'] },
-    { term: 'Decorator', alt: '@decorator', def: 'Función que modifica el comportamiento de otra función. Exclusivo de Python con la sintaxis @.', tags: ['avanzado', 'python'] },
-    { term: 'Type Casting', alt: 'casting / conversión', def: 'Convertir un tipo de dato a otro. Python: int(), str(). Java: (int), Integer.parseInt().', tags: ['tipos', 'python', 'java'] },
+const GLOSSARY = typeof GLOSSARY_MASTER !== 'undefined' ? GLOSSARY_MASTER : [
+    { term: 'Variable', alt: 'variable', def: 'Nombre que almacena un dato en memoria.', tags: ['básico', 'python', 'java'] }
 ];
 
 function renderGlossary(filter = '') {
     const grid = document.getElementById('glossary-grid');
     const empty = document.getElementById('glossary-empty');
-    const lowerFilter = filter.toLowerCase();
+    const lowerFilter = filter.toLowerCase().trim();
 
     const filtered = GLOSSARY.filter(g =>
         g.term.toLowerCase().includes(lowerFilter) ||
-        g.alt.toLowerCase().includes(lowerFilter) ||
+        (g.alt && g.alt.toLowerCase().includes(lowerFilter)) ||
         g.def.toLowerCase().includes(lowerFilter) ||
-        g.tags.some(t => t.toLowerCase().includes(lowerFilter))
+        (g.tags && g.tags.some(t => t.toLowerCase().includes(lowerFilter)))
     );
 
     if (filtered.length === 0) {
@@ -181,10 +149,10 @@ function renderGlossary(filter = '') {
     grid.innerHTML = filtered.map(g => `
         <div class="glossary-card">
             <div class="glossary-card-term">${g.term}</div>
-            <div class="glossary-card-alt">${g.alt}</div>
+            <div class="glossary-card-alt">${g.alt || ''}</div>
             <div class="glossary-card-def">${g.def}</div>
             <div class="glossary-card-tags">
-                ${g.tags.map(t => `<span class="glossary-tag">${t}</span>`).join('')}
+                ${(g.tags || []).map(t => `<span class="glossary-tag">${t}</span>`).join('')}
             </div>
         </div>
     `).join('');
