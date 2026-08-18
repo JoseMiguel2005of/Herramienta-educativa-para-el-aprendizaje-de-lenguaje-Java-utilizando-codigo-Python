@@ -16,12 +16,17 @@
         <form method="POST" action="{{ url_for('register') }}" style="display: flex; flex-direction: column; gap: 1rem;">
             <div>
                 <label for="username" style="display: block; margin-bottom: 0.5rem; color: var(--text);">Usuario</label>
-                <input type="text" id="username" name="username" required style="width: 100%; padding: 0.8rem; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-code); color: var(--text); outline: none; font-family: inherit;">
+                <input type="text" id="username" name="username" required placeholder="Tu nombre de usuario..." style="width: 100%; padding: 0.8rem; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-code); color: var(--text); outline: none; font-family: inherit;">
+            </div>
+
+            <div>
+                <label for="email" style="display: block; margin-bottom: 0.5rem; color: var(--text);">Correo Electrónico</label>
+                <input type="email" id="email" name="email" required placeholder="tu@correo.com" style="width: 100%; padding: 0.8rem; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-code); color: var(--text); outline: none; font-family: inherit;">
             </div>
             
             <div>
                 <label for="password" style="display: block; margin-bottom: 0.5rem; color: var(--text);">Contraseña</label>
-                <input type="password" id="password" name="password" required style="width: 100%; padding: 0.8rem; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-code); color: var(--text); outline: none; font-family: inherit;">
+                <input type="password" id="password" name="password" required placeholder="Tu contraseña..." style="width: 100%; padding: 0.8rem; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-code); color: var(--text); outline: none; font-family: inherit;">
             </div>
             
             <div>
@@ -32,7 +37,6 @@
                 </select>
             </div>
 
-            <!-- Teacher Secret Code (4.10) -->
             <div id="teacher-code-field" style="display: none;">
                 <label for="teacher_code" style="display: block; margin-bottom: 0.5rem; color: var(--text);">
                     Código de Profesor

@@ -15,13 +15,18 @@ from flask_login import (LoginManager, current_user, login_required,
                          login_user, logout_user)
 from werkzeug.security import check_password_hash, generate_password_hash
 
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import smtplib
+
 from content_loader import (get_lesson, get_lesson_title, get_reference,
                             load_ui_strings, load_quiz, load_all_quizzes,
                             load_examples_catalog, get_example_by_id,
                             load_practice_problems, get_practice_problem,
                             get_evaluation_for_section, load_all_evaluations)
 from models import (ExerciseAttempt, LessonProgress, User, QuizResult,
-                    PracticeSubmission, DailyStreak, SectionEvaluation, db)
+                    PracticeSubmission, DailyStreak, SectionEvaluation,
+                    PasswordResetCode, db)
 from search_index import search_lessons
 from translator import translate
 
@@ -95,9 +100,19 @@ def init_db():
     with app.app_context():
         try:
             db.create_all()
-            print("[INFO] db.create_all() executed successfully.", flush=True)
+            # Migración automática: asegura que la columna email exista en users
+            try:
+                with db.engine.begin() as conn:
+                    conn.execute(db.text("ALTER TABLE users ADD COLUMN IF NOT EXISTS email VARCHAR(120)"))
+            except Exception:
+                try:
+                    with db.engine.begin() as conn:
+                        conn.execute(db.text("ALTER TABLE users ADD COLUMN email VARCHAR(120)"))
+                except Exception:
+                    pass
+            print("[INFO] db.create_all() y migraciones ejecutadas con éxito.", flush=True)
         except Exception as e:
-            print(f"[WARNING] db.create_all failed during startup: {e}", flush=True)
+            print(f"[WARNING] db.create_all falló durante el inicio: {e}", flush=True)
 
 init_db()
 
@@ -882,6 +897,57 @@ def login():
     return render_template("login.html", categories=LESSON_CATEGORIES)
 
 
+def send_recovery_email(to_email, username, code):
+    """
+    Envía correo con el nombre de usuario y el código de 6 dígitos.
+    Si no hay SMTP configurado o falla el envío, registra en consola
+    y retorna (False, error) para modo demostración.
+    """
+    mail_server = os.environ.get("MAIL_SERVER")
+    mail_port = int(os.environ.get("MAIL_PORT", 587))
+    mail_username = os.environ.get("MAIL_USERNAME")
+    mail_password = os.environ.get("MAIL_PASSWORD")
+    mail_sender = os.environ.get("MAIL_DEFAULT_SENDER", mail_username or "no-reply@plataforma-educativa.edu")
+    mail_use_tls = os.environ.get("MAIL_USE_TLS", "true").lower() in ("true", "1", "yes")
+
+    subject = "Recuperación de cuenta — Plataforma Educativa Python & Java"
+    html_content = f"""
+    <div style="font-family: Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 24px; border: 1px solid #e0e0e0; border-radius: 8px; background: #ffffff;">
+        <h2 style="color: #4CAF50; text-align: center; margin-top: 0;">Recuperación de Cuenta</h2>
+        <p style="color: #333; font-size: 15px;">Hola,</p>
+        <p style="color: #555; font-size: 14px; line-height: 1.5;">Hemos recibido una solicitud para recordar tu nombre de usuario y restablecer tu contraseña.</p>
+        
+        <div style="background: #f4f6f8; padding: 16px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #4CAF50;">
+            <p style="margin: 0 0 10px 0; font-size: 15px;">👤 <strong>Tu nombre de usuario es:</strong> <span style="font-size: 16px; color: #1e88e5; font-weight: bold;">{username}</span></p>
+            <p style="margin: 0; font-size: 15px;">🔑 <strong>Código de verificación:</strong> <span style="font-size: 20px; font-weight: bold; letter-spacing: 4px; color: #2e7d32; display: block; margin-top: 6px; font-family: monospace;">{code}</span></p>
+        </div>
+        
+        <p style="font-size: 13px; color: #777; line-height: 1.4;">Este código expirará en <strong>15 minutos</strong>. Si no solicitaste este cambio, puedes ignorar este correo de forma segura.</p>
+    </div>
+    """
+
+    if not mail_server or not mail_username or not mail_password:
+        print(f"[MODO DEMO RECUPERACIÓN] Correo: {to_email} | Usuario: {username} | Código: {code}", flush=True)
+        return False, "SMTP no configurado"
+
+    try:
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = subject
+        msg["From"] = mail_sender
+        msg["To"] = to_email
+        msg.attach(MIMEText(html_content, "html"))
+
+        with smtplib.SMTP(mail_server, mail_port, timeout=10) as server:
+            if mail_use_tls:
+                server.starttls()
+            server.login(mail_username, mail_password)
+            server.sendmail(mail_sender, [to_email], msg.as_string())
+        return True, None
+    except Exception as e:
+        print(f"[ERROR EMAIL] Error al enviar correo a {to_email}: {e}", flush=True)
+        return False, str(e)
+
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if current_user.is_authenticated:
@@ -889,14 +955,15 @@ def register():
 
     if request.method == "POST":
         username = request.form.get("username", "").strip()
+        email = request.form.get("email", "").strip().lower()
         password = request.form.get("password", "")
         role = request.form.get("role", "student")
         teacher_code = request.form.get("teacher_code", "").strip()
 
-        if not username or not password:
+        if not username or not email or not password:
             return render_template(
                 "register.html",
-                error="El nombre de usuario y contraseña son requeridos.",
+                error="Todos los campos son requeridos (usuario, correo y contraseña).",
                 categories=LESSON_CATEGORIES,
             )
 
@@ -908,13 +975,15 @@ def register():
             )
 
         try:
-            existing = User.query.filter_by(username=username).first()
+            existing_user = User.query.filter_by(username=username).first()
+            existing_email = User.query.filter_by(email=email).first() if email else None
         except Exception as e:
             print(f"[ERROR in register query]: {e}", flush=True)
             db.session.rollback()
             try:
                 db.create_all()
-                existing = User.query.filter_by(username=username).first()
+                existing_user = User.query.filter_by(username=username).first()
+                existing_email = User.query.filter_by(email=email).first() if email else None
             except Exception as e2:
                 print(f"[CRITICAL in register retry]: {e2}", flush=True)
                 db.session.rollback()
@@ -924,16 +993,23 @@ def register():
                     categories=LESSON_CATEGORIES,
                 )
 
-        if existing:
+        if existing_user:
             return render_template(
                 "register.html",
-                error="El usuario ya existe",
+                error="El nombre de usuario ya está en uso. Elige otro.",
+                categories=LESSON_CATEGORIES,
+            )
+
+        if existing_email:
+            return render_template(
+                "register.html",
+                error="Este correo electrónico ya está registrado. Si olvidaste tu clave, usa la opción de recuperar cuenta.",
                 categories=LESSON_CATEGORIES,
             )
 
         try:
             hashed_pw = generate_password_hash(password)
-            new_user = User(username=username, password_hash=hashed_pw, role=role)
+            new_user = User(username=username, email=email, password_hash=hashed_pw, role=role)
             db.session.add(new_user)
             db.session.commit()
 
@@ -951,6 +1027,154 @@ def register():
             )
 
     return render_template("register.html", categories=LESSON_CATEGORIES)
+
+
+@app.route("/recuperar", methods=["GET", "POST"])
+def forgot_password():
+    if current_user.is_authenticated:
+        return redirect(url_for("dashboard"))
+
+    if request.method == "POST":
+        email = request.form.get("email", "").strip().lower()
+        if not email:
+            return render_template("forgot_password.html", error="Debes ingresar un correo electrónico.", categories=LESSON_CATEGORIES)
+
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            return render_template(
+                "forgot_password.html",
+                error="No encontramos ninguna cuenta registrada con este correo electrónico.",
+                email=email,
+                categories=LESSON_CATEGORIES
+            )
+
+        # Generar código de 6 dígitos numéricos
+        code = f"{random.randint(100000, 999999)}"
+        expires_at = datetime.now(timezone.utc) + timedelta(minutes=15)
+
+        # Marcar códigos anteriores no usados como usados
+        PasswordResetCode.query.filter_by(user_id=user.id, used=False).update({"used": True})
+
+        reset_record = PasswordResetCode(
+            user_id=user.id,
+            code=code,
+            expires_at=expires_at,
+            used=False
+        )
+        db.session.add(reset_record)
+        db.session.commit()
+
+        # Enviar correo (o simular en modo demo si no hay SMTP)
+        sent, _ = send_recovery_email(user.email, user.username, code)
+        session["recovery_email"] = user.email
+        if not sent:
+            session["demo_reset_code"] = code
+
+        return redirect(url_for("reset_password", email=user.email))
+
+    return render_template("forgot_password.html", categories=LESSON_CATEGORIES)
+
+
+@app.route("/recuperar/verificar", methods=["GET", "POST"])
+def reset_password():
+    if current_user.is_authenticated:
+        return redirect(url_for("dashboard"))
+
+    email = request.args.get("email") or session.get("recovery_email", "")
+    demo_code = session.get("demo_reset_code")
+
+    if request.method == "POST":
+        email = request.form.get("email", "").strip().lower()
+        code = request.form.get("code", "").strip()
+        new_password = request.form.get("new_password", "")
+        confirm_password = request.form.get("confirm_password", "")
+
+        if not email or not code or not new_password:
+            return render_template(
+                "reset_password.html",
+                error="Todos los campos son obligatorios.",
+                email=email,
+                demo_code=demo_code,
+                categories=LESSON_CATEGORIES
+            )
+
+        if len(new_password) < 4:
+            return render_template(
+                "reset_password.html",
+                error="La contraseña debe tener al menos 4 caracteres.",
+                email=email,
+                demo_code=demo_code,
+                categories=LESSON_CATEGORIES
+            )
+
+        if new_password != confirm_password:
+            return render_template(
+                "reset_password.html",
+                error="Las contraseñas no coinciden.",
+                email=email,
+                demo_code=demo_code,
+                categories=LESSON_CATEGORIES
+            )
+
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            return render_template(
+                "reset_password.html",
+                error="No se encontró usuario con ese correo electrónico.",
+                email=email,
+                categories=LESSON_CATEGORIES
+            )
+
+        reset_record = PasswordResetCode.query.filter_by(
+            user_id=user.id,
+            code=code,
+            used=False
+        ).order_by(PasswordResetCode.created_at.desc()).first()
+
+        if not reset_record:
+            return render_template(
+                "reset_password.html",
+                error="El código de verificación es inválido o ya fue utilizado.",
+                email=email,
+                demo_code=demo_code,
+                categories=LESSON_CATEGORIES
+            )
+
+        # Verificar expiración (con soporte timezone)
+        record_expiry = reset_record.expires_at
+        if record_expiry.tzinfo is None:
+            record_expiry = record_expiry.replace(tzinfo=timezone.utc)
+
+        now_utc = datetime.now(timezone.utc)
+        if record_expiry < now_utc:
+            return render_template(
+                "reset_password.html",
+                error="El código de verificación ha expirado (válido 15 minutos). Solicita uno nuevo.",
+                email=email,
+                categories=LESSON_CATEGORIES
+            )
+
+        # Actualizar contraseña y marcar código
+        user.password_hash = generate_password_hash(new_password)
+        reset_record.used = True
+        db.session.commit()
+
+        # Limpiar datos de sesión
+        session.pop("recovery_email", None)
+        session.pop("demo_reset_code", None)
+
+        return render_template(
+            "login.html",
+            success="¡Contraseña actualizada con éxito! Ya puedes iniciar sesión con tu usuario y nueva clave.",
+            categories=LESSON_CATEGORIES
+        )
+
+    return render_template(
+        "reset_password.html",
+        email=email,
+        demo_code=demo_code,
+        categories=LESSON_CATEGORIES
+    )
 
 
 @app.route("/logout")
