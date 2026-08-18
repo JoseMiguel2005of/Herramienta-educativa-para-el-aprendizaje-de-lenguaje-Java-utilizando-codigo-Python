@@ -1,63 +1,118 @@
 /**
- * Exercise Navigation & Validation
- * Handles individual exercise page interactions
+ * Exercise Navigation & Validation (Dual Python/Java Mode)
  */
+let standaloneQuizLang = localStorage.getItem('py2java_quiz_lang') || 'python';
+
+function switchStandaloneExerciseLang(lang) {
+    standaloneQuizLang = lang;
+    localStorage.setItem('py2java_quiz_lang', lang);
+
+    document.querySelectorAll('.quiz-lang-btn').forEach(btn => {
+        if (btn.dataset.lang === lang) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    const card = document.getElementById('exercise-card-main');
+    if (!card) return;
+
+    const hasJava = card.dataset.hasJava === 'true';
+    const qPy = card.querySelector('.exercise-question-python');
+    const qJava = card.querySelector('.exercise-question-java');
+    const viewPy = card.querySelector('.exercise-lang-python');
+    const viewJava = card.querySelector('.exercise-lang-java');
+    const indicator = card.querySelector('.exercise-mode-indicator');
+    const feedback = document.getElementById('exercise-feedback');
+    if (feedback) feedback.hidden = true;
+
+    if (lang === 'java' && hasJava) {
+        if (qPy) qPy.style.display = 'none';
+        if (qJava) qJava.style.display = 'block';
+        if (viewPy) viewPy.style.display = 'none';
+        if (viewJava) viewJava.style.display = 'block';
+        if (indicator) {
+            indicator.textContent = '☕ Modo Java';
+            indicator.className = 'exercise-mode-indicator lang-badge java-badge';
+        }
+    } else {
+        if (qPy) qPy.style.display = 'block';
+        if (qJava) qJava.style.display = 'none';
+        if (viewPy) viewPy.style.display = 'block';
+        if (viewJava) viewJava.style.display = 'none';
+        if (indicator) {
+            indicator.textContent = '🐍 Modo Python';
+            indicator.className = 'exercise-mode-indicator lang-badge python-badge';
+        }
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const submitBtn = document.getElementById('btn-submit-exercise');
     const hintBtn = document.getElementById('btn-hint');
     const showBtn = document.getElementById('btn-show-answer');
     const feedback = document.getElementById('exercise-feedback');
     const hintBox = document.getElementById('hint-box');
-    const freeformInput = document.getElementById('exercise-freeform-input');
-    const mcOptions = document.getElementById('exercise-mc-options');
 
-    // Submit answer
+    // Inicializar idioma guardado
+    const saved = localStorage.getItem('py2java_quiz_lang') || 'python';
+    switchStandaloneExerciseLang(saved);
+
+    // Enviar / Comprobar respuesta
     if (submitBtn) {
         submitBtn.addEventListener('click', () => {
-            const templateArea = document.getElementById('exercise-template');
+            const card = document.getElementById('exercise-card-main');
+            if (!card) return;
 
-            if (mcOptions) {
-                // Multiple-choice mode
-                const answerData = mcOptions.querySelector('.quiz-answer-data');
+            const isJavaActive = standaloneQuizLang === 'java' && card.dataset.hasJava === 'true';
+            const activeView = isJavaActive 
+                ? (card.querySelector('.exercise-lang-java') || card)
+                : (card.querySelector('.exercise-lang-python') || card);
+
+            const mcBlock = activeView.querySelector('.exercise-options-block');
+            const templateArea = activeView.querySelector('.exercise-template-area');
+            const freeformInput = activeView.querySelector('.exercise-freeform-editor');
+
+            if (mcBlock) {
+                // Opción Múltiple
+                const answerData = mcBlock.querySelector('.quiz-answer-data');
                 const correctIndex = answerData ? parseInt(answerData.getAttribute('data-correct')) : -1;
 
-                const selected = mcOptions.querySelector('input[type="radio"]:checked');
+                const selected = mcBlock.querySelector('input[type="radio"]:checked');
                 if (!selected) {
-                    showFeedback(false, 'Por favor selecciona una opción antes de enviar.');
+                    showFeedback(false, 'Por favor selecciona una opción antes de comprobar.');
                     return;
                 }
 
                 const selectedIndex = parseInt(selected.value);
                 const isCorrect = (selectedIndex === correctIndex);
 
-                // Highlight options
-                mcOptions.querySelectorAll('.quiz-option-label').forEach((label, i) => {
+                mcBlock.querySelectorAll('.quiz-option-label').forEach((label, i) => {
                     label.classList.remove('option-correct', 'option-incorrect');
                     if (i === correctIndex) {
                         label.classList.add('option-correct');
                     } else if (i === selectedIndex && !isCorrect) {
                         label.classList.add('option-incorrect');
                     }
-                    // Disable all radios after submission
-                    const radio = label.querySelector('input[type="radio"]');
-                    if (radio) radio.disabled = true;
                 });
 
                 showFeedback(isCorrect,
-                    isCorrect ? '¡Correcto! Buen trabajo.' : 'Incorrecto. La respuesta correcta está resaltada en verde.');
+                    isCorrect ? '¡Correcto! Excelente trabajo.' : 'Opción incorrecta. La respuesta correcta está resaltada en verde.');
 
                 if (isCorrect) {
                     trackExerciseProgress(submitBtn.dataset.lesson, submitBtn.dataset.exerciseId);
                 }
 
             } else if (templateArea) {
-                // Fill-in-the-blank mode
+                // Espacios en blanco (Fill-in-the-blank)
                 const inputs = templateArea.querySelectorAll('.exercise-input');
                 let allCorrect = true;
 
                 inputs.forEach(input => {
-                    const answer = input.dataset.answer;
-                    if (input.value.trim() === answer) {
+                    const answer = (input.dataset.answer || '').trim().toLowerCase();
+                    const userVal = input.value.trim().toLowerCase();
+                    if (userVal === answer) {
                         input.classList.remove('input-incorrect');
                         input.classList.add('input-correct');
                     } else {
@@ -68,26 +123,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 showFeedback(allCorrect,
-                    allCorrect ? 'Correct! Well done.' : 'Not quite. Check the highlighted fields and try again.');
+                    allCorrect ? '¡Correcto! Completaste el código adecuadamente.' : 'Revisa los campos resaltados en rojo e intenta de nuevo.');
 
                 if (allCorrect) {
                     trackExerciseProgress(submitBtn.dataset.lesson, submitBtn.dataset.exerciseId);
                 }
             } else if (freeformInput) {
-                // Freeform text comparison mode
                 const userCode = freeformInput.value.trim();
                 if (userCode.length === 0) {
-                    showFeedback(false, 'Please write your answer first.');
+                    showFeedback(false, 'Por favor escribe tu código antes de comprobar.');
                     return;
                 }
-                // In freeform mode, we just mark as attempted and let AI tutor help
-                showFeedback(true, 'Answer submitted! Use the hint button if you need guidance.');
+                showFeedback(true, '¡Respuesta enviada! Puedes usar el botón de Pista o consultar al Tutor IA si necesitas retroalimentación.');
                 trackExerciseProgress(submitBtn.dataset.lesson, submitBtn.dataset.exerciseId);
             }
         });
     }
 
-    // Show hint
+    // Pista
     if (hintBtn) {
         hintBtn.addEventListener('click', () => {
             if (hintBox) {
@@ -96,42 +149,46 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Show answer
+    // Ver solución
     if (showBtn) {
         showBtn.addEventListener('click', () => {
-            if (mcOptions) {
-                // Multiple-choice: highlight correct answer
-                const answerData = mcOptions.querySelector('.quiz-answer-data');
+            const card = document.getElementById('exercise-card-main');
+            if (!card) return;
+
+            const isJavaActive = standaloneQuizLang === 'java' && card.dataset.hasJava === 'true';
+            const activeView = isJavaActive 
+                ? (card.querySelector('.exercise-lang-java') || card)
+                : (card.querySelector('.exercise-lang-python') || card);
+
+            const mcBlock = activeView.querySelector('.exercise-options-block');
+            const templateArea = activeView.querySelector('.exercise-template-area');
+
+            if (mcBlock) {
+                const answerData = mcBlock.querySelector('.quiz-answer-data');
                 const correctIndex = answerData ? parseInt(answerData.getAttribute('data-correct')) : -1;
 
-                mcOptions.querySelectorAll('.quiz-option-label').forEach((label, i) => {
+                mcBlock.querySelectorAll('.quiz-option-label').forEach((label, i) => {
                     label.classList.remove('option-correct', 'option-incorrect');
                     if (i === correctIndex) {
                         label.classList.add('option-correct');
                     }
                     const radio = label.querySelector('input[type="radio"]');
-                    if (radio) {
-                        radio.disabled = true;
-                        if (i === correctIndex) radio.checked = true;
-                    }
+                    if (radio && i === correctIndex) radio.checked = true;
                 });
                 showFeedback(true, 'Respuesta mostrada.');
-            } else {
-                const templateArea = document.getElementById('exercise-template');
-                if (templateArea) {
-                    const inputs = templateArea.querySelectorAll('.exercise-input');
-                    inputs.forEach(input => {
-                        input.value = input.dataset.answer;
-                        input.classList.remove('input-incorrect');
-                        input.classList.add('input-correct');
-                    });
-                }
-                showFeedback(true, 'Answer shown.');
+            } else if (templateArea) {
+                const inputs = templateArea.querySelectorAll('.exercise-input');
+                inputs.forEach(input => {
+                    input.value = input.dataset.answer || '';
+                    input.classList.remove('input-incorrect');
+                    input.classList.add('input-correct');
+                });
+                showFeedback(true, 'Solución completada.');
             }
         });
     }
 
-    // Keyboard navigation
+    // Navegación con teclado
     document.addEventListener('keydown', (e) => {
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
@@ -164,4 +221,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }).catch(() => {});
     }
 });
-
