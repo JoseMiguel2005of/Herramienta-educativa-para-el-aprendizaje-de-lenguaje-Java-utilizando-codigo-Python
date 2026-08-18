@@ -1,27 +1,26 @@
 // progress.js - Manejo del progreso y gamificación en el cliente
 
-// ===== LEVEL TITLES MAP (1.4) =====
 const LEVEL_TITLES = {
     1: "Iniciado",
     2: "Novato",
     3: "Aprendiz",
-    4: "Estudiante",
-    5: "Practicante",
-    6: "Competente",
-    7: "Hábil",
-    8: "Experto",
-    9: "Veterano",
-    10: "Pythonista",
-    11: "Maestro",
-    12: "Arquitecto",
-    13: "Virtuoso",
-    14: "Gurú",
-    15: "Sensei",
-    16: "Leyenda",
-    17: "Oráculo",
-    18: "Iluminado",
-    19: "Trascendente",
-    20: "Omnisciente"
+    4: "Entusiasta",
+    5: "Programador Junior",
+    6: "Programador",
+    7: "Desarrollador",
+    8: "Ingeniero de Software",
+    9: "Arquitecto",
+    10: "Maestro del Código",
+    11: "Mago de la Sintaxis",
+    12: "Gurú de Algoritmos",
+    13: "Hacker",
+    14: "Ninja del Desarrollo",
+    15: "Jedi del Software",
+    16: "Titán de la Programación",
+    17: "Leyenda Viva",
+    18: "Semidiós del Código",
+    19: "Dios del Código",
+    20: "Entidad Binaria Superior"
 };
 
 function getLevelTitle(level) {
@@ -35,7 +34,7 @@ function getNextLevelTitle(level) {
     return LEVEL_TITLES[next] || null;
 }
 
-// ===== ACHIEVEMENT DEFINITIONS (for client-side detection) (1.7) =====
+// Definiciones de logros del cliente
 function computeAchievements(summary) {
     const completedCount = summary.completed_lessons ? summary.completed_lessons.length : 0;
     const totalXp = summary.total_xp || 0;
@@ -53,30 +52,29 @@ function computeAchievements(summary) {
     ];
 }
 
-function checkForNewAchievements(summary) {
+function checkForNewAchievements(summary, isLiveAction = false) {
+    if (!summary) return;
     const currentAchievements = computeAchievements(summary);
     const unlockedIds = currentAchievements.filter(a => a.unlocked).map(a => a.id);
 
-    // Compare with stored state
     const storedStr = localStorage.getItem('py2java_achievements');
     const previousIds = storedStr ? JSON.parse(storedStr) : [];
 
-    // Find newly unlocked
+    // Identificar logros recién desbloqueados
     const newlyUnlocked = unlockedIds.filter(id => !previousIds.includes(id));
 
-    // Update stored state
+    // Actualizar estado en almacenamiento local
     localStorage.setItem('py2java_achievements', JSON.stringify(unlockedIds));
 
-    // Show modal for each new achievement
-    if (newlyUnlocked.length > 0) {
+    // SOLO mostrar modal si fue una acción en vivo (ej: terminar ejercicio/lección) y ya existía historial previo
+    if (isLiveAction && newlyUnlocked.length > 0 && storedStr !== null) {
         const newAchievements = currentAchievements.filter(a => newlyUnlocked.includes(a.id));
         showAchievementUnlockModal(newAchievements);
     }
 }
 
-// ===== XP TOAST COMPONENT (1.3) =====
+// Notificación emergente de XP
 function showXPNotification(xpText, title) {
-    // Create toast container if it doesn't exist
     let container = document.getElementById('xp-toast-container');
     if (!container) {
         container = document.createElement('div');
@@ -96,16 +94,12 @@ function showXPNotification(xpText, title) {
     `;
 
     container.appendChild(toast);
-
-    // Spawn particles
     spawnParticles(toast.querySelector('.xp-toast-particles'));
 
-    // Animate in
     requestAnimationFrame(() => {
         toast.classList.add('xp-toast-show');
     });
 
-    // Animate out and remove
     setTimeout(() => {
         toast.classList.add('xp-toast-hide');
         setTimeout(() => toast.remove(), 600);
@@ -113,6 +107,7 @@ function showXPNotification(xpText, title) {
 }
 
 function spawnParticles(container) {
+    if (!container) return;
     const colors = ['#00e5ff', '#ffd700', '#ff6b6b', '#51cf66', '#845ef7'];
     for (let i = 0; i < 12; i++) {
         const particle = document.createElement('span');
@@ -125,9 +120,10 @@ function spawnParticles(container) {
     }
 }
 
-// ===== ACHIEVEMENT UNLOCK MODAL (1.7) =====
+// Modal de logro desbloqueado
 function showAchievementUnlockModal(achievements) {
-    // Create overlay
+    if (!achievements || achievements.length === 0) return;
+
     const overlay = document.createElement('div');
     overlay.className = 'achievement-modal-overlay';
 
@@ -159,21 +155,17 @@ function showAchievementUnlockModal(achievements) {
 
     document.body.appendChild(overlay);
 
-    // Animate in
     requestAnimationFrame(() => {
         overlay.classList.add('achievement-modal-visible');
     });
 
-    // Spawn confetti
     spawnConfetti(overlay.querySelector('.achievement-modal-confetti'));
 
-    // Close
     overlay.querySelector('#achievement-close-btn').addEventListener('click', () => {
         overlay.classList.remove('achievement-modal-visible');
         setTimeout(() => overlay.remove(), 400);
     });
 
-    // Close on overlay click
     overlay.addEventListener('click', (e) => {
         if (e.target === overlay) {
             overlay.classList.remove('achievement-modal-visible');
@@ -183,6 +175,7 @@ function showAchievementUnlockModal(achievements) {
 }
 
 function spawnConfetti(container) {
+    if (!container) return;
     const colors = ['#ffd700', '#ff6b6b', '#00e5ff', '#51cf66', '#845ef7', '#ff922b', '#ff85c0'];
     for (let i = 0; i < 40; i++) {
         const confetti = document.createElement('span');
@@ -197,8 +190,8 @@ function spawnConfetti(container) {
     }
 }
 
-// ===== BADGE NOTIFICATION =====
 function showBadgeNotification(badge) {
+    if (!badge) return;
     const notif = document.createElement('div');
     notif.className = 'badge-notification';
     notif.innerHTML = `
@@ -217,21 +210,19 @@ function showBadgeNotification(badge) {
     }, 5000);
 }
 
-// ===== MAIN INITIALIZATION =====
+// Inicialización
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Rastrear si el usuario llega al final de la lección para marcarla completada
+    // Rastrear si el usuario llega al final de la lección para marcarla completada
     const observer = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting) {
-            // El usuario vio el final de la lección
             const lessonId = window.currentLessonId;
             if (lessonId) {
                 markLessonCompleted(lessonId);
             }
-            observer.disconnect(); // Solo contar una vez por carga de página
+            observer.disconnect();
         }
     }, { threshold: 0.5 });
 
-    // Observar el pie de página de la lección o los botones de navegación
     const lessonNav = document.querySelector('.lesson-navigation');
     if (lessonNav) {
         observer.observe(lessonNav);
@@ -241,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchProgressSummary();
 });
 
-// Función global para que los quizzes puedan llamar al responder correctamente
+// Función global para que los ejercicios puedan registrar progreso
 window.trackProgress = function(lessonId, exerciseId) {
     fetch('/api/progreso/ejercicio', {
         method: 'POST',
@@ -253,13 +244,13 @@ window.trackProgress = function(lessonId, exerciseId) {
         if (data.xp_gained > 0) {
             showXPNotification(`+${data.xp_gained} XP`, '¡Ejercicio completado!');
             updateSidebarProgress(data.summary);
-            checkForNewAchievements(data.summary);
+            checkForNewAchievements(data.summary, true);
         }
         if (data.badge_unlocked) {
             showBadgeNotification(data.badge);
         }
     })
-    .catch(err => console.error("Error saving exercise progress:", err));
+    .catch(err => console.error("Error al registrar ejercicio:", err));
 };
 
 function markLessonCompleted(lessonId) {
@@ -273,19 +264,16 @@ function markLessonCompleted(lessonId) {
         if (data.xp_gained > 0) {
             showXPNotification(`+${data.xp_gained} XP`, '¡Lección completada!');
             updateSidebarProgress(data.summary);
-            checkForNewAchievements(data.summary);
-
-            // Marcar en la UI del sidebar
+            checkForNewAchievements(data.summary, true);
             markSidebarLesson(lessonId);
         }
         if (data.badge_unlocked) {
             showBadgeNotification(data.badge);
         }
     })
-    .catch(err => console.error("Error saving lesson progress:", err));
+    .catch(err => console.error("Error al registrar lección:", err));
 }
 
-// ===== SIDEBAR CHECKMARKS (1.8) =====
 function markSidebarLesson(lessonId) {
     const links = document.querySelectorAll('.nav-link');
     links.forEach(link => {
@@ -306,26 +294,23 @@ function fetchProgressSummary() {
         .then(data => {
             if (data && data.success !== false) {
                 updateSidebarProgress(data);
-                // Marcar lecciones completadas en el menú (1.8)
                 if (data.completed_lessons) {
                     data.completed_lessons.forEach(lid => {
                         markSidebarLesson(lid);
                     });
                 }
-                // Check achievements on page load (for first-time badge sync)
-                checkForNewAchievements(data);
+                // Sincronizar estado de logros de forma silenciosa sin abrir modales
+                checkForNewAchievements(data, false);
             }
         })
-        .catch(err => console.error("Error fetching progress summary:", err));
+        .catch(err => console.error("Error al sincronizar resumen:", err));
 }
 
 function updateSidebarProgress(data) {
     if (!data) return;
 
-    // Si tenemos un contenedor para info de progreso (XP, nivel) en el sidebar
     let infoDiv = document.getElementById('sidebar-user-info');
     if (!infoDiv) {
-        // Crear si no existe (normalmente debajo del buscador)
         const searchDiv = document.querySelector('.sidebar-search');
         if (searchDiv) {
             infoDiv = document.createElement('div');
