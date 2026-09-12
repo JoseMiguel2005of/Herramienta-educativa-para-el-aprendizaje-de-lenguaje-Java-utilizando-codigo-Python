@@ -18,7 +18,17 @@
     </header>
 
     <div class="leaderboard-container">
-        {% if board | length == 0 %}
+        {% if db_error %}
+        <div class="lb-empty" style="padding: 2rem 1rem;">
+            <div style="background: rgba(255, 170, 0, 0.08); border: 1px dashed rgba(255, 170, 0, 0.4); border-radius: 8px; padding: 1.5rem; text-align: center; max-width: 600px; margin: 0 auto;">
+                <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">⚠️</div>
+                <h3 style="color: #ffaa00; font-size: 1.1rem; margin-bottom: 0.5rem; font-family: 'Space Grotesk', sans-serif;">Base de Datos Temporalmente No Disponible</h3>
+                <p style="color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.5; margin: 0;">
+                    // La tabla de posiciones no pudo cargar los puntajes. Si estás usando Supabase, verifica en el panel de control que el proyecto no se encuentre pausado por inactividad.
+                </p>
+            </div>
+        </div>
+        {% elif board | length == 0 %}
         <div class="lb-empty">
             <p style="color: var(--text-muted); font-family: 'JetBrains Mono', monospace; text-align: center; padding: 3rem;">
                 // No hay estudiantes registrados aún
@@ -32,7 +42,7 @@
             <!-- 2nd place -->
             <div class="podium-entry podium-silver {% if board[1].id == current_uid %}podium-current{% endif %}">
                 <div class="podium-rank">2</div>
-                <div class="podium-avatar">{{ board[1].username[0] | upper }}</div>
+                <div class="podium-avatar">{{ (board[1].username or '?')[0] | upper }}</div>
                 <div class="podium-name">{{ board[1].username }}</div>
                 <div class="podium-xp">{{ board[1].total_xp }} XP</div>
                 <div class="podium-bar" style="height: 100px;"></div>
@@ -40,7 +50,7 @@
             <!-- 1st place -->
             <div class="podium-entry podium-gold {% if board[0].id == current_uid %}podium-current{% endif %}">
                 <div class="podium-rank">1</div>
-                <div class="podium-avatar">{{ board[0].username[0] | upper }}</div>
+                <div class="podium-avatar">{{ (board[0].username or '?')[0] | upper }}</div>
                 <div class="podium-name">{{ board[0].username }}</div>
                 <div class="podium-xp">{{ board[0].total_xp }} XP</div>
                 <div class="podium-bar" style="height: 140px;"></div>
@@ -48,7 +58,7 @@
             <!-- 3rd place -->
             <div class="podium-entry podium-bronze {% if board[2].id == current_uid %}podium-current{% endif %}">
                 <div class="podium-rank">3</div>
-                <div class="podium-avatar">{{ board[2].username[0] | upper }}</div>
+                <div class="podium-avatar">{{ (board[2].username or '?')[0] | upper }}</div>
                 <div class="podium-name">{{ board[2].username }}</div>
                 <div class="podium-xp">{{ board[2].total_xp }} XP</div>
                 <div class="podium-bar" style="height: 70px;"></div>
@@ -80,7 +90,7 @@
                             {% endif %}
                         </td>
                         <td class="lb-user">
-                            <span class="lb-avatar">{{ entry.username[0] | upper }}</span>
+                            <span class="lb-avatar">{{ (entry.username or '?')[0] | upper }}</span>
                             <a href="{{ url_for('profile', username=entry.username) }}" class="lb-username">{{ entry.username }}</a>
                             {% if entry.id == current_uid %}<span class="lb-you-badge">TÚ</span>{% endif %}
                         </td>

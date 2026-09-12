@@ -1242,37 +1242,43 @@ def teacher_dashboard():
     if current_user.role != "teacher":
         return redirect(url_for("dashboard"))
 
-    # Obtener todos los estudiantes y su progreso
-    students = User.query.filter_by(role="student").all()
     student_stats = []
-    
-    # Métricas agregadas
     total_xp = 0
     total_completed = 0
     level_counts = {}
+    students = []
 
-    for s in students:
-        stats = get_progress_summary(s)
-        lvl_info = get_level_info(stats["total_xp"])
-        title = lvl_info["title"]
-        
-        # Accumulate level counts
-        level_counts[title] = level_counts.get(title, 0) + 1
-        total_xp += stats["total_xp"]
-        total_completed += len(stats["completed_lessons"])
-        
-        student_stats.append(
-            {
-                "username": s.username,
-                "total_xp": stats["total_xp"],
-                "completed": len(stats["completed_lessons"]),
-                "level": lvl_info["level"],
-                "title": title,
-                "id": s.id
-            }
-        )
+    try:
+        # Obtener todos los estudiantes y su progreso
+        students = User.query.filter_by(role="student").all()
+        for s in students:
+            stats = get_progress_summary(s)
+            lvl_info = get_level_info(stats["total_xp"])
+            title = lvl_info["title"]
+            
+            # Accumulate level counts
+            level_counts[title] = level_counts.get(title, 0) + 1
+            total_xp += stats["total_xp"]
+            total_completed += len(stats["completed_lessons"])
+            
+            student_stats.append(
+                {
+                    "username": s.username,
+                    "total_xp": stats["total_xp"],
+                    "completed": len(stats["completed_lessons"]),
+                    "level": lvl_info["level"],
+                    "title": title,
+                    "id": s.id
+                }
+            )
 
-    student_stats.sort(key=lambda x: x["total_xp"], reverse=True)
+        student_stats.sort(key=lambda x: x["total_xp"], reverse=True)
+    except Exception as e:
+        print(f"[ERROR in teacher_dashboard]: {e}", flush=True)
+        try:
+            db.session.rollback()
+        except Exception:
+            pass
 
     metrics = {
         "total_students": len(students),
@@ -1343,23 +1349,32 @@ def teacher_export_csv():
 # --- Tabla de posiciones ---
 @app.route("/leaderboard")
 def leaderboard():
-    students = User.query.filter_by(role="student").all()
     board = []
-    for s in students:
-        summary = get_progress_summary(s)
-        lvl_info = get_level_info(summary["total_xp"])
-        board.append({
-            "id": s.id,
-            "username": s.username,
-            "total_xp": summary["total_xp"],
-            "level": lvl_info["level"],
-            "completed": len(summary["completed_lessons"]),
-            "streak": summary["streak"],
-        })
-    board.sort(key=lambda x: x["total_xp"], reverse=True)
+    db_error = False
+    try:
+        students = User.query.filter_by(role="student").all()
+        for s in students:
+            summary = get_progress_summary(s)
+            lvl_info = get_level_info(summary["total_xp"])
+            board.append({
+                "id": s.id,
+                "username": s.username or "Anónimo",
+                "total_xp": summary["total_xp"],
+                "level": lvl_info["level"],
+                "completed": len(summary["completed_lessons"]),
+                "streak": summary["streak"],
+            })
+        board.sort(key=lambda x: x["total_xp"], reverse=True)
 
-    for i, entry in enumerate(board):
-        entry["rank"] = i + 1
+        for i, entry in enumerate(board):
+            entry["rank"] = i + 1
+    except Exception as e:
+        print(f"[ERROR in leaderboard]: {e}", flush=True)
+        try:
+            db.session.rollback()
+        except Exception:
+            pass
+        db_error = True
 
     current_uid = current_user.id if current_user.is_authenticated else None
     return render_template(
@@ -1368,7 +1383,9 @@ def leaderboard():
         current_uid=current_uid,
         categories=LESSON_CATEGORIES,
         page="leaderboard",
+        db_error=db_error,
     )
+
 
 
 # --- Perfil de usuario ---
@@ -1385,25 +1402,33 @@ def profile(username=None):
     summary = get_progress_summary(user)
     level = get_level_info(summary["total_xp"])["level"]
 
-    # Últimas lecciones completadas
-    recent = (
-        LessonProgress.query.filter_by(user_id=user.id, completed=True)
-        .order_by(LessonProgress.completed_at.desc())
-        .limit(10)
-        .all()
-    )
+    # Últimas lecciones completadas y estadísticas
+    recent = []
+    quiz_results = []
+    total_exercises = 0
+    passed_exercises = 0
 
-    # Quiz results
-    quiz_results = (
-        QuizResult.query.filter_by(user_id=user.id)
-        .order_by(QuizResult.completed_at.desc())
-        .limit(10)
-        .all()
-    )
-
-    # Exercise stats
-    total_exercises = ExerciseAttempt.query.filter_by(user_id=user.id).count()
-    passed_exercises = ExerciseAttempt.query.filter_by(user_id=user.id, passed=True).count()
+    try:
+        recent = (
+            LessonProgress.query.filter_by(user_id=user.id, completed=True)
+            .order_by(LessonProgress.completed_at.desc())
+            .limit(10)
+            .all()
+        )
+        quiz_results = (
+            QuizResult.query.filter_by(user_id=user.id)
+            .order_by(QuizResult.completed_at.desc())
+            .limit(10)
+            .all()
+        )
+        total_exercises = ExerciseAttempt.query.filter_by(user_id=user.id).count()
+        passed_exercises = ExerciseAttempt.query.filter_by(user_id=user.id, passed=True).count()
+    except Exception as e:
+        print(f"[ERROR in profile queries]: {e}", flush=True)
+        try:
+            db.session.rollback()
+        except Exception:
+            pass
 
     return render_template(
         "profile.html",
