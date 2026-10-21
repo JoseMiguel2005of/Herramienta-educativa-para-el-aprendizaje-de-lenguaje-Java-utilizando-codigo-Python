@@ -19,3 +19,7 @@ fix_quotes.py
 fix_quotes_2.py
 fix_quotes_3.py
 restore_keys.py
+
+# Base de datos y temporales
+instance/
+scratch/

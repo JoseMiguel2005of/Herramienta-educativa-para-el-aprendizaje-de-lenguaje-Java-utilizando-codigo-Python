@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 showFeedback(allCorrect,
-                    allCorrect ? '¡Correcto! Completaste el código adecuadamente.' : 'Revisa los campos resaltados en rojo e intenta de nuevo.');
+                    allCorrect ? '¡Correcto! Completaste el código adecuadamente.' : 'Revisa los campos resaltados con borde negro e intenta de nuevo.');
 
                 if (allCorrect) {
                     trackExerciseProgress(submitBtn.dataset.lesson, submitBtn.dataset.exerciseId);
@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const radio = label.querySelector('input[type="radio"]');
                     if (radio && i === correctIndex) radio.checked = true;
                 });
-                showFeedback(true, 'Respuesta mostrada.');
+                showFeedback(true, 'Respuesta mostrada.', true);
             } else if (templateArea) {
                 const inputs = templateArea.querySelectorAll('.exercise-input');
                 inputs.forEach(input => {
@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     input.classList.remove('input-incorrect');
                     input.classList.add('input-correct');
                 });
-                showFeedback(true, 'Solución completada.');
+                showFeedback(true, 'Solución completada.', true);
             }
         });
     }
@@ -201,7 +201,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    function showFeedback(isCorrect, message) {
+    function showFeedback(isCorrect, message, silent) {
+        if (!silent && window.QuizSounds) window.QuizSounds.play(isCorrect);
         if (!feedback) return;
         feedback.textContent = message;
         feedback.hidden = false;

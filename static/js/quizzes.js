@@ -176,7 +176,7 @@ function checkQuiz(exerciseId, type, btn) {
             message = `¡Correcto en ${langLabel}! Excelente trabajo.` + (cardExplanation ? `<div class="exercise-explanation-box"><b>Explicación:</b> ${cardExplanation}</div>` : "");
             if (btn) btn.disabled = true;
         } else {
-            const expText = cardExplanation || cardHint || "Revisa la sintaxis requerida y los campos resaltados en rojo.";
+            const expText = cardExplanation || cardHint || "Revisa la sintaxis requerida y los campos resaltados con borde negro.";
             message = `<b>Hay errores en tu respuesta.</b><div class="exercise-explanation-box"><b>Orientación:</b> ${expText}</div>`;
         }
     } 
@@ -247,6 +247,7 @@ function checkQuiz(exerciseId, type, btn) {
     }
 
     showFeedback(feedback, isCorrect, message, card, exerciseId);
+    if (window.QuizSounds) window.QuizSounds.play(isCorrect);
 
     if (isCorrect && window.trackProgress && btn && btn.dataset.lesson) {
         window.trackProgress(btn.dataset.lesson, exerciseId);

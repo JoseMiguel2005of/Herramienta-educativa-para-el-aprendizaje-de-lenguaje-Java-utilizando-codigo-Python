@@ -62,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (selectedIndex === correctIndex) {
                 score++;
             }
+            if (window.QuizSounds) window.QuizSounds.play(selectedIndex === correctIndex);
             answers.push({ question: currentQuestion, selected: selectedIndex, correct: correctIndex });
 
             // Change button text

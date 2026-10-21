@@ -1261,7 +1261,7 @@ body::before {
 }
 
 .exercise-card.incorrect {
-    border-color: #e53935;
+    border-color: #000;
     animation: shake 0.4s ease;
 }
 
@@ -1362,8 +1362,8 @@ body::before {
 }
 
 .exercise-input.input-incorrect {
-    border-color: #e53935;
-    background: #fdecea;
+    border-color: #000;
+    background: transparent;
 }
 
 .exercise-controls {
@@ -1432,9 +1432,9 @@ body::before {
 }
 
 .exercise-feedback.feedback-incorrect {
-    background: rgba(229, 57, 53, 0.12);
-    color: #c62828;
-    border-left: 4px solid #e53935;
+    background: rgba(0, 0, 0, 0.06);
+    color: inherit;
+    border: 2px solid #000;
 }
 
 [data-theme="dark"] .exercise-feedback.feedback-correct {
@@ -1443,8 +1443,9 @@ body::before {
 }
 
 [data-theme="dark"] .exercise-feedback.feedback-incorrect {
-    background: rgba(239, 68, 68, 0.15);
-    color: #fca5a5;
+    background: rgba(255, 255, 255, 0.06);
+    color: inherit;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35);
 }
 
 .exercise-explanation-box {

@@ -126,9 +126,10 @@
 }
 
 .exercise-template-area .exercise-input.input-incorrect {
-    background: #ffebee;
-    border-color: #ef5350;
-    color: #c62828;
+    background: transparent;
+    border-color: #000;
+    color: inherit;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35);
     animation: shake 0.4s ease;
 }
 
@@ -223,9 +224,10 @@
 }
 
 .exercise-feedback.feedback-incorrect {
-    background: rgba(239, 83, 80, 0.15);
-    color: #ef5350;
-    border-left: 4px solid #ef5350;
+    background: rgba(0, 0, 0, 0.06);
+    color: inherit;
+    border: 2px solid #000;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35);
 }
 
 /* Hint Box */

@@ -115,7 +115,7 @@
                     {% if current_user.is_authenticated and current_user.role == 'teacher' %}
                     <a href="{{ url_for('teacher_dashboard') }}" class="term-btn text-orange">
                         <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                        TEACHER_PANEL
+                        ADMIN_PANEL
                     </a>
                     {% endif %}
                 </div>
@@ -255,6 +255,7 @@
     </style>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/quiz-sounds.js') }}"></script>
     <script src="{{ url_for('static', filename='js/quizzes.js') }}"></script>
     <script src="{{ url_for('static', filename='js/progress.js') }}"></script>
     <script src="{{ url_for('static', filename='js/ai-tutor.js') }}"></script>
