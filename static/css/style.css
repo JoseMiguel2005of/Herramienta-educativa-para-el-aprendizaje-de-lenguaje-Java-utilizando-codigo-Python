@@ -383,18 +383,19 @@ body::before {
     color: var(--topbar-text);
     position: sticky;
     top: 0;
-    z-index: 100;
-    height: 64px;
+    z-index: 102;
+    min-height: 64px;
     box-shadow: 0 4px 20px #10131B;
     border-bottom: 1px solid var(--border);
 }
 
 .topbar-inner {
-    padding: 0.75rem 1.5rem;
+    padding: 0.65rem 1.5rem;
+    min-height: 64px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
+    gap: 0.75rem;
     max-width: 1400px;
     margin: 0 auto;
 }
@@ -406,11 +407,13 @@ body::before {
     text-decoration: none;
     color: inherit;
     transition: all 0.2s ease;
+    min-width: 0;
+    flex-shrink: 1;
 }
 
 .brand-icon {
-    width: 38px;
-    height: 38px;
+    width: 40px;
+    height: 40px;
     border-radius: 10px;
     background: var(--bg-secondary);
     box-shadow: var(--neu-flat);
@@ -418,6 +421,9 @@ body::before {
     align-items: center;
     justify-content: center;
     color: var(--green);
+    padding: 3px;
+    overflow: hidden;
+    flex-shrink: 0;
 }
 
 .brand-icon svg {
@@ -428,6 +434,30 @@ body::before {
     stroke-width: 2;
 }
 
+.brand-icon .brand-logo {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    display: block;
+    transition: transform 0.2s ease;
+}
+
+.brand:hover .brand-icon .brand-logo {
+    transform: scale(1.08);
+}
+
+.brand-icon .brand-logo-light {
+    display: none;
+}
+
+[data-theme="light"] .brand-icon .brand-logo-dark {
+    display: none;
+}
+
+[data-theme="light"] .brand-icon .brand-logo-light {
+    display: block;
+}
+
 .brand strong {
     display: block;
     font-size: 1.15rem;
@@ -436,6 +466,9 @@ body::before {
     font-family: "Space Grotesk", sans-serif;
     color: var(--green);
     text-shadow: 0 0 12px rgba(0, 229, 255, 0.25);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .topbar-actions {
@@ -443,6 +476,7 @@ body::before {
     gap: 0.6rem;
     align-items: center;
     margin-left: auto;
+    flex-shrink: 0;
 }
 
 .term-btn {
@@ -561,12 +595,21 @@ body::before {
     color: var(--sidebar-text);
     padding: 0;
     position: sticky;
-    top: 60px;
-    height: calc(100vh - 60px);
+    top: 64px;
+    height: calc(100vh - 64px);
     overflow-y: auto;
     border-right: 1px solid var(--border);
     font-family: "JetBrains Mono", monospace;
     font-size: 0.85rem;
+}
+
+.mobile-overlay {
+    position: fixed;
+    inset: 0;
+    top: 64px;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(2px);
+    z-index: 100;
 }
 
 /* Scrollbar personalizada para el sidebar */
@@ -1560,60 +1603,135 @@ body::before {
 }
 
 /* =============================================
-   RESPONSIVE
+   SHARED TELEMETRY & DATA MODULES
    ============================================= */
-@media (max-width: 900px) {
-    .layout {
-        flex-direction: column;
-    }
+.telemetry-dashboard {
+    font-family: "JetBrains Mono", monospace;
+    color: var(--text);
+    max-width: 100%;
+}
 
-    .sidebar {
-        width: 100%;
-        min-width: unset;
-        position: static;
-        height: auto;
-        padding: 0.5rem 0;
-    }
+.telemetry-header:not(.term-hero) {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    border-bottom: 2px solid var(--text);
+    padding-bottom: 0.5rem;
+    margin-bottom: 2rem;
+}
 
-    .sidebar nav {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0;
-    }
+.telemetry-header:not(.term-hero) h1 {
+    font-size: 1.5rem;
+    font-family: "Space Grotesk", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0;
+    color: var(--text);
+}
 
-    .sidebar-heading {
-        width: 100%;
-    }
+.system-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--green);
+}
 
-    .nav-list {
-        display: flex;
-        flex-wrap: wrap;
-        width: 100%;
-    }
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    background-color: var(--green);
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+}
 
-    .nav-link {
-        padding: 0.5rem 1rem;
-        border-left: none;
-        border-bottom: 2px solid transparent;
-    }
+.telemetry-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+}
 
-    .nav-link.active {
-        border-bottom-color: var(--sidebar-active);
-        border-left: none;
-    }
+.data-module {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
 
-    .nav-link.active::after {
-        display: none;
-    }
+.telemetry-grid > .data-module {
+    border: none;
+}
 
-    .code-comparison,
-    .translator-panels {
-        grid-template-columns: 1fr;
-    }
+.module-header {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 0.45rem 0.8rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+}
 
-    .content {
-        padding: 1.25rem;
-    }
+.module-body {
+    padding: 1.25rem;
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.center-data {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.metric-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+}
+
+.highlight-orange {
+    color: #ff9800;
+}
+
+.highlight-cyan {
+    color: var(--green);
+}
+
+.metric-total {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+}
+
+.terminal-progress-container {
+    height: 12px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+}
+
+.terminal-progress-bar {
+    height: 100%;
+    background: var(--green);
+    position: relative;
+}
+
+.terminal-progress-bar.bg-python {
+    background: var(--python-color);
 }
 
 /* =============================================
@@ -1697,29 +1815,34 @@ body::before {
 /* Tablet & Smaller Desktop */
 @media (max-width: 1024px) {
     .code-comparison {
-        grid-template-columns: 1fr !important;
+        grid-template-columns: minmax(0, 1fr) !important;
     }
 
     .translator-panels {
-        grid-template-columns: 1fr !important;
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+
+    .content {
+        padding: 1.5rem;
     }
 }
 
-/* Mobile Devices */
-@media (max-width: 768px) {
+/* Tablet & Mobile Navigation Drawer */
+@media (max-width: 900px) {
     .hide-desktop {
-        display: inline-block !important;
+        display: inline-flex !important;
     }
 
     .sidebar {
         position: fixed;
         left: -300px;
-        top: 60px;
-        height: calc(100vh - 60px);
-        width: 280px;
+        top: 64px;
+        height: calc(100vh - 64px);
+        width: min(280px, 85vw);
+        min-width: unset;
         z-index: 101;
         transition: left 0.3s ease;
-        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+        box-shadow: 2px 0 16px rgba(0, 0, 0, 0.6);
         overflow-y: auto;
     }
 
@@ -1732,11 +1855,60 @@ body::before {
     }
 
     .content {
-        padding: 1rem;
+        padding: 1.25rem;
+        width: 100%;
     }
 
-    .lesson-header h1 {
-        font-size: 2rem;
+    .telemetry-grid {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+}
+
+/* Mobile Devices */
+@media (max-width: 600px) {
+    .topbar-inner {
+        padding: 0.5rem 0.75rem;
+        gap: 0.4rem;
+    }
+
+    .brand {
+        gap: 0.4rem;
+    }
+
+    .brand-icon {
+        display: none;
+    }
+
+    .brand strong {
+        font-size: 0.95rem;
+        letter-spacing: 0.04em;
+    }
+
+    .topbar-actions {
+        gap: 0.35rem;
+    }
+
+    .topbar-actions .term-btn {
+        padding: 0.35rem 0.55rem;
+        font-size: 0.75rem;
+    }
+
+    #btn-theme-toggle {
+        width: 32px;
+        height: 32px;
+    }
+
+    .content {
+        padding: 1rem 0.85rem;
+    }
+
+    .lesson-header h1,
+    .term-hero h1 {
+        font-size: 1.6rem;
+    }
+
+    .telemetry-header:not(.term-hero) h1 {
+        font-size: 1.2rem;
     }
 
     .exercise-controls {
@@ -1751,33 +1923,47 @@ body::before {
     .dashboard-grid {
         grid-template-columns: 1fr;
     }
-}
-
-/* Small Mobile */
-@media (max-width: 480px) {
-    .topbar-inner {
-        padding: 0 1rem;
-    }
-
-    .brand-icon {
-        display: none;
-    }
 
     .lesson-intro {
-        font-size: 1rem;
-    }
-
-    .code-panel {
-        padding: 0;
-        background: transparent;
-        border: none;
+        font-size: 0.95rem;
     }
 
     .code-block-interactive,
     .code-block {
         border-radius: var(--radius);
-        font-size: 0.9rem;
-        padding: 0.5rem;
+        font-size: 0.85rem;
+        padding: 0.65rem;
+    }
+
+    #xp-toast-container {
+        right: 1rem;
+        left: 1rem;
+        bottom: 1rem;
+    }
+
+    .xp-toast {
+        min-width: 0;
+        width: 100%;
+    }
+}
+
+/* Extra Small Mobile */
+@media (max-width: 400px) {
+    #study-timer-goal-pill {
+        display: none !important;
+    }
+
+    .brand strong {
+        font-size: 0.85rem;
+        letter-spacing: 0.02em;
+    }
+
+    .topbar-actions {
+        gap: 0.25rem;
+    }
+
+    .topbar-actions .term-btn {
+        padding: 0.3rem 0.45rem;
     }
 }
 

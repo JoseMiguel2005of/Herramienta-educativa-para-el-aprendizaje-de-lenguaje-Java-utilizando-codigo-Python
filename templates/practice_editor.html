@@ -3,7 +3,7 @@
 {% block title %}{{ problem.title }} — Práctica{% endblock %}
 
 {% block content %}
-<div class="practice-layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; height: calc(100vh - 120px); min-height: 600px;">
+<div class="practice-layout">
     
     <!-- LEFT PANEL: Problem description and cases -->
     <div class="practice-left data-module module-log" style="display: flex; flex-direction: column; overflow: hidden;">
@@ -48,9 +48,9 @@
 
     <!-- RIGHT PANEL: Editor and Console -->
     <div class="practice-right data-module module-log" style="display: flex; flex-direction: column; overflow: hidden;">
-        <div class="module-header" style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-code);">
+        <div class="module-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; background: var(--bg-code);">
             <span>// main.py</span>
-            <div style="display: flex; gap: 0.5rem;">
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
                 <button type="button" id="btn-reset" class="btn-translate" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 0.3rem 0.8rem; font-size: 0.75rem; cursor: pointer;">
                     RESET
                 </button>
@@ -220,6 +220,14 @@ json.dumps({"passed": _passed, "actual": _actual_repr})
 </script>
 
 <style>
+.practice-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    height: calc(100vh - 120px);
+    min-height: 600px;
+}
+
 .problem-description code {
     background: rgba(255,255,255,0.1);
     color: var(--green);
@@ -229,13 +237,17 @@ json.dumps({"passed": _passed, "actual": _actual_repr})
     font-size: 0.9em;
 }
 
-@media (max-width: 800px) {
+@media (max-width: 900px) {
     .practice-layout {
         grid-template-columns: 1fr;
         height: auto;
+        min-height: 0;
     }
-    .practice-left, .practice-right {
-        min-height: 400px;
+    .practice-left {
+        max-height: 460px;
+    }
+    .practice-right {
+        min-height: 520px;
     }
 }
 </style>

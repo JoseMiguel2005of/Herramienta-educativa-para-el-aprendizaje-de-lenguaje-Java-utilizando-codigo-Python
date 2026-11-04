@@ -1,9 +1,14 @@
 import csv
+import hashlib
+import hmac
+import html
 from io import StringIO
 import json
 import os
 import random
+import secrets
 from datetime import date, datetime, timedelta, timezone
+from urllib.parse import urlparse
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -31,24 +36,40 @@ from search_index import search_lessons
 from translator import translate
 
 app = Flask(__name__)
+is_vercel = bool(os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"))
 _secret = os.environ.get("SECRET_KEY")
 if not _secret:
-    _secret = os.urandom(32).hex()
-    print("[AVISO] SECRET_KEY no configurada. Usando clave temporal.", flush=True)
+    if is_vercel:
+        # En serverless (Vercel), derivar clave determinista si SECRET_KEY no fue definida
+        # para evitar que las sesiones se invaliden entre distintas instancias lambda
+        _seed = (
+            os.environ.get("DATABASE_URL")
+            or os.environ.get("TEACHER_SECRET_CODE")
+            or os.environ.get("GEMINI_API_KEY")
+            or "py2java-edu-vercel-fallback-seed"
+        )
+        _secret = hashlib.sha256(f"py2java-session-{_seed}".encode("utf-8")).hexdigest()
+        print("[AVISO] SECRET_KEY no configurada en Vercel. Se recomienda definir SECRET_KEY en las variables de entorno.", flush=True)
+    else:
+        _secret = os.urandom(32).hex()
+        print("[AVISO] SECRET_KEY no configurada. Usando clave temporal.", flush=True)
 app.secret_key = _secret
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_SECURE"] = is_vercel
 
 TEACHER_SECRET_CODE = os.environ.get("TEACHER_SECRET_CODE", "")
 
 # Database Configuration
 database_url = os.environ.get("DATABASE_URL")
-is_vercel = bool(os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"))
 
+is_postgres = bool(database_url and database_url.startswith(("postgres://", "postgresql://", "postgresql+psycopg2://")))
 if database_url:
     if database_url.startswith("postgres://"):
         database_url = database_url.replace("postgres://", "postgresql+psycopg2://", 1)
     elif database_url.startswith("postgresql://"):
         database_url = database_url.replace("postgresql://", "postgresql+psycopg2://", 1)
-    if "sslmode=" not in database_url and "localhost" not in database_url and "127.0.0.1" not in database_url:
+    if is_postgres and "sslmode=" not in database_url and "localhost" not in database_url and "127.0.0.1" not in database_url:
         separator = "&" if "?" in database_url else "?"
         database_url = f"{database_url}{separator}sslmode=require"
     app.config["SQLALCHEMY_DATABASE_URI"] = database_url
@@ -61,6 +82,8 @@ if database_url:
             "pool_pre_ping": True,
             "poolclass": NullPool,
         }
+        if is_postgres:
+            engine_options["connect_args"] = {"connect_timeout": 10}
     else:
         engine_options = {
             "pool_pre_ping": True,
@@ -68,6 +91,8 @@ if database_url:
             "max_overflow": 3,
             "pool_recycle": 280,
         }
+        if is_postgres:
+            engine_options["connect_args"] = {"connect_timeout": 10}
 else:
     # On Vercel serverless, working directory is read-only (/var/task), write SQLite to /tmp
     if is_vercel:
@@ -98,31 +123,61 @@ def load_user(user_id):
         return None
 
 
+_db_initialized = False
+
+
 def init_db():
+    global _db_initialized
     with app.app_context():
         try:
             db.create_all()
             # Migración automática: asegura que email, failed_login_attempts y locked_until existan en users
-            for col_def in [
-                "email VARCHAR(120)",
-                "failed_login_attempts INTEGER DEFAULT 0",
-                "locked_until TIMESTAMP"
-            ]:
+            if is_postgres:
                 try:
                     with db.engine.begin() as conn:
-                        conn.execute(db.text(f"ALTER TABLE users ADD COLUMN IF NOT EXISTS {col_def}"))
+                        conn.execute(db.text(
+                            "ALTER TABLE users "
+                            "ADD COLUMN IF NOT EXISTS email VARCHAR(120), "
+                            "ADD COLUMN IF NOT EXISTS failed_login_attempts INTEGER DEFAULT 0, "
+                            "ADD COLUMN IF NOT EXISTS locked_until TIMESTAMP"
+                        ))
                 except Exception:
+                    pass
+            else:
+                for col_def in [
+                    "email VARCHAR(120)",
+                    "failed_login_attempts INTEGER DEFAULT 0",
+                    "locked_until TIMESTAMP"
+                ]:
                     try:
                         with db.engine.begin() as conn:
                             conn.execute(db.text(f"ALTER TABLE users ADD COLUMN {col_def}"))
                     except Exception:
                         pass
+            _db_initialized = True
             print("[INFO] db.create_all() y migraciones ejecutadas con éxito.", flush=True)
         except Exception as e:
             print(f"[WARNING] db.create_all falló durante el inicio: {e}", flush=True)
 
+
 if not is_vercel:
     init_db()
+
+
+@app.before_request
+def _ensure_serverless_db():
+    if not _db_initialized and is_vercel:
+        if request.path.startswith("/static/"):
+            return
+        init_db()
+
+
+@app.after_request
+def _set_security_headers(response):
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
+    response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+    return response
 
 LESSON_CATEGORIES = [
     {
@@ -638,6 +693,13 @@ def api_ejercicio():
     if not user or not user.id:
         return jsonify({"ok": False})
 
+    # Check if previously passed BEFORE adding the new attempt (avoids SQLAlchemy autoflush)
+    prev_passed = None
+    if passed:
+        prev_passed = ExerciseAttempt.query.filter_by(
+            user_id=user.id, exercise_id=exercise_id, passed=True
+        ).first()
+
     attempt = ExerciseAttempt(
         user_id=user.id, lesson_id=lesson_id, exercise_id=exercise_id, passed=passed
     )
@@ -646,9 +708,6 @@ def api_ejercicio():
     xp_gained = 0
     # Add XP if passed and not previously passed
     if passed:
-        prev_passed = ExerciseAttempt.query.filter_by(
-            user_id=user.id, exercise_id=exercise_id, passed=True
-        ).first()
         if not prev_passed:
             xp_gained = 25
 
@@ -758,6 +817,53 @@ def get_progress_summary(user):
         return {"completed_lessons": [], "total_xp": 0, "streak": 0}
 
 
+def get_bulk_progress_summaries(users):
+    """Calcula el resumen de progreso de múltiples usuarios en solo 2 consultas SQL."""
+    user_ids = [u.id for u in users if getattr(u, "id", None)]
+    if not user_ids:
+        return {}
+
+    result = {uid: {"completed_lessons": [], "total_xp": 0, "streak": 0} for uid in user_ids}
+    try:
+        all_progress = LessonProgress.query.filter(LessonProgress.user_id.in_(user_ids)).all()
+        for p in all_progress:
+            entry = result.get(p.user_id)
+            if entry is not None:
+                if p.completed:
+                    entry["completed_lessons"].append(p.lesson_id)
+                entry["total_xp"] += (p.score or 0)
+
+        all_streaks = (
+            DailyStreak.query.filter(DailyStreak.user_id.in_(user_ids))
+            .order_by(DailyStreak.user_id, DailyStreak.date.desc())
+            .all()
+        )
+        streaks_by_user = {}
+        for s in all_streaks:
+            streaks_by_user.setdefault(s.user_id, []).append(s.date)
+
+        today = date.today()
+        yesterday = today - timedelta(days=1)
+        for uid, dates in streaks_by_user.items():
+            if not dates:
+                continue
+            first_date = dates[0]
+            if first_date != today and first_date != yesterday:
+                continue
+            count = 1
+            for i in range(1, len(dates)):
+                if dates[i] == first_date - timedelta(days=i):
+                    count += 1
+                else:
+                    break
+            result[uid]["streak"] = count
+    except Exception as e:
+        print(f"[WARNING] get_bulk_progress_summaries error: {e}", flush=True)
+        db.session.rollback()
+
+    return result
+
+
 LEVEL_TITLES = {
     1: "Iniciado",
     2: "Novato",
@@ -853,13 +959,13 @@ def api_db_status():
     }
 
     try:
-        db.create_all()
+        init_db()
         status["tables"] = list(db.metadata.tables.keys())
         status["user_count"] = User.query.count()
         status["ok"] = True
     except Exception as e:
         print(f"[ERROR in api_db_status]: {e}", flush=True)
-        status["error"] = str(e)
+        status["error"] = "Error de conexión o consulta a la base de datos. Revisa los logs del servidor." 
 
     return jsonify(status)
 
@@ -879,7 +985,7 @@ def login():
             print(f"[ERROR in login]: {e}", flush=True)
             db.session.rollback()
             try:
-                db.create_all()
+                init_db()
                 user = User.query.filter_by(username=username).first()
             except Exception as e2:
                 print(f"[CRITICAL in login retry]: {e2}", flush=True)
@@ -963,6 +1069,8 @@ def send_recovery_email(to_email, username, code):
     mail_sender = os.environ.get("MAIL_DEFAULT_SENDER", mail_username or "no-reply@plataforma-educativa.edu")
     mail_use_tls = os.environ.get("MAIL_USE_TLS", "true").lower() in ("true", "1", "yes")
 
+    safe_username = html.escape(username or "")
+    safe_code = html.escape(str(code))
     subject = "Recuperación de cuenta — Plataforma Educativa Python & Java"
     html_content = f"""
     <div style="font-family: Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 24px; border: 1px solid #e0e0e0; border-radius: 8px; background: #ffffff;">
@@ -971,8 +1079,8 @@ def send_recovery_email(to_email, username, code):
         <p style="color: #555; font-size: 14px; line-height: 1.5;">Hemos recibido una solicitud para recordar tu nombre de usuario y restablecer tu contraseña.</p>
         
         <div style="background: #f4f6f8; padding: 16px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #4CAF50;">
-            <p style="margin: 0 0 10px 0; font-size: 15px;"><strong>Tu nombre de usuario es:</strong> <span style="font-size: 16px; color: #1e88e5; font-weight: bold;">{username}</span></p>
-            <p style="margin: 0; font-size: 15px;"><strong>Código de verificación:</strong> <span style="font-size: 20px; font-weight: bold; letter-spacing: 4px; color: #2e7d32; display: block; margin-top: 6px; font-family: monospace;">{code}</span></p>
+            <p style="margin: 0 0 10px 0; font-size: 15px;"><strong>Tu nombre de usuario es:</strong> <span style="font-size: 16px; color: #1e88e5; font-weight: bold;">{safe_username}</span></p>
+            <p style="margin: 0; font-size: 15px;"><strong>Código de verificación:</strong> <span style="font-size: 20px; font-weight: bold; letter-spacing: 4px; color: #2e7d32; display: block; margin-top: 6px; font-family: monospace;">{safe_code}</span></p>
         </div>
         
         <p style="font-size: 13px; color: #777; line-height: 1.4;">Este código expirará en <strong>15 minutos</strong>. Si no solicitaste este cambio, puedes ignorar este correo de forma segura.</p>
@@ -980,7 +1088,7 @@ def send_recovery_email(to_email, username, code):
     """
 
     if not mail_server or not mail_username or not mail_password:
-        print(f"[MODO DEMO RECUPERACIÓN] Correo: {to_email} | Usuario: {username} | Código: {code}", flush=True)
+        print(f"[MODO DEMO RECUPERACIÓN] Solicitud de recuperación en modo sin SMTP para usuario '{username}'.", flush=True)
         return False, "SMTP no configurado"
 
     try:
@@ -1010,7 +1118,9 @@ def register():
         username = request.form.get("username", "").strip()
         email = request.form.get("email", "").strip().lower()
         password = request.form.get("password", "")
-        role = request.form.get("role", "student")
+        role = request.form.get("role", "student").strip()
+        if role not in ("student", "teacher"):
+            role = "student"
         teacher_code = request.form.get("teacher_code", "").strip()
 
         if not username or not email or not password:
@@ -1020,7 +1130,7 @@ def register():
                 categories=LESSON_CATEGORIES,
             )
 
-        if role == "teacher" and (not TEACHER_SECRET_CODE or teacher_code != TEACHER_SECRET_CODE):
+        if role == "teacher" and (not TEACHER_SECRET_CODE or not hmac.compare_digest(teacher_code, TEACHER_SECRET_CODE)):
             return render_template(
                 "register.html",
                 error="Código de profesor incorrecto. Contacta al administrador.",
@@ -1034,7 +1144,7 @@ def register():
             print(f"[ERROR in register query]: {e}", flush=True)
             db.session.rollback()
             try:
-                db.create_all()
+                init_db()
                 existing_user = User.query.filter_by(username=username).first()
                 existing_email = User.query.filter_by(email=email).first() if email else None
             except Exception as e2:
@@ -1101,8 +1211,8 @@ def forgot_password():
                 categories=LESSON_CATEGORIES
             )
 
-        # Generar código de 6 dígitos numéricos
-        code = f"{random.randint(100000, 999999)}"
+        # Generar código criptográficamente seguro de 6 dígitos numéricos
+        code = f"{secrets.randbelow(900000) + 100000}"
         expires_at = datetime.now(timezone.utc) + timedelta(minutes=15)
 
         # Marcar códigos anteriores no usados como usados
@@ -1117,11 +1227,14 @@ def forgot_password():
         db.session.add(reset_record)
         db.session.commit()
 
-        # Enviar correo (o simular en modo demo si no hay SMTP)
-        sent, _ = send_recovery_email(user.email, user.username, code)
+        # Enviar correo (o simular en modo demo si no hay SMTP configurado)
+        sent, reason = send_recovery_email(user.email, user.username, code)
         session["recovery_email"] = user.email
-        if not sent:
+        allow_demo = os.environ.get("ALLOW_DEMO_RESET", "true").lower() in ("true", "1", "yes")
+        if not sent and reason == "SMTP no configurado" and allow_demo:
             session["demo_reset_code"] = code
+        else:
+            session.pop("demo_reset_code", None)
 
         return redirect(url_for("reset_password", email=user.email))
 
@@ -1252,10 +1365,11 @@ def teacher_dashboard():
     students = []
 
     try:
-        # Obtener todos los estudiantes y su progreso
+        # Obtener todos los estudiantes y su progreso en bloque (evita N+1 queries en Vercel/Supabase)
         students = User.query.filter_by(role="student").all()
+        bulk_stats = get_bulk_progress_summaries(students)
         for s in students:
-            stats = get_progress_summary(s)
+            stats = bulk_stats.get(s.id, {"completed_lessons": [], "total_xp": 0, "streak": 0})
             lvl_info = get_level_info(stats["total_xp"])
             title = lvl_info["title"]
             
@@ -1321,6 +1435,7 @@ def teacher_export_csv():
         return redirect(url_for("dashboard"))
         
     students = User.query.filter_by(role="student").all()
+    bulk_stats = get_bulk_progress_summaries(students)
     
     si = StringIO()
     si.write('\ufeff')  # Agregamos BOM para que Excel detecte correctamente el UTF-8
@@ -1328,15 +1443,18 @@ def teacher_export_csv():
     cw.writerow(["Username", "Total_XP", "Lecciones_Completadas", "Nivel", "Racha_Actual", "Fecha_Registro"])
     
     for s in students:
-        stats = get_progress_summary(s)
+        stats = bulk_stats.get(s.id, {"completed_lessons": [], "total_xp": 0, "streak": 0})
         lvl_info = get_level_info(stats["total_xp"])
+        safe_user = s.username or ""
+        if safe_user.startswith(("=", "+", "-", "@")):
+            safe_user = "'" + safe_user
         cw.writerow([
-            s.username,
+            safe_user,
             stats["total_xp"],
             len(stats["completed_lessons"]),
             lvl_info["title"],
             stats["streak"],
-            s.created_at.strftime("%Y-%m-%d")
+            s.created_at.strftime("%Y-%m-%d") if s.created_at else "N/A"
         ])
         
     output = si.getvalue()
@@ -1356,8 +1474,9 @@ def leaderboard():
     db_error = False
     try:
         students = User.query.filter_by(role="student").all()
+        bulk_stats = get_bulk_progress_summaries(students)
         for s in students:
-            summary = get_progress_summary(s)
+            summary = bulk_stats.get(s.id, {"completed_lessons": [], "total_xp": 0, "streak": 0})
             lvl_info = get_level_info(summary["total_xp"])
             board.append({
                 "id": s.id,
@@ -1506,7 +1625,11 @@ def settings():
     if request.method == "POST":
         theme = request.form.get("theme", "light")
         session["theme"] = theme if theme in ("light", "dark") else "light"
-        return redirect(request.referrer or url_for("index"))
+        ref = request.referrer or ""
+        parsed_ref = urlparse(ref)
+        if ref and (not parsed_ref.netloc or parsed_ref.netloc == request.host):
+            return redirect(ref)
+        return redirect(url_for("index"))
 
     return redirect(url_for("index"))
 
@@ -1608,9 +1731,10 @@ REGLAS:
         }
 
         resp = http_requests.post(
-            f"{GEMINI_API_URL}?key={GEMINI_API_KEY}",
+            GEMINI_API_URL,
+            headers={"x-goog-api-key": GEMINI_API_KEY, "Content-Type": "application/json"},
             json=payload,
-            timeout=30,
+            timeout=25,
         )
         if resp.status_code == 429:
             return jsonify(
@@ -1639,7 +1763,8 @@ REGLAS:
             }
         )
     except Exception as e:
-        return jsonify({"ok": False, "error": f"Error al conectar con la IA: {str(e)}"})
+        print(f"[ERROR in api_ai_tutor]: {type(e).__name__}", flush=True)
+        return jsonify({"ok": False, "error": "No fue posible conectar con el Tutor IA en este momento. Intenta de nuevo más tarde."})
 
 # --- Ejercicios y quizzes ---
 
@@ -1896,15 +2021,18 @@ def evaluation_page(section_key):
             pass  # No extra fields needed
         client_questions.append(cq)
 
-    # Build answer key (stored in session for validation)
+    # Limpiar claves previas de evaluaciones en la sesión para no superar el límite de 4 KB de cookies
+    for k in list(session.keys()):
+        if k.startswith("eval_answers_") or k.startswith("eval_questions_"):
+            session.pop(k, None)
+
+    # Guardar únicamente el mapa compacto {id: respuesta_correcta} en la sesión
     answer_key = {}
     for q in questions:
-        if q["type"] == "multiple_choice":
-            answer_key[q["id"]] = {"correct": q["correct"], "explanation": q["explanation"]}
-        elif q["type"] == "true_false":
-            answer_key[q["id"]] = {"correct": q["correct"], "explanation": q["explanation"]}
+        if q["type"] in ("multiple_choice", "true_false"):
+            answer_key[q["id"]] = q["correct"]
         elif q["type"] == "complete_code":
-            answer_key[q["id"]] = {"correct": q["correct_answer"], "explanation": q["explanation"]}
+            answer_key[q["id"]] = q["correct_answer"]
 
     session[f"eval_answers_{section_key}"] = answer_key
     session[f"eval_questions_{section_key}"] = [q["id"] for q in questions]
@@ -1944,11 +2072,22 @@ def api_evaluation_result():
     if section_key not in SECTION_EVAL_MAP:
         return jsonify({"ok": False, "error": "Sección inválida"})
 
-    # Get answer key from session
-    answer_key = session.get(f"eval_answers_{section_key}", {})
-    question_ids = session.get(f"eval_questions_{section_key}", [])
+    eval_data = get_evaluation_for_section(section_key)
+    question_source_map = {}
+    catalog_answers = {}
+    if eval_data:
+        for lesson_id, qs in eval_data.get("lesson_questions", {}).items():
+            for q in qs:
+                question_source_map[q["id"]] = lesson_id
+                catalog_answers[q["id"]] = (
+                    q.get("correct_answer") if q.get("type") == "complete_code" else q.get("correct")
+                )
 
-    if not answer_key:
+    # Get answer key from session (or fall back to server catalog if cookie was dropped)
+    answer_key = session.get(f"eval_answers_{section_key}", {})
+    question_ids = session.get(f"eval_questions_{section_key}", []) or list(answers.keys())
+
+    if not question_ids:
         return jsonify({"ok": False, "error": "Sesión de evaluación expirada"})
 
     user = current_user
@@ -1956,17 +2095,10 @@ def api_evaluation_result():
     total = len(question_ids)
     details = {}
 
-    eval_data = get_evaluation_for_section(section_key)
-    question_source_map = {}
-    if eval_data:
-        for lesson_id, qs in eval_data.get("lesson_questions", {}).items():
-            for q in qs:
-                question_source_map[q["id"]] = lesson_id
-
     for qid in question_ids:
-        key_data = answer_key.get(qid, {})
+        raw_key = answer_key.get(qid, catalog_answers.get(qid))
+        correct_val = raw_key.get("correct") if isinstance(raw_key, dict) else raw_key
         user_answer = answers.get(qid)
-        correct_val = key_data.get("correct")
         source_lesson = question_source_map.get(qid, "")
 
         if source_lesson not in details:
@@ -1992,10 +2124,15 @@ def api_evaluation_result():
     percentage = round((score / total) * 100, 1) if total > 0 else 0
     passed = percentage >= 70
 
-    # Count previous attempts
+    # Count previous attempts and check prior pass BEFORE adding the new evaluation (avoids autoflush)
     prev_attempts = SectionEvaluation.query.filter_by(
         user_id=user.id, section_id=section_key
     ).count()
+    already_passed = None
+    if passed:
+        already_passed = SectionEvaluation.query.filter_by(
+            user_id=user.id, section_id=section_key, passed=True
+        ).first()
 
     # Save result
     evaluation = SectionEvaluation(
@@ -2014,10 +2151,7 @@ def api_evaluation_result():
     # Award XP if passed for first time
     xp_gained = 0
     if passed:
-        first_pass = SectionEvaluation.query.filter_by(
-            user_id=user.id, section_id=section_key, passed=True
-        ).first()
-        if not first_pass or first_pass.id is None:
+        if not already_passed:
             xp_gained = 100
             # Update a LessonProgress record for XP tracking
             lp = LessonProgress.query.filter_by(
@@ -2047,6 +2181,44 @@ def api_evaluation_result():
         "attempt_number": prev_attempts + 1,
         "details": details,
     })
+
+
+@app.route("/api/evaluacion/estados")
+def api_evaluation_statuses():
+    """Obtiene el estado de todas las evaluaciones de sección en solo 2 consultas SQL."""
+    if not current_user.is_authenticated:
+        return jsonify({k: {"unlocked": False, "passed": False, "best_score": 0, "attempts": 0, "completion_pct": 0} for k in SECTION_EVAL_MAP})
+
+    user_id = current_user.id
+    completed_rows = LessonProgress.query.filter_by(user_id=user_id, completed=True).all()
+    completed_set = {r.lesson_id for r in completed_rows}
+
+    eval_rows = SectionEvaluation.query.filter_by(user_id=user_id).all()
+    evals_by_sec = {}
+    for r in eval_rows:
+        evals_by_sec.setdefault(r.section_id, []).append(r)
+
+    results = {}
+    for section_key in SECTION_EVAL_MAP:
+        lesson_ids = get_section_lessons(section_key)
+        if not lesson_ids:
+            results[section_key] = {"unlocked": False, "passed": False, "best_score": 0, "attempts": 0, "completion_pct": 0}
+            continue
+        completed_cnt = sum(1 for lid in lesson_ids if lid in completed_set)
+        completion_pct = round((completed_cnt / len(lesson_ids)) * 100)
+        sec_evals = evals_by_sec.get(section_key, [])
+        best_pct = max((e.percentage for e in sec_evals), default=0)
+        passed = any(e.passed for e in sec_evals)
+        results[section_key] = {
+            "unlocked": completion_pct >= 80,
+            "passed": passed,
+            "best_score": round(best_pct),
+            "attempts": len(sec_evals),
+            "completion_pct": completion_pct,
+            "completed_lessons": completed_cnt,
+            "total_lessons": len(lesson_ids),
+        }
+    return jsonify(results)
 
 
 @app.route("/api/evaluacion/estado/<section_key>")

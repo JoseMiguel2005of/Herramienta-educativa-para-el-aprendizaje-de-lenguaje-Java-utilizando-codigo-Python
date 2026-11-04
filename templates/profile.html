@@ -104,7 +104,7 @@
                     <span>// QUIZ_RESULTS</span>
                     <span>{{ quiz_results | length }} REGISTROS</span>
                 </div>
-                <div class="module-body" style="padding: 0;">
+                <div class="module-body" style="padding: 0; overflow-x: auto; -webkit-overflow-scrolling: touch;">
                     <table class="profile-table">
                         <thead>
                             <tr><th>Quiz</th><th>Puntuación</th><th>Fecha</th></tr>
@@ -197,6 +197,20 @@
 @media (max-width: 900px) {
     .profile-layout {
         grid-template-columns: 1fr;
+    }
+    .profile-card {
+        position: static;
+    }
+}
+
+@media (max-width: 600px) {
+    .profile-cert-card {
+        flex-wrap: wrap;
+    }
+    .cert-download {
+        width: 100%;
+        text-align: right;
+        margin-top: 0.25rem;
     }
 }
 

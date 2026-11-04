@@ -1,8 +1,9 @@
-const CACHE_NAME = 'py2java-cache-v1';
+const CACHE_NAME = 'py2java-cache-v3';
 const urlsToCache = [
-  '/',
   '/static/css/style.css',
   '/static/css/quizzes.css',
+  '/static/images/logo-dark.png',
+  '/static/images/logo-light.png',
   '/static/js/main.js',
   '/static/js/quizzes.js',
   '/static/js/progress.js',
@@ -11,50 +12,11 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', event => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => {
-        return cache.addAll(urlsToCache);
-      })
+      .then(cache => cache.addAll(urlsToCache))
   );
-});
-
-self.addEventListener('fetch', event => {
-  // Ignorar peticiones POST/PUT/DELETE o fuera del dominio
-  if (event.request.method !== 'GET' || !event.request.url.startsWith(self.location.origin)) {
-    return;
-  }
-
-  // Network first para /api/, Cache first para estáticos
-  if (event.request.url.includes('/api/')) {
-    event.respondWith(
-      fetch(event.request).catch(() => caches.match(event.request))
-    );
-  } else {
-    event.respondWith(
-      caches.match(event.request)
-        .then(response => {
-          if (response) {
-            // Actualizar en segundo plano
-            fetch(event.request).then(res => {
-              caches.open(CACHE_NAME).then(cache => cache.put(event.request, res));
-            }).catch(() => {});
-            return response;
-          }
-          return fetch(event.request).then(response => {
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-            const responseToCache = response.clone();
-            caches.open(CACHE_NAME)
-              .then(cache => {
-                cache.put(event.request, responseToCache);
-              });
-            return response;
-          });
-        })
-    );
-  }
 });
 
 self.addEventListener('activate', event => {
@@ -68,6 +30,48 @@ self.addEventListener('activate', event => {
           }
         })
       );
-    })
+    }).then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET' || !event.request.url.startsWith(self.location.origin)) {
+    return;
+  }
+
+  const url = new URL(event.request.url);
+
+  // Nunca cachear endpoints de API ni rutas de autenticación/sesión
+  if (
+    url.pathname.startsWith('/api/') ||
+    url.pathname.startsWith('/login') ||
+    url.pathname.startsWith('/logout') ||
+    url.pathname.startsWith('/register') ||
+    url.pathname.startsWith('/recuperar')
+  ) {
+    return;
+  }
+
+  // Estrategia Cache-First con actualización en segundo plano solo para archivos estáticos (/static/)
+  if (url.pathname.startsWith('/static/')) {
+    event.respondWith(
+      caches.match(event.request).then(cachedResponse => {
+        const networkFetch = fetch(event.request).then(networkResponse => {
+          if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone));
+          }
+          return networkResponse;
+        }).catch(() => cachedResponse);
+
+        return cachedResponse || networkFetch;
+      })
+    );
+    return;
+  }
+
+  // Estrategia Network-First para documentos HTML / navegación
+  event.respondWith(
+    fetch(event.request).catch(() => caches.match(event.request))
   );
 });

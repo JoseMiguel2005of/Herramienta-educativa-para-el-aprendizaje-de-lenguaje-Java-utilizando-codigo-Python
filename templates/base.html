@@ -14,6 +14,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap"
         rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo-dark.png') }}">
     <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
     <meta name="theme-color" content="#0D1117">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -31,9 +32,8 @@
 
             <a href="{{ url_for('lesson', lesson_id='py-home') }}" class="brand">
                 <div class="brand-icon">
-                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
-                    </svg>
+                    <img src="{{ url_for('static', filename='images/logo-dark.png') }}" alt="{{ t.site_title }}" width="32" height="32" decoding="async" class="brand-logo brand-logo-dark">
+                    <img src="{{ url_for('static', filename='images/logo-light.png') }}" alt="{{ t.site_title }}" width="32" height="32" decoding="async" class="brand-logo brand-logo-light">
                 </div>
                 <strong class="brand-title">
                     {{ t.site_title | upper }}
@@ -57,12 +57,12 @@
                 {% if current_user.is_authenticated %}
                 <a href="{{ url_for('logout') }}" class="term-btn btn-logout">
                     <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                    LOGOUT
+                    <span class="hide-mobile">LOGOUT</span>
                 </a>
                 {% else %}
                 <a href="{{ url_for('login') }}" class="term-btn btn-login">
                     <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
-                    LOGIN
+                    <span class="hide-mobile">LOGIN</span>
                 </a>
                 {% endif %}
             </div>
@@ -298,13 +298,24 @@
         const overlay = document.getElementById('mobile-overlay');
 
         if (mobileToggle) {
+            const closeMobileMenu = () => {
+                sidebar.classList.remove('active');
+                overlay.style.display = 'none';
+            };
             mobileToggle.addEventListener('click', () => {
                 sidebar.classList.toggle('active');
                 overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none';
             });
-            overlay.addEventListener('click', () => {
-                sidebar.classList.remove('active');
-                overlay.style.display = 'none';
+            overlay.addEventListener('click', closeMobileMenu);
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && sidebar.classList.contains('active')) {
+                    closeMobileMenu();
+                }
+            });
+            sidebar.querySelectorAll('a.nav-link, a.term-nav-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth <= 900) closeMobileMenu();
+                });
             });
         }
 

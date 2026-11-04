@@ -132,7 +132,9 @@
     flex-direction: column;
     align-items: center;
     gap: 0.5rem;
-    width: 140px;
+    flex: 1 1 0;
+    max-width: 140px;
+    min-width: 0;
 }
 
 .podium-rank {
@@ -208,7 +210,8 @@
 .lb-table-wrapper {
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    overflow: hidden;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .lb-table {
@@ -262,9 +265,7 @@
 }
 
 .lb-user {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
+    white-space: nowrap;
 }
 
 .lb-avatar {
@@ -273,9 +274,11 @@
     border-radius: 50%;
     background: var(--bg-secondary);
     border: 1px solid var(--border);
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    vertical-align: middle;
+    margin-right: 0.5rem;
     font-size: 0.85rem;
     font-weight: 700;
     color: var(--green);
@@ -303,18 +306,20 @@
 }
 
 .lb-level {
-    display: flex;
-    flex-direction: column;
+    white-space: nowrap;
 }
 
 .lb-lvl-num {
     font-weight: 700;
     color: var(--green);
+    display: block;
+    line-height: 1.2;
 }
 
 .lb-lvl-title {
     font-size: 0.7rem;
     color: var(--text-muted);
+    display: block;
 }
 
 .lb-xp {
@@ -330,13 +335,28 @@
 @media (max-width: 768px) {
     .lb-podium {
         gap: 0.5rem;
+        padding: 1.25rem 0.25rem;
     }
-    .podium-entry {
-        width: 100px;
+    .lb-table th,
+    .lb-table td {
+        padding: 0.6rem 0.65rem;
     }
     .lb-table th:nth-child(5),
     .lb-table td:nth-child(5) {
         display: none;
+    }
+}
+
+@media (max-width: 600px) {
+    .lb-table th:nth-child(6),
+    .lb-table td:nth-child(6) {
+        display: none;
+    }
+    .lb-avatar {
+        width: 26px;
+        height: 26px;
+        font-size: 0.75rem;
+        margin-right: 0.35rem;
     }
 }
 </style>
