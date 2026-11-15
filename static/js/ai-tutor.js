@@ -426,6 +426,13 @@
         });
     }
 
+    // ===== Expose public API =====
+    window.AITutor = {
+        hint: requestHint,
+        open: toggleTutor,
+        analyze: analyzeCode
+    };
+
     // ===== Init on DOM load =====
     document.addEventListener('DOMContentLoaded', () => {
         createToggleButton();

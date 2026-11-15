@@ -9,6 +9,11 @@ def translate(python_code: str, class_name: str = "Program") -> Dict[str, Any]:
     """
     Main entry point for translating Python code to Java.
     """
+    if not isinstance(python_code, str):
+        python_code = "" if python_code is None else str(python_code)
+    if not isinstance(class_name, str) or not class_name.strip():
+        class_name = "Program"
+
     code = python_code.strip()
     if not code:
         return {"java": "", "errors": [], "warnings": []}

@@ -82,7 +82,7 @@
                                 </div>
                             </td>
                             <td style="padding: 1rem; text-align: center;">
-                                <button onclick="deleteStudent({{ s.id }}, '{{ s.username }}', this)" style="background: none; border: 1px solid #F44336; color: #F44336; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; transition: all 0.2s;" onmouseover="this.style.background='#F44336'; this.style.color='#fff';" onmouseout="this.style.background='none'; this.style.color='#F44336';">
+                                <button data-username="{{ s.username }}" onclick="deleteStudent({{ s.id }}, this.dataset.username, this)" style="background: none; border: 1px solid #F44336; color: #F44336; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; transition: all 0.2s;" onmouseover="this.style.background='#F44336'; this.style.color='#fff';" onmouseout="this.style.background='none'; this.style.color='#F44336';">
                                     Eliminar
                                 </button>
                             </td>
@@ -191,7 +191,7 @@
         btnElement.disabled = true;
         btnElement.innerText = "Borrando...";
         
-        fetch('/profesor/estudiante/' + studentId + '/eliminar', {
+        fetch('/administrador/estudiante/' + studentId + '/eliminar', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -218,7 +218,7 @@
             btnElement.innerText = "Eliminar";
         });
     }
-    // Load evaluation summary for teacher
+    // Load evaluation summary for administrator
     const evalSections = [
         {key: 'cat_python_tutorial', label: 'Python Tutorial'},
         {key: 'cat_python_functions', label: 'Funciones'},

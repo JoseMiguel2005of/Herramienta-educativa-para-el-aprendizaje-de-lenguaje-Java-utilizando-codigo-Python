@@ -18,11 +18,12 @@
 
     <section class="exercise-list">
         {% for ex in exercises %}
-        <a href="{{ url_for('exercise_page', topic=topic, exercise_num=loop.index) }}" class="exercise-list-item {% if (topic ~ '-' ~ loop.index) in completed_exercises %}completed{% endif %}">
+        {% set is_ex_done = (ex.id in completed_exercises) or ((topic ~ '-' ~ loop.index) in completed_exercises) %}
+        <a href="{{ url_for('exercise_page', topic=topic, exercise_num=loop.index) }}" class="exercise-list-item {% if is_ex_done %}completed{% endif %}">
             <span class="exercise-list-number">{{ loop.index }}</span>
             <span class="exercise-list-question">{{ ex.question | truncate(80) }}</span>
             <span class="exercise-list-status">
-                {% if (topic ~ '-' ~ loop.index) in completed_exercises %}
+                {% if is_ex_done %}
                     <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" style="color: var(--green);"><polyline points="20 6 9 17 4 12"></polyline></svg>
                 {% else %}
                     ○

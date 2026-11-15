@@ -251,10 +251,8 @@ function checkQuiz(exerciseId, type, btn) {
 
     if (isCorrect && window.trackProgress && btn && btn.dataset.lesson) {
         window.trackProgress(btn.dataset.lesson, exerciseId);
-    }
-    
-    // Registrar progreso
-    if (btn && btn.dataset.lesson) {
+    } else if (btn && btn.dataset.lesson) {
+        // Registrar intento fallido (o exitoso si trackProgress no está cargado)
         fetch('/api/progreso/ejercicio', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

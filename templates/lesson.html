@@ -131,7 +131,8 @@
             {% if mapping.python %}
             <div class="example-run-container" style="margin-bottom: 1rem;">
                 <button class="btn-run-example"
-                    onclick="runExampleCode(this, `{{ mapping.python | replace('`', '\`') | replace('\\', '\\\\') }}`)"
+                    data-code="{{ mapping.python }}"
+                    onclick="runExampleCode(this, this.dataset.code)"
                     style="background: transparent; border: 1px solid var(--python-color); color: var(--python-color); padding: 0.3rem 0.8rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; cursor: pointer; transition: all 0.2s;">
                     ▶ Ejecutar ejemplo
                 </button>
@@ -195,7 +196,8 @@
         {% if mapping.python %}
         <div class="example-run-container" style="margin-bottom: 1rem;">
             <button class="btn-run-example"
-                onclick="runExampleCode(this, `{{ mapping.python | replace('`', '\`') | replace('\\', '\\\\') }}`)"
+                data-code="{{ mapping.python }}"
+                onclick="runExampleCode(this, this.dataset.code)"
                 style="background: transparent; border: 1px solid var(--python-color); color: var(--python-color); padding: 0.3rem 0.8rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; cursor: pointer; transition: all 0.2s;">
                 ▶ Ejecutar ejemplo
             </button>

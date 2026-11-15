@@ -86,8 +86,8 @@
 
 <script>
     // Config from backend
-    const problemId = "{{ problem.id }}";
-    const starterCode = `{{ problem.starter_code | replace('`', '\`') | replace('\\', '\\\\') }}`;
+    const problemId = {{ problem.id | tojson }};
+    const starterCode = {{ problem.starter_code | tojson }};
     const testCases = {{ problem.test_cases | tojson }};
 
     document.addEventListener('DOMContentLoaded', () => {

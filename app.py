@@ -24,7 +24,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
 
-from content_loader import (get_lesson, get_lesson_title, get_reference,
+from content_loader import (LESSON_ALIASES, get_lesson, get_lesson_title, get_reference,
                             load_ui_strings, load_quiz, load_all_quizzes,
                             load_examples_catalog, get_example_by_id,
                             load_practice_problems, get_practice_problem,
@@ -475,6 +475,21 @@ def get_lesson_neighbors(lesson_id):
     return None, None
 
 
+def _get_json_dict():
+    """Obtiene el cuerpo JSON de la petición garantizando un diccionario."""
+    data = request.get_json(silent=True)
+    return data if isinstance(data, dict) else {}
+
+
+def _safe_int(val, default=0):
+    try:
+        if isinstance(val, bool):
+            return default
+        return int(val)
+    except (ValueError, TypeError):
+        return default
+
+
 @app.route("/")
 def index():
     return redirect(url_for("lesson", lesson_id="py-home"))
@@ -482,6 +497,7 @@ def index():
 
 @app.route("/leccion/<lesson_id>")
 def lesson(lesson_id):
+    lesson_id = LESSON_ALIASES.get(lesson_id, lesson_id)
     if lesson_id.startswith("quiz-"):
         return redirect(url_for("quiz", topic=lesson_id))
     if lesson_id == "practice-hub":
@@ -578,12 +594,14 @@ def practice_editor(problem_id):
 @app.route("/api/submit_practice", methods=["POST"])
 @login_required
 def api_submit_practice():
-    data = request.get_json(silent=True) or {}
-    problem_id = data.get("problem_id", "unknown")
-    code = data.get("code", "")
-    passed = data.get("passed", False)
-    tests_passed = data.get("tests_passed", 0)
-    tests_total = data.get("tests_total", 0)
+    data = _get_json_dict()
+    raw_problem_id = data.get("problem_id")
+    problem_id = str(raw_problem_id).strip()[:50] if isinstance(raw_problem_id, (str, int)) and str(raw_problem_id).strip() else "unknown"
+    raw_code = data.get("code")
+    code = raw_code if isinstance(raw_code, str) else ""
+    passed = bool(data.get("passed", False))
+    tests_passed = _safe_int(data.get("tests_passed", 0), 0)
+    tests_total = _safe_int(data.get("tests_total", 0), 0)
     
     user = current_user
     
@@ -660,9 +678,11 @@ def reference():
 
 @app.route("/api/traducir", methods=["POST"])
 def api_translate():
-    data = request.get_json(silent=True) or {}
-    python_code = data.get("code", "")
-    class_name = data.get("class_name", "Program")
+    data = _get_json_dict()
+    raw_code = data.get("code", "")
+    python_code = raw_code if isinstance(raw_code, str) else ""
+    raw_cls = data.get("class_name", "Program")
+    class_name = raw_cls if isinstance(raw_cls, str) and raw_cls.strip() else "Program"
 
     result = translate(python_code, class_name=class_name)
 
@@ -684,10 +704,12 @@ def get_current_user():
 
 @app.route("/api/progreso/ejercicio", methods=["POST"])
 def api_ejercicio():
-    data = request.get_json(silent=True) or {}
-    lesson_id = data.get("lesson_id", "unknown")
-    exercise_id = data.get("exercise_id", "unknown")
-    passed = data.get("passed", False)
+    data = _get_json_dict()
+    raw_lesson = data.get("lesson_id")
+    lesson_id = str(raw_lesson).strip()[:50] if isinstance(raw_lesson, (str, int)) and str(raw_lesson).strip() else "unknown"
+    raw_ex = data.get("exercise_id")
+    exercise_id = str(raw_ex).strip()[:50] if isinstance(raw_ex, (str, int)) and str(raw_ex).strip() else "unknown"
+    passed = bool(data.get("passed", False))
 
     user = get_current_user()
     if not user or not user.id:
@@ -731,8 +753,9 @@ def api_ejercicio():
 
 @app.route("/api/progreso/leccion", methods=["POST"])
 def api_leccion():
-    data = request.get_json(silent=True) or {}
-    lesson_id = data.get("lesson_id")
+    data = _get_json_dict()
+    raw_lesson = data.get("lesson_id")
+    lesson_id = str(raw_lesson).strip()[:50] if isinstance(raw_lesson, str) and raw_lesson.strip() else None
     if not lesson_id:
         return jsonify({"ok": False})
 
@@ -938,10 +961,10 @@ def roadmap():
 @app.route("/api/db-status")
 @login_required
 def api_db_status():
-    """Diagnóstico de la base de datos (solo profesores)."""
+    """Diagnóstico de la base de datos (solo administradores)."""
     if current_user.role != "teacher":
         return jsonify({"ok": False, "error": "No autorizado"}), 403
-    db_type = "postgresql" if database_url else "sqlite"
+    db_type = "postgresql" if is_postgres else "sqlite"
     uri_masked = app.config.get("SQLALCHEMY_DATABASE_URI", "")
     if "@" in uri_masked:
         prefix, rest = uri_masked.split("@", 1)
@@ -1133,7 +1156,7 @@ def register():
         if role == "teacher" and (not TEACHER_SECRET_CODE or not hmac.compare_digest(teacher_code, TEACHER_SECRET_CODE)):
             return render_template(
                 "register.html",
-                error="Código de profesor incorrecto. Contacta al administrador.",
+                error="Código de administrador incorrecto. Verifica tu clave de acceso.",
                 categories=LESSON_CATEGORIES,
             )
 
@@ -1353,6 +1376,7 @@ def logout():
 
 
 @app.route("/profesor")
+@app.route("/administrador")
 @login_required
 def teacher_dashboard():
     if current_user.role != "teacher":
@@ -1413,6 +1437,7 @@ def teacher_dashboard():
     )
 
 @app.route("/profesor/estudiante/<int:student_id>/eliminar", methods=["POST"])
+@app.route("/administrador/estudiante/<int:student_id>/eliminar", methods=["POST"])
 @login_required
 def teacher_delete_student(student_id):
     if current_user.role != "teacher":
@@ -1429,6 +1454,7 @@ def teacher_delete_student(student_id):
 
 # --- Exportar CSV ---
 @app.route("/profesor/export/csv")
+@app.route("/administrador/export/csv")
 @login_required
 def teacher_export_csv():
     if current_user.role != "teacher":
@@ -1612,7 +1638,7 @@ def certificate(section_id):
 # --- Tema visual ---
 @app.route("/api/theme", methods=["POST"])
 def toggle_theme():
-    data = request.get_json(silent=True) or {}
+    data = _get_json_dict()
     theme = data.get("theme", "dark")
     if theme not in ("dark", "light"):
         theme = "dark"
@@ -1654,12 +1680,17 @@ def api_ai_tutor():
             {"ok": False, "error": "API key no configurada. Configura GEMINI_API_KEY."}
         )
 
-    data = request.get_json(silent=True) or {}
-    user_code = data.get("code", "")
-    lesson_id = data.get("lesson_id", "")
-    question = data.get("question", "").strip()
-    mode = data.get("mode", "chat" if question else "analyze")  # 'chat', 'analyze', 'hint'
-    exercise_question = data.get("exercise_question", "")
+    data = _get_json_dict()
+    raw_code = data.get("code", "")
+    user_code = raw_code if isinstance(raw_code, str) else ""
+    raw_lesson = data.get("lesson_id", "")
+    lesson_id = raw_lesson if isinstance(raw_lesson, str) else ""
+    raw_q = data.get("question", "")
+    question = (raw_q if isinstance(raw_q, str) else "").strip()
+    raw_mode = data.get("mode")
+    mode = raw_mode if isinstance(raw_mode, str) and raw_mode else ("chat" if question else "analyze")
+    raw_ex_q = data.get("exercise_question", "")
+    exercise_question = raw_ex_q if isinstance(raw_ex_q, str) else ""
     history = data.get("history", [])
 
     # Load lesson context
@@ -1777,10 +1808,16 @@ def exercise_topic(topic):
     exercises = lesson_data.get("exercises", [])
     user = get_current_user()
     completed_exercises = []
+    completed_count = 0
     
     if user and user.is_authenticated:
         attempts = ExerciseAttempt.query.filter_by(user_id=user.id, lesson_id=topic, passed=True).all()
-        completed_exercises = [f"{a.lesson_id}-{a.exercise_id}" for a in attempts]
+        completed_set = {a.exercise_id for a in attempts} | {f"{a.lesson_id}-{a.exercise_id}" for a in attempts}
+        completed_exercises = list(completed_set)
+        for idx, ex in enumerate(exercises, start=1):
+            ex_id = ex.get("id")
+            if (ex_id and ex_id in completed_set) or f"{topic}-{idx}" in completed_set:
+                completed_count += 1
         
     return render_template(
         "exercise_hub.html",
@@ -1788,7 +1825,7 @@ def exercise_topic(topic):
         exercise_data=lesson_data,
         exercises=exercises,
         completed_exercises=completed_exercises,
-        completed_count=len(completed_exercises),
+        completed_count=completed_count,
         categories=LESSON_CATEGORIES,
         page="exercises"
     )
@@ -1833,10 +1870,11 @@ def quiz(topic):
 
 @app.route("/api/quiz/resultado", methods=["POST"])
 def api_quiz_result():
-    data = request.get_json(silent=True) or {}
-    quiz_id = data.get("quiz_id")
-    score = data.get("score", 0)
-    total = data.get("total", 0)
+    data = _get_json_dict()
+    raw_quiz_id = data.get("quiz_id")
+    quiz_id = str(raw_quiz_id).strip()[:50] if isinstance(raw_quiz_id, str) and raw_quiz_id.strip() else None
+    score = _safe_int(data.get("score", 0), 0)
+    total = _safe_int(data.get("total", 0), 0)
     
     user = get_current_user()
     if user and quiz_id:
@@ -2064,13 +2102,20 @@ def evaluation_page(section_key):
 @login_required
 def api_evaluation_result():
     """Process and save evaluation results."""
-    data = request.get_json(silent=True) or {}
+    data = _get_json_dict()
     section_key = data.get("section_key", "")
     answers = data.get("answers", {})
-    time_taken = data.get("time_taken", 0)
+    time_taken = _safe_int(data.get("time_taken", 0), 0)
 
-    if section_key not in SECTION_EVAL_MAP:
+    if not isinstance(section_key, str) or section_key not in SECTION_EVAL_MAP:
         return jsonify({"ok": False, "error": "Sección inválida"})
+    if not isinstance(answers, dict):
+        return jsonify({"ok": False, "error": "Formato de respuestas inválido"})
+
+    user = current_user
+    status = get_section_eval_status(user.id, section_key)
+    if not status["unlocked"]:
+        return jsonify({"ok": False, "error": "Debes completar al menos el 80% de las lecciones de la sección antes de presentar la evaluación."})
 
     eval_data = get_evaluation_for_section(section_key)
     question_source_map = {}
@@ -2085,12 +2130,14 @@ def api_evaluation_result():
 
     # Get answer key from session (or fall back to server catalog if cookie was dropped)
     answer_key = session.get(f"eval_answers_{section_key}", {})
-    question_ids = session.get(f"eval_questions_{section_key}", []) or list(answers.keys())
+    session_qids = session.get(f"eval_questions_{section_key}", [])
+    if session_qids:
+        question_ids = session_qids
+    else:
+        question_ids = [qid for qid in answers.keys() if isinstance(qid, str) and qid in catalog_answers]
 
     if not question_ids:
         return jsonify({"ok": False, "error": "Sesión de evaluación expirada"})
-
-    user = current_user
     score = 0
     total = len(question_ids)
     details = {}

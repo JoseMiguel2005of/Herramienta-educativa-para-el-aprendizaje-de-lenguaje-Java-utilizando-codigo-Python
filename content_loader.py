@@ -29,9 +29,22 @@ def load_reference_data():
     return _load_json(os.path.join(CONTENT_DIR, "reference.json"))
 
 
+LESSON_ALIASES = {
+    "sc-interpolate": "sc-interpolation",
+    "sc-significance": "sc-sigtests",
+    "sc-sparsematrix": "sc-sparsedata",
+    "sc-spatial": "sc-spatialdata",
+    "mongo-createcollection": "mongo-collection",
+    "mongo-dropcollection": "mongo-drop",
+}
+
+
 @lru_cache(maxsize=100)
 def load_lesson(lesson_id):
     """Carga una lección individual por su ID."""
+    if not isinstance(lesson_id, str):
+        return None
+    lesson_id = LESSON_ALIASES.get(lesson_id, lesson_id)
     path = os.path.join(LESSONS_DIR, f"{lesson_id}.json")
     if not os.path.exists(path):
         return None
@@ -40,12 +53,14 @@ def load_lesson(lesson_id):
 
 @lru_cache(maxsize=1)
 def load_all_lesson_ids():
-    """Devuelve la lista de todos los IDs de lecciones disponibles."""
+    """Devuelve la lista de todos los IDs de lecciones canónicas disponibles."""
     ids = []
     if os.path.isdir(LESSONS_DIR):
         for fname in sorted(os.listdir(LESSONS_DIR)):
             if fname.endswith(".json"):
-                ids.append(fname[:-5])  # Remove .json
+                lid = fname[:-5]  # Remove .json
+                if lid not in LESSON_ALIASES:
+                    ids.append(lid)
     return ids
 
 
