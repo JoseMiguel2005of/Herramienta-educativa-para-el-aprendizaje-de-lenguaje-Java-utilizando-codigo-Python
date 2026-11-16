@@ -592,8 +592,16 @@ def practice_editor(problem_id):
     )
 
 @app.route("/api/submit_practice", methods=["POST"])
-@login_required
 def api_submit_practice():
+    # Visitantes sin sesión pueden ejecutar pruebas, pero no guardar progreso ni XP
+    if not current_user.is_authenticated:
+        return jsonify({
+            "ok": False,
+            "anonymous": True,
+            "xp_gained": 0,
+            "message": "Inicia sesión para guardar tu progreso y ganar XP."
+        })
+
     data = _get_json_dict()
     raw_problem_id = data.get("problem_id")
     problem_id = str(raw_problem_id).strip()[:50] if isinstance(raw_problem_id, (str, int)) and str(raw_problem_id).strip() else "unknown"

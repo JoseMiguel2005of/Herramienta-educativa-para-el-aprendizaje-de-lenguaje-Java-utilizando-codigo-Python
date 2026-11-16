@@ -191,12 +191,14 @@ json.dumps({"passed": _passed, "actual": _actual_repr})
                     })
                 });
                 
-                const data = await response.json();
+                const data = await response.json().catch(() => ({ ok: false, anonymous: true, xp_gained: 0 }));
                 
                 if(allPassed) {
                     output.innerHTML += `<br><br><span style='color:#a6e22e; font-size:1.1rem; font-weight:bold;'>TODAS LAS PRUEBAS SUPERADAS</span>`;
                     
-                    if(data.xp_gained > 0) {
+                    if(data.anonymous) {
+                        output.innerHTML += `<br><span style='color:#fd971f;'>Inicia sesión para guardar tu progreso y ganar XP.</span>`;
+                    } else if(data.xp_gained > 0) {
                         output.innerHTML += `<br><span style='color:#fd971f;'>+${data.xp_gained} XP obtenidos.</span>`;
                         confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
                         
