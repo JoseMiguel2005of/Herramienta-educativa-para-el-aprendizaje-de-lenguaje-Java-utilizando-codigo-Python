@@ -4,8 +4,10 @@ import hmac
 import html
 from io import StringIO
 import json
+import math
 import os
 import random
+import re
 import secrets
 from datetime import date, datetime, timedelta, timezone
 from urllib.parse import urlparse
@@ -18,6 +20,7 @@ from flask import (Flask, Response, jsonify, redirect, render_template, request,
                    url_for)
 from flask_login import (LoginManager, current_user, login_required,
                          login_user, logout_user)
+from sqlalchemy import or_
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from email.mime.multipart import MIMEMultipart
@@ -29,7 +32,7 @@ from content_loader import (LESSON_ALIASES, get_lesson, get_lesson_title, get_re
                             load_examples_catalog, get_example_by_id,
                             load_practice_problems, get_practice_problem,
                             get_evaluation_for_section, load_all_evaluations)
-from models import (ExerciseAttempt, LessonProgress, User, QuizResult,
+from models import (AuditLog, Classroom, ExerciseAttempt, LessonProgress, User, QuizResult,
                     PracticeSubmission, DailyStreak, SectionEvaluation,
                     PasswordResetCode, db)
 from search_index import search_lessons
@@ -131,7 +134,7 @@ def init_db():
     with app.app_context():
         try:
             db.create_all()
-            # Migración automática: asegura que email, failed_login_attempts y locked_until existan en users
+            # Migración automática idempotente: asegura columnas nuevas en users sin perder datos
             if is_postgres:
                 try:
                     with db.engine.begin() as conn:
@@ -139,21 +142,61 @@ def init_db():
                             "ALTER TABLE users "
                             "ADD COLUMN IF NOT EXISTS email VARCHAR(120), "
                             "ADD COLUMN IF NOT EXISTS failed_login_attempts INTEGER DEFAULT 0, "
-                            "ADD COLUMN IF NOT EXISTS locked_until TIMESTAMP"
+                            "ADD COLUMN IF NOT EXISTS locked_until TIMESTAMP, "
+                            "ADD COLUMN IF NOT EXISTS section_id INTEGER REFERENCES classrooms(id), "
+                            "ADD COLUMN IF NOT EXISTS is_suspended BOOLEAN DEFAULT FALSE NOT NULL, "
+                            "ADD COLUMN IF NOT EXISTS suspended_at TIMESTAMP, "
+                            "ADD COLUMN IF NOT EXISTS suspended_reason TEXT, "
+                            "ADD COLUMN IF NOT EXISTS suspended_by INTEGER REFERENCES users(id)"
                         ))
-                except Exception:
-                    pass
+                except Exception as mig_err:
+                    print(f"[WARNING] Migración Postgres users: {mig_err}", flush=True)
             else:
                 for col_def in [
                     "email VARCHAR(120)",
                     "failed_login_attempts INTEGER DEFAULT 0",
-                    "locked_until TIMESTAMP"
+                    "locked_until TIMESTAMP",
+                    "section_id INTEGER REFERENCES classrooms(id)",
+                    "is_suspended BOOLEAN DEFAULT 0",
+                    "suspended_at TIMESTAMP",
+                    "suspended_reason TEXT",
+                    "suspended_by INTEGER REFERENCES users(id)",
                 ]:
                     try:
                         with db.engine.begin() as conn:
                             conn.execute(db.text(f"ALTER TABLE users ADD COLUMN {col_def}"))
                     except Exception:
                         pass
+                try:
+                    with db.engine.begin() as conn:
+                        conn.execute(db.text("UPDATE users SET is_suspended = 0 WHERE is_suspended IS NULL"))
+                except Exception:
+                    pass
+            # Garantizar cuenta Super Admin por defecto (Admin / Admin1)
+            try:
+                superadmin_user = User.query.filter_by(username="Admin").first()
+                if not superadmin_user:
+                    superadmin_user = User(
+                        username="Admin",
+                        email="admin@py2java.edu",
+                        password_hash=generate_password_hash("Admin1"),
+                        role="superadmin",
+                        is_suspended=False,
+                    )
+                    db.session.add(superadmin_user)
+                    db.session.commit()
+                elif superadmin_user.role != "superadmin" or superadmin_user.is_suspended:
+                    superadmin_user.role = "superadmin"
+                    superadmin_user.is_suspended = False
+                    superadmin_user.suspended_reason = None
+                    superadmin_user.suspended_at = None
+                    db.session.commit()
+            except Exception as sa_err:
+                print(f"[WARNING] No se pudo inicializar Super Admin: {sa_err}", flush=True)
+                try:
+                    db.session.rollback()
+                except Exception:
+                    pass
             _db_initialized = True
             print("[INFO] db.create_all() y migraciones ejecutadas con éxito.", flush=True)
         except Exception as e:
@@ -170,6 +213,38 @@ def _ensure_serverless_db():
         if request.path.startswith("/static/"):
             return
         init_db()
+
+
+@app.before_request
+def _block_suspended_user():
+    """Expulsa inmediatamente a cualquier estudiante que haya sido suspendido con sesión activa."""
+    if request.path.startswith(("/static/", "/login", "/logout", "/register", "/recuperar")):
+        return
+    user_to_check = None
+    if current_user.is_authenticated:
+        user_to_check = current_user
+    else:
+        raw_uid = session.get("_user_id")
+        if raw_uid is not None:
+            try:
+                user_to_check = db.session.get(User, int(raw_uid))
+            except Exception:
+                user_to_check = None
+
+    if user_to_check and getattr(user_to_check, "is_suspended", False):
+        reason = user_to_check.suspended_reason or "Suspendida por el administrador."
+        logout_user()
+        session.pop("_user_id", None)
+        if request.path.startswith("/api/"):
+            return jsonify({
+                "ok": False,
+                "error": f"Tu cuenta se encuentra suspendida. Motivo: {reason}",
+            }), 403
+        session["suspended_notice"] = (
+            f"Tu cuenta se encuentra suspendida. Motivo: {reason}. "
+            "Contacta a tu docente o administrador para más información."
+        )
+        return redirect(url_for("login"))
 
 
 @app.after_request
@@ -940,18 +1015,155 @@ def api_buscar():
     return jsonify(results)
 
 
+def _normalize_class_code(raw):
+    """Normaliza un código de clase a mayúsculas alfanuméricas y guiones."""
+    if not isinstance(raw, str):
+        return ""
+    cleaned = re.sub(r"[^A-Za-z0-9\-]", "", raw.strip().upper())
+    return cleaned[:20]
+
+
+def _generate_class_code(name=""):
+    """Genera un código de clase único y fácil de compartir (ej. PROG-7K2M)."""
+    prefix = re.sub(r"[^A-Za-z0-9]", "", (name or "CLS").upper())[:4] or "CLS"
+    alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+    for _ in range(30):
+        suffix = "".join(secrets.choice(alphabet) for _ in range(4))
+        candidate = f"{prefix}-{suffix}"
+        if not Classroom.query.filter_by(code=candidate).first():
+            return candidate
+    return f"CLS-{secrets.token_hex(4).upper()}"
+
+
+def _get_teacher_classrooms(teacher_id):
+    return (
+        Classroom.query.filter_by(teacher_id=teacher_id)
+        .order_by(Classroom.created_at.desc())
+        .all()
+    )
+
+
+def _get_teacher_section_ids(teacher_id):
+    return {c.id for c in Classroom.query.filter_by(teacher_id=teacher_id).all()}
+
+
+def _teacher_owns_student(teacher_id, student):
+    """Regla de aislamiento estricta: verifica en BD que el estudiante pertenezca a una sección del docente."""
+    if not student or student.role != "student" or not student.section_id:
+        return False
+    return (
+        Classroom.query.filter_by(id=student.section_id, teacher_id=teacher_id).first()
+        is not None
+    )
+
+
+def _log_audit(admin_user, action, target_username=None, reason=None, section_id=None, details=None):
+    """Registra una entrada en la bitácora de auditoría dentro de la transacción actual."""
+    entry = AuditLog(
+        admin_id=getattr(admin_user, "id", None),
+        admin_username=getattr(admin_user, "username", None) or "sistema",
+        action=action,
+        target_username=target_username,
+        section_id=section_id,
+        reason=(reason or "").strip() or None,
+        details=(details or "").strip() or None,
+    )
+    db.session.add(entry)
+    return entry
+
+
 @app.route("/dashboard")
 @login_required
 def dashboard():
     summary = get_progress_summary(current_user)
+    course_ids = _course_lesson_ids()
+    completed_set = set(summary["completed_lessons"])
+    completed_course_count = len(completed_set & course_ids)
+
+    ui = load_ui_strings()
+    category_breakdown = []
+    for cat in LESSON_CATEGORIES:
+        cat_lessons = _category_course_lessons(cat)
+        done_cnt = sum(1 for lid in cat_lessons if lid in completed_set)
+        total_cnt = len(cat_lessons)
+        category_breakdown.append({
+            "id": cat["id"],
+            "name": ui.get(cat["label_key"], cat["id"]),
+            "completed": done_cnt,
+            "total": total_cnt,
+            "pct": round(done_cnt / total_cnt * 100) if total_cnt > 0 else 0,
+        })
+
+    section_msg = session.pop("section_msg", None)
     return render_template(
         "dashboard.html",
         user=current_user,
+        classroom=current_user.classroom,
+        section_msg=section_msg,
         summary=summary,
         categories=LESSON_CATEGORIES,
         lessons=LESSONS,
+        course_lesson_count=len(course_ids),
+        completed_course_count=completed_course_count,
+        category_breakdown=category_breakdown,
         page="dashboard",
     )
+
+
+@app.route("/estudiante/unirse-seccion", methods=["POST"])
+@login_required
+def student_join_section():
+    """Permite a un estudiante unirse (o cambiarse) a una sección mediante código de clase."""
+    wants_json = request.is_json or "application/json" in (request.headers.get("Accept") or "")
+    raw_next = request.form.get("next") or request.referrer or url_for("dashboard")
+    parsed_next = urlparse(raw_next)
+    safe_next = raw_next if (not parsed_next.netloc or parsed_next.netloc == request.host) else url_for("dashboard")
+
+    if current_user.role != "student":
+        msg = "Solo los estudiantes pueden inscribirse en una sección."
+        if wants_json:
+            return jsonify({"ok": False, "error": msg}), 403
+        session["section_msg"] = {"type": "error", "text": msg}
+        return redirect(safe_next)
+
+    raw_code = (_get_json_dict().get("class_code") if request.is_json else request.form.get("class_code")) or ""
+    code = _normalize_class_code(raw_code)
+    if not code:
+        msg = "Debes ingresar un código de clase válido."
+        if wants_json:
+            return jsonify({"ok": False, "error": msg}), 400
+        session["section_msg"] = {"type": "error", "text": msg}
+        return redirect(safe_next)
+
+    classroom = Classroom.query.filter_by(code=code).first()
+    if not classroom:
+        msg = f"El código de clase '{code}' no existe. Verifica el código con tu docente."
+        if wants_json:
+            return jsonify({"ok": False, "error": msg}), 404
+        session["section_msg"] = {"type": "error", "text": msg}
+        return redirect(safe_next)
+
+    current_user.section_id = classroom.id
+    teacher = db.session.get(User, classroom.teacher_id)
+    _log_audit(
+        teacher,
+        action="STUDENT_JOIN_SECTION",
+        target_username=current_user.username,
+        section_id=classroom.id,
+        reason="Inscripción por código de clase",
+        details=f"Sección: {classroom.name} ({classroom.code})",
+    )
+    db.session.commit()
+
+    ok_msg = f"Te has unido correctamente a la sección {classroom.name} ({classroom.code})."
+    if wants_json:
+        return jsonify({
+            "ok": True,
+            "message": ok_msg,
+            "section": {"id": classroom.id, "name": classroom.name, "code": classroom.code},
+        })
+    session["section_msg"] = {"type": "success", "text": ok_msg}
+    return redirect(safe_next)
 
 
 @app.route("/roadmap")
@@ -966,11 +1178,19 @@ def roadmap():
 # --- Autenticación ---
 
 
+def _home_endpoint_for_role(role):
+    if role == "superadmin":
+        return "superadmin_dashboard"
+    if role == "teacher":
+        return "teacher_dashboard"
+    return "dashboard"
+
+
 @app.route("/api/db-status")
 @login_required
 def api_db_status():
-    """Diagnóstico de la base de datos (solo administradores)."""
-    if current_user.role != "teacher":
+    """Diagnóstico de la base de datos (profesores y Super Admin)."""
+    if current_user.role not in ("teacher", "superadmin"):
         return jsonify({"ok": False, "error": "No autorizado"}), 403
     db_type = "postgresql" if is_postgres else "sqlite"
     uri_masked = app.config.get("SQLALCHEMY_DATABASE_URI", "")
@@ -1004,7 +1224,12 @@ def api_db_status():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for("dashboard"))
+        if getattr(current_user, "is_suspended", False):
+            logout_user()
+        else:
+            return redirect(url_for(_home_endpoint_for_role(current_user.role)))
+
+    suspended_notice = session.pop("suspended_notice", None)
 
     if request.method == "POST":
         username = request.form.get("username", "").strip()
@@ -1055,15 +1280,20 @@ def login():
                 user.locked_until = None
                 db.session.commit()
 
-        # 2. Contraseña correcta -> restablecer intentos y loguear
+        # 2. Contraseña correcta -> verificar suspensión lógica antes de iniciar sesión
         if check_password_hash(user.password_hash, password):
+            if getattr(user, "is_suspended", False):
+                reason = user.suspended_reason or "Cuenta suspendida por el administrador."
+                return render_template(
+                    "login.html",
+                    error=f"Tu cuenta se encuentra suspendida. Motivo: {reason}. Contacta a tu docente o administrador.",
+                    categories=LESSON_CATEGORIES,
+                )
             user.failed_login_attempts = 0
             user.locked_until = None
             db.session.commit()
             login_user(user)
-            return redirect(
-                url_for("teacher_dashboard" if user.role == "teacher" else "dashboard")
-            )
+            return redirect(url_for(_home_endpoint_for_role(user.role)))
 
         # 3. Contraseña incorrecta -> Incrementar contador de intentos fallidos
         user.failed_login_attempts = (user.failed_login_attempts or 0) + 1
@@ -1084,40 +1314,86 @@ def login():
                 categories=LESSON_CATEGORIES,
             )
 
-    return render_template("login.html", categories=LESSON_CATEGORIES)
+    return render_template("login.html", error=suspended_notice, categories=LESSON_CATEGORIES)
 
 
 def send_recovery_email(to_email, username, code):
     """
-    Envía correo con el nombre de usuario y el código de 6 dígitos.
-    Si no hay SMTP configurado o falla el envío, registra en consola
-    y retorna (False, error) para modo demostración.
+    Envía correo real con el nombre de usuario y el código de 6 dígitos.
+    Soporta:
+      1) Resend API por HTTPS (RESEND_API_KEY)
+      2) SMTP estándar (MAIL_SERVER / MAIL_PORT / MAIL_USERNAME / MAIL_PASSWORD,
+         con soporte TLS puerto 587 y SSL puerto 465; también acepta SMTP_EMAIL / SMTP_PASSWORD).
+    Si no hay proveedor configurado, retorna (False, 'SMTP no configurado').
     """
-    mail_server = os.environ.get("MAIL_SERVER")
-    mail_port = int(os.environ.get("MAIL_PORT", 587))
-    mail_username = os.environ.get("MAIL_USERNAME")
-    mail_password = os.environ.get("MAIL_PASSWORD")
-    mail_sender = os.environ.get("MAIL_DEFAULT_SENDER", mail_username or "no-reply@plataforma-educativa.edu")
-    mail_use_tls = os.environ.get("MAIL_USE_TLS", "true").lower() in ("true", "1", "yes")
+    resend_api_key = (os.environ.get("RESEND_API_KEY") or "").strip()
+    mail_username = (os.environ.get("MAIL_USERNAME") or os.environ.get("SMTP_EMAIL") or "").strip()
+    mail_password = (os.environ.get("MAIL_PASSWORD") or os.environ.get("SMTP_PASSWORD") or "").strip()
+    mail_server = (os.environ.get("MAIL_SERVER") or "").strip()
+    if not mail_server and mail_username and mail_username.lower().endswith("@gmail.com"):
+        mail_server = "smtp.gmail.com"
+    mail_port = _safe_int(os.environ.get("MAIL_PORT", 587), 587)
+    mail_sender = (
+        os.environ.get("MAIL_DEFAULT_SENDER")
+        or mail_username
+        or "Py2Java Edu <onboarding@resend.dev>"
+    ).strip()
+    mail_use_ssl = os.environ.get("MAIL_USE_SSL", "false").lower() in ("true", "1", "yes") or mail_port == 465
+    mail_use_tls = os.environ.get("MAIL_USE_TLS", "true").lower() in ("true", "1", "yes") and not mail_use_ssl
 
     safe_username = html.escape(username or "")
     safe_code = html.escape(str(code))
-    subject = "Recuperación de cuenta — Plataforma Educativa Python & Java"
+    subject = "Recuperación de cuenta — Py2Java Edu"
+    text_content = (
+        f"Hola {username},\n\n"
+        "Hemos recibido una solicitud para recordar tu usuario y restablecer tu contraseña en Py2Java Edu.\n\n"
+        f"Tu nombre de usuario es: {username}\n"
+        f"Tu código de verificación es: {code}\n\n"
+        "Este código expirará en 15 minutos. Si no solicitaste este cambio, ignora este correo.\n"
+    )
     html_content = f"""
     <div style="font-family: Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 24px; border: 1px solid #e0e0e0; border-radius: 8px; background: #ffffff;">
-        <h2 style="color: #4CAF50; text-align: center; margin-top: 0;">Recuperación de Cuenta</h2>
+        <h2 style="color: #1e3a5f; text-align: center; margin-top: 0;">Recuperación de Cuenta — Py2Java Edu</h2>
         <p style="color: #333; font-size: 15px;">Hola,</p>
         <p style="color: #555; font-size: 14px; line-height: 1.5;">Hemos recibido una solicitud para recordar tu nombre de usuario y restablecer tu contraseña.</p>
         
-        <div style="background: #f4f6f8; padding: 16px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #4CAF50;">
-            <p style="margin: 0 0 10px 0; font-size: 15px;"><strong>Tu nombre de usuario es:</strong> <span style="font-size: 16px; color: #1e88e5; font-weight: bold;">{safe_username}</span></p>
-            <p style="margin: 0; font-size: 15px;"><strong>Código de verificación:</strong> <span style="font-size: 20px; font-weight: bold; letter-spacing: 4px; color: #2e7d32; display: block; margin-top: 6px; font-family: monospace;">{safe_code}</span></p>
+        <div style="background: #f4f6f8; padding: 16px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #3776ab;">
+            <p style="margin: 0 0 10px 0; font-size: 15px;"><strong>Tu nombre de usuario es:</strong> <span style="font-size: 16px; color: #1e3a5f; font-weight: bold;">{safe_username}</span></p>
+            <p style="margin: 0; font-size: 15px;"><strong>Código de verificación:</strong> <span style="font-size: 24px; font-weight: bold; letter-spacing: 6px; color: #2e7d32; display: block; margin-top: 8px; font-family: monospace;">{safe_code}</span></p>
         </div>
         
         <p style="font-size: 13px; color: #777; line-height: 1.4;">Este código expirará en <strong>15 minutos</strong>. Si no solicitaste este cambio, puedes ignorar este correo de forma segura.</p>
     </div>
     """
 
+    # Opción 1: Resend API (HTTPS, ideal para Vercel/serverless)
+    if resend_api_key:
+        try:
+            resp = http_requests.post(
+                "https://api.resend.com/emails",
+                headers={
+                    "Authorization": f"Bearer {resend_api_key}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "from": mail_sender,
+                    "to": [to_email],
+                    "subject": subject,
+                    "html": html_content,
+                    "text": text_content,
+                },
+                timeout=12,
+            )
+            if 200 <= resp.status_code < 300:
+                return True, None
+            err_txt = resp.text[:300]
+            print(f"[ERROR EMAIL RESEND] HTTP {resp.status_code}: {err_txt}", flush=True)
+            return False, f"Error proveedor de correo (HTTP {resp.status_code})"
+        except Exception as e:
+            print(f"[ERROR EMAIL RESEND] {type(e).__name__}: {e}", flush=True)
+            return False, str(e)
+
+    # Opción 2: SMTP (Gmail, Outlook, Brevo SMTP, etc.)
     if not mail_server or not mail_username or not mail_password:
         print(f"[MODO DEMO RECUPERACIÓN] Solicitud de recuperación en modo sin SMTP para usuario '{username}'.", flush=True)
         return False, "SMTP no configurado"
@@ -1127,16 +1403,24 @@ def send_recovery_email(to_email, username, code):
         msg["Subject"] = subject
         msg["From"] = mail_sender
         msg["To"] = to_email
-        msg.attach(MIMEText(html_content, "html"))
+        msg.attach(MIMEText(text_content, "plain", "utf-8"))
+        msg.attach(MIMEText(html_content, "html", "utf-8"))
 
-        with smtplib.SMTP(mail_server, mail_port, timeout=10) as server:
-            if mail_use_tls:
-                server.starttls()
-            server.login(mail_username, mail_password)
-            server.sendmail(mail_sender, [to_email], msg.as_string())
+        if mail_use_ssl:
+            with smtplib.SMTP_SSL(mail_server, mail_port, timeout=15) as server:
+                server.login(mail_username, mail_password)
+                server.sendmail(mail_username, [to_email], msg.as_string())
+        else:
+            with smtplib.SMTP(mail_server, mail_port, timeout=15) as server:
+                server.ehlo()
+                if mail_use_tls:
+                    server.starttls()
+                    server.ehlo()
+                server.login(mail_username, mail_password)
+                server.sendmail(mail_username, [to_email], msg.as_string())
         return True, None
     except Exception as e:
-        print(f"[ERROR EMAIL] Error al enviar correo a {to_email}: {e}", flush=True)
+        print(f"[ERROR EMAIL SMTP] Error al enviar correo a {to_email}: {type(e).__name__}: {e}", flush=True)
         return False, str(e)
 
 
@@ -1153,6 +1437,7 @@ def register():
         if role not in ("student", "teacher"):
             role = "student"
         teacher_code = request.form.get("teacher_code", "").strip()
+        class_code = _normalize_class_code(request.form.get("class_code", "")) if role == "student" else ""
 
         if not username or not email or not password:
             return render_template(
@@ -1164,13 +1449,16 @@ def register():
         if role == "teacher" and (not TEACHER_SECRET_CODE or not hmac.compare_digest(teacher_code, TEACHER_SECRET_CODE)):
             return render_template(
                 "register.html",
-                error="Código de administrador incorrecto. Verifica tu clave de acceso.",
+                error="Código de profesor incorrecto. Verifica tu clave de acceso.",
                 categories=LESSON_CATEGORIES,
             )
 
+        target_classroom = None
         try:
             existing_user = User.query.filter_by(username=username).first()
             existing_email = User.query.filter_by(email=email).first() if email else None
+            if role == "student" and class_code:
+                target_classroom = Classroom.query.filter_by(code=class_code).first()
         except Exception as e:
             print(f"[ERROR in register query]: {e}", flush=True)
             db.session.rollback()
@@ -1178,6 +1466,8 @@ def register():
                 init_db()
                 existing_user = User.query.filter_by(username=username).first()
                 existing_email = User.query.filter_by(email=email).first() if email else None
+                if role == "student" and class_code:
+                    target_classroom = Classroom.query.filter_by(code=class_code).first()
             except Exception as e2:
                 print(f"[CRITICAL in register retry]: {e2}", flush=True)
                 db.session.rollback()
@@ -1186,6 +1476,13 @@ def register():
                     error="Error de conexión con la base de datos. Si estás en Vercel, verifica que tu DATABASE_URL esté configurada o revisa /api/db-status.",
                     categories=LESSON_CATEGORIES,
                 )
+
+        if role == "student" and class_code and not target_classroom:
+            return render_template(
+                "register.html",
+                error=f"El código de clase '{class_code}' no existe. Verifica el código con tu docente o déjalo vacío para unirte después.",
+                categories=LESSON_CATEGORIES,
+            )
 
         if existing_user:
             return render_template(
@@ -1203,8 +1500,25 @@ def register():
 
         try:
             hashed_pw = generate_password_hash(password)
-            new_user = User(username=username, email=email, password_hash=hashed_pw, role=role)
+            new_user = User(
+                username=username,
+                email=email,
+                password_hash=hashed_pw,
+                role=role,
+                section_id=target_classroom.id if target_classroom else None,
+            )
             db.session.add(new_user)
+            db.session.flush()
+            if target_classroom:
+                teacher = db.session.get(User, target_classroom.teacher_id)
+                _log_audit(
+                    teacher,
+                    action="STUDENT_JOIN_SECTION",
+                    target_username=new_user.username,
+                    section_id=target_classroom.id,
+                    reason="Registro inicial con código de clase",
+                    details=f"Sección: {target_classroom.name} ({target_classroom.code})",
+                )
             db.session.commit()
 
             login_user(new_user)
@@ -1258,16 +1572,31 @@ def forgot_password():
         db.session.add(reset_record)
         db.session.commit()
 
-        # Enviar correo (o simular en modo demo si no hay SMTP configurado)
+        # Enviar correo real (o modo demo solo si no hay SMTP/Resend configurado)
         sent, reason = send_recovery_email(user.email, user.username, code)
         session["recovery_email"] = user.email
         allow_demo = os.environ.get("ALLOW_DEMO_RESET", "true").lower() in ("true", "1", "yes")
-        if not sent and reason == "SMTP no configurado" and allow_demo:
-            session["demo_reset_code"] = code
-        else:
+        if sent:
             session.pop("demo_reset_code", None)
+            session["recovery_notice"] = (
+                f"Hemos enviado un código de verificación de 6 dígitos a {user.email}. "
+                "Revisa tu bandeja de entrada o la carpeta de spam."
+            )
+            return redirect(url_for("reset_password", email=user.email))
 
-        return redirect(url_for("reset_password", email=user.email))
+        if reason == "SMTP no configurado" and allow_demo:
+            session["demo_reset_code"] = code
+            session.pop("recovery_notice", None)
+            return redirect(url_for("reset_password", email=user.email))
+
+        session.pop("demo_reset_code", None)
+        session.pop("recovery_notice", None)
+        return render_template(
+            "forgot_password.html",
+            error="No se pudo enviar el correo de recuperación en este momento. Verifica la configuración de correo (SMTP/Resend) e intenta de nuevo.",
+            email=email,
+            categories=LESSON_CATEGORIES,
+        )
 
     return render_template("forgot_password.html", categories=LESSON_CATEGORIES)
 
@@ -1279,6 +1608,7 @@ def reset_password():
 
     email = request.args.get("email") or session.get("recovery_email", "")
     demo_code = session.get("demo_reset_code")
+    recovery_notice = session.get("recovery_notice")
 
     if request.method == "POST":
         email = request.form.get("email", "").strip().lower()
@@ -1361,6 +1691,7 @@ def reset_password():
         # Limpiar datos de sesión
         session.pop("recovery_email", None)
         session.pop("demo_reset_code", None)
+        session.pop("recovery_notice", None)
 
         return render_template(
             "login.html",
@@ -1372,6 +1703,7 @@ def reset_password():
         "reset_password.html",
         email=email,
         demo_code=demo_code,
+        recovery_notice=recovery_notice,
         categories=LESSON_CATEGORIES
     )
 
@@ -1383,81 +1715,488 @@ def logout():
     return redirect(url_for("index"))
 
 
-@app.route("/profesor")
+ADMIN_STUDENTS_PER_PAGE = 20
+ADMIN_AUDIT_PER_PAGE = 10
+
+
+def _get_teacher_scoped_students(teacher_id, section_id_filter=None):
+    """Devuelve (classrooms, allowed_section_ids, students_query) aislados estrictamente al docente."""
+    classrooms = _get_teacher_classrooms(teacher_id)
+    allowed_ids = [c.id for c in classrooms]
+    if not allowed_ids:
+        return classrooms, [], User.query.filter(db.false())
+
+    if section_id_filter is not None and section_id_filter in allowed_ids:
+        target_ids = [section_id_filter]
+    else:
+        target_ids = allowed_ids
+
+    query = User.query.filter(
+        User.role == "student",
+        User.section_id.in_(target_ids),
+    )
+    return classrooms, allowed_ids, query
+
+
 @app.route("/administrador")
+@app.route("/profesor")
 @login_required
 def teacher_dashboard():
+    if current_user.role == "superadmin":
+        return redirect(url_for("superadmin_dashboard"))
     if current_user.role != "teacher":
         return redirect(url_for("dashboard"))
 
-    student_stats = []
+    # Parámetros de búsqueda, filtros, ordenamiento y paginación desde URL (GET)
+    q = request.args.get("q", "").strip()
+    raw_section = request.args.get("section_id", "").strip()
+    section_filter = _safe_int(raw_section, 0) if raw_section else 0
+    raw_level = request.args.get("level", "").strip()
+    level_filter = _safe_int(raw_level, 0) if raw_level else 0
+    status_filter = request.args.get("status", "all").strip()
+    if status_filter not in ("all", "active", "suspended", "with_progress", "no_activity"):
+        status_filter = "all"
+    sort_by = request.args.get("sort", "xp_desc").strip()
+    if sort_by not in ("xp_desc", "xp_asc", "progress_desc", "progress_asc", "name_asc", "name_desc", "date_desc", "date_asc"):
+        sort_by = "xp_desc"
+    page = max(1, _safe_int(request.args.get("page", 1), 1))
+    audit_page = max(1, _safe_int(request.args.get("audit_page", 1), 1))
+
+    classrooms = []
+    classroom_map = {}
+    classroom_counts = {}
+    student_rows = []
+    all_scoped_students = []
     total_xp = 0
     total_completed = 0
+    active_count = 0
+    suspended_count = 0
     level_counts = {}
-    students = []
+    audit_logs = []
+    audit_total = 0
+    audit_total_pages = 1
+    course_ids = _course_lesson_ids()
+    total_course_lessons = len(course_ids) or 1
 
     try:
-        # Obtener todos los estudiantes y su progreso en bloque (evita N+1 queries en Vercel/Supabase)
-        students = User.query.filter_by(role="student").all()
-        bulk_stats = get_bulk_progress_summaries(students)
-        for s in students:
-            stats = bulk_stats.get(s.id, {"completed_lessons": [], "total_xp": 0, "streak": 0})
-            lvl_info = get_level_info(stats["total_xp"])
-            title = lvl_info["title"]
-            
-            # Accumulate level counts
-            level_counts[title] = level_counts.get(title, 0) + 1
-            total_xp += stats["total_xp"]
-            total_completed += len(stats["completed_lessons"])
-            
-            student_stats.append(
-                {
-                    "username": s.username,
-                    "total_xp": stats["total_xp"],
-                    "completed": len(stats["completed_lessons"]),
-                    "level": lvl_info["level"],
-                    "title": title,
-                    "id": s.id
-                }
-            )
+        classrooms = _get_teacher_classrooms(current_user.id)
+        classroom_map = {c.id: c for c in classrooms}
+        allowed_ids = list(classroom_map.keys())
 
-        student_stats.sort(key=lambda x: x["total_xp"], reverse=True)
+        # Validar en backend que section_filter pertenezca al docente actual
+        active_section_id = section_filter if section_filter in classroom_map else None
+
+        if allowed_ids:
+            # Conteo de estudiantes por sección del docente
+            for c_id in allowed_ids:
+                classroom_counts[c_id] = User.query.filter_by(role="student", section_id=c_id).count()
+
+            # 1) Métricas generales del docente (sobre sus grupos o el grupo filtrado)
+            scope_ids = [active_section_id] if active_section_id else allowed_ids
+            all_scoped_students = User.query.filter(
+                User.role == "student",
+                User.section_id.in_(scope_ids),
+            ).all()
+            all_bulk = get_bulk_progress_summaries(all_scoped_students)
+            for s in all_scoped_students:
+                st = all_bulk.get(s.id, {"completed_lessons": [], "total_xp": 0, "streak": 0})
+                lvl = get_level_info(st["total_xp"])
+                completed_cnt = len(set(st["completed_lessons"]) & course_ids)
+                total_xp += st["total_xp"]
+                total_completed += completed_cnt
+                if getattr(s, "is_suspended", False):
+                    suspended_count += 1
+                else:
+                    active_count += 1
+                level_counts[lvl["title"]] = level_counts.get(lvl["title"], 0) + 1
+
+            # 2) Consulta filtrada en SQL (aislamiento + búsqueda username/email + estado cuenta)
+            filtered_q = User.query.filter(
+                User.role == "student",
+                User.section_id.in_(scope_ids),
+            )
+            if q:
+                like_pattern = f"%{q}%"
+                filtered_q = filtered_q.filter(
+                    or_(
+                        User.username.ilike(like_pattern),
+                        User.email.ilike(like_pattern),
+                    )
+                )
+            if status_filter == "active":
+                filtered_q = filtered_q.filter(User.is_suspended.is_(False))
+            elif status_filter == "suspended":
+                filtered_q = filtered_q.filter(User.is_suspended.is_(True))
+
+            matched_students = filtered_q.all()
+            matched_bulk = get_bulk_progress_summaries(matched_students)
+
+            for s in matched_students:
+                st = matched_bulk.get(s.id, {"completed_lessons": [], "total_xp": 0, "streak": 0})
+                lvl = get_level_info(st["total_xp"])
+                completed_cnt = len(set(st["completed_lessons"]) & course_ids)
+
+                # Filtros calculados: nivel y actividad/progreso
+                if level_filter and lvl["level"] != level_filter:
+                    continue
+                if status_filter == "with_progress" and completed_cnt == 0 and st["total_xp"] == 0:
+                    continue
+                if status_filter == "no_activity" and (completed_cnt > 0 or st["total_xp"] > 0):
+                    continue
+
+                cls = classroom_map.get(s.section_id)
+                student_rows.append({
+                    "id": s.id,
+                    "username": s.username,
+                    "email": s.email or "",
+                    "total_xp": st["total_xp"],
+                    "completed": completed_cnt,
+                    "progress_pct": round(min(100, completed_cnt * 100 / total_course_lessons), 1),
+                    "level": lvl["level"],
+                    "title": lvl["title"],
+                    "streak": st["streak"],
+                    "section_id": s.section_id,
+                    "section_name": cls.name if cls else "Sin sección",
+                    "section_code": cls.code if cls else "",
+                    "is_suspended": bool(getattr(s, "is_suspended", False)),
+                    "suspended_reason": getattr(s, "suspended_reason", None) or "",
+                    "suspended_at": s.suspended_at.strftime("%d/%m/%Y %H:%M") if getattr(s, "suspended_at", None) else "",
+                    "created_at": s.created_at,
+                    "created_at_str": s.created_at.strftime("%d/%m/%Y") if s.created_at else "N/A",
+                })
+
+            # Ordenamiento
+            if sort_by == "xp_desc":
+                student_rows.sort(key=lambda x: (-x["total_xp"], (x["username"] or "").lower()))
+            elif sort_by == "xp_asc":
+                student_rows.sort(key=lambda x: (x["total_xp"], (x["username"] or "").lower()))
+            elif sort_by == "progress_desc":
+                student_rows.sort(key=lambda x: (-x["completed"], -x["total_xp"]))
+            elif sort_by == "progress_asc":
+                student_rows.sort(key=lambda x: (x["completed"], x["total_xp"]))
+            elif sort_by == "name_asc":
+                student_rows.sort(key=lambda x: (x["username"] or "").lower())
+            elif sort_by == "name_desc":
+                student_rows.sort(key=lambda x: (x["username"] or "").lower(), reverse=True)
+            elif sort_by == "date_desc":
+                student_rows.sort(key=lambda x: x["created_at"] or datetime.min.replace(tzinfo=timezone.utc), reverse=True)
+            elif sort_by == "date_asc":
+                student_rows.sort(key=lambda x: x["created_at"] or datetime.min.replace(tzinfo=timezone.utc))
     except Exception as e:
         print(f"[ERROR in teacher_dashboard]: {e}", flush=True)
         try:
             db.session.rollback()
         except Exception:
             pass
+        active_section_id = None
+
+    total_filtered = len(student_rows)
+    total_pages = max(1, math.ceil(total_filtered / ADMIN_STUDENTS_PER_PAGE))
+    if page > total_pages:
+        page = total_pages
+    start_idx = (page - 1) * ADMIN_STUDENTS_PER_PAGE
+    paginated_students = student_rows[start_idx : start_idx + ADMIN_STUDENTS_PER_PAGE]
 
     metrics = {
-        "total_students": len(students),
-        "avg_xp": round(total_xp / len(students)) if students else 0,
+        "total_students": len(all_scoped_students),
+        "active_students": active_count,
+        "suspended_students": suspended_count,
+        "avg_xp": round(total_xp / len(all_scoped_students)) if all_scoped_students else 0,
         "total_completed": total_completed,
+        "total_course_lessons": len(course_ids),
         "level_labels": list(level_counts.keys()),
-        "level_data": list(level_counts.values())
+        "level_data": list(level_counts.values()),
     }
 
+    filters = {
+        "q": q,
+        "section_id": active_section_id or "",
+        "level": level_filter or "",
+        "status": status_filter,
+        "sort": sort_by,
+        "page": page,
+        "total_pages": total_pages,
+        "total_filtered": total_filtered,
+        "per_page": ADMIN_STUDENTS_PER_PAGE,
+    }
+
+    admin_msg = session.pop("admin_msg", None)
     return render_template(
-        "teacher_dashboard.html", 
-        students=student_stats, 
+        "teacher_dashboard.html",
+        students=paginated_students,
+        classrooms=classrooms,
+        classroom_counts=classroom_counts,
         metrics=metrics,
-        categories=LESSON_CATEGORIES
+        filters=filters,
+        level_titles=LEVEL_TITLES,
+        admin_msg=admin_msg,
+        categories=LESSON_CATEGORIES,
     )
+
+
+@app.route("/profesor/secciones/crear", methods=["POST"])
+@app.route("/administrador/secciones/crear", methods=["POST"])
+@login_required
+def admin_create_section():
+    wants_json = request.is_json or "application/json" in (request.headers.get("Accept") or "")
+    if current_user.role != "teacher":
+        if wants_json:
+            return jsonify({"ok": False, "error": "No autorizado"}), 403
+        return redirect(url_for("dashboard"))
+
+    data = _get_json_dict() if request.is_json else request.form
+    name = str(data.get("name") or "").strip()[:100]
+    raw_code = str(data.get("code") or "").strip()
+
+    if len(name) < 2:
+        msg = "El nombre de la sección debe tener al menos 2 caracteres (ej. PROG1-A)."
+        if wants_json:
+            return jsonify({"ok": False, "error": msg}), 400
+        session["admin_msg"] = {"type": "error", "text": msg}
+        return redirect(url_for("teacher_dashboard"))
+
+    if raw_code:
+        code = _normalize_class_code(raw_code)
+        if len(code) < 4:
+            msg = "El código personalizado debe tener entre 4 y 20 caracteres alfanuméricos."
+            if wants_json:
+                return jsonify({"ok": False, "error": msg}), 400
+            session["admin_msg"] = {"type": "error", "text": msg}
+            return redirect(url_for("teacher_dashboard"))
+        if Classroom.query.filter_by(code=code).first():
+            msg = f"El código de clase '{code}' ya está en uso. Elige otro o déjalo vacío para generarlo automáticamente."
+            if wants_json:
+                return jsonify({"ok": False, "error": msg}), 409
+            session["admin_msg"] = {"type": "error", "text": msg}
+            return redirect(url_for("teacher_dashboard"))
+    else:
+        code = _generate_class_code(name)
+
+    try:
+        classroom = Classroom(name=name, code=code, teacher_id=current_user.id)
+        db.session.add(classroom)
+        db.session.flush()
+        _log_audit(
+            current_user,
+            action="CREATE_SECTION",
+            target_username=None,
+            section_id=classroom.id,
+            reason=f"Creación de sección '{name}'",
+            details=f"Código de clase: {code}",
+        )
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        print(f"[ERROR in admin_create_section]: {e}", flush=True)
+        msg = "No se pudo crear la sección. Intenta nuevamente."
+        if wants_json:
+            return jsonify({"ok": False, "error": msg}), 500
+        session["admin_msg"] = {"type": "error", "text": msg}
+        return redirect(url_for("teacher_dashboard"))
+
+    ok_msg = f"Sección '{classroom.name}' creada correctamente. Código para compartir: {classroom.code}"
+    if wants_json:
+        return jsonify({
+            "ok": True,
+            "message": ok_msg,
+            "section": {"id": classroom.id, "name": classroom.name, "code": classroom.code},
+        }), 201
+    session["admin_msg"] = {"type": "success", "text": ok_msg}
+    return redirect(url_for("teacher_dashboard"))
+
+
+@app.route("/administrador/secciones/<int:section_id>/eliminar", methods=["POST"])
+@app.route("/profesor/secciones/<int:section_id>/eliminar", methods=["POST"])
+@login_required
+def admin_delete_section(section_id):
+    """Permite a un profesor eliminar su propia sección (o al Super Admin eliminar cualquiera) sin borrar estudiantes."""
+    wants_json = request.is_json or "application/json" in (request.headers.get("Accept") or "")
+    if current_user.role not in ("teacher", "superadmin"):
+        if wants_json:
+            return jsonify({"ok": False, "error": "No autorizado"}), 403
+        return redirect(url_for("dashboard"))
+
+    classroom = db.session.get(Classroom, section_id)
+    if not classroom:
+        msg = "Sección no encontrada."
+        if wants_json:
+            return jsonify({"ok": False, "error": msg}), 404
+        session["admin_msg"] = {"type": "error", "text": msg}
+        return redirect(url_for(_home_endpoint_for_role(current_user.role)))
+
+    if current_user.role == "teacher" and classroom.teacher_id != current_user.id:
+        _log_audit(
+            current_user,
+            action="UNAUTHORIZED_DELETE_SECTION_ATTEMPT",
+            target_username=None,
+            section_id=classroom.id,
+            reason=f"Intento de eliminar sección ajena '{classroom.name}' ({classroom.code})",
+        )
+        db.session.commit()
+        msg = "Acceso denegado: solo puedes eliminar tus propias secciones."
+        if wants_json:
+            return jsonify({"ok": False, "error": msg}), 403
+        session["admin_msg"] = {"type": "error", "text": msg}
+        return redirect(url_for("teacher_dashboard"))
+
+    sec_name = classroom.name
+    sec_code = classroom.code
+    try:
+        # Desvincular estudiantes (conservan cuenta, XP e historial intactos) y referencias de auditoría
+        detached_students = User.query.filter_by(section_id=classroom.id).update(
+            {"section_id": None}, synchronize_session=False
+        )
+        AuditLog.query.filter_by(section_id=classroom.id).update(
+            {"section_id": None}, synchronize_session=False
+        )
+        db.session.delete(classroom)
+        _log_audit(
+            current_user,
+            action="DELETE_SECTION",
+            target_username=None,
+            section_id=None,
+            reason=f"Eliminación de sección '{sec_name}'",
+            details=f"Código: {sec_code} | Estudiantes desvinculados: {detached_students}",
+        )
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        print(f"[ERROR in admin_delete_section]: {e}", flush=True)
+        msg = "No se pudo eliminar la sección. Intenta nuevamente."
+        if wants_json:
+            return jsonify({"ok": False, "error": msg}), 500
+        session["admin_msg"] = {"type": "error", "text": msg}
+        return redirect(url_for(_home_endpoint_for_role(current_user.role)))
+
+    ok_msg = f"Sección '{sec_name}' ({sec_code}) eliminada. {detached_students} estudiante(s) fueron desvinculados sin perder su progreso."
+    if wants_json:
+        return jsonify({"ok": True, "message": ok_msg, "detached_students": detached_students})
+    if current_user.role == "superadmin":
+        session["superadmin_msg"] = {"type": "success", "text": ok_msg}
+        return redirect(url_for("superadmin_dashboard"))
+    session["admin_msg"] = {"type": "success", "text": ok_msg}
+    return redirect(url_for("teacher_dashboard"))
+
+
+@app.route("/profesor/estudiante/<int:student_id>/suspender", methods=["POST"])
+@app.route("/administrador/estudiante/<int:student_id>/suspender", methods=["POST"])
+@login_required
+def admin_suspend_student(student_id):
+    """Borrado lógico (suspensión) de estudiante con motivo obligatorio y registro de auditoría."""
+    if current_user.role != "teacher":
+        return jsonify({"success": False, "error": "No autorizado"}), 403
+
+    data = _get_json_dict() if request.is_json else request.form
+    reason = str(data.get("reason") or "").strip()[:500]
+    if len(reason) < 5:
+        return jsonify({
+            "success": False,
+            "error": "Debes indicar un motivo obligatorio para suspender al estudiante (mínimo 5 caracteres).",
+        }), 400
+
+    student = db.session.get(User, student_id)
+    if not student or student.role != "student":
+        return jsonify({"success": False, "error": "Estudiante no encontrado"}), 404
+
+    if not _teacher_owns_student(current_user.id, student):
+        _log_audit(
+            current_user,
+            action="UNAUTHORIZED_SUSPEND_ATTEMPT",
+            target_username=student.username,
+            section_id=student.section_id,
+            reason=reason,
+            details="Intento bloqueado: el estudiante no pertenece a las secciones del docente.",
+        )
+        db.session.commit()
+        return jsonify({
+            "success": False,
+            "error": "Acceso denegado: este estudiante no pertenece a tus secciones.",
+        }), 403
+
+    if getattr(student, "is_suspended", False):
+        return jsonify({"success": False, "error": "El estudiante ya se encuentra suspendido."}), 400
+
+    cls = db.session.get(Classroom, student.section_id) if student.section_id else None
+    student.is_suspended = True
+    student.suspended_at = datetime.now(timezone.utc)
+    student.suspended_reason = reason
+    student.suspended_by = current_user.id
+
+    _log_audit(
+        current_user,
+        action="SUSPEND_STUDENT",
+        target_username=student.username,
+        section_id=student.section_id,
+        reason=reason,
+        details=f"Grupo: {cls.name} ({cls.code})" if cls else "Sin sección",
+    )
+    db.session.commit()
+    return jsonify({
+        "success": True,
+        "status": "suspended",
+        "reason": reason,
+        "suspended_at": student.suspended_at.strftime("%d/%m/%Y %H:%M"),
+    })
+
+
+@app.route("/profesor/estudiante/<int:student_id>/restaurar", methods=["POST"])
+@app.route("/administrador/estudiante/<int:student_id>/restaurar", methods=["POST"])
+@login_required
+def admin_restore_student(student_id):
+    """Restaura a un estudiante suspendido conservando intacto todo su progreso e historial."""
+    if current_user.role != "teacher":
+        return jsonify({"success": False, "error": "No autorizado"}), 403
+
+    data = _get_json_dict() if request.is_json else request.form
+    reason = str(data.get("reason") or "Restauración de cuenta por el docente").strip()[:500]
+
+    student = db.session.get(User, student_id)
+    if not student or student.role != "student":
+        return jsonify({"success": False, "error": "Estudiante no encontrado"}), 404
+
+    if not _teacher_owns_student(current_user.id, student):
+        _log_audit(
+            current_user,
+            action="UNAUTHORIZED_RESTORE_ATTEMPT",
+            target_username=student.username,
+            section_id=student.section_id,
+            reason=reason,
+            details="Intento bloqueado: el estudiante no pertenece a las secciones del docente.",
+        )
+        db.session.commit()
+        return jsonify({
+            "success": False,
+            "error": "Acceso denegado: este estudiante no pertenece a tus secciones.",
+        }), 403
+
+    if not getattr(student, "is_suspended", False):
+        return jsonify({"success": False, "error": "El estudiante ya se encuentra activo."}), 400
+
+    cls = db.session.get(Classroom, student.section_id) if student.section_id else None
+    prev_reason = student.suspended_reason or ""
+    student.is_suspended = False
+    student.suspended_at = None
+    student.suspended_reason = None
+    student.suspended_by = None
+
+    _log_audit(
+        current_user,
+        action="RESTORE_STUDENT",
+        target_username=student.username,
+        section_id=student.section_id,
+        reason=reason,
+        details=f"Grupo: {cls.name} ({cls.code}) | Motivo previo: {prev_reason}" if cls else f"Motivo previo: {prev_reason}",
+    )
+    db.session.commit()
+    return jsonify({"success": True, "status": "active"})
+
 
 @app.route("/profesor/estudiante/<int:student_id>/eliminar", methods=["POST"])
 @app.route("/administrador/estudiante/<int:student_id>/eliminar", methods=["POST"])
 @login_required
 def teacher_delete_student(student_id):
-    if current_user.role != "teacher":
-        return jsonify({"success": False, "error": "No autorizado"}), 403
-        
-    student = db.session.get(User, student_id)
-    if student and student.role == "student":
-        db.session.delete(student)
-        db.session.commit()
-        return jsonify({"success": True})
-        
-    return jsonify({"success": False, "error": "Estudiante no encontrado"}), 404
+    """El borrado físico fue sustituido por suspensión lógica (Soft Delete) con motivo obligatorio."""
+    return admin_suspend_student(student_id)
 
 
 # --- Exportar CSV ---
@@ -1467,37 +2206,509 @@ def teacher_delete_student(student_id):
 def teacher_export_csv():
     if current_user.role != "teacher":
         return redirect(url_for("dashboard"))
-        
-    students = User.query.filter_by(role="student").all()
+
+    raw_section = request.args.get("section_id", "").strip()
+    section_filter = _safe_int(raw_section, 0) if raw_section else None
+    classrooms, _, students_q = _get_teacher_scoped_students(current_user.id, section_filter)
+    classroom_map = {c.id: c for c in classrooms}
+    students = students_q.all()
     bulk_stats = get_bulk_progress_summaries(students)
-    
+    course_ids = _course_lesson_ids()
+
     si = StringIO()
     si.write('\ufeff')  # Agregamos BOM para que Excel detecte correctamente el UTF-8
     cw = csv.writer(si, delimiter=';')  # Usamos punto y coma que es el separador esperado por Excel en español
-    cw.writerow(["Username", "Total_XP", "Lecciones_Completadas", "Nivel", "Racha_Actual", "Fecha_Registro"])
-    
+    cw.writerow(["Username", "Email", "Seccion", "Estado", "Total_XP", "Lecciones_Completadas", "Nivel", "Racha_Actual", "Fecha_Registro"])
+
     for s in students:
         stats = bulk_stats.get(s.id, {"completed_lessons": [], "total_xp": 0, "streak": 0})
         lvl_info = get_level_info(stats["total_xp"])
         safe_user = s.username or ""
         if safe_user.startswith(("=", "+", "-", "@")):
             safe_user = "'" + safe_user
+        cls = classroom_map.get(s.section_id)
+        completed_cnt = len(set(stats["completed_lessons"]) & course_ids)
         cw.writerow([
             safe_user,
+            s.email or "",
+            f"{cls.name} ({cls.code})" if cls else "Sin sección",
+            "Suspendido" if getattr(s, "is_suspended", False) else "Activo",
             stats["total_xp"],
-            len(stats["completed_lessons"]),
+            completed_cnt,
             lvl_info["title"],
             stats["streak"],
-            s.created_at.strftime("%Y-%m-%d") if s.created_at else "N/A"
+            s.created_at.strftime("%Y-%m-%d") if s.created_at else "N/A",
         ])
-        
+
     output = si.getvalue()
     si.close()
-    
+
     return Response(
         output,
         mimetype="text/csv",
         headers={"Content-Disposition": "attachment;filename=reporte_estudiantes.csv"}
+    )
+
+
+# --- Exportar PDF ---
+def _course_lesson_ids():
+    """IDs de lecciones teóricas del curso (excluye quizzes, hubs y temas de ejercicios)."""
+    return {
+        l["id"] for l in LESSONS
+        if not l.get("type") and not l["id"].startswith("ex-")
+    }
+
+
+@app.route("/profesor/export/pdf")
+@app.route("/administrador/export/pdf")
+@login_required
+def admin_export_pdf():
+    if current_user.role != "teacher":
+        return jsonify({"ok": False, "error": "No autorizado"}), 403
+
+    try:
+        from pdf_report import build_admin_report_pdf
+
+        course_ids = _course_lesson_ids()
+        total_course = len(course_ids) or 1
+
+        raw_section = request.args.get("section_id", "").strip()
+        section_filter = _safe_int(raw_section, 0) if raw_section else None
+        _, _, students_q = _get_teacher_scoped_students(current_user.id, section_filter)
+        students = students_q.all()
+        bulk_stats = get_bulk_progress_summaries(students)
+
+        rows = []
+        level_counts = {}
+        for s in students:
+            stats = bulk_stats.get(s.id, {"completed_lessons": [], "total_xp": 0, "streak": 0})
+            lvl = get_level_info(stats["total_xp"])
+            completed = len(set(stats["completed_lessons"]) & course_ids)
+            rows.append({
+                "username": s.username or "",
+                "level": lvl["level"],
+                "title": lvl["title"],
+                "total_xp": stats["total_xp"],
+                "completed": completed,
+                "progress_pct": round(min(100, completed * 100 / total_course), 1),
+                "streak": stats["streak"],
+            })
+            key = (lvl["level"] if lvl["level"] < 20 else 20, lvl["title"])
+            level_counts[key] = level_counts.get(key, 0) + 1
+
+        rows.sort(key=lambda r: r["total_xp"], reverse=True)
+        n = len(rows)
+        metrics = {
+            "total_students": n,
+            "avg_xp": round(sum(r["total_xp"] for r in rows) / n) if n else 0,
+            "total_completed": sum(r["completed"] for r in rows),
+            "avg_progress_pct": round(sum(r["progress_pct"] for r in rows) / n, 1) if n else 0,
+            "total_course_lessons": len(course_ids),
+            "active_streaks": sum(1 for r in rows if r["streak"] > 0),
+            "level_distribution": [
+                (f"Lv.{lv} - {title}", count)
+                for (lv, title), count in sorted(level_counts.items())
+            ],
+        }
+
+        pdf_bytes = build_admin_report_pdf(
+            rows, metrics,
+            site_title=load_ui_strings().get("site_title", "Py2Java Edu"),
+            generated_by=current_user.username,
+        )
+    except Exception as e:
+        print(f"[ERROR in admin_export_pdf]: {type(e).__name__}: {e}", flush=True)
+        try:
+            db.session.rollback()
+        except Exception:
+            pass
+        return jsonify({"ok": False, "error": "No se pudo generar el reporte PDF. Intenta de nuevo."}), 500
+
+    filename = f"reporte_estudiantes_{datetime.now().strftime('%Y%m%d_%H%M')}.pdf"
+    return Response(
+        pdf_bytes,
+        mimetype="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )
+
+
+# --- Panel de Super Admin ---
+@app.route("/superadmin")
+@login_required
+def superadmin_dashboard():
+    if current_user.role != "superadmin":
+        _log_audit(
+            current_user,
+            action="UNAUTHORIZED_SUPERADMIN_ACCESS",
+            target_username=None,
+            reason="Intento de acceso a /superadmin sin privilegios",
+        )
+        db.session.commit()
+        return redirect(url_for(_home_endpoint_for_role(current_user.role)))
+
+    q = request.args.get("q", "").strip()
+    raw_section = request.args.get("section_id", "").strip()
+    status_filter = request.args.get("status", "all").strip()
+    if status_filter not in ("all", "active", "suspended"):
+        status_filter = "all"
+    sort_by = request.args.get("sort", "xp_desc").strip()
+    if sort_by not in ("xp_desc", "xp_asc", "progress_desc", "name_asc", "date_desc"):
+        sort_by = "xp_desc"
+    page = max(1, _safe_int(request.args.get("page", 1), 1))
+    audit_page = max(1, _safe_int(request.args.get("audit_page", 1), 1))
+
+    course_ids = _course_lesson_ids()
+    total_course = len(course_ids) or 1
+
+    all_teachers = User.query.filter_by(role="teacher").order_by(User.created_at.desc()).all()
+    all_classrooms = Classroom.query.order_by(Classroom.created_at.desc()).all()
+    classroom_map = {c.id: c for c in all_classrooms}
+    teacher_map = {t.id: t for t in all_teachers}
+
+    classroom_counts = {}
+    for c in all_classrooms:
+        classroom_counts[c.id] = User.query.filter_by(role="student", section_id=c.id).count()
+
+    teacher_rows = []
+    for t in all_teachers:
+        t_secs = [c for c in all_classrooms if c.teacher_id == t.id]
+        t_stu_cnt = sum(classroom_counts.get(c.id, 0) for c in t_secs)
+        teacher_rows.append({
+            "id": t.id,
+            "username": t.username,
+            "email": t.email or "",
+            "sections_count": len(t_secs),
+            "students_count": t_stu_cnt,
+            "is_suspended": bool(getattr(t, "is_suspended", False)),
+            "suspended_reason": getattr(t, "suspended_reason", None) or "",
+            "created_at_str": t.created_at.strftime("%d/%m/%Y") if t.created_at else "N/A",
+        })
+
+    # Métricas globales de estudiantes
+    all_students = User.query.filter_by(role="student").all()
+    active_students_cnt = sum(1 for s in all_students if not getattr(s, "is_suspended", False))
+    suspended_students_cnt = len(all_students) - active_students_cnt
+    unassigned_students_cnt = sum(1 for s in all_students if s.section_id is None)
+
+    # Consulta filtrada de estudiantes
+    sq = User.query.filter_by(role="student")
+    if q:
+        like = f"%{q}%"
+        sq = sq.filter(or_(User.username.ilike(like), User.email.ilike(like)))
+    if raw_section == "unassigned":
+        sq = sq.filter(User.section_id.is_(None))
+    elif raw_section:
+        sec_int = _safe_int(raw_section, 0)
+        if sec_int in classroom_map:
+            sq = sq.filter(User.section_id == sec_int)
+    if status_filter == "active":
+        sq = sq.filter(User.is_suspended.is_(False))
+    elif status_filter == "suspended":
+        sq = sq.filter(User.is_suspended.is_(True))
+
+    matched = sq.all()
+    bulk = get_bulk_progress_summaries(matched)
+    student_rows = []
+    for s in matched:
+        st = bulk.get(s.id, {"completed_lessons": [], "total_xp": 0, "streak": 0})
+        lvl = get_level_info(st["total_xp"])
+        comp = len(set(st["completed_lessons"]) & course_ids)
+        cls = classroom_map.get(s.section_id)
+        t_owner = teacher_map.get(cls.teacher_id) if cls else None
+        student_rows.append({
+            "id": s.id,
+            "username": s.username,
+            "email": s.email or "",
+            "level": lvl["level"],
+            "title": lvl["title"],
+            "total_xp": st["total_xp"],
+            "completed": comp,
+            "progress_pct": round(min(100, comp * 100 / total_course), 1),
+            "section_id": s.section_id,
+            "section_name": cls.name if cls else "Sin sección",
+            "section_code": cls.code if cls else "",
+            "teacher_name": t_owner.username if t_owner else "—",
+            "is_suspended": bool(getattr(s, "is_suspended", False)),
+            "suspended_reason": getattr(s, "suspended_reason", None) or "",
+            "created_at": s.created_at,
+        })
+
+    if sort_by == "xp_desc":
+        student_rows.sort(key=lambda x: (-x["total_xp"], (x["username"] or "").lower()))
+    elif sort_by == "xp_asc":
+        student_rows.sort(key=lambda x: (x["total_xp"], (x["username"] or "").lower()))
+    elif sort_by == "progress_desc":
+        student_rows.sort(key=lambda x: (-x["completed"], -x["total_xp"]))
+    elif sort_by == "name_asc":
+        student_rows.sort(key=lambda x: (x["username"] or "").lower())
+    elif sort_by == "date_desc":
+        student_rows.sort(key=lambda x: x["created_at"] or datetime.min.replace(tzinfo=timezone.utc), reverse=True)
+
+    total_filtered = len(student_rows)
+    total_pages = max(1, math.ceil(total_filtered / ADMIN_STUDENTS_PER_PAGE))
+    page = min(page, total_pages)
+    start = (page - 1) * ADMIN_STUDENTS_PER_PAGE
+    paginated_students = student_rows[start : start + ADMIN_STUDENTS_PER_PAGE]
+
+    # Bitácora global (todos los eventos del sistema)
+    audit_q = AuditLog.query.order_by(AuditLog.created_at.desc())
+    audit_total = audit_q.count()
+    audit_per = 15
+    audit_total_pages = max(1, math.ceil(audit_total / audit_per))
+    audit_page = min(audit_page, audit_total_pages)
+    audit_logs = audit_q.offset((audit_page - 1) * audit_per).limit(audit_per).all()
+
+    metrics = {
+        "total_students": len(all_students),
+        "active_students": active_students_cnt,
+        "suspended_students": suspended_students_cnt,
+        "unassigned_students": unassigned_students_cnt,
+        "total_teachers": len(all_teachers),
+        "suspended_teachers": sum(1 for t in all_teachers if getattr(t, "is_suspended", False)),
+        "total_classrooms": len(all_classrooms),
+        "total_course_lessons": len(course_ids),
+        "audit_total": audit_total,
+    }
+    filters = {
+        "q": q,
+        "section_id": raw_section,
+        "status": status_filter,
+        "sort": sort_by,
+        "page": page,
+        "total_pages": total_pages,
+        "total_filtered": total_filtered,
+        "audit_page": audit_page,
+        "audit_total_pages": audit_total_pages,
+    }
+    superadmin_msg = session.pop("superadmin_msg", None)
+    return render_template(
+        "superadmin_dashboard.html",
+        metrics=metrics,
+        teachers=teacher_rows,
+        classrooms=all_classrooms,
+        classroom_counts=classroom_counts,
+        teacher_map=teacher_map,
+        students=paginated_students,
+        audit_logs=audit_logs,
+        filters=filters,
+        superadmin_msg=superadmin_msg,
+        categories=LESSON_CATEGORIES,
+    )
+
+
+@app.route("/superadmin/usuario/<int:user_id>/suspender", methods=["POST"])
+@login_required
+def superadmin_suspend_user(user_id):
+    """Super Admin puede suspender a cualquier estudiante o profesor (nunca a otro superadmin) con motivo obligatorio."""
+    if current_user.role != "superadmin":
+        return jsonify({"success": False, "error": "No autorizado"}), 403
+
+    data = _get_json_dict() if request.is_json else request.form
+    reason = str(data.get("reason") or "").strip()[:500]
+    if len(reason) < 5:
+        return jsonify({"success": False, "error": "Debes indicar un motivo obligatorio (mínimo 5 caracteres)."}), 400
+
+    target = db.session.get(User, user_id)
+    if not target or target.role == "superadmin":
+        return jsonify({"success": False, "error": "Usuario no encontrado o protegido."}), 404
+
+    if getattr(target, "is_suspended", False):
+        return jsonify({"success": False, "error": "El usuario ya se encuentra suspendido."}), 400
+
+    target.is_suspended = True
+    target.suspended_at = datetime.now(timezone.utc)
+    target.suspended_reason = reason
+    target.suspended_by = current_user.id
+
+    action = "SUPERADMIN_SUSPEND_TEACHER" if target.role == "teacher" else "SUPERADMIN_SUSPEND_STUDENT"
+    _log_audit(
+        current_user,
+        action=action,
+        target_username=target.username,
+        section_id=target.section_id,
+        reason=reason,
+        details=f"Rol afectado: {target.role}",
+    )
+    db.session.commit()
+    return jsonify({"success": True, "status": "suspended"})
+
+
+@app.route("/superadmin/usuario/<int:user_id>/restaurar", methods=["POST"])
+@login_required
+def superadmin_restore_user(user_id):
+    """Super Admin puede restaurar a cualquier estudiante o profesor suspendido."""
+    if current_user.role != "superadmin":
+        return jsonify({"success": False, "error": "No autorizado"}), 403
+
+    data = _get_json_dict() if request.is_json else request.form
+    reason = str(data.get("reason") or "Restauración por Super Admin").strip()[:500]
+
+    target = db.session.get(User, user_id)
+    if not target or target.role == "superadmin":
+        return jsonify({"success": False, "error": "Usuario no encontrado."}), 404
+
+    if not getattr(target, "is_suspended", False):
+        return jsonify({"success": False, "error": "El usuario ya está activo."}), 400
+
+    prev_reason = target.suspended_reason or ""
+    target.is_suspended = False
+    target.suspended_at = None
+    target.suspended_reason = None
+    target.suspended_by = None
+
+    action = "SUPERADMIN_RESTORE_TEACHER" if target.role == "teacher" else "SUPERADMIN_RESTORE_STUDENT"
+    _log_audit(
+        current_user,
+        action=action,
+        target_username=target.username,
+        section_id=target.section_id,
+        reason=reason,
+        details=f"Rol afectado: {target.role} | Motivo previo: {prev_reason}",
+    )
+    db.session.commit()
+    return jsonify({"success": True, "status": "active"})
+
+
+@app.route("/superadmin/estudiante/<int:student_id>/asignar-seccion", methods=["POST"])
+@login_required
+def superadmin_assign_section(student_id):
+    """Permite al Super Admin asignar o quitar la sección de cualquier estudiante."""
+    if current_user.role != "superadmin":
+        return jsonify({"success": False, "error": "No autorizado"}), 403
+
+    student = db.session.get(User, student_id)
+    if not student or student.role != "student":
+        return jsonify({"success": False, "error": "Estudiante no encontrado."}), 404
+
+    data = _get_json_dict() if request.is_json else request.form
+    raw_sec = str(data.get("section_id") or "").strip()
+    if not raw_sec:
+        student.section_id = None
+        detail = "Desvinculado de sección"
+        new_sec_id = None
+    else:
+        sec_id = _safe_int(raw_sec, 0)
+        cls = db.session.get(Classroom, sec_id)
+        if not cls:
+            return jsonify({"success": False, "error": "Sección no encontrada."}), 404
+        student.section_id = cls.id
+        detail = f"Asignado a sección {cls.name} ({cls.code})"
+        new_sec_id = cls.id
+
+    _log_audit(
+        current_user,
+        action="SUPERADMIN_ASSIGN_SECTION",
+        target_username=student.username,
+        section_id=new_sec_id,
+        reason="Gestión de sección por Super Admin",
+        details=detail,
+    )
+    db.session.commit()
+    return jsonify({"success": True, "details": detail})
+
+
+@app.route("/superadmin/export/csv")
+@login_required
+def superadmin_export_csv():
+    if current_user.role != "superadmin":
+        return redirect(url_for(_home_endpoint_for_role(current_user.role)))
+
+    all_classrooms = Classroom.query.all()
+    classroom_map = {c.id: c for c in all_classrooms}
+    students = User.query.filter_by(role="student").all()
+    bulk_stats = get_bulk_progress_summaries(students)
+    course_ids = _course_lesson_ids()
+
+    si = StringIO()
+    si.write('\ufeff')
+    cw = csv.writer(si, delimiter=';')
+    cw.writerow(["Username", "Email", "Seccion", "Estado", "Total_XP", "Lecciones_Completadas", "Nivel", "Racha_Actual", "Fecha_Registro"])
+    for s in students:
+        stats = bulk_stats.get(s.id, {"completed_lessons": [], "total_xp": 0, "streak": 0})
+        lvl_info = get_level_info(stats["total_xp"])
+        safe_user = s.username or ""
+        if safe_user.startswith(("=", "+", "-", "@")):
+            safe_user = "'" + safe_user
+        cls = classroom_map.get(s.section_id)
+        cw.writerow([
+            safe_user,
+            s.email or "",
+            f"{cls.name} ({cls.code})" if cls else "Sin sección",
+            "Suspendido" if getattr(s, "is_suspended", False) else "Activo",
+            stats["total_xp"],
+            len(set(stats["completed_lessons"]) & course_ids),
+            lvl_info["title"],
+            stats["streak"],
+            s.created_at.strftime("%Y-%m-%d") if s.created_at else "N/A",
+        ])
+    output = si.getvalue()
+    si.close()
+    return Response(
+        output,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=reporte_global_estudiantes.csv"},
+    )
+
+
+@app.route("/superadmin/export/pdf")
+@login_required
+def superadmin_export_pdf():
+    if current_user.role != "superadmin":
+        return jsonify({"ok": False, "error": "No autorizado"}), 403
+    try:
+        from pdf_report import build_admin_report_pdf
+
+        course_ids = _course_lesson_ids()
+        total_course = len(course_ids) or 1
+        students = User.query.filter_by(role="student").all()
+        bulk_stats = get_bulk_progress_summaries(students)
+
+        rows = []
+        level_counts = {}
+        for s in students:
+            stats = bulk_stats.get(s.id, {"completed_lessons": [], "total_xp": 0, "streak": 0})
+            lvl = get_level_info(stats["total_xp"])
+            completed = len(set(stats["completed_lessons"]) & course_ids)
+            rows.append({
+                "username": s.username or "",
+                "level": lvl["level"],
+                "title": lvl["title"],
+                "total_xp": stats["total_xp"],
+                "completed": completed,
+                "progress_pct": round(min(100, completed * 100 / total_course), 1),
+                "streak": stats["streak"],
+            })
+            key = (lvl["level"] if lvl["level"] < 20 else 20, lvl["title"])
+            level_counts[key] = level_counts.get(key, 0) + 1
+
+        rows.sort(key=lambda r: r["total_xp"], reverse=True)
+        n = len(rows)
+        metrics = {
+            "total_students": n,
+            "avg_xp": round(sum(r["total_xp"] for r in rows) / n) if n else 0,
+            "total_completed": sum(r["completed"] for r in rows),
+            "avg_progress_pct": round(sum(r["progress_pct"] for r in rows) / n, 1) if n else 0,
+            "total_course_lessons": len(course_ids),
+            "active_streaks": sum(1 for r in rows if r["streak"] > 0),
+            "level_distribution": [
+                (f"Lv.{lv} - {title}", count)
+                for (lv, title), count in sorted(level_counts.items())
+            ],
+        }
+        pdf_bytes = build_admin_report_pdf(
+            rows, metrics,
+            site_title=load_ui_strings().get("site_title", "Py2Java Edu"),
+            generated_by=f"{current_user.username} (Super Admin)",
+        )
+    except Exception as e:
+        print(f"[ERROR in superadmin_export_pdf]: {type(e).__name__}: {e}", flush=True)
+        return jsonify({"ok": False, "error": "No se pudo generar el reporte PDF global."}), 500
+
+    filename = f"reporte_global_{datetime.now().strftime('%Y%m%d_%H%M')}.pdf"
+    return Response(
+        pdf_bytes,
+        mimetype="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
     )
 
 
@@ -1507,7 +2718,7 @@ def leaderboard():
     board = []
     db_error = False
     try:
-        students = User.query.filter_by(role="student").all()
+        students = User.query.filter_by(role="student", is_suspended=False).all()
         bulk_stats = get_bulk_progress_summaries(students)
         for s in students:
             summary = bulk_stats.get(s.id, {"completed_lessons": [], "total_xp": 0, "streak": 0})
@@ -1555,6 +2766,23 @@ def profile(username=None):
     else:
         return redirect(url_for("login"))
 
+    # Aislamiento estricto para profesores al consultar perfiles ajenos (Super Admin puede ver todos)
+    if current_user.is_authenticated and current_user.role == "superadmin":
+        pass
+    elif current_user.is_authenticated and current_user.role == "teacher" and user.id != current_user.id:
+        if not _teacher_owns_student(current_user.id, user):
+            _log_audit(
+                current_user,
+                action="UNAUTHORIZED_PROFILE_VIEW",
+                target_username=user.username,
+                section_id=user.section_id,
+                reason="Intento de ver perfil de usuario fuera de sus secciones",
+            )
+            db.session.commit()
+            return Response("Acceso denegado: este usuario no pertenece a tus secciones.", status=403, mimetype="text/plain")
+    elif getattr(user, "is_suspended", False) and (not current_user.is_authenticated or current_user.id != user.id):
+        return Response("Perfil no disponible.", status=404, mimetype="text/plain")
+
     summary = get_progress_summary(user)
     level = get_level_info(summary["total_xp"])["level"]
 
@@ -1586,60 +2814,142 @@ def profile(username=None):
         except Exception:
             pass
 
+    ui = load_ui_strings()
+    completed_set = set(summary["completed_lessons"])
+    cert_cards = []
+    for cat in LESSON_CATEGORIES:
+        cat_lessons = _category_course_lessons(cat)
+        done_cnt = sum(1 for lid in cat_lessons if lid in completed_set)
+        cert_cards.append({
+            "id": cat["id"],
+            "name": ui.get(cat["label_key"], cat["id"]),
+            "completed": done_cnt,
+            "total": len(cat_lessons),
+            "is_complete": done_cnt >= len(cat_lessons) and len(cat_lessons) > 0,
+        })
+
+    is_own_profile = bool(current_user.is_authenticated and current_user.id == user.id)
+    section_msg = session.pop("section_msg", None) if is_own_profile else None
     return render_template(
         "profile.html",
         profile_user=user,
+        classroom=user.classroom,
+        is_own_profile=is_own_profile,
+        section_msg=section_msg,
         summary=summary,
         level=level,
         recent=recent,
         quiz_results=quiz_results,
         total_exercises=total_exercises,
         passed_exercises=passed_exercises,
+        cert_cards=cert_cards,
         categories=LESSON_CATEGORIES,
         page="profile",
     )
+
+
+_SPANISH_MONTHS = {
+    1: "enero", 2: "febrero", 3: "marzo", 4: "abril",
+    5: "mayo", 6: "junio", 7: "julio", 8: "agosto",
+    9: "septiembre", 10: "octubre", 11: "noviembre", 12: "diciembre",
+}
+
+
+def _format_spanish_date(dt):
+    return f"{dt.day:02d} de {_SPANISH_MONTHS[dt.month]} de {dt.year}"
+
+
+def _category_course_lessons(cat):
+    """Devuelve solo las lecciones teóricas completables de una categoría (sin quizzes, hubs ni ex-*)."""
+    lessons_out = []
+    for sec in cat.get("sections", []):
+        for lesson_item in sec.get("lessons", []):
+            lid = lesson_item["id"]
+            if not lesson_item.get("type") and not lid.startswith("ex-"):
+                lessons_out.append(lid)
+    return lessons_out
+
+
+def _get_certificate_context(user, section_id):
+    target_cat = None
+    for cat in LESSON_CATEGORIES:
+        if cat["id"] == section_id:
+            target_cat = cat
+            break
+    if not target_cat:
+        return None
+
+    summary = get_progress_summary(user)
+    completed_set = set(summary["completed_lessons"])
+    cat_lessons = _category_course_lessons(target_cat)
+    completed_in_cat = [lid for lid in cat_lessons if lid in completed_set]
+    is_complete = len(completed_in_cat) >= len(cat_lessons) and len(cat_lessons) > 0
+
+    ui = load_ui_strings()
+    now = datetime.now()
+    return {
+        "category_name": ui.get(target_cat["label_key"], section_id),
+        "category_id": section_id,
+        "total_lessons": len(cat_lessons),
+        "completed_lessons": len(completed_in_cat),
+        "is_complete": is_complete,
+        "completion_date": _format_spanish_date(now),
+        "completion_year": now.year,
+        "site_title": ui.get("site_title", "Py2Java Edu"),
+    }
 
 
 # --- Certificado ---
 @app.route("/certificado/<section_id>")
 @login_required
 def certificate(section_id):
-    user = current_user
-    summary = get_progress_summary(user)
-
-    # Find the category
-    target_cat = None
-    for cat in LESSON_CATEGORIES:
-        if cat["id"] == section_id:
-            target_cat = cat
-            break
-
-    if not target_cat:
+    ctx = _get_certificate_context(current_user, section_id)
+    if not ctx:
         return redirect(url_for("dashboard"))
-
-    # Get all lessons in this category
-    cat_lessons = []
-    for sec in target_cat["sections"]:
-        for lesson in sec["lessons"]:
-            cat_lessons.append(lesson["id"])
-
-    # Check completion
-    completed_in_cat = [lid for lid in cat_lessons if lid in summary["completed_lessons"]]
-    is_complete = len(completed_in_cat) >= len(cat_lessons) and len(cat_lessons) > 0
-
-    ui = load_ui_strings()
-    cat_name = ui.get(target_cat["label_key"], section_id)
 
     return render_template(
         "certificate.html",
-        user=user,
-        category_name=cat_name,
-        category_id=section_id,
-        total_lessons=len(cat_lessons),
-        completed_lessons=len(completed_in_cat),
-        is_complete=is_complete,
-        completion_date=datetime.now().strftime("%d de %B de %Y"),
+        user=current_user,
         categories=LESSON_CATEGORIES,
+        **ctx,
+    )
+
+
+@app.route("/certificado/<section_id>/pdf")
+@login_required
+def certificate_pdf(section_id):
+    ctx = _get_certificate_context(current_user, section_id)
+    if not ctx:
+        return redirect(url_for("dashboard"))
+    if not ctx["is_complete"]:
+        return redirect(url_for("certificate", section_id=section_id))
+
+    try:
+        from pdf_report import build_certificate_pdf
+
+        pdf_bytes = build_certificate_pdf(
+            username=current_user.username,
+            category_name=ctx["category_name"],
+            category_id=ctx["category_id"],
+            user_id=current_user.id,
+            total_lessons=ctx["total_lessons"],
+            completion_date=ctx["completion_date"],
+            completion_year=ctx["completion_year"],
+            site_title=ctx["site_title"],
+        )
+    except Exception as e:
+        print(f"[ERROR in certificate_pdf]: {type(e).__name__}: {e}", flush=True)
+        return jsonify({"ok": False, "error": "No se pudo generar el certificado PDF."}), 500
+
+    safe_user = "".join(
+        ch if ch.isascii() and (ch.isalnum() or ch in ("_", "-")) else "_"
+        for ch in (current_user.username or "estudiante")
+    ).strip("_") or "estudiante"
+    filename = f"certificado_{section_id}_{safe_user}.pdf"
+    return Response(
+        pdf_bytes,
+        mimetype="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
     )
 
 

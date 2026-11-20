@@ -98,9 +98,9 @@
             font-family: "Space Grotesk", sans-serif;
             font-size: 2.5rem;
             font-weight: 700;
-            color: var(--text);
+            color: #F0F6FC;
             margin-bottom: 0.5rem;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
         }
 
         .cert-achievement {
@@ -313,14 +313,18 @@
         </div>
     </div>
 
-    <div class="cert-id">CERT-{{ category_id | upper }}-{{ user.id }}-{{ "2026" }}</div>
+    <div class="cert-id">CERT-{{ category_id | upper }}-{{ user.id }}-{{ completion_year }}</div>
 </div>
 
 {% if is_complete %}
 <div class="cert-actions">
-    <button onclick="window.print()" class="cert-btn cert-btn-primary">
+    <a href="{{ url_for('certificate_pdf', section_id=category_id) }}" class="cert-btn cert-btn-primary">
+        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" style="vertical-align:-2px; margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Descargar PDF
+    </a>
+    <button onclick="window.print()" class="cert-btn">
         <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" style="vertical-align:-2px; margin-right:4px;"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-        Imprimir / PDF
+        Imprimir
     </button>
     <a href="{{ url_for('dashboard') }}" class="cert-btn">← Dashboard</a>
 </div>

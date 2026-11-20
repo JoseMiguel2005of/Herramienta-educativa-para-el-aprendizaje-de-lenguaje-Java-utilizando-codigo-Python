@@ -5,6 +5,16 @@ from datetime import datetime, timezone
 db = SQLAlchemy()
 
 
+class Classroom(db.Model):
+    __tablename__ = "classrooms"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    code = db.Column(db.String(20), unique=True, nullable=False, index=True)
+    teacher_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+
 class User(UserMixin, db.Model):
     __tablename__ = "users"
 
@@ -12,12 +22,45 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), nullable=True)
     password_hash = db.Column(db.String(255), nullable=False)
-    role = db.Column(db.String(20), default="student")  # 'student' or 'teacher' (Administrador)
+    role = db.Column(db.String(20), default="student")  # 'student', 'teacher' (Profesor) or 'superadmin'
     failed_login_attempts = db.Column(db.Integer, default=0)
     locked_until = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
+    # Aislamiento por sección / grupo (1 a N: cada estudiante pertenece a una sección)
+    section_id = db.Column(
+        db.Integer,
+        db.ForeignKey("classrooms.id", use_alter=True, name="fk_users_section_id"),
+        nullable=True,
+        index=True,
+    )
+
+    # Borrado lógico (Soft Delete: Suspender / Restaurar)
+    is_suspended = db.Column(db.Boolean, default=False, nullable=False)
+    suspended_at = db.Column(db.DateTime, nullable=True)
+    suspended_reason = db.Column(db.Text, nullable=True)
+    suspended_by = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id", use_alter=True, name="fk_users_suspended_by"),
+        nullable=True,
+    )
+
+    @property
+    def is_active(self):
+        return not bool(self.is_suspended)
+
     # Relaciones
+    classroom = db.relationship(
+        "Classroom",
+        foreign_keys=[section_id],
+        backref=db.backref("students", lazy=True),
+    )
+    owned_classrooms = db.relationship(
+        "Classroom",
+        foreign_keys=[Classroom.teacher_id],
+        backref=db.backref("teacher", lazy=True),
+        lazy=True,
+    )
     progress = db.relationship("LessonProgress", backref="user", lazy=True, cascade="all, delete-orphan")
     attempts = db.relationship("ExerciseAttempt", backref="user", lazy=True, cascade="all, delete-orphan")
     achievements = db.relationship("Achievement", backref="user", lazy=True, cascade="all, delete-orphan")
@@ -32,6 +75,20 @@ class User(UserMixin, db.Model):
     reset_codes = db.relationship(
         "PasswordResetCode", backref="user", lazy=True, cascade="all, delete-orphan"
     )
+
+
+class AuditLog(db.Model):
+    __tablename__ = "audit_logs"
+
+    id = db.Column(db.Integer, primary_key=True)
+    admin_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True, index=True)
+    admin_username = db.Column(db.String(80), nullable=False)
+    action = db.Column(db.String(50), nullable=False, index=True)
+    target_username = db.Column(db.String(80), nullable=True)
+    section_id = db.Column(db.Integer, db.ForeignKey("classrooms.id"), nullable=True, index=True)
+    reason = db.Column(db.Text, nullable=True)
+    details = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), index=True)
 
 
 class LessonProgress(db.Model):

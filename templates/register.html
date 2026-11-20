@@ -33,14 +33,22 @@
                 <label for="role" style="display: block; margin-bottom: 0.5rem; color: var(--text);">Soy...</label>
                 <select id="role" name="role" onchange="toggleTeacherCode(this.value)" style="width: 100%; padding: 0.8rem; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-code); color: var(--text); outline: none; font-family: inherit;">
                     <option value="student">Estudiante</option>
-                    <option value="teacher">Administrador</option>
+                    <option value="teacher">Profesor</option>
                 </select>
+            </div>
+
+            <div id="student-class-field">
+                <label for="class_code" style="display: block; margin-bottom: 0.5rem; color: var(--text);">
+                    Código de Clase / Sección <span style="font-size: 0.75rem; color: var(--text-muted);">(opcional)</span>
+                    <span style="font-size: 0.75rem; color: var(--text-muted); display: block;">Si tu profesor te dio un código (ej. PROG-7K2M), ingrésalo aquí</span>
+                </label>
+                <input type="text" id="class_code" name="class_code" maxlength="20" placeholder="Ej. PROG-7K2M" style="width: 100%; padding: 0.8rem; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-code); color: var(--text); outline: none; font-family: 'JetBrains Mono', monospace; text-transform: uppercase;">
             </div>
 
             <div id="teacher-code-field" style="display: none;">
                 <label for="teacher_code" style="display: block; margin-bottom: 0.5rem; color: var(--text);">
-                    Código de Administrador
-                    <span style="font-size: 0.75rem; color: var(--text-muted); display: block;">Ingresa el código secreto de administrador</span>
+                    Código de Profesor
+                    <span style="font-size: 0.75rem; color: var(--text-muted); display: block;">Ingresa el código secreto proporcionado por el Super Admin</span>
                 </label>
                 <input type="password" id="teacher_code" name="teacher_code" placeholder="Código secreto..." style="width: 100%; padding: 0.8rem; border-radius: 4px; border: 1px solid rgba(255,152,0,0.4); background: rgba(255,152,0,0.05); color: var(--text); outline: none; font-family: inherit;">
             </div>
@@ -58,12 +66,15 @@
 
 <script>
 function toggleTeacherCode(value) {
-    const field = document.getElementById('teacher-code-field');
+    const teacherField = document.getElementById('teacher-code-field');
+    const studentField = document.getElementById('student-class-field');
     if (value === 'teacher') {
-        field.style.display = 'block';
-        field.style.animation = 'slideDown 0.3s ease';
+        teacherField.style.display = 'block';
+        teacherField.style.animation = 'slideDown 0.3s ease';
+        if (studentField) studentField.style.display = 'none';
     } else {
-        field.style.display = 'none';
+        teacherField.style.display = 'none';
+        if (studentField) studentField.style.display = 'block';
     }
 }
 </script>
