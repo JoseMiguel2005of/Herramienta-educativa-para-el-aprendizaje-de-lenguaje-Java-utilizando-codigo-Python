@@ -26,6 +26,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
+import socket
+import ssl
 
 from content_loader import (LESSON_ALIASES, get_lesson, get_lesson_title, get_reference,
                             load_ui_strings, load_quiz, load_all_quizzes,
@@ -1317,27 +1319,63 @@ def login():
     return render_template("login.html", error=suspended_notice, categories=LESSON_CATEGORIES)
 
 
+def _connect_ipv4_socket(host, port, timeout):
+    """Abre conexión TCP priorizando IPv4 para evitar cuelgues por IPv6 sin ruta en Vercel/AWS Lambda."""
+    last_err = None
+    try:
+        infos = socket.getaddrinfo(host, port, socket.AF_INET, socket.SOCK_STREAM)
+    except OSError:
+        infos = []
+    for af, socktype, proto, _, sa in infos:
+        sock = None
+        try:
+            sock = socket.socket(af, socktype, proto)
+            sock.settimeout(timeout)
+            sock.connect(sa)
+            return sock
+        except OSError as exc:
+            last_err = exc
+            if sock is not None:
+                sock.close()
+    if last_err is not None:
+        raise last_err
+    return socket.create_connection((host, port), timeout)
+
+
+class _IPv4SMTP(smtplib.SMTP):
+    def _get_socket(self, host, port, timeout):
+        return _connect_ipv4_socket(host, port, timeout)
+
+
+class _IPv4SMTP_SSL(smtplib.SMTP_SSL):
+    def _get_socket(self, host, port, timeout):
+        sock = _connect_ipv4_socket(host, port, timeout)
+        return self.context.wrap_socket(sock, server_hostname=self._host)
+
+
 def send_recovery_email(to_email, username, code):
     """
     Envía correo real con el nombre de usuario y el código de 6 dígitos.
     Soporta:
-      1) Resend API por HTTPS (RESEND_API_KEY)
-      2) SMTP estándar (MAIL_SERVER / MAIL_PORT / MAIL_USERNAME / MAIL_PASSWORD,
+      1) Resend API por HTTPS (RESEND_API_KEY) — recomendado en Vercel (< 1s)
+      2) SMTP estándar sobre IPv4 (MAIL_SERVER / MAIL_PORT / MAIL_USERNAME / MAIL_PASSWORD,
          con soporte TLS puerto 587 y SSL puerto 465; también acepta SMTP_EMAIL / SMTP_PASSWORD).
     Si no hay proveedor configurado, retorna (False, 'SMTP no configurado').
     """
-    resend_api_key = (os.environ.get("RESEND_API_KEY") or "").strip()
-    mail_username = (os.environ.get("MAIL_USERNAME") or os.environ.get("SMTP_EMAIL") or "").strip()
-    mail_password = (os.environ.get("MAIL_PASSWORD") or os.environ.get("SMTP_PASSWORD") or "").strip()
-    mail_server = (os.environ.get("MAIL_SERVER") or "").strip()
+    resend_api_key = (os.environ.get("RESEND_API_KEY") or "").strip().strip('"').strip("'")
+    mail_username = (os.environ.get("MAIL_USERNAME") or os.environ.get("SMTP_EMAIL") or "").strip().strip('"').strip("'")
+    raw_password = (os.environ.get("MAIL_PASSWORD") or os.environ.get("SMTP_PASSWORD") or "").strip().strip('"').strip("'")
+    mail_server = (os.environ.get("MAIL_SERVER") or "").strip().strip('"').strip("'")
     if not mail_server and mail_username and mail_username.lower().endswith("@gmail.com"):
         mail_server = "smtp.gmail.com"
+    # Las contraseñas de aplicación de Google se muestran en grupos de 4 letras con espacios; quitarlos evita rechazos
+    mail_password = raw_password.replace(" ", "") if "gmail" in mail_server.lower() else raw_password
     mail_port = _safe_int(os.environ.get("MAIL_PORT", 587), 587)
     mail_sender = (
         os.environ.get("MAIL_DEFAULT_SENDER")
         or mail_username
         or "Py2Java Edu <onboarding@resend.dev>"
-    ).strip()
+    ).strip().strip('"').strip("'")
     mail_use_ssl = os.environ.get("MAIL_USE_SSL", "false").lower() in ("true", "1", "yes") or mail_port == 465
     mail_use_tls = os.environ.get("MAIL_USE_TLS", "true").lower() in ("true", "1", "yes") and not mail_use_ssl
 
@@ -1382,7 +1420,7 @@ def send_recovery_email(to_email, username, code):
                     "html": html_content,
                     "text": text_content,
                 },
-                timeout=12,
+                timeout=7,
             )
             if 200 <= resp.status_code < 300:
                 return True, None
@@ -1391,9 +1429,9 @@ def send_recovery_email(to_email, username, code):
             return False, f"Error proveedor de correo (HTTP {resp.status_code})"
         except Exception as e:
             print(f"[ERROR EMAIL RESEND] {type(e).__name__}: {e}", flush=True)
-            return False, str(e)
+            return False, "El proveedor de correo tardó demasiado en responder."
 
-    # Opción 2: SMTP (Gmail, Outlook, Brevo SMTP, etc.)
+    # Opción 2: SMTP sobre IPv4 (Gmail, Outlook, Brevo SMTP, etc.)
     if not mail_server or not mail_username or not mail_password:
         print(f"[MODO DEMO RECUPERACIÓN] Solicitud de recuperación en modo sin SMTP para usuario '{username}'.", flush=True)
         return False, "SMTP no configurado"
@@ -1406,22 +1444,31 @@ def send_recovery_email(to_email, username, code):
         msg.attach(MIMEText(text_content, "plain", "utf-8"))
         msg.attach(MIMEText(html_content, "html", "utf-8"))
 
+        # Timeout acotado (7s) para nunca agotar el límite de 10s en Vercel Serverless
+        smtp_timeout = 7
+        tls_ctx = ssl.create_default_context()
         if mail_use_ssl:
-            with smtplib.SMTP_SSL(mail_server, mail_port, timeout=15) as server:
+            with _IPv4SMTP_SSL(mail_server, mail_port, timeout=smtp_timeout, context=tls_ctx) as server:
                 server.login(mail_username, mail_password)
                 server.sendmail(mail_username, [to_email], msg.as_string())
         else:
-            with smtplib.SMTP(mail_server, mail_port, timeout=15) as server:
+            with _IPv4SMTP(mail_server, mail_port, timeout=smtp_timeout) as server:
                 server.ehlo()
                 if mail_use_tls:
-                    server.starttls()
+                    server.starttls(context=tls_ctx)
                     server.ehlo()
                 server.login(mail_username, mail_password)
                 server.sendmail(mail_username, [to_email], msg.as_string())
         return True, None
+    except smtplib.SMTPAuthenticationError as e:
+        print(f"[ERROR EMAIL SMTP AUTH] {e}", flush=True)
+        return False, "Error de autenticación SMTP: verifica MAIL_USERNAME y que MAIL_PASSWORD sea una Contraseña de Aplicación de 16 caracteres."
+    except (socket.timeout, TimeoutError) as e:
+        print(f"[ERROR EMAIL SMTP TIMEOUT] {e}", flush=True)
+        return False, "El servidor SMTP tardó demasiado en responder. En Vercel se recomienda usar MAIL_PORT=465 con MAIL_USE_SSL=true o RESEND_API_KEY."
     except Exception as e:
         print(f"[ERROR EMAIL SMTP] Error al enviar correo a {to_email}: {type(e).__name__}: {e}", flush=True)
-        return False, str(e)
+        return False, "No se pudo conectar con el servidor de correo. Verifica las variables SMTP en Vercel."
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -1593,7 +1640,7 @@ def forgot_password():
         session.pop("recovery_notice", None)
         return render_template(
             "forgot_password.html",
-            error="No se pudo enviar el correo de recuperación en este momento. Verifica la configuración de correo (SMTP/Resend) e intenta de nuevo.",
+            error=reason or "No se pudo enviar el correo de recuperación en este momento. Verifica la configuración de correo (SMTP/Resend) e intenta de nuevo.",
             email=email,
             categories=LESSON_CATEGORIES,
         )
