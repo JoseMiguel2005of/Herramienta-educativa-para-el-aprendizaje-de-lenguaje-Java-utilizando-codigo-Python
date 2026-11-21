@@ -1,24 +1,30 @@
 """
-Script seguro e idempotente de migración de base de datos (SQLite y PostgreSQL).
+Script seguro e idempotente de migración de base de datos vía Alembic / Flask-Migrate.
 
-Crea las nuevas tablas (`classrooms`, `audit_logs`) y añade las nuevas columnas
-en `users` (`section_id`, `is_suspended`, `suspended_at`, `suspended_reason`,
-`suspended_by`) sin modificar ni borrar ningún dato existente.
+Aplica todas las migraciones pendientes (`flask db upgrade`) y opcionalmente
+ejecuta el bootstrap inicial de Super Admin si existen las variables de entorno
+correspondientes y aún no existe ningún Super Admin.
 
 Uso:
     python migrate_db.py
+    # o directamente con Flask CLI:
+    flask --app app db upgrade
 """
 
-from app import app, db, init_db, is_postgres
+from flask_migrate import upgrade
+
+from app import app, db, is_postgres, logger, _bootstrap_initial_superadmin
 
 
 def run_migration():
-    print(f"[MIGRATE] Motor detectado: {'PostgreSQL' if is_postgres else 'SQLite'}")
-    init_db()
+    engine_label = "PostgreSQL" if is_postgres else "SQLite"
+    logger.info("[MIGRATE] Motor detectado: %s", engine_label)
     with app.app_context():
+        upgrade()
+        _bootstrap_initial_superadmin()
         tables = sorted(db.metadata.tables.keys())
-        print(f"[MIGRATE] Tablas registradas ({len(tables)}): {', '.join(tables)}")
-        print("[MIGRATE] Migración completada correctamente sin pérdida de datos.")
+        logger.info("[MIGRATE] Tablas registradas (%d): %s", len(tables), ", ".join(tables))
+        logger.info("[MIGRATE] Migración Alembic completada correctamente.")
 
 
 if __name__ == "__main__":

@@ -1,8 +1,44 @@
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import UserMixin
 from datetime import datetime, timezone
+from flask_login import UserMixin
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import MetaData
 
-db = SQLAlchemy()
+NAMING_CONVENTION = {
+    "ix": "ix_%(column_0_label)s",
+    "uq": "uq_%(table_name)s_%(column_0_name)s",
+    "ck": "ck_%(table_name)s_%(constraint_name)s",
+    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+    "pk": "pk_%(table_name)s",
+}
+
+db = SQLAlchemy(metadata=MetaData(naming_convention=NAMING_CONVENTION))
+
+
+def utcnow():
+    """Devuelve la fecha y hora actual siempre en UTC (offset-aware)."""
+    return datetime.now(timezone.utc)
+
+
+def ensure_utc(dt):
+    """Normaliza cualquier datetime (naive o aware) a UTC offset-aware."""
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
+
+
+class UTCDateTime(db.TypeDecorator):
+    """Columna de fecha/hora UTC consistente entre PostgreSQL (TIMESTAMPTZ) y SQLite."""
+
+    impl = db.DateTime(timezone=True)
+    cache_ok = True
+
+    def process_bind_param(self, value, dialect):
+        return ensure_utc(value)
+
+    def process_result_value(self, value, dialect):
+        return ensure_utc(value)
 
 
 class Classroom(db.Model):
@@ -12,20 +48,20 @@ class Classroom(db.Model):
     name = db.Column(db.String(100), nullable=False)
     code = db.Column(db.String(20), unique=True, nullable=False, index=True)
     teacher_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = db.Column(UTCDateTime, default=utcnow, index=True)
 
 
 class User(UserMixin, db.Model):
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    email = db.Column(db.String(120), nullable=True)
+    username = db.Column(db.String(80), unique=True, nullable=False, index=True)
+    email = db.Column(db.String(120), unique=True, nullable=True, index=True)
     password_hash = db.Column(db.String(255), nullable=False)
-    role = db.Column(db.String(20), default="student")  # 'student', 'teacher' (Profesor) or 'superadmin'
+    role = db.Column(db.String(20), default="student", index=True)  # 'student', 'teacher' (Profesor) or 'superadmin'
     failed_login_attempts = db.Column(db.Integer, default=0)
-    locked_until = db.Column(db.DateTime, nullable=True)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    locked_until = db.Column(UTCDateTime, nullable=True)
+    created_at = db.Column(UTCDateTime, default=utcnow, index=True)
 
     # Aislamiento por sección / grupo (1 a N: cada estudiante pertenece a una sección)
     section_id = db.Column(
@@ -36,13 +72,14 @@ class User(UserMixin, db.Model):
     )
 
     # Borrado lógico (Soft Delete: Suspender / Restaurar)
-    is_suspended = db.Column(db.Boolean, default=False, nullable=False)
-    suspended_at = db.Column(db.DateTime, nullable=True)
+    is_suspended = db.Column(db.Boolean, default=False, nullable=False, index=True)
+    suspended_at = db.Column(UTCDateTime, nullable=True)
     suspended_reason = db.Column(db.Text, nullable=True)
     suspended_by = db.Column(
         db.Integer,
         db.ForeignKey("users.id", use_alter=True, name="fk_users_suspended_by"),
         nullable=True,
+        index=True,
     )
 
     @property
@@ -91,48 +128,57 @@ class AuditLog(db.Model):
     section_id = db.Column(db.Integer, db.ForeignKey("classrooms.id"), nullable=True, index=True)
     reason = db.Column(db.Text, nullable=True)
     details = db.Column(db.Text, nullable=True)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), index=True)
+    created_at = db.Column(UTCDateTime, default=utcnow, index=True)
 
 
 class LessonProgress(db.Model):
     __tablename__ = "lesson_progress"
+    __table_args__ = (
+        db.UniqueConstraint("user_id", "lesson_id", name="uq_lesson_progress_user_lesson"),
+    )
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    lesson_id = db.Column(db.String(100), nullable=False)
-    completed = db.Column(db.Boolean, default=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
+    lesson_id = db.Column(db.String(100), nullable=False, index=True)
+    completed = db.Column(db.Boolean, default=False, index=True)
     score = db.Column(db.Integer, default=0)  # XP gained
     time_spent = db.Column(db.Integer, default=0)  # in seconds
-    completed_at = db.Column(db.DateTime, nullable=True)
+    completed_at = db.Column(UTCDateTime, nullable=True, index=True)
 
 
 class ExerciseAttempt(db.Model):
     __tablename__ = "exercise_attempts"
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    lesson_id = db.Column(db.String(100), nullable=False)
-    exercise_id = db.Column(db.String(100), nullable=False)
-    passed = db.Column(db.Boolean, default=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
+    lesson_id = db.Column(db.String(100), nullable=False, index=True)
+    exercise_id = db.Column(db.String(100), nullable=False, index=True)
+    passed = db.Column(db.Boolean, default=False, index=True)
     answer = db.Column(db.Text, nullable=True)
-    attempted_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    attempted_at = db.Column(UTCDateTime, default=utcnow)
 
 
 class Achievement(db.Model):
     __tablename__ = "achievements"
+    __table_args__ = (
+        db.UniqueConstraint("user_id", "badge_id", name="uq_achievements_user_badge"),
+    )
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    badge_id = db.Column(db.String(100), nullable=False)
-    unlocked_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
+    badge_id = db.Column(db.String(100), nullable=False, index=True)
+    unlocked_at = db.Column(UTCDateTime, default=utcnow)
 
 
 class DailyStreak(db.Model):
     __tablename__ = "daily_streaks"
+    __table_args__ = (
+        db.UniqueConstraint("user_id", "date", name="uq_daily_streaks_user_date"),
+    )
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    date = db.Column(db.Date, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
+    date = db.Column(db.Date, nullable=False, index=True)
     lessons_completed = db.Column(db.Integer, default=0)
 
 
@@ -140,41 +186,41 @@ class QuizResult(db.Model):
     __tablename__ = "quiz_results"
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    quiz_id = db.Column(db.String(100), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
+    quiz_id = db.Column(db.String(100), nullable=False, index=True)
     score = db.Column(db.Integer, default=0)
     total = db.Column(db.Integer, default=0)
     time_taken = db.Column(db.Integer, nullable=True)
-    completed_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    completed_at = db.Column(UTCDateTime, default=utcnow, index=True)
 
 
 class PracticeSubmission(db.Model):
     __tablename__ = "practice_submissions"
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    problem_id = db.Column(db.String(100), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
+    problem_id = db.Column(db.String(100), nullable=False, index=True)
     code = db.Column(db.Text, nullable=False)
-    passed = db.Column(db.Boolean, default=False)
+    passed = db.Column(db.Boolean, default=False, index=True)
     tests_passed = db.Column(db.Integer, default=0)
     tests_total = db.Column(db.Integer, default=0)
-    submitted_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    submitted_at = db.Column(UTCDateTime, default=utcnow, index=True)
 
 
 class SectionEvaluation(db.Model):
     __tablename__ = "section_evaluations"
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    section_id = db.Column(db.String(100), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
+    section_id = db.Column(db.String(100), nullable=False, index=True)
     score = db.Column(db.Integer, default=0)
     total = db.Column(db.Integer, default=0)
     percentage = db.Column(db.Float, default=0.0)
-    passed = db.Column(db.Boolean, default=False)
+    passed = db.Column(db.Boolean, default=False, index=True)
     time_taken = db.Column(db.Integer, nullable=True)
     attempt_number = db.Column(db.Integer, default=1)
     details_json = db.Column(db.Text, nullable=True)
-    completed_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    completed_at = db.Column(UTCDateTime, default=utcnow)
 
 
 class EvaluationSession(db.Model):
@@ -184,18 +230,18 @@ class EvaluationSession(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
     section_key = db.Column(db.String(100), nullable=False, index=True)
     question_ids_json = db.Column(db.Text, nullable=False)
-    started_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
-    expires_at = db.Column(db.DateTime, nullable=False)
-    submitted = db.Column(db.Boolean, default=False, nullable=False)
+    started_at = db.Column(UTCDateTime, default=utcnow, nullable=False)
+    expires_at = db.Column(UTCDateTime, nullable=False)
+    submitted = db.Column(db.Boolean, default=False, nullable=False, index=True)
 
 
 class PasswordResetCode(db.Model):
     __tablename__ = "password_reset_codes"
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
     code = db.Column(db.String(6), nullable=False)
-    expires_at = db.Column(db.DateTime, nullable=False)
-    used = db.Column(db.Boolean, default=False)
+    expires_at = db.Column(UTCDateTime, nullable=False)
+    used = db.Column(db.Boolean, default=False, index=True)
     failed_attempts = db.Column(db.Integer, default=0, nullable=False)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = db.Column(UTCDateTime, default=utcnow)

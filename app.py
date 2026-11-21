@@ -5,13 +5,19 @@ import hmac
 import html
 from io import StringIO
 import json
+import logging
 import math
 import os
 import random
 import re
 import secrets
+import time
 from datetime import date, datetime, timedelta, timezone
 from urllib.parse import urlparse
+try:
+    from zoneinfo import ZoneInfo
+except ImportError:
+    ZoneInfo = None
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -24,8 +30,9 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_login import (LoginManager, current_user, login_required,
                          login_user, logout_user)
+from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFError, CSRFProtect
-from sqlalchemy import func, or_
+from sqlalchemy import case, distinct, false, func, nullslast, or_
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from email.mime.multipart import MIMEMultipart
@@ -43,9 +50,20 @@ from content_loader import (LESSON_ALIASES, get_lesson, get_lesson_title, get_re
                             get_evaluation_for_section, load_all_evaluations)
 from models import (AuditLog, Classroom, ExerciseAttempt, LessonProgress, User, QuizResult,
                     PracticeSubmission, DailyStreak, SectionEvaluation, EvaluationSession,
-                    PasswordResetCode, db)
+                    PasswordResetCode, db, ensure_utc, utcnow)
 from search_index import search_lessons
 from translator import translate
+
+_log_level_name = (os.environ.get("LOG_LEVEL") or "INFO").strip().upper()
+_log_level = getattr(logging, _log_level_name, logging.INFO)
+logging.basicConfig(
+    level=_log_level,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    datefmt="%Y-%m-%dT%H:%M:%SZ",
+)
+logging.Formatter.converter = time.gmtime
+logger = logging.getLogger("py2java")
+logger.setLevel(_log_level)
 
 app = Flask(__name__)
 is_vercel = bool(os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"))
@@ -65,9 +83,9 @@ if is_production:
         )
 elif not _secret:
     _secret = os.urandom(32).hex()
-    print("[AVISO] SECRET_KEY no configurada en desarrollo local. Usando clave temporal aleatoria.", flush=True)
+    logger.warning("SECRET_KEY no configurada en desarrollo local. Usando clave temporal aleatoria.")
 elif len(_secret) < 32:
-    print("[AVISO] SECRET_KEY tiene menos de 32 caracteres. Usa una clave de al menos 32 caracteres en producción.", flush=True)
+    logger.warning("SECRET_KEY tiene menos de 32 caracteres. Usa una clave de al menos 32 caracteres en producción.")
 
 app.secret_key = _secret
 app.config["SESSION_COOKIE_HTTPONLY"] = True
@@ -235,6 +253,50 @@ else:
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = engine_options
 db.init_app(app)
+migrate = Migrate(app, db, render_as_batch=True)
+
+_APP_TZ_CACHE = {}
+
+
+def _get_app_timezone():
+    """Resuelve la zona horaria operativa (por defecto America/Bogota) para rachas y reportes."""
+    tz_name = (os.environ.get("APP_TIMEZONE") or "America/Bogota").strip() or "America/Bogota"
+    if tz_name in _APP_TZ_CACHE:
+        return _APP_TZ_CACHE[tz_name]
+
+    tz = None
+    if ZoneInfo is not None:
+        try:
+            tz = ZoneInfo(tz_name)
+        except Exception:
+            tz = None
+
+    if tz is None:
+        match = re.fullmatch(r"(?:UTC|GMT)?\s*([+-])(\d{1,2})(?::?(\d{2}))?", tz_name, re.I)
+        if match:
+            sign = 1 if match.group(1) == "+" else -1
+            hours = int(match.group(2))
+            mins = int(match.group(3) or 0)
+            if hours <= 14 and mins < 60:
+                tz = timezone(timedelta(hours=sign * hours, minutes=sign * mins))
+
+    if tz is None:
+        logger.warning("APP_TIMEZONE inválido o sin datos IANA ('%s'); usando UTC.", tz_name)
+        tz = timezone.utc
+
+    _APP_TZ_CACHE[tz_name] = tz
+    return tz
+
+
+def _app_now():
+    """Fecha y hora actual en la zona horaria operativa, derivada siempre de UTC."""
+    return utcnow().astimezone(_get_app_timezone())
+
+
+def _get_app_today():
+    """Fecha calendario actual en la zona horaria operativa (consistente con UTC)."""
+    return _app_now().date()
+
 
 login_manager = LoginManager()
 login_manager.login_view = "login"
@@ -265,51 +327,50 @@ def load_user(user_id):
     try:
         return db.session.get(User, int(user_id))
     except Exception as e:
-        print(f"[ERROR in load_user]: {e}", flush=True)
+        logger.error("Error en load_user(user_id=%s): %s", user_id, e)
         db.session.rollback()
         return None
-
-
-_db_initialized = False
 
 
 def _bootstrap_initial_superadmin():
     """Crea un Super Admin inicial desde variables de entorno SOLO si aún no existe ninguno."""
     existing_sa = User.query.filter_by(role="superadmin").first()
     if existing_sa:
-        return
+        return False
 
     sa_username = (os.environ.get("SUPERADMIN_USERNAME") or "").strip()
     sa_email = (os.environ.get("SUPERADMIN_EMAIL") or "").strip().lower()
     sa_password = os.environ.get("SUPERADMIN_PASSWORD") or ""
 
     if not (sa_username or sa_email or sa_password):
-        print(
-            "[INFO] No existe ninguna cuenta Super Admin. Ejecuta 'flask create-superadmin' "
-            "o define SUPERADMIN_USERNAME, SUPERADMIN_EMAIL y SUPERADMIN_PASSWORD.",
-            flush=True,
+        logger.info(
+            "No existe ninguna cuenta Super Admin. Ejecuta 'flask create-superadmin' "
+            "o define SUPERADMIN_USERNAME, SUPERADMIN_EMAIL y SUPERADMIN_PASSWORD."
         )
-        return
+        return False
 
     if not (sa_username and sa_email and sa_password):
-        print(
-            "[WARNING] Variables de bootstrap de Super Admin incompletas. "
-            "Se requieren SUPERADMIN_USERNAME, SUPERADMIN_EMAIL y SUPERADMIN_PASSWORD.",
-            flush=True,
+        logger.warning(
+            "Variables de bootstrap de Super Admin incompletas. "
+            "Se requieren SUPERADMIN_USERNAME, SUPERADMIN_EMAIL y SUPERADMIN_PASSWORD."
         )
-        return
+        return False
 
     if not _is_valid_username(sa_username):
-        print("[WARNING] SUPERADMIN_USERNAME inválido (debe tener 3-30 caracteres: letras, números, _ o -).", flush=True)
-        return
+        logger.warning(
+            "SUPERADMIN_USERNAME inválido (debe tener 3-30 caracteres: letras, números, _ o -)."
+        )
+        return False
 
     if not _is_valid_email(sa_email):
-        print("[WARNING] SUPERADMIN_EMAIL no tiene un formato de correo válido.", flush=True)
-        return
+        logger.warning("SUPERADMIN_EMAIL no tiene un formato de correo válido.")
+        return False
 
     if len(sa_password) < MIN_PASSWORD_LENGTH:
-        print(f"[WARNING] SUPERADMIN_PASSWORD debe tener al menos {MIN_PASSWORD_LENGTH} caracteres.", flush=True)
-        return
+        logger.warning(
+            "SUPERADMIN_PASSWORD debe tener al menos %d caracteres.", MIN_PASSWORD_LENGTH
+        )
+        return False
 
     collision = User.query.filter(
         or_(
@@ -318,98 +379,32 @@ def _bootstrap_initial_superadmin():
         )
     ).first()
     if collision:
-        print(
-            "[WARNING] No se creó Super Admin desde variables de entorno porque el usuario o correo ya existe.",
-            flush=True,
+        logger.warning(
+            "No se creó Super Admin desde variables de entorno porque el usuario o correo ya existe."
         )
-        return
+        return False
 
     superadmin_user = User(
         username=sa_username,
-        email=sa_email,
+        email=sa_email or None,
         password_hash=generate_password_hash(sa_password),
         role="superadmin",
         is_suspended=False,
     )
     db.session.add(superadmin_user)
     db.session.commit()
-    print(f"[INFO] Cuenta Super Admin inicial '{sa_username}' creada desde variables de entorno.", flush=True)
+    logger.info("Cuenta Super Admin inicial '%s' creada desde variables de entorno.", sa_username)
+    return True
 
 
-def init_db():
-    global _db_initialized
-    with app.app_context():
-        try:
-            db.create_all()
-            # Migración automática idempotente: asegura columnas nuevas sin perder datos
-            if is_postgres:
-                try:
-                    with db.engine.begin() as conn:
-                        conn.execute(db.text(
-                            "ALTER TABLE users "
-                            "ADD COLUMN IF NOT EXISTS email VARCHAR(120), "
-                            "ADD COLUMN IF NOT EXISTS failed_login_attempts INTEGER DEFAULT 0, "
-                            "ADD COLUMN IF NOT EXISTS locked_until TIMESTAMP, "
-                            "ADD COLUMN IF NOT EXISTS section_id INTEGER REFERENCES classrooms(id), "
-                            "ADD COLUMN IF NOT EXISTS is_suspended BOOLEAN DEFAULT FALSE NOT NULL, "
-                            "ADD COLUMN IF NOT EXISTS suspended_at TIMESTAMP, "
-                            "ADD COLUMN IF NOT EXISTS suspended_reason TEXT, "
-                            "ADD COLUMN IF NOT EXISTS suspended_by INTEGER REFERENCES users(id)"
-                        ))
-                except Exception as mig_err:
-                    print(f"[WARNING] Migración Postgres users: {mig_err}", flush=True)
-                try:
-                    with db.engine.begin() as conn:
-                        conn.execute(db.text(
-                            "ALTER TABLE password_reset_codes "
-                            "ADD COLUMN IF NOT EXISTS failed_attempts INTEGER DEFAULT 0 NOT NULL"
-                        ))
-                except Exception as mig_err:
-                    print(f"[WARNING] Migración Postgres password_reset_codes: {mig_err}", flush=True)
-            else:
-                for col_def in [
-                    "email VARCHAR(120)",
-                    "failed_login_attempts INTEGER DEFAULT 0",
-                    "locked_until TIMESTAMP",
-                    "section_id INTEGER REFERENCES classrooms(id)",
-                    "is_suspended BOOLEAN DEFAULT 0",
-                    "suspended_at TIMESTAMP",
-                    "suspended_reason TEXT",
-                    "suspended_by INTEGER REFERENCES users(id)",
-                ]:
-                    try:
-                        with db.engine.begin() as conn:
-                            conn.execute(db.text(f"ALTER TABLE users ADD COLUMN {col_def}"))
-                    except Exception:
-                        pass
-                try:
-                    with db.engine.begin() as conn:
-                        conn.execute(db.text("UPDATE users SET is_suspended = 0 WHERE is_suspended IS NULL"))
-                except Exception:
-                    pass
-                try:
-                    with db.engine.begin() as conn:
-                        conn.execute(db.text("ALTER TABLE password_reset_codes ADD COLUMN failed_attempts INTEGER DEFAULT 0"))
-                except Exception:
-                    pass
-                try:
-                    with db.engine.begin() as conn:
-                        conn.execute(db.text("UPDATE password_reset_codes SET failed_attempts = 0 WHERE failed_attempts IS NULL"))
-                except Exception:
-                    pass
-
-            try:
-                _bootstrap_initial_superadmin()
-            except Exception as sa_err:
-                print(f"[WARNING] No se pudo verificar Super Admin inicial: {sa_err}", flush=True)
-                try:
-                    db.session.rollback()
-                except Exception:
-                    pass
-            _db_initialized = True
-            print("[INFO] db.create_all() y migraciones ejecutadas con éxito.", flush=True)
-        except Exception as e:
-            print(f"[WARNING] db.create_all falló durante el inicio: {e}", flush=True)
+@app.cli.command("bootstrap-superadmin")
+def bootstrap_superadmin_command():
+    """Crea la cuenta Super Admin inicial desde variables de entorno si aún no existe."""
+    created = _bootstrap_initial_superadmin()
+    if created:
+        click.echo("Super Admin inicial creado desde variables de entorno.")
+    else:
+        click.echo("No se creó ningún Super Admin nuevo (revisa los logs para detalles).")
 
 
 @app.cli.command("create-superadmin")
@@ -423,10 +418,7 @@ def init_db():
     help="Contraseña (mínimo 8 caracteres).",
 )
 def create_superadmin_command(username, email, password):
-    """Crea una cuenta Super Admin de forma segura desde la CLI."""
-    if not _db_initialized:
-        init_db()
-
+    """Crea una cuenta Super Admin de forma segura desde la CLI (requiere 'flask db upgrade' previo)."""
     clean_username = (username or "").strip()
     clean_email = (email or "").strip().lower()
 
@@ -446,26 +438,15 @@ def create_superadmin_command(username, email, password):
 
     new_sa = User(
         username=clean_username,
-        email=clean_email,
+        email=clean_email or None,
         password_hash=generate_password_hash(password),
         role="superadmin",
         is_suspended=False,
     )
     db.session.add(new_sa)
     db.session.commit()
+    logger.info("Super Admin '%s' creado mediante CLI.", clean_username)
     click.echo(f"Super Admin '{clean_username}' creado correctamente.")
-
-
-if not is_vercel:
-    init_db()
-
-
-@app.before_request
-def _ensure_serverless_db():
-    if not _db_initialized and is_vercel:
-        if request.path.startswith("/static/"):
-            return
-        init_db()
 
 
 @app.before_request
@@ -908,7 +889,7 @@ def lesson(lesson_id):
                     prereq_lesson_id = prev_lesson
                     prereq_lesson_title = get_lesson_title(prev_lesson) or prev_lesson
         except Exception as e:
-            print(f"[WARNING] Prerequisite check failed (DB issue): {e}", flush=True)
+            logger.warning("Prerequisite check failed (DB issue): %s", e)
             db.session.rollback()
 
     return render_template(
@@ -1408,13 +1389,13 @@ def api_leccion():
             lesson_id=lesson_id,
             completed=True,
             score=XP_PER_LESSON,
-            completed_at=datetime.now(timezone.utc),
+            completed_at=utcnow(),
         )
         db.session.add(lp)
         xp_gained = XP_PER_LESSON
     elif not lp.completed:
         lp.completed = True
-        lp.completed_at = datetime.now(timezone.utc)
+        lp.completed_at = utcnow()
         lp.score = XP_PER_LESSON
         xp_gained = XP_PER_LESSON
 
@@ -1428,44 +1409,143 @@ def api_leccion():
 
 
 def record_daily_activity(user_id):
-    """Registra la actividad diaria del usuario para el cálculo de racha."""
+    """Registra la actividad diaria del usuario en la zona horaria operativa para el cálculo de racha."""
     if not user_id:
         return
-    today = date.today()
+    today = _get_app_today()
     existing = DailyStreak.query.filter_by(user_id=user_id, date=today).first()
     if existing:
-        existing.lessons_completed += 1
+        existing.lessons_completed = (existing.lessons_completed or 0) + 1
     else:
         streak_entry = DailyStreak(user_id=user_id, date=today, lessons_completed=1)
         db.session.add(streak_entry)
 
 
-def calculate_streak(user_id):
-    """Calcula la racha de días consecutivos de actividad."""
-    if not user_id:
+def _compute_streak_from_dates(dates, today):
+    """Calcula la racha consecutiva dada una lista ordenada descendente de fechas únicas."""
+    if not dates:
         return 0
-    streaks = (
-        DailyStreak.query.filter_by(user_id=user_id)
-        .order_by(DailyStreak.date.desc())
-        .all()
-    )
-    if not streaks:
+    yesterday = today - timedelta(days=1)
+    first_date = dates[0]
+    if first_date != today and first_date != yesterday:
         return 0
-
-    today = date.today()
-    # Allow today or yesterday as the start
-    first_date = streaks[0].date
-    if first_date != today and first_date != today - timedelta(days=1):
-        return 0
-
     count = 1
-    for i in range(1, len(streaks)):
-        expected = first_date - timedelta(days=i)
-        if streaks[i].date == expected:
+    for i in range(1, len(dates)):
+        if dates[i] == first_date - timedelta(days=i):
             count += 1
         else:
             break
     return count
+
+
+def calculate_streak(user_id):
+    """Calcula la racha de días consecutivos de actividad usando la zona horaria operativa."""
+    if not user_id:
+        return 0
+    rows = (
+        db.session.query(DailyStreak.date)
+        .filter_by(user_id=user_id)
+        .distinct()
+        .order_by(DailyStreak.date.desc())
+        .all()
+    )
+    return _compute_streak_from_dates([r[0] for r in rows], _get_app_today())
+
+
+def _get_bulk_streaks(user_ids):
+    """Calcula la racha actual para un conjunto acotado de IDs de usuario en una sola consulta."""
+    if not user_ids:
+        return {}
+    rows = (
+        db.session.query(DailyStreak.user_id, DailyStreak.date)
+        .filter(DailyStreak.user_id.in_(user_ids))
+        .distinct()
+        .order_by(DailyStreak.user_id.asc(), DailyStreak.date.desc())
+        .all()
+    )
+    dates_by_user = {}
+    for uid, day in rows:
+        dates_by_user.setdefault(uid, []).append(day)
+
+    today = _get_app_today()
+    return {
+        uid: _compute_streak_from_dates(dates_by_user.get(uid, []), today)
+        for uid in user_ids
+    }
+
+
+def _get_classroom_student_counts(section_ids=None):
+    """Cuenta estudiantes por sección en una sola consulta agregada GROUP BY (elimina N+1)."""
+    query = db.session.query(User.section_id, func.count(User.id)).filter(
+        User.role == "student",
+        User.section_id.isnot(None),
+    )
+    if section_ids is not None:
+        if not section_ids:
+            return {}
+        query = query.filter(User.section_id.in_(section_ids))
+    return {sec_id: int(cnt) for sec_id, cnt in query.group_by(User.section_id).all()}
+
+
+def _build_student_stats_subqueries(user_ids_select=None):
+    """Construye subconsultas GROUP BY por usuario para calcular XP y lecciones directamente en SQL."""
+    course_ids = _course_lesson_ids()
+    valid_exercise_ids = get_valid_exercise_ids()
+    valid_practice_ids = get_valid_practice_ids()
+    valid_eval_keys = set(SECTION_EVAL_MAP.keys())
+
+    lp_q = db.session.query(
+        LessonProgress.user_id.label("user_id"),
+        func.count(distinct(LessonProgress.lesson_id)).label("completed_cnt"),
+    ).filter(
+        LessonProgress.completed.is_(True),
+        LessonProgress.lesson_id.in_(course_ids) if course_ids else false(),
+    )
+    if user_ids_select is not None:
+        lp_q = lp_q.filter(LessonProgress.user_id.in_(user_ids_select))
+    lp_sub = lp_q.group_by(LessonProgress.user_id).subquery()
+
+    ex_q = db.session.query(
+        ExerciseAttempt.user_id.label("user_id"),
+        func.count(distinct(ExerciseAttempt.exercise_id)).label("ex_cnt"),
+    ).filter(
+        ExerciseAttempt.passed.is_(True),
+        ExerciseAttempt.exercise_id.in_(valid_exercise_ids) if valid_exercise_ids else false(),
+    )
+    if user_ids_select is not None:
+        ex_q = ex_q.filter(ExerciseAttempt.user_id.in_(user_ids_select))
+    ex_sub = ex_q.group_by(ExerciseAttempt.user_id).subquery()
+
+    pr_q = db.session.query(
+        PracticeSubmission.user_id.label("user_id"),
+        func.count(distinct(PracticeSubmission.problem_id)).label("pr_cnt"),
+    ).filter(
+        PracticeSubmission.passed.is_(True),
+        PracticeSubmission.problem_id.in_(valid_practice_ids) if valid_practice_ids else false(),
+    )
+    if user_ids_select is not None:
+        pr_q = pr_q.filter(PracticeSubmission.user_id.in_(user_ids_select))
+    pr_sub = pr_q.group_by(PracticeSubmission.user_id).subquery()
+
+    ev_q = db.session.query(
+        SectionEvaluation.user_id.label("user_id"),
+        func.count(distinct(SectionEvaluation.section_id)).label("ev_cnt"),
+    ).filter(
+        SectionEvaluation.passed.is_(True),
+        SectionEvaluation.section_id.in_(valid_eval_keys) if valid_eval_keys else false(),
+    )
+    if user_ids_select is not None:
+        ev_q = ev_q.filter(SectionEvaluation.user_id.in_(user_ids_select))
+    ev_sub = ev_q.group_by(SectionEvaluation.user_id).subquery()
+
+    completed_expr = func.coalesce(lp_sub.c.completed_cnt, 0)
+    total_xp_expr = (
+        completed_expr * XP_PER_LESSON
+        + func.coalesce(ex_sub.c.ex_cnt, 0) * XP_PER_EXERCISE
+        + func.coalesce(pr_sub.c.pr_cnt, 0) * XP_PER_PRACTICE
+        + func.coalesce(ev_sub.c.ev_cnt, 0) * XP_PER_EVALUATION
+    )
+    return lp_sub, ex_sub, pr_sub, ev_sub, completed_expr, total_xp_expr
 
 
 def get_progress_summary(user):
@@ -1518,7 +1598,7 @@ def get_progress_summary(user):
             "streak": streak,
         }
     except Exception as e:
-        print(f"[WARNING] get_progress_summary error: {e}", flush=True)
+        logger.warning("get_progress_summary error: %s", e)
         try:
             db.session.rollback()
         except Exception:
@@ -1546,7 +1626,7 @@ def get_bulk_progress_summaries(users):
 
         all_progress = LessonProgress.query.filter(
             LessonProgress.user_id.in_(user_ids),
-            LessonProgress.completed == True,
+            LessonProgress.completed.is_(True),
         ).all()
         for p in all_progress:
             if p.lesson_id in course_ids:
@@ -1554,7 +1634,7 @@ def get_bulk_progress_summaries(users):
 
         all_ex = (
             db.session.query(ExerciseAttempt.user_id, ExerciseAttempt.exercise_id)
-            .filter(ExerciseAttempt.user_id.in_(user_ids), ExerciseAttempt.passed == True)
+            .filter(ExerciseAttempt.user_id.in_(user_ids), ExerciseAttempt.passed.is_(True))
             .distinct()
             .all()
         )
@@ -1564,7 +1644,7 @@ def get_bulk_progress_summaries(users):
 
         all_pr = (
             db.session.query(PracticeSubmission.user_id, PracticeSubmission.problem_id)
-            .filter(PracticeSubmission.user_id.in_(user_ids), PracticeSubmission.passed == True)
+            .filter(PracticeSubmission.user_id.in_(user_ids), PracticeSubmission.passed.is_(True))
             .distinct()
             .all()
         )
@@ -1574,7 +1654,7 @@ def get_bulk_progress_summaries(users):
 
         all_ev = (
             db.session.query(SectionEvaluation.user_id, SectionEvaluation.section_id)
-            .filter(SectionEvaluation.user_id.in_(user_ids), SectionEvaluation.passed == True)
+            .filter(SectionEvaluation.user_id.in_(user_ids), SectionEvaluation.passed.is_(True))
             .distinct()
             .all()
         )
@@ -1582,6 +1662,7 @@ def get_bulk_progress_summaries(users):
             if sec_id in valid_eval_keys:
                 ev_by_user[uid].add(sec_id)
 
+        streaks_map = _get_bulk_streaks(user_ids)
         for uid in user_ids:
             comp = lessons_by_user[uid]
             result[uid]["completed_lessons"] = sorted(comp)
@@ -1591,33 +1672,9 @@ def get_bulk_progress_summaries(users):
                 + len(pr_by_user[uid]) * XP_PER_PRACTICE
                 + len(ev_by_user[uid]) * XP_PER_EVALUATION
             )
-
-        all_streaks = (
-            DailyStreak.query.filter(DailyStreak.user_id.in_(user_ids))
-            .order_by(DailyStreak.user_id, DailyStreak.date.desc())
-            .all()
-        )
-        streaks_by_user = {}
-        for s in all_streaks:
-            streaks_by_user.setdefault(s.user_id, []).append(s.date)
-
-        today = date.today()
-        yesterday = today - timedelta(days=1)
-        for uid, dates in streaks_by_user.items():
-            if not dates:
-                continue
-            first_date = dates[0]
-            if first_date != today and first_date != yesterday:
-                continue
-            count = 1
-            for i in range(1, len(dates)):
-                if dates[i] == first_date - timedelta(days=i):
-                    count += 1
-                else:
-                    break
-            result[uid]["streak"] = count
+            result[uid]["streak"] = streaks_map.get(uid, 0)
     except Exception as e:
-        print(f"[WARNING] get_bulk_progress_summaries error: {e}", flush=True)
+        logger.warning("get_bulk_progress_summaries error: %s", e)
         db.session.rollback()
 
     return result
@@ -1937,7 +1994,7 @@ def api_db_status():
         status["ok"] = True
         return jsonify(status), 200
     except Exception as e:
-        print(f"[ERROR in api_db_status]: {e}", flush=True)
+        logger.error("Error en api_db_status: %s", e)
         try:
             db.session.rollback()
         except Exception:
@@ -1972,7 +2029,7 @@ def login():
                 or User.query.filter(func.lower(User.username) == username.lower()).first()
             )
         except Exception as e:
-            print(f"[ERROR in login]: {e}", flush=True)
+            logger.error("Error en login al consultar usuario: %s", e)
             db.session.rollback()
             return render_template(
                 "login.html",
@@ -2146,15 +2203,15 @@ def send_recovery_email(to_email, username, code):
             if 200 <= resp.status_code < 300:
                 return True, None
             err_txt = resp.text[:300]
-            print(f"[ERROR EMAIL RESEND] HTTP {resp.status_code}: {err_txt}", flush=True)
+            logger.error("Error de envío Resend HTTP %s: %s", resp.status_code, err_txt)
             return False, "No se pudo enviar el correo de recuperación en este momento. Intenta de nuevo más tarde."
         except Exception as e:
-            print(f"[ERROR EMAIL RESEND] {type(e).__name__}: {e}", flush=True)
+            logger.error("Error de envío Resend (%s): %s", type(e).__name__, e)
             return False, "El servicio de correo tardó demasiado en responder. Intenta de nuevo más tarde."
 
     # Opción 2: SMTP sobre IPv4 (Gmail, Outlook, Brevo SMTP, etc.)
     if not mail_server or not mail_username or not mail_password:
-        print(f"[AVISO RECUPERACIÓN] Proveedor de correo no configurado para recuperación de '{username}'.", flush=True)
+        logger.warning("Proveedor de correo no configurado para recuperación de '%s'.", username)
         return False, "SMTP no configurado"
 
     try:
@@ -2181,13 +2238,13 @@ def send_recovery_email(to_email, username, code):
                 server.sendmail(mail_username, [to_email], msg.as_string())
         return True, None
     except smtplib.SMTPAuthenticationError as e:
-        print(f"[ERROR EMAIL SMTP AUTH] {e}", flush=True)
+        logger.error("Error de autenticación SMTP: %s", e)
         return False, "No se pudo enviar el correo de recuperación en este momento. Contacta al administrador."
     except (socket.timeout, TimeoutError) as e:
-        print(f"[ERROR EMAIL SMTP TIMEOUT] {e}", flush=True)
+        logger.error("Timeout en servidor SMTP: %s", e)
         return False, "El servicio de correo tardó demasiado en responder. Intenta de nuevo más tarde."
     except Exception as e:
-        print(f"[ERROR EMAIL SMTP] Error al enviar correo a {to_email}: {type(e).__name__}: {e}", flush=True)
+        logger.error("Error SMTP al enviar correo a %s (%s): %s", to_email, type(e).__name__, e)
         return False, "No se pudo enviar el correo de recuperación en este momento. Intenta de nuevo más tarde."
 
 
@@ -2260,7 +2317,7 @@ def register():
             if role == "student" and class_code:
                 target_classroom = Classroom.query.filter_by(code=class_code).first()
         except Exception as e:
-            print(f"[ERROR in register query]: {e}", flush=True)
+            logger.error("Error en register query: %s", e)
             db.session.rollback()
             return render_template(
                 "register.html",
@@ -2306,7 +2363,7 @@ def register():
             hashed_pw = generate_password_hash(password)
             new_user = User(
                 username=username,
-                email=email,
+                email=email or None,
                 password_hash=hashed_pw,
                 role=role,
                 section_id=target_classroom.id if target_classroom else None,
@@ -2329,7 +2386,7 @@ def register():
                 url_for("teacher_dashboard" if role == "teacher" else "dashboard")
             )
         except Exception as e:
-            print(f"[ERROR in register commit]: {e}", flush=True)
+            logger.error("Error en register commit: %s", e)
             db.session.rollback()
             return render_template(
                 "register.html",
@@ -2383,7 +2440,7 @@ def forgot_password():
 
         # Generar código criptográficamente seguro de 6 dígitos numéricos
         code = f"{secrets.randbelow(900000) + 100000}"
-        expires_at = datetime.now(timezone.utc) + timedelta(minutes=15)
+        expires_at = utcnow() + timedelta(minutes=15)
 
         # Invalidar códigos anteriores no usados
         PasswordResetCode.query.filter_by(user_id=user.id, used=False).update({"used": True})
@@ -2492,12 +2549,9 @@ def reset_password():
                 categories=LESSON_CATEGORIES,
             )
 
-        # Verificar expiración (con soporte timezone)
-        record_expiry = active_record.expires_at
-        if record_expiry.tzinfo is None:
-            record_expiry = record_expiry.replace(tzinfo=timezone.utc)
-
-        now_utc = datetime.now(timezone.utc)
+        # Verificar expiración en UTC consistente
+        record_expiry = ensure_utc(active_record.expires_at)
+        now_utc = utcnow()
         if record_expiry < now_utc:
             active_record.used = True
             db.session.commit()
@@ -2580,6 +2634,7 @@ def logout():
 
 ADMIN_STUDENTS_PER_PAGE = 20
 ADMIN_AUDIT_PER_PAGE = 10
+LEADERBOARD_PER_PAGE = 50
 
 
 def _get_teacher_scoped_students(teacher_id, section_id_filter=None):
@@ -2623,21 +2678,20 @@ def teacher_dashboard():
     if sort_by not in ("xp_desc", "xp_asc", "progress_desc", "progress_asc", "name_asc", "name_desc", "date_desc", "date_asc"):
         sort_by = "xp_desc"
     page = max(1, _safe_int(request.args.get("page", 1), 1))
-    audit_page = max(1, _safe_int(request.args.get("audit_page", 1), 1))
 
     classrooms = []
     classroom_map = {}
     classroom_counts = {}
-    student_rows = []
-    all_scoped_students = []
+    paginated_students = []
+    total_scoped_students = 0
+    total_filtered = 0
+    total_pages = 1
     total_xp = 0
     total_completed = 0
     active_count = 0
     suspended_count = 0
     level_counts = {}
-    audit_logs = []
-    audit_total = 0
-    audit_total_pages = 1
+    active_section_id = None
     course_ids = _course_lesson_ids()
     total_course_lessons = len(course_ids) or 1
 
@@ -2650,34 +2704,59 @@ def teacher_dashboard():
         active_section_id = section_filter if section_filter in classroom_map else None
 
         if allowed_ids:
-            # Conteo de estudiantes por sección del docente
-            for c_id in allowed_ids:
-                classroom_counts[c_id] = User.query.filter_by(role="student", section_id=c_id).count()
+            # 1) Conteo de estudiantes por sección en 1 consulta agregada GROUP BY
+            classroom_counts = _get_classroom_student_counts(allowed_ids)
 
-            # 1) Métricas generales del docente (sobre sus grupos o el grupo filtrado)
             scope_ids = [active_section_id] if active_section_id else allowed_ids
-            all_scoped_students = User.query.filter(
-                User.role == "student",
-                User.section_id.in_(scope_ids),
-            ).all()
-            all_bulk = get_bulk_progress_summaries(all_scoped_students)
-            for s in all_scoped_students:
-                st = all_bulk.get(s.id, {"completed_lessons": [], "total_xp": 0, "streak": 0})
-                lvl = get_level_info(st["total_xp"])
-                completed_cnt = len(set(st["completed_lessons"]) & course_ids)
-                total_xp += st["total_xp"]
-                total_completed += completed_cnt
-                if getattr(s, "is_suspended", False):
-                    suspended_count += 1
-                else:
-                    active_count += 1
-                level_counts[lvl["title"]] = level_counts.get(lvl["title"], 0) + 1
-
-            # 2) Consulta filtrada en SQL (aislamiento + búsqueda username/email + estado cuenta)
-            filtered_q = User.query.filter(
+            scope_user_ids_select = db.select(User.id).where(
                 User.role == "student",
                 User.section_id.in_(scope_ids),
             )
+            lp_sub, ex_sub, pr_sub, ev_sub, completed_expr, total_xp_expr = (
+                _build_student_stats_subqueries(scope_user_ids_select)
+            )
+
+            base_scope_q = (
+                db.session.query(User)
+                .outerjoin(lp_sub, lp_sub.c.user_id == User.id)
+                .outerjoin(ex_sub, ex_sub.c.user_id == User.id)
+                .outerjoin(pr_sub, pr_sub.c.user_id == User.id)
+                .outerjoin(ev_sub, ev_sub.c.user_id == User.id)
+                .filter(User.role == "student", User.section_id.in_(scope_ids))
+            )
+
+            # 2) Métricas agregadas del alcance en SQL (sin cargar todos los estudiantes en RAM)
+            agg_total, agg_suspended, agg_xp, agg_completed = (
+                base_scope_q.with_entities(
+                    func.count(User.id),
+                    func.coalesce(func.sum(case((User.is_suspended.is_(True), 1), else_=0)), 0),
+                    func.coalesce(func.sum(total_xp_expr), 0),
+                    func.coalesce(func.sum(completed_expr), 0),
+                ).one()
+            )
+            total_scoped_students = int(agg_total or 0)
+            suspended_count = int(agg_suspended or 0)
+            active_count = total_scoped_students - suspended_count
+            total_xp = int(agg_xp or 0)
+            total_completed = int(agg_completed or 0)
+
+            # Distribución por nivel en SQL (máximo 20 filas agregadas)
+            level_bucket_expr = case(
+                *[(total_xp_expr < lv * 100, lv) for lv in range(1, 20)],
+                else_=20,
+            )
+            level_dist_rows = (
+                base_scope_q.with_entities(level_bucket_expr.label("lvl"), func.count(User.id))
+                .group_by(level_bucket_expr)
+                .order_by(level_bucket_expr.asc())
+                .all()
+            )
+            for lv_num, lv_cnt in level_dist_rows:
+                lv_title = LEVEL_TITLES.get(int(lv_num), "Iniciado")
+                level_counts[lv_title] = int(lv_cnt or 0)
+
+            # 3) Filtros, ordenamiento y paginación directamente en SQL
+            filtered_q = base_scope_q
             if q:
                 like_pattern = f"%{q}%"
                 filtered_q = filtered_q.filter(
@@ -2690,81 +2769,88 @@ def teacher_dashboard():
                 filtered_q = filtered_q.filter(User.is_suspended.is_(False))
             elif status_filter == "suspended":
                 filtered_q = filtered_q.filter(User.is_suspended.is_(True))
+            elif status_filter == "with_progress":
+                filtered_q = filtered_q.filter(or_(completed_expr > 0, total_xp_expr > 0))
+            elif status_filter == "no_activity":
+                filtered_q = filtered_q.filter(completed_expr == 0, total_xp_expr == 0)
 
-            matched_students = filtered_q.all()
-            matched_bulk = get_bulk_progress_summaries(matched_students)
+            if level_filter >= 20:
+                filtered_q = filtered_q.filter(total_xp_expr >= 1900)
+            elif level_filter >= 1:
+                filtered_q = filtered_q.filter(
+                    total_xp_expr >= (level_filter - 1) * 100,
+                    total_xp_expr < level_filter * 100,
+                )
 
-            for s in matched_students:
-                st = matched_bulk.get(s.id, {"completed_lessons": [], "total_xp": 0, "streak": 0})
-                lvl = get_level_info(st["total_xp"])
-                completed_cnt = len(set(st["completed_lessons"]) & course_ids)
+            total_filtered = int(filtered_q.with_entities(func.count(User.id)).scalar() or 0)
+            total_pages = max(1, math.ceil(total_filtered / ADMIN_STUDENTS_PER_PAGE))
+            if page > total_pages:
+                page = total_pages
 
-                # Filtros calculados: nivel y actividad/progreso
-                if level_filter and lvl["level"] != level_filter:
-                    continue
-                if status_filter == "with_progress" and completed_cnt == 0 and st["total_xp"] == 0:
-                    continue
-                if status_filter == "no_activity" and (completed_cnt > 0 or st["total_xp"] > 0):
-                    continue
+            order_map = {
+                "xp_desc": (total_xp_expr.desc(), func.lower(User.username).asc(), User.id.asc()),
+                "xp_asc": (total_xp_expr.asc(), func.lower(User.username).asc(), User.id.asc()),
+                "progress_desc": (completed_expr.desc(), total_xp_expr.desc(), func.lower(User.username).asc()),
+                "progress_asc": (completed_expr.asc(), total_xp_expr.asc(), func.lower(User.username).asc()),
+                "name_asc": (func.lower(User.username).asc(), User.id.asc()),
+                "name_desc": (func.lower(User.username).desc(), User.id.desc()),
+                "date_desc": (nullslast(User.created_at.desc()), User.id.desc()),
+                "date_asc": (nullslast(User.created_at.asc()), User.id.asc()),
+            }
 
+            page_rows = (
+                filtered_q.with_entities(
+                    User,
+                    completed_expr.label("completed_cnt"),
+                    total_xp_expr.label("total_xp"),
+                )
+                .order_by(*order_map[sort_by])
+                .offset((page - 1) * ADMIN_STUDENTS_PER_PAGE)
+                .limit(ADMIN_STUDENTS_PER_PAGE)
+                .all()
+            )
+            page_streaks = _get_bulk_streaks([s.id for s, _, _ in page_rows])
+            app_tz = _get_app_timezone()
+
+            for s, completed_val, xp_val in page_rows:
+                completed_cnt = int(completed_val or 0)
+                xp_int = int(xp_val or 0)
+                lvl = get_level_info(xp_int)
                 cls = classroom_map.get(s.section_id)
-                student_rows.append({
+                created_utc = ensure_utc(s.created_at)
+                suspended_utc = ensure_utc(getattr(s, "suspended_at", None))
+                paginated_students.append({
                     "id": s.id,
                     "username": s.username,
                     "email": s.email or "",
-                    "total_xp": st["total_xp"],
+                    "total_xp": xp_int,
                     "completed": completed_cnt,
                     "progress_pct": round(min(100, completed_cnt * 100 / total_course_lessons), 1),
                     "level": lvl["level"],
                     "title": lvl["title"],
-                    "streak": st["streak"],
+                    "streak": page_streaks.get(s.id, 0),
                     "section_id": s.section_id,
                     "section_name": cls.name if cls else "Sin sección",
                     "section_code": cls.code if cls else "",
                     "is_suspended": bool(getattr(s, "is_suspended", False)),
                     "suspended_reason": getattr(s, "suspended_reason", None) or "",
-                    "suspended_at": s.suspended_at.strftime("%d/%m/%Y %H:%M") if getattr(s, "suspended_at", None) else "",
-                    "created_at": s.created_at,
-                    "created_at_str": s.created_at.strftime("%d/%m/%Y") if s.created_at else "N/A",
+                    "suspended_at": suspended_utc.astimezone(app_tz).strftime("%d/%m/%Y %H:%M") if suspended_utc else "",
+                    "created_at": created_utc,
+                    "created_at_str": created_utc.astimezone(app_tz).strftime("%d/%m/%Y") if created_utc else "N/A",
                 })
-
-            # Ordenamiento
-            if sort_by == "xp_desc":
-                student_rows.sort(key=lambda x: (-x["total_xp"], (x["username"] or "").lower()))
-            elif sort_by == "xp_asc":
-                student_rows.sort(key=lambda x: (x["total_xp"], (x["username"] or "").lower()))
-            elif sort_by == "progress_desc":
-                student_rows.sort(key=lambda x: (-x["completed"], -x["total_xp"]))
-            elif sort_by == "progress_asc":
-                student_rows.sort(key=lambda x: (x["completed"], x["total_xp"]))
-            elif sort_by == "name_asc":
-                student_rows.sort(key=lambda x: (x["username"] or "").lower())
-            elif sort_by == "name_desc":
-                student_rows.sort(key=lambda x: (x["username"] or "").lower(), reverse=True)
-            elif sort_by == "date_desc":
-                student_rows.sort(key=lambda x: x["created_at"] or datetime.min.replace(tzinfo=timezone.utc), reverse=True)
-            elif sort_by == "date_asc":
-                student_rows.sort(key=lambda x: x["created_at"] or datetime.min.replace(tzinfo=timezone.utc))
     except Exception as e:
-        print(f"[ERROR in teacher_dashboard]: {e}", flush=True)
+        logger.error("Error en teacher_dashboard: %s", e)
         try:
             db.session.rollback()
         except Exception:
             pass
         active_section_id = None
 
-    total_filtered = len(student_rows)
-    total_pages = max(1, math.ceil(total_filtered / ADMIN_STUDENTS_PER_PAGE))
-    if page > total_pages:
-        page = total_pages
-    start_idx = (page - 1) * ADMIN_STUDENTS_PER_PAGE
-    paginated_students = student_rows[start_idx : start_idx + ADMIN_STUDENTS_PER_PAGE]
-
     metrics = {
-        "total_students": len(all_scoped_students),
+        "total_students": total_scoped_students,
         "active_students": active_count,
         "suspended_students": suspended_count,
-        "avg_xp": round(total_xp / len(all_scoped_students)) if all_scoped_students else 0,
+        "avg_xp": round(total_xp / total_scoped_students) if total_scoped_students else 0,
         "total_completed": total_completed,
         "total_course_lessons": len(course_ids),
         "level_labels": list(level_counts.keys()),
@@ -2848,7 +2934,7 @@ def admin_create_section():
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        print(f"[ERROR in admin_create_section]: {e}", flush=True)
+        logger.error("Error en admin_create_section: %s", e)
         msg = "No se pudo crear la sección. Intenta nuevamente."
         if wants_json:
             return jsonify({"ok": False, "error": msg}), 500
@@ -2922,7 +3008,7 @@ def admin_delete_section(section_id):
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        print(f"[ERROR in admin_delete_section]: {e}", flush=True)
+        logger.error("Error en admin_delete_section: %s", e)
         msg = "No se pudo eliminar la sección. Intenta nuevamente."
         if wants_json:
             return jsonify({"ok": False, "error": msg}), 500
@@ -2976,7 +3062,7 @@ def admin_suspend_student(student_id):
 
     cls = db.session.get(Classroom, student.section_id) if student.section_id else None
     student.is_suspended = True
-    student.suspended_at = datetime.now(timezone.utc)
+    student.suspended_at = utcnow()
     student.suspended_reason = reason
     student.suspended_by = current_user.id
 
@@ -3173,14 +3259,14 @@ def admin_export_pdf():
             generated_by=current_user.username,
         )
     except Exception as e:
-        print(f"[ERROR in admin_export_pdf]: {type(e).__name__}: {e}", flush=True)
+        logger.error("Error en admin_export_pdf (%s): %s", type(e).__name__, e)
         try:
             db.session.rollback()
         except Exception:
             pass
         return jsonify({"ok": False, "error": "No se pudo generar el reporte PDF. Intenta de nuevo."}), 500
 
-    filename = f"reporte_estudiantes_{datetime.now().strftime('%Y%m%d_%H%M')}.pdf"
+    filename = f"reporte_estudiantes_{_app_now().strftime('%Y%m%d_%H%M')}.pdf"
     return Response(
         pdf_bytes,
         mimetype="application/pdf",
@@ -3208,114 +3294,163 @@ def superadmin_dashboard():
     if status_filter not in ("all", "active", "suspended"):
         status_filter = "all"
     sort_by = request.args.get("sort", "xp_desc").strip()
-    if sort_by not in ("xp_desc", "xp_asc", "progress_desc", "name_asc", "date_desc"):
+    if sort_by not in ("xp_desc", "xp_asc", "progress_desc", "name_asc", "date_desc", "date_asc"):
         sort_by = "xp_desc"
     page = max(1, _safe_int(request.args.get("page", 1), 1))
     audit_page = max(1, _safe_int(request.args.get("audit_page", 1), 1))
 
     course_ids = _course_lesson_ids()
     total_course = len(course_ids) or 1
+    app_tz = _get_app_timezone()
 
-    all_teachers = User.query.filter_by(role="teacher").order_by(User.created_at.desc()).all()
-    all_classrooms = Classroom.query.order_by(Classroom.created_at.desc()).all()
-    classroom_map = {c.id: c for c in all_classrooms}
-    teacher_map = {t.id: t for t in all_teachers}
-
+    all_teachers = []
+    all_classrooms = []
+    classroom_map = {}
+    teacher_map = {}
     classroom_counts = {}
-    for c in all_classrooms:
-        classroom_counts[c.id] = User.query.filter_by(role="student", section_id=c.id).count()
-
     teacher_rows = []
-    for t in all_teachers:
-        t_secs = [c for c in all_classrooms if c.teacher_id == t.id]
-        t_stu_cnt = sum(classroom_counts.get(c.id, 0) for c in t_secs)
-        teacher_rows.append({
-            "id": t.id,
-            "username": t.username,
-            "email": t.email or "",
-            "sections_count": len(t_secs),
-            "students_count": t_stu_cnt,
-            "is_suspended": bool(getattr(t, "is_suspended", False)),
-            "suspended_reason": getattr(t, "suspended_reason", None) or "",
-            "created_at_str": t.created_at.strftime("%d/%m/%Y") if t.created_at else "N/A",
-        })
+    paginated_students = []
+    total_students_cnt = 0
+    active_students_cnt = 0
+    suspended_students_cnt = 0
+    unassigned_students_cnt = 0
+    total_filtered = 0
+    total_pages = 1
+    audit_logs = []
+    audit_total = 0
+    audit_total_pages = 1
 
-    # Métricas globales de estudiantes
-    all_students = User.query.filter_by(role="student").all()
-    active_students_cnt = sum(1 for s in all_students if not getattr(s, "is_suspended", False))
-    suspended_students_cnt = len(all_students) - active_students_cnt
-    unassigned_students_cnt = sum(1 for s in all_students if s.section_id is None)
+    try:
+        all_teachers = User.query.filter_by(role="teacher").order_by(nullslast(User.created_at.desc()), User.id.desc()).all()
+        all_classrooms = Classroom.query.order_by(nullslast(Classroom.created_at.desc()), Classroom.id.desc()).all()
+        classroom_map = {c.id: c for c in all_classrooms}
+        teacher_map = {t.id: t for t in all_teachers}
 
-    # Consulta filtrada de estudiantes
-    sq = User.query.filter_by(role="student")
-    if q:
-        like = f"%{q}%"
-        sq = sq.filter(or_(User.username.ilike(like), User.email.ilike(like)))
-    if raw_section == "unassigned":
-        sq = sq.filter(User.section_id.is_(None))
-    elif raw_section:
-        sec_int = _safe_int(raw_section, 0)
-        if sec_int in classroom_map:
-            sq = sq.filter(User.section_id == sec_int)
-    if status_filter == "active":
-        sq = sq.filter(User.is_suspended.is_(False))
-    elif status_filter == "suspended":
-        sq = sq.filter(User.is_suspended.is_(True))
+        # Conteo de estudiantes por sección en 1 consulta agregada GROUP BY (sin N+1)
+        classroom_counts = _get_classroom_student_counts()
 
-    matched = sq.all()
-    bulk = get_bulk_progress_summaries(matched)
-    student_rows = []
-    for s in matched:
-        st = bulk.get(s.id, {"completed_lessons": [], "total_xp": 0, "streak": 0})
-        lvl = get_level_info(st["total_xp"])
-        comp = len(set(st["completed_lessons"]) & course_ids)
-        cls = classroom_map.get(s.section_id)
-        t_owner = teacher_map.get(cls.teacher_id) if cls else None
-        student_rows.append({
-            "id": s.id,
-            "username": s.username,
-            "email": s.email or "",
-            "level": lvl["level"],
-            "title": lvl["title"],
-            "total_xp": st["total_xp"],
-            "completed": comp,
-            "progress_pct": round(min(100, comp * 100 / total_course), 1),
-            "section_id": s.section_id,
-            "section_name": cls.name if cls else "Sin sección",
-            "section_code": cls.code if cls else "",
-            "teacher_name": t_owner.username if t_owner else "—",
-            "is_suspended": bool(getattr(s, "is_suspended", False)),
-            "suspended_reason": getattr(s, "suspended_reason", None) or "",
-            "created_at": s.created_at,
-        })
+        sections_by_teacher = {}
+        for c in all_classrooms:
+            sections_by_teacher.setdefault(c.teacher_id, []).append(c)
 
-    if sort_by == "xp_desc":
-        student_rows.sort(key=lambda x: (-x["total_xp"], (x["username"] or "").lower()))
-    elif sort_by == "xp_asc":
-        student_rows.sort(key=lambda x: (x["total_xp"], (x["username"] or "").lower()))
-    elif sort_by == "progress_desc":
-        student_rows.sort(key=lambda x: (-x["completed"], -x["total_xp"]))
-    elif sort_by == "name_asc":
-        student_rows.sort(key=lambda x: (x["username"] or "").lower())
-    elif sort_by == "date_desc":
-        student_rows.sort(key=lambda x: x["created_at"] or datetime.min.replace(tzinfo=timezone.utc), reverse=True)
+        for t in all_teachers:
+            t_secs = sections_by_teacher.get(t.id, [])
+            t_stu_cnt = sum(classroom_counts.get(c.id, 0) for c in t_secs)
+            t_created_utc = ensure_utc(t.created_at)
+            teacher_rows.append({
+                "id": t.id,
+                "username": t.username,
+                "email": t.email or "",
+                "sections_count": len(t_secs),
+                "students_count": t_stu_cnt,
+                "is_suspended": bool(getattr(t, "is_suspended", False)),
+                "suspended_reason": getattr(t, "suspended_reason", None) or "",
+                "created_at_str": t_created_utc.astimezone(app_tz).strftime("%d/%m/%Y") if t_created_utc else "N/A",
+            })
 
-    total_filtered = len(student_rows)
-    total_pages = max(1, math.ceil(total_filtered / ADMIN_STUDENTS_PER_PAGE))
-    page = min(page, total_pages)
-    start = (page - 1) * ADMIN_STUDENTS_PER_PAGE
-    paginated_students = student_rows[start : start + ADMIN_STUDENTS_PER_PAGE]
+        # Métricas globales de estudiantes en 1 sola consulta agregada SQL
+        stu_agg = (
+            db.session.query(
+                func.count(User.id),
+                func.coalesce(func.sum(case((User.is_suspended.is_(True), 1), else_=0)), 0),
+                func.coalesce(func.sum(case((User.section_id.is_(None), 1), else_=0)), 0),
+            )
+            .filter(User.role == "student")
+            .one()
+        )
+        total_students_cnt = int(stu_agg[0] or 0)
+        suspended_students_cnt = int(stu_agg[1] or 0)
+        active_students_cnt = total_students_cnt - suspended_students_cnt
+        unassigned_students_cnt = int(stu_agg[2] or 0)
 
-    # Bitácora global (todos los eventos del sistema)
-    audit_q = AuditLog.query.order_by(AuditLog.created_at.desc())
-    audit_total = audit_q.count()
-    audit_per = 15
-    audit_total_pages = max(1, math.ceil(audit_total / audit_per))
-    audit_page = min(audit_page, audit_total_pages)
-    audit_logs = audit_q.offset((audit_page - 1) * audit_per).limit(audit_per).all()
+        # Consulta filtrada, ordenada y paginada de estudiantes directamente en SQL
+        lp_sub, ex_sub, pr_sub, ev_sub, completed_expr, total_xp_expr = _build_student_stats_subqueries()
+        sq = (
+            db.session.query(User)
+            .outerjoin(lp_sub, lp_sub.c.user_id == User.id)
+            .outerjoin(ex_sub, ex_sub.c.user_id == User.id)
+            .outerjoin(pr_sub, pr_sub.c.user_id == User.id)
+            .outerjoin(ev_sub, ev_sub.c.user_id == User.id)
+            .filter(User.role == "student")
+        )
+        if q:
+            like = f"%{q}%"
+            sq = sq.filter(or_(User.username.ilike(like), User.email.ilike(like)))
+        if raw_section == "unassigned":
+            sq = sq.filter(User.section_id.is_(None))
+        elif raw_section:
+            sec_int = _safe_int(raw_section, 0)
+            if sec_int in classroom_map:
+                sq = sq.filter(User.section_id == sec_int)
+        if status_filter == "active":
+            sq = sq.filter(User.is_suspended.is_(False))
+        elif status_filter == "suspended":
+            sq = sq.filter(User.is_suspended.is_(True))
+
+        total_filtered = int(sq.with_entities(func.count(User.id)).scalar() or 0)
+        total_pages = max(1, math.ceil(total_filtered / ADMIN_STUDENTS_PER_PAGE))
+        page = min(page, total_pages)
+
+        order_map = {
+            "xp_desc": (total_xp_expr.desc(), func.lower(User.username).asc(), User.id.asc()),
+            "xp_asc": (total_xp_expr.asc(), func.lower(User.username).asc(), User.id.asc()),
+            "progress_desc": (completed_expr.desc(), total_xp_expr.desc(), func.lower(User.username).asc()),
+            "name_asc": (func.lower(User.username).asc(), User.id.asc()),
+            "date_desc": (nullslast(User.created_at.desc()), User.id.desc()),
+            "date_asc": (nullslast(User.created_at.asc()), User.id.asc()),
+        }
+
+        page_rows = (
+            sq.with_entities(
+                User,
+                completed_expr.label("completed_cnt"),
+                total_xp_expr.label("total_xp"),
+            )
+            .order_by(*order_map[sort_by])
+            .offset((page - 1) * ADMIN_STUDENTS_PER_PAGE)
+            .limit(ADMIN_STUDENTS_PER_PAGE)
+            .all()
+        )
+        for s, comp_val, xp_val in page_rows:
+            comp = int(comp_val or 0)
+            xp_int = int(xp_val or 0)
+            lvl = get_level_info(xp_int)
+            cls = classroom_map.get(s.section_id)
+            t_owner = teacher_map.get(cls.teacher_id) if cls else None
+            paginated_students.append({
+                "id": s.id,
+                "username": s.username,
+                "email": s.email or "",
+                "level": lvl["level"],
+                "title": lvl["title"],
+                "total_xp": xp_int,
+                "completed": comp,
+                "progress_pct": round(min(100, comp * 100 / total_course), 1),
+                "section_id": s.section_id,
+                "section_name": cls.name if cls else "Sin sección",
+                "section_code": cls.code if cls else "",
+                "teacher_name": t_owner.username if t_owner else "—",
+                "is_suspended": bool(getattr(s, "is_suspended", False)),
+                "suspended_reason": getattr(s, "suspended_reason", None) or "",
+                "created_at": ensure_utc(s.created_at),
+            })
+
+        # Bitácora global (todos los eventos del sistema)
+        audit_q = AuditLog.query.order_by(nullslast(AuditLog.created_at.desc()), AuditLog.id.desc())
+        audit_total = audit_q.count()
+        audit_per = 15
+        audit_total_pages = max(1, math.ceil(audit_total / audit_per))
+        audit_page = min(audit_page, audit_total_pages)
+        audit_logs = audit_q.offset((audit_page - 1) * audit_per).limit(audit_per).all()
+    except Exception as e:
+        logger.error("Error en superadmin_dashboard: %s", e)
+        try:
+            db.session.rollback()
+        except Exception:
+            pass
 
     metrics = {
-        "total_students": len(all_students),
+        "total_students": total_students_cnt,
         "active_students": active_students_cnt,
         "suspended_students": suspended_students_cnt,
         "unassigned_students": unassigned_students_cnt,
@@ -3370,7 +3505,7 @@ def superadmin_suspend_user(user_id):
         return jsonify({"success": False, "error": "El usuario ya se encuentra suspendido."}), 400
 
     target.is_suspended = True
-    target.suspended_at = datetime.now(timezone.utc)
+    target.suspended_at = utcnow()
     target.suspended_reason = reason
     target.suspended_by = current_user.id
 
@@ -3553,10 +3688,10 @@ def superadmin_export_pdf():
             generated_by=f"{current_user.username} (Super Admin)",
         )
     except Exception as e:
-        print(f"[ERROR in superadmin_export_pdf]: {type(e).__name__}: {e}", flush=True)
+        logger.error("Error en superadmin_export_pdf (%s): %s", type(e).__name__, e)
         return jsonify({"ok": False, "error": "No se pudo generar el reporte PDF global."}), 500
 
-    filename = f"reporte_global_{datetime.now().strftime('%Y%m%d_%H%M')}.pdf"
+    filename = f"reporte_global_{_app_now().strftime('%Y%m%d_%H%M')}.pdf"
     return Response(
         pdf_bytes,
         mimetype="application/pdf",
@@ -3568,16 +3703,55 @@ def superadmin_export_pdf():
 @app.route("/leaderboard")
 def leaderboard():
     board = []
+    podium = []
     db_error = False
     teacher_section_ids = set()
+    page_num = max(1, _safe_int(request.args.get("page", 1), 1))
+    total_pages = 1
+    total_students = 0
     try:
         if current_user.is_authenticated and current_user.role == "teacher":
             teacher_section_ids = _get_teacher_section_ids(current_user.id)
-        students = User.query.filter_by(role="student", is_suspended=False).all()
-        bulk_stats = get_bulk_progress_summaries(students)
-        for s in students:
-            summary = bulk_stats.get(s.id, {"completed_lessons": [], "total_xp": 0, "streak": 0})
-            lvl_info = get_level_info(summary["total_xp"])
+
+        active_students_select = db.select(User.id).where(
+            User.role == "student",
+            User.is_suspended.is_(False),
+        )
+        lp_sub, ex_sub, pr_sub, ev_sub, completed_expr, total_xp_expr = (
+            _build_student_stats_subqueries(active_students_select)
+        )
+        base_q = (
+            db.session.query(User)
+            .outerjoin(lp_sub, lp_sub.c.user_id == User.id)
+            .outerjoin(ex_sub, ex_sub.c.user_id == User.id)
+            .outerjoin(pr_sub, pr_sub.c.user_id == User.id)
+            .outerjoin(ev_sub, ev_sub.c.user_id == User.id)
+            .filter(User.role == "student", User.is_suspended.is_(False))
+        )
+
+        total_students = int(base_q.with_entities(func.count(User.id)).scalar() or 0)
+        total_pages = max(1, math.ceil(total_students / LEADERBOARD_PER_PAGE))
+        if page_num > total_pages:
+            page_num = total_pages
+
+        ordered_q = base_q.with_entities(
+            User,
+            completed_expr.label("completed_cnt"),
+            total_xp_expr.label("total_xp"),
+        ).order_by(
+            total_xp_expr.desc(),
+            completed_expr.desc(),
+            func.lower(User.username).asc(),
+            User.id.asc(),
+        )
+
+        offset = (page_num - 1) * LEADERBOARD_PER_PAGE
+        page_rows = ordered_q.offset(offset).limit(LEADERBOARD_PER_PAGE).all()
+        page_streaks = _get_bulk_streaks([s.id for s, _, _ in page_rows])
+
+        def _row_to_entry(s, completed_val, xp_val, rank_num, streak_val):
+            xp_int = int(xp_val or 0)
+            lvl_info = get_level_info(xp_int)
             can_view_profile = bool(
                 current_user.is_authenticated
                 and (
@@ -3586,21 +3760,32 @@ def leaderboard():
                     or (current_user.role == "teacher" and s.section_id in teacher_section_ids)
                 )
             )
-            board.append({
+            return {
                 "id": s.id,
                 "username": s.username or "Anónimo",
-                "total_xp": summary["total_xp"],
+                "total_xp": xp_int,
                 "level": lvl_info["level"],
-                "completed": len(summary["completed_lessons"]),
-                "streak": summary["streak"],
+                "completed": int(completed_val or 0),
+                "streak": streak_val,
                 "can_view_profile": can_view_profile,
-            })
-        board.sort(key=lambda x: x["total_xp"], reverse=True)
+                "rank": rank_num,
+            }
 
-        for i, entry in enumerate(board):
-            entry["rank"] = i + 1
+        for idx, (s, completed_val, xp_val) in enumerate(page_rows):
+            board.append(
+                _row_to_entry(s, completed_val, xp_val, offset + idx + 1, page_streaks.get(s.id, 0))
+            )
+
+        if page_num == 1:
+            podium = board[:3]
+        elif total_students >= 3:
+            top3_rows = ordered_q.limit(3).all()
+            podium = [
+                _row_to_entry(s, comp_val, xp_val, i + 1, 0)
+                for i, (s, comp_val, xp_val) in enumerate(top3_rows)
+            ]
     except Exception as e:
-        print(f"[ERROR in leaderboard]: {e}", flush=True)
+        logger.error("Error en leaderboard: %s", e)
         try:
             db.session.rollback()
         except Exception:
@@ -3611,6 +3796,10 @@ def leaderboard():
     return render_template(
         "leaderboard.html",
         board=board,
+        podium=podium,
+        page_num=page_num,
+        total_pages=total_pages,
+        total_students=total_students,
         current_uid=current_uid,
         categories=LESSON_CATEGORIES,
         page="leaderboard",
@@ -3686,7 +3875,7 @@ def profile(username=None):
         total_exercises = ExerciseAttempt.query.filter_by(user_id=user.id).count()
         passed_exercises = ExerciseAttempt.query.filter_by(user_id=user.id, passed=True).count()
     except Exception as e:
-        print(f"[ERROR in profile queries]: {e}", flush=True)
+        logger.error("Error en profile queries: %s", e)
         try:
             db.session.rollback()
         except Exception:
@@ -3762,7 +3951,7 @@ def _get_certificate_context(user, section_id):
     is_complete = len(completed_in_cat) >= len(cat_lessons) and len(cat_lessons) > 0
 
     ui = load_ui_strings()
-    now = datetime.now()
+    now = _app_now()
     return {
         "category_name": ui.get(target_cat["label_key"], section_id),
         "category_id": section_id,
@@ -3814,7 +4003,7 @@ def certificate_pdf(section_id):
             site_title=ctx["site_title"],
         )
     except Exception as e:
-        print(f"[ERROR in certificate_pdf]: {type(e).__name__}: {e}", flush=True)
+        logger.error("Error en certificate_pdf (%s): %s", type(e).__name__, e)
         return jsonify({"ok": False, "error": "No se pudo generar el certificado PDF."}), 500
 
     safe_user = "".join(
@@ -4041,7 +4230,7 @@ REGLAS:
             }
         )
     except Exception as e:
-        print(f"[ERROR in api_ai_tutor]: {type(e).__name__}", flush=True)
+        logger.error("Error en api_ai_tutor (%s)", type(e).__name__)
         return jsonify({"ok": False, "error": "No fue posible conectar con el Tutor IA en este momento. Intenta de nuevo más tarde."})
 
 # --- Ejercicios y quizzes ---
@@ -4369,7 +4558,7 @@ def evaluation_page(section_key):
     time_limit = min(600, raw_time)
 
     # Invalidar sesiones anteriores no enviadas para esta sección y crear sesión en servidor
-    now_utc = datetime.now(timezone.utc)
+    now_utc = utcnow()
     EvaluationSession.query.filter_by(
         user_id=user.id, section_key=section_key, submitted=False
     ).update({"submitted": True}, synchronize_session=False)
@@ -4455,13 +4644,9 @@ def api_evaluation_result():
             "error": "No tienes una sesión de evaluación activa o ya fue enviada. Inicia un nuevo intento.",
         }), 400
 
-    now_utc = datetime.now(timezone.utc)
-    started_at = eval_session.started_at
-    if started_at.tzinfo is None:
-        started_at = started_at.replace(tzinfo=timezone.utc)
-    expires_at = eval_session.expires_at
-    if expires_at.tzinfo is None:
-        expires_at = expires_at.replace(tzinfo=timezone.utc)
+    now_utc = utcnow()
+    started_at = ensure_utc(eval_session.started_at)
+    expires_at = ensure_utc(eval_session.expires_at)
 
     if now_utc > expires_at + timedelta(seconds=EVAL_NETWORK_GRACE_SECONDS):
         eval_session.submitted = True

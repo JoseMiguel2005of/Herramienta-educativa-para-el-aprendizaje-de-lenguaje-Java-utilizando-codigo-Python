@@ -37,30 +37,31 @@
         {% else %}
 
         <!-- Podium (Top 3) -->
-        {% if board | length >= 3 %}
+        {% set top3 = podium if podium is defined else board[:3] %}
+        {% if top3 | length >= 3 %}
         <div class="lb-podium">
             <!-- 2nd place -->
-            <div class="podium-entry podium-silver {% if board[1].id == current_uid %}podium-current{% endif %}">
+            <div class="podium-entry podium-silver {% if top3[1].id == current_uid %}podium-current{% endif %}">
                 <div class="podium-rank">2</div>
-                <div class="podium-avatar">{{ (board[1].username or '?')[0] | upper }}</div>
-                <div class="podium-name">{{ board[1].username }}</div>
-                <div class="podium-xp">{{ board[1].total_xp }} XP</div>
+                <div class="podium-avatar">{{ (top3[1].username or '?')[0] | upper }}</div>
+                <div class="podium-name">{{ top3[1].username }}</div>
+                <div class="podium-xp">{{ top3[1].total_xp }} XP</div>
                 <div class="podium-bar" style="height: 100px;"></div>
             </div>
             <!-- 1st place -->
-            <div class="podium-entry podium-gold {% if board[0].id == current_uid %}podium-current{% endif %}">
+            <div class="podium-entry podium-gold {% if top3[0].id == current_uid %}podium-current{% endif %}">
                 <div class="podium-rank">1</div>
-                <div class="podium-avatar">{{ (board[0].username or '?')[0] | upper }}</div>
-                <div class="podium-name">{{ board[0].username }}</div>
-                <div class="podium-xp">{{ board[0].total_xp }} XP</div>
+                <div class="podium-avatar">{{ (top3[0].username or '?')[0] | upper }}</div>
+                <div class="podium-name">{{ top3[0].username }}</div>
+                <div class="podium-xp">{{ top3[0].total_xp }} XP</div>
                 <div class="podium-bar" style="height: 140px;"></div>
             </div>
             <!-- 3rd place -->
-            <div class="podium-entry podium-bronze {% if board[2].id == current_uid %}podium-current{% endif %}">
+            <div class="podium-entry podium-bronze {% if top3[2].id == current_uid %}podium-current{% endif %}">
                 <div class="podium-rank">3</div>
-                <div class="podium-avatar">{{ (board[2].username or '?')[0] | upper }}</div>
-                <div class="podium-name">{{ board[2].username }}</div>
-                <div class="podium-xp">{{ board[2].total_xp }} XP</div>
+                <div class="podium-avatar">{{ (top3[2].username or '?')[0] | upper }}</div>
+                <div class="podium-name">{{ top3[2].username }}</div>
+                <div class="podium-xp">{{ top3[2].total_xp }} XP</div>
                 <div class="podium-bar" style="height: 70px;"></div>
             </div>
         </div>
@@ -111,6 +112,20 @@
                 </tbody>
             </table>
         </div>
+
+        {% if total_pages is defined and total_pages > 1 %}
+        <nav class="lb-pagination" aria-label="Paginación del ranking" style="display:flex; justify-content:space-between; align-items:center; gap:0.75rem; margin-top:1.25rem; flex-wrap:wrap; font-size:0.82rem; color:var(--text-muted);">
+            <span>Página <strong style="color:var(--text);">{{ page_num }}</strong> de <strong style="color:var(--text);">{{ total_pages }}</strong> · {{ total_students }} estudiante(s)</span>
+            <div style="display:flex; gap:0.5rem;">
+                {% if page_num > 1 %}
+                <a href="{{ url_for('leaderboard', page=page_num - 1) }}" class="term-btn" style="padding:0.4rem 0.85rem; font-size:0.8rem; text-decoration:none;">← Anterior</a>
+                {% endif %}
+                {% if page_num < total_pages %}
+                <a href="{{ url_for('leaderboard', page=page_num + 1) }}" class="term-btn" style="padding:0.4rem 0.85rem; font-size:0.8rem; text-decoration:none;">Siguiente →</a>
+                {% endif %}
+            </div>
+        </nav>
+        {% endif %}
         {% endif %}
     </div>
 </article>
