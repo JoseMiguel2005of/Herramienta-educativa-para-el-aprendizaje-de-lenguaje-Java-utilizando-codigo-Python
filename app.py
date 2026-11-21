@@ -17,12 +17,13 @@ load_dotenv()
 
 import click
 import requests as http_requests
-from flask import (Flask, Response, flash, jsonify, redirect, render_template, request, session,
+from flask import (Flask, Response, flash, g, jsonify, redirect, render_template, request, session,
                    url_for)
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_login import (LoginManager, current_user, login_required,
                          login_user, logout_user)
+from flask_wtf.csrf import CSRFError, CSRFProtect
 from sqlalchemy import func, or_
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -70,6 +71,8 @@ app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_SECURE"] = is_production
 
+csrf = CSRFProtect(app)
+
 TEACHER_SECRET_CODE = os.environ.get("TEACHER_SECRET_CODE", "")
 
 USERNAME_RE = re.compile(r"^[A-Za-z0-9_-]{3,30}$")
@@ -77,6 +80,17 @@ EMAIL_RE = re.compile(r"^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9-]+(?:\.[A-Z
 MIN_PASSWORD_LENGTH = 8
 MAX_RESET_FAILED_ATTEMPTS = 5
 _DUMMY_PASSWORD_HASH = generate_password_hash("py2java-dummy-timing-guard")
+_CSV_FORMULA_PREFIXES = ("=", "+", "-", "@", "\t", "\r")
+
+
+def _csv_safe(val):
+    """Neutraliza CSV Formula Injection anteponiendo apóstrofo a prefijos peligrosos."""
+    if val is None:
+        return ""
+    text = str(val)
+    if text.startswith(_CSV_FORMULA_PREFIXES) or text.lstrip(" \t\r\n").startswith(("=", "+", "-", "@")):
+        return "'" + text
+    return text
 
 
 def _is_valid_username(username):
@@ -87,17 +101,34 @@ def _is_valid_email(email):
     return bool(email and len(email) <= 120 and EMAIL_RE.fullmatch(email))
 
 
-def _is_safe_redirect_url(target):
-    """Permite únicamente rutas internas relativas o del mismo host HTTP(S), bloqueando open redirects."""
-    if not target or not isinstance(target, str):
+def _is_safe_redirect_url(raw_next):
+    """Permite únicamente rutas relativas internas estrictas, bloqueando Open Redirect."""
+    if not raw_next or not isinstance(raw_next, str):
         return False
-    cleaned = target.strip()
+    cleaned = raw_next.strip()
     if not cleaned or "\\" in cleaned or any(ord(c) < 32 for c in cleaned):
         return False
     parsed = urlparse(cleaned)
-    if parsed.scheme or parsed.netloc:
-        return parsed.scheme in ("http", "https") and parsed.netloc == request.host
-    return cleaned.startswith("/") and not cleaned.startswith("//")
+    return (
+        parsed.scheme == ""
+        and parsed.netloc == ""
+        and cleaned.startswith("/")
+        and not cleaned.startswith(("//", "/\\"))
+    )
+
+
+def _extract_relative_from_referrer(referrer):
+    """Extrae una ruta relativa desde Referer solo si coincide exactamente con el host actual."""
+    if not referrer or not isinstance(referrer, str):
+        return ""
+    cleaned = referrer.strip()
+    parsed = urlparse(cleaned)
+    if parsed.scheme in ("http", "https") and parsed.netloc == request.host:
+        rel = parsed.path or "/"
+        if parsed.query:
+            rel = f"{rel}?{parsed.query}"
+        return rel
+    return cleaned
 
 
 def _get_safe_next_url(raw_target, default=None, exclude_paths=()):
@@ -430,11 +461,61 @@ def _block_suspended_user():
         return redirect(url_for("login"))
 
 
+@app.before_request
+def _generate_csp_nonce():
+    """Genera un nonce criptográfico único por petición para Content-Security-Policy."""
+    g.csp_nonce = secrets.token_urlsafe(16)
+
+
+@app.context_processor
+def _inject_security_context():
+    return {"csp_nonce": getattr(g, "csp_nonce", "")}
+
+
+@app.errorhandler(CSRFError)
+def handle_csrf_error(err):
+    msg = "Token CSRF inválido o expirado. Recarga la página e intenta de nuevo."
+    wants_json = (
+        request.is_json
+        or request.path.startswith("/api/")
+        or "application/json" in (request.headers.get("Accept") or "")
+    )
+    if wants_json:
+        return jsonify({"ok": False, "success": False, "error": msg}), 400
+    return Response(msg, status=400, mimetype="text/plain")
+
+
 @app.after_request
 def _set_security_headers(response):
     response.headers.setdefault("X-Content-Type-Options", "nosniff")
     response.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
     response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+
+    forwarded_proto = (request.headers.get("X-Forwarded-Proto") or "").split(",")[0].strip().lower()
+    if request.is_secure or forwarded_proto == "https" or is_production:
+        response.headers.setdefault(
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains",
+        )
+
+    nonce = getattr(g, "csp_nonce", "")
+    script_nonce = f"'nonce-{nonce}'" if nonce else ""
+    csp_directives = [
+        "default-src 'self'",
+        f"script-src 'self' {script_nonce} https://cdn.jsdelivr.net https://cdnjs.cloudflare.com 'wasm-unsafe-eval'",
+        f"script-src-elem 'self' {script_nonce} https://cdn.jsdelivr.net https://cdnjs.cloudflare.com",
+        "script-src-attr 'unsafe-inline'",
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
+        "font-src 'self' https://fonts.gstatic.com data:",
+        "img-src 'self' data: blob:",
+        "connect-src 'self' https://cdn.jsdelivr.net",
+        "worker-src 'self' blob:",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+        "frame-ancestors 'self'",
+    ]
+    response.headers.setdefault("Content-Security-Policy", "; ".join(csp_directives))
     return response
 
 LESSON_CATEGORIES = [
@@ -1297,7 +1378,7 @@ def dashboard():
 def student_join_section():
     """Permite a un estudiante unirse (o cambiarse) a una sección mediante código de clase."""
     wants_json = request.is_json or "application/json" in (request.headers.get("Accept") or "")
-    raw_next = request.form.get("next") or request.referrer
+    raw_next = (request.form.get("next") or "").strip() or _extract_relative_from_referrer(request.referrer)
     safe_next = _get_safe_next_url(raw_next, default=url_for("dashboard"))
 
     if current_user.role != "student":
@@ -2101,7 +2182,7 @@ def reset_password():
     )
 
 
-@app.route("/logout")
+@app.route("/logout", methods=["POST"])
 @login_required
 def logout():
     logout_user()
@@ -2611,21 +2692,19 @@ def teacher_export_csv():
     for s in students:
         stats = bulk_stats.get(s.id, {"completed_lessons": [], "total_xp": 0, "streak": 0})
         lvl_info = get_level_info(stats["total_xp"])
-        safe_user = s.username or ""
-        if safe_user.startswith(("=", "+", "-", "@")):
-            safe_user = "'" + safe_user
         cls = classroom_map.get(s.section_id)
         completed_cnt = len(set(stats["completed_lessons"]) & course_ids)
+        section_label = f"{cls.name} ({cls.code})" if cls else "Sin sección"
         cw.writerow([
-            safe_user,
-            s.email or "",
-            f"{cls.name} ({cls.code})" if cls else "Sin sección",
-            "Suspendido" if getattr(s, "is_suspended", False) else "Activo",
+            _csv_safe(s.username or ""),
+            _csv_safe(s.email or ""),
+            _csv_safe(section_label),
+            _csv_safe("Suspendido" if getattr(s, "is_suspended", False) else "Activo"),
             stats["total_xp"],
             completed_cnt,
-            lvl_info["title"],
+            _csv_safe(lvl_info["title"]),
             stats["streak"],
-            s.created_at.strftime("%Y-%m-%d") if s.created_at else "N/A",
+            _csv_safe(s.created_at.strftime("%Y-%m-%d") if s.created_at else "N/A"),
         ])
 
     output = si.getvalue()
@@ -3012,20 +3091,18 @@ def superadmin_export_csv():
     for s in students:
         stats = bulk_stats.get(s.id, {"completed_lessons": [], "total_xp": 0, "streak": 0})
         lvl_info = get_level_info(stats["total_xp"])
-        safe_user = s.username or ""
-        if safe_user.startswith(("=", "+", "-", "@")):
-            safe_user = "'" + safe_user
         cls = classroom_map.get(s.section_id)
+        section_label = f"{cls.name} ({cls.code})" if cls else "Sin sección"
         cw.writerow([
-            safe_user,
-            s.email or "",
-            f"{cls.name} ({cls.code})" if cls else "Sin sección",
-            "Suspendido" if getattr(s, "is_suspended", False) else "Activo",
+            _csv_safe(s.username or ""),
+            _csv_safe(s.email or ""),
+            _csv_safe(section_label),
+            _csv_safe("Suspendido" if getattr(s, "is_suspended", False) else "Activo"),
             stats["total_xp"],
             len(set(stats["completed_lessons"]) & course_ids),
-            lvl_info["title"],
+            _csv_safe(lvl_info["title"]),
             stats["streak"],
-            s.created_at.strftime("%Y-%m-%d") if s.created_at else "N/A",
+            _csv_safe(s.created_at.strftime("%Y-%m-%d") if s.created_at else "N/A"),
         ])
     output = si.getvalue()
     si.close()
@@ -3374,7 +3451,8 @@ def settings():
     if request.method == "POST":
         theme = request.form.get("theme", "light")
         session["theme"] = theme if theme in ("light", "dark") else "light"
-        safe_ref = _get_safe_next_url(request.referrer, default=url_for("index"))
+        raw_next = (request.form.get("next") or "").strip() or _extract_relative_from_referrer(request.referrer)
+        safe_ref = _get_safe_next_url(raw_next, default=url_for("index"))
         return redirect(safe_ref)
 
     return redirect(url_for("index"))

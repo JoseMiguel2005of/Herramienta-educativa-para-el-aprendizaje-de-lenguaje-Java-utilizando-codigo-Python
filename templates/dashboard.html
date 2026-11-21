@@ -130,6 +130,7 @@
                 {% endwith %}
             </div>
             <form method="POST" action="{{ url_for('student_join_section') }}" class="dash-class-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="next" value="{{ url_for('dashboard') }}">
                 <label for="dash-class-code" class="sr-only">Código de sección de clase</label>
                 <input type="text" id="dash-class-code" name="class_code" required maxlength="20" placeholder="Ej. PROG-7K2M"
@@ -703,7 +704,7 @@
     }
 </style>
 
-<script>
+<script nonce="{{ csp_nonce }}">
     function toggleDashChunk(btn) {
         const selector = btn.dataset.toggleSelector;
         if (!selector) return;

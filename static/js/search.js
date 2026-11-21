@@ -41,24 +41,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    function renderSearchMessage(text, color) {
+        resultsContainer.textContent = '';
+        const p = document.createElement('p');
+        p.style.textAlign = 'center';
+        p.style.padding = '2rem 1rem';
+        if (color) p.style.color = color;
+        p.textContent = text;
+        resultsContainer.appendChild(p);
+    }
+
     let debounceTimer;
     input.addEventListener('input', (e) => {
         clearTimeout(debounceTimer);
         const query = e.target.value.trim();
         
         if (query.length < 2) {
-            resultsContainer.innerHTML = '<p style="color:#888; text-align:center; padding:2rem 1rem;">Escribe al menos 2 caracteres...</p>';
+            renderSearchMessage('Escribe al menos 2 caracteres...', '#888');
             return;
         }
 
         debounceTimer = setTimeout(() => {
-            resultsContainer.innerHTML = '<p style="text-align:center; padding:2rem 1rem;">Buscando...</p>';
+            renderSearchMessage('Buscando...', null);
             fetch(`/api/buscar?q=${encodeURIComponent(query)}`)
                 .then(res => res.json())
                 .then(data => {
-                    resultsContainer.innerHTML = '';
-                    if (data.length === 0) {
-                        resultsContainer.innerHTML = '<p style="color:#888; text-align:center; padding:2rem 1rem;">No se encontraron resultados para "'+ query +'".</p>';
+                    resultsContainer.textContent = '';
+                    if (!Array.isArray(data) || data.length === 0) {
+                        renderSearchMessage(`No se encontraron resultados para "${query}".`, '#888');
                         return;
                     }
                     
@@ -66,21 +76,29 @@ document.addEventListener('DOMContentLoaded', () => {
                         const div = document.createElement('div');
                         div.className = 'search-result-item';
                         
-                        // Quitar etiquetas HTML del snippet por seguridad y estética
-                        const cleanSnippet = item.snippet.replace(/<[^>]*>?/gm, '');
-                        
-                        div.innerHTML = `
-                            <a href="/leccion/${item.id}" class="search-result-link">
-                                <h4 class="search-result-title">${item.title}</h4>
-                                <p class="search-result-snippet">${cleanSnippet}</p>
-                            </a>
-                        `;
+                        const link = document.createElement('a');
+                        link.href = `/leccion/${encodeURIComponent(String(item.id || ''))}`;
+                        link.className = 'search-result-link';
+
+                        const titleEl = document.createElement('h4');
+                        titleEl.className = 'search-result-title';
+                        titleEl.textContent = String(item.title || '');
+
+                        const snippetEl = document.createElement('p');
+                        snippetEl.className = 'search-result-snippet';
+                        // Quitar etiquetas HTML del snippet por estética; textContent impide inyección HTML
+                        const cleanSnippet = String(item.snippet || '').replace(/<[^>]*>?/gm, '');
+                        snippetEl.textContent = cleanSnippet;
+
+                        link.appendChild(titleEl);
+                        link.appendChild(snippetEl);
+                        div.appendChild(link);
                         resultsContainer.appendChild(div);
                     });
                 })
                 .catch(err => {
                     console.error('Search error:', err);
-                    resultsContainer.innerHTML = '<p style="color:#ef5350; text-align:center; padding:2rem 1rem;">Ocurrió un error en la búsqueda.</p>';
+                    renderSearchMessage('Ocurrió un error en la búsqueda.', '#ef5350');
                 });
         }, 300);
     });

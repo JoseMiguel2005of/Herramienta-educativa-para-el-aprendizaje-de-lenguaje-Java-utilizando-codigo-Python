@@ -68,6 +68,7 @@
             </div>
             <div class="module-body" style="padding: 1rem;">
                 <form method="POST" action="{{ url_for('admin_create_section') }}" style="display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin-bottom: 1rem;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="text" name="name" required minlength="2" maxlength="100" placeholder="Nombre de sección (ej. PROG1-A)"
                         style="flex: 1 1 220px; padding: 0.55rem 0.8rem; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-code); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;">
                     <input type="text" name="code" maxlength="20" placeholder="Código opcional (auto si vacío)"
@@ -322,8 +323,13 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"
+        integrity="sha384-T/4KgSWuZEPozpPz7rnnp/5lDSnpY1VPJCojf1S81uTHS1E38qgLfMgVsAeRCWc4"
+        crossorigin="anonymous"></script>
+<script nonce="{{ csp_nonce }}">
+    function _getCsrfToken() {
+        return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    }
     document.addEventListener('DOMContentLoaded', () => {
         const canvas = document.getElementById('levelsChart');
         if (!canvas) return;
@@ -395,7 +401,11 @@
         try {
             const resp = await fetch('/profesor/secciones/' + encodeURIComponent(sectionId) + '/eliminar', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRFToken': _getCsrfToken()
+                }
             });
             const data = await resp.json().catch(() => ({}));
             if (resp.ok && data.ok) {
@@ -455,7 +465,10 @@
         try {
             const resp = await fetch('/administrador/estudiante/' + encodeURIComponent(_suspendTargetId) + '/suspender', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': _getCsrfToken()
+                },
                 body: JSON.stringify({ reason: reason })
             });
             const data = await resp.json().catch(() => ({}));
@@ -488,7 +501,10 @@
         try {
             const resp = await fetch('/administrador/estudiante/' + encodeURIComponent(studentId) + '/restaurar', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': _getCsrfToken()
+                },
                 body: JSON.stringify({ reason: 'Restauración aprobada desde Panel de Administrador' })
             });
             const data = await resp.json().catch(() => ({}));

@@ -334,7 +334,10 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
+<script nonce="{{ csp_nonce }}">
+    function _getCsrfToken() {
+        return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    }
     let _saTargetId = null;
 
     function openSaSuspendModal(btn) {
@@ -369,7 +372,10 @@
         try {
             const resp = await fetch('/superadmin/usuario/' + encodeURIComponent(_saTargetId) + '/suspender', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': _getCsrfToken()
+                },
                 body: JSON.stringify({ reason })
             });
             const data = await resp.json().catch(() => ({}));
@@ -397,7 +403,10 @@
         try {
             const resp = await fetch('/superadmin/usuario/' + encodeURIComponent(uid) + '/restaurar', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': _getCsrfToken()
+                },
                 body: JSON.stringify({ reason: 'Restauración desde Panel de Super Admin' })
             });
             const data = await resp.json().catch(() => ({}));
@@ -415,7 +424,11 @@
         try {
             const resp = await fetch('/profesor/secciones/' + encodeURIComponent(sid) + '/eliminar', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRFToken': _getCsrfToken()
+                }
             });
             const data = await resp.json().catch(() => ({}));
             if (resp.ok && data.ok) window.location.reload();
@@ -431,7 +444,10 @@
         try {
             const resp = await fetch('/superadmin/estudiante/' + encodeURIComponent(sid) + '/asignar-seccion', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': _getCsrfToken()
+                },
                 body: JSON.stringify({ section_id: sectionId })
             });
             const data = await resp.json().catch(() => ({}));

@@ -62,7 +62,7 @@
         
         <!-- Editor -->
         <div style="flex-grow: 1; display: flex; flex-direction: column; border-bottom: 1px solid var(--border);">
-            <textarea id="practice-editor" spellcheck="false" style="width: 100%; flex-grow: 1; background: var(--bg-code); color: var(--green); font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; padding: 1rem; border: none; outline: none; resize: none; line-height: 1.5;">{{ previous_code | safe }}</textarea>
+            <textarea id="practice-editor" spellcheck="false" style="width: 100%; flex-grow: 1; background: var(--bg-code); color: var(--green); font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; padding: 1rem; border: none; outline: none; resize: none; line-height: 1.5;">{{ previous_code }}</textarea>
         </div>
         
         <!-- Console Output -->
@@ -80,11 +80,15 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"
+        integrity="sha384-b4IZetZNE8bVncsQqlcH4ZZFC58BslGU2LVj47xUtIMOw72axMESbPe8spBylXnd"
+        crossorigin="anonymous"></script>
 <script src="{{ url_for('static', filename='js/pyodide-runner.js') }}"></script>
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"
+        integrity="sha384-HAH79XdRvHr6axVGh4xQWVCp14kcd32bNk4Xu0sHDHtFQ42n6BAM8ykvB47dGz6D"
+        crossorigin="anonymous"></script>
 
-<script>
+<script nonce="{{ csp_nonce }}">
     // Config from backend
     const problemId = {{ problem.id | tojson }};
     const starterCode = {{ problem.starter_code | tojson }};
@@ -95,6 +99,27 @@
         const btnRun = document.getElementById('btn-run-tests');
         const btnReset = document.getElementById('btn-reset');
         const output = document.getElementById('test-output');
+
+        function appendLine(text, opts = {}) {
+            const el = document.createElement('div');
+            if (opts.color) el.style.color = opts.color;
+            if (opts.marginTop) el.style.marginTop = opts.marginTop;
+            if (opts.fontSize) el.style.fontSize = opts.fontSize;
+            if (opts.bold) el.style.fontWeight = 'bold';
+            el.textContent = text;
+            output.appendChild(el);
+            return el;
+        }
+
+        function appendPre(text, color) {
+            const pre = document.createElement('pre');
+            pre.style.color = color || '#f92672';
+            pre.style.marginTop = '0.5rem';
+            pre.style.whiteSpace = 'pre-wrap';
+            pre.textContent = text;
+            output.appendChild(pre);
+            return pre;
+        }
         
         // Handle Tab key in textarea
         editor.addEventListener('keydown', function(e) {
@@ -121,7 +146,8 @@
 
         btnRun.addEventListener('click', async () => {
             const userCode = editor.value;
-            output.innerHTML = "<span style='color:#fd971f;'>Ejecutando pruebas...</span><br>";
+            output.textContent = '';
+            appendLine('Ejecutando pruebas...', { color: '#fd971f' });
             btnRun.disabled = true;
             btnRun.textContent = "EVALUANDO...";
 
@@ -129,13 +155,13 @@
                 const pyodide = await loadPyodideIfNeeded();
                 
                 // 1. Load user code into pyodide environment
-                // We wrap it so it doesn't pollute global scope and we can catch syntax errors early
                 try {
                     await pyodide.runPythonAsync(userCode);
                 } catch(e) {
-                    output.innerHTML += `<br><span style="color:#f92672;">[Error] Error de sintaxis o ejecución en tu código:</span><br><pre style="color:#f92672; margin-top:0.5rem;">${e.message}</pre>`;
+                    appendLine('[Error] Error de sintaxis o ejecución en tu código:', { color: '#f92672', marginTop: '0.75rem' });
+                    appendPre(e.message || String(e), '#f92672');
                     btnRun.disabled = false;
-                    btnRun.textContent = "EJECUTAR PRUEBAS";
+                    btnRun.textContent = "▶ EJECUTAR PRUEBAS";
                     return;
                 }
 
@@ -164,24 +190,41 @@ json.dumps({"passed": _passed, "actual": _actual_repr})
                         const result = JSON.parse(resultJson);
                         
                         if(result.passed) {
-                            output.innerHTML += `<div style="color:#a6e22e; margin-top:0.5rem;">[PASÓ] Caso ${i+1}: ${test.input} == ${test.expected}</div>`;
+                            appendLine(`[PASÓ] Caso ${i+1}: ${test.input} == ${test.expected}`, { color: '#a6e22e', marginTop: '0.5rem' });
                             passedCount++;
                         } else {
-                            output.innerHTML += `<div style="color:#f92672; margin-top:0.5rem;">[FALLÓ] Caso ${i+1} Falló.<br>&nbsp;&nbsp;Entrada: ${test.input}<br>&nbsp;&nbsp;Esperado: ${test.expected}<br>&nbsp;&nbsp;Obtenido: ${result.actual}</div>`;
+                            const failBox = document.createElement('div');
+                            failBox.style.color = '#f92672';
+                            failBox.style.marginTop = '0.5rem';
+                            const details = [
+                                `[FALLÓ] Caso ${i+1} Falló.`,
+                                `  Entrada: ${test.input}`,
+                                `  Esperado: ${test.expected}`,
+                                `  Obtenido: ${result.actual}`
+                            ];
+                            details.forEach((lineText) => {
+                                const lineDiv = document.createElement('div');
+                                lineDiv.textContent = lineText;
+                                failBox.appendChild(lineDiv);
+                            });
+                            output.appendChild(failBox);
                             allPassed = false;
                         }
                     } catch(e) {
-                        output.innerHTML += `<div style="color:#f92672; margin-top:0.5rem;">[FALLÓ] Caso ${i+1} Falló con error interno de test.</div>`;
+                        appendLine(`[FALLÓ] Caso ${i+1} Falló con error interno de test.`, { color: '#f92672', marginTop: '0.5rem' });
                         allPassed = false;
                     }
                 }
 
                 // 3. Submit results to backend
-                output.innerHTML += "<br><span style='color:#888;'>Enviando resultados...</span>";
-                
+                appendLine('Enviando resultados...', { color: '#888', marginTop: '0.75rem' });
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
                 const response = await fetch('/api/submit_practice', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
                     body: JSON.stringify({
                         problem_id: problemId,
                         code: userCode,
@@ -194,12 +237,12 @@ json.dumps({"passed": _passed, "actual": _actual_repr})
                 const data = await response.json().catch(() => ({ ok: false, anonymous: true, xp_gained: 0 }));
                 
                 if(allPassed) {
-                    output.innerHTML += `<br><br><span style='color:#a6e22e; font-size:1.1rem; font-weight:bold;'>TODAS LAS PRUEBAS SUPERADAS</span>`;
+                    appendLine('TODAS LAS PRUEBAS SUPERADAS', { color: '#a6e22e', fontSize: '1.1rem', bold: true, marginTop: '0.9rem' });
                     
                     if(data.anonymous) {
-                        output.innerHTML += `<br><span style='color:#fd971f;'>Inicia sesión para guardar tu progreso y ganar XP.</span>`;
+                        appendLine('Inicia sesión para guardar tu progreso y ganar XP.', { color: '#fd971f', marginTop: '0.35rem' });
                     } else if(data.xp_gained > 0) {
-                        output.innerHTML += `<br><span style='color:#fd971f;'>+${data.xp_gained} XP obtenidos.</span>`;
+                        appendLine(`+${data.xp_gained} XP obtenidos.`, { color: '#fd971f', marginTop: '0.35rem' });
                         confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
                         
                         // Fire global event to update UI if needed
@@ -208,11 +251,11 @@ json.dumps({"passed": _passed, "actual": _actual_repr})
                         }
                     }
                 } else {
-                    output.innerHTML += `<br><br><span style='color:#f92672; font-weight:bold;'>Algunas pruebas fallaron. Revisa tu codigo e intenta de nuevo.</span>`;
+                    appendLine('Algunas pruebas fallaron. Revisa tu código e intenta de nuevo.', { color: '#f92672', bold: true, marginTop: '0.9rem' });
                 }
 
             } catch (err) {
-                output.innerHTML += `<br><span style="color:#f92672;">Error del entorno de evaluación: ${err.message}</span>`;
+                appendLine(`Error del entorno de evaluación: ${err.message || String(err)}`, { color: '#f92672', marginTop: '0.75rem' });
             } finally {
                 btnRun.disabled = false;
                 btnRun.textContent = "▶ EJECUTAR PRUEBAS";

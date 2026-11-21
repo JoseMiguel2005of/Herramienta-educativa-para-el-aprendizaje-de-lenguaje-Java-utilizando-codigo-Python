@@ -98,10 +98,13 @@ sys.stderr = io.StringIO()
             } catch (e) {
                 const item = document.createElement('div');
                 item.className = 'test-case-item failed';
-                item.innerHTML = `
-                    <span class="test-icon">✗</span>
-                    <span>${tc.input} → Error: ${e.message}</span>
-                `;
+                const iconSpan = document.createElement('span');
+                iconSpan.className = 'test-icon';
+                iconSpan.textContent = '✗';
+                const msgSpan = document.createElement('span');
+                msgSpan.textContent = `${tc.input} → Error: ${e.message}`;
+                item.appendChild(iconSpan);
+                item.appendChild(msgSpan);
                 testsList.appendChild(item);
             }
         }
@@ -121,9 +124,13 @@ sys.stderr = io.StringIO()
 
         // Track progress if all passed
         if (passed === total) {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
             fetch('/api/submit_practice', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
                 body: JSON.stringify({
                     problem_id: problemId,
                     code: editor.value,

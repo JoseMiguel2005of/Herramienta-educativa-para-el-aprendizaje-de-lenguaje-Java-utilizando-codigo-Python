@@ -161,9 +161,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Save result
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
         fetch('/api/quiz/resultado', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
             body: JSON.stringify({
                 quiz_id: quizId,
                 score: score,

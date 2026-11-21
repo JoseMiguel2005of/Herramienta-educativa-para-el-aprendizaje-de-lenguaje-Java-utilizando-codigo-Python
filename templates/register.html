@@ -15,6 +15,7 @@
         {% endif %}
         
         <form method="POST" action="{{ url_for('register') }}" style="display: flex; flex-direction: column; gap: 1rem;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div>
                 <label for="username" style="display: block; margin-bottom: 0.45rem; color: var(--text); font-weight: 600;">Usuario</label>
                 <input type="text" id="username" name="username" required minlength="3" maxlength="30" pattern="[A-Za-z0-9_-]{3,30}" title="Entre 3 y 30 caracteres: solo letras, números, guion (-) o guion bajo (_)" autocomplete="username" value="{{ form_data.username if form_data else '' }}" placeholder="Ej. ana_dev (3-30 caracteres)" style="width: 100%; min-height: 44px; padding: 0.75rem 0.9rem; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: inherit;">
@@ -66,7 +67,7 @@
     </div>
 </article>
 
-<script>
+<script nonce="{{ csp_nonce }}">
 function toggleTeacherCode(value) {
     const teacherField = document.getElementById('teacher-code-field');
     const studentField = document.getElementById('student-class-field');

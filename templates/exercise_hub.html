@@ -56,7 +56,7 @@
 
 {% block scripts %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/exercise-page.css') }}">
-<script>
+<script nonce="{{ csp_nonce }}">
 function toggleExHubMore(btn) {
     const expanded = btn.getAttribute('aria-expanded') === 'true';
     document.querySelectorAll('.ex-hub-extra').forEach(el => {

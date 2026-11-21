@@ -253,9 +253,13 @@ function checkQuiz(exerciseId, type, btn) {
         window.trackProgress(btn.dataset.lesson, exerciseId);
     } else if (btn && btn.dataset.lesson) {
         // Registrar intento fallido (o exitoso si trackProgress no está cargado)
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
         fetch('/api/progreso/ejercicio', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
             body: JSON.stringify({
                 lesson_id: btn.dataset.lesson,
                 exercise_id: exerciseId,

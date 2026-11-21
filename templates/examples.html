@@ -67,7 +67,7 @@
 
 {% block scripts %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/examples-page.css') }}">
-<script>
+<script nonce="{{ csp_nonce }}">
 function toggleExampleCategory(btn, panelId) {
     const panel = document.getElementById(panelId);
     if (!panel) return;

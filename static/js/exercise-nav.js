@@ -211,9 +211,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function trackExerciseProgress(lessonId, exerciseId) {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
         fetch('/api/progreso/ejercicio', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
             body: JSON.stringify({
                 lesson_id: lessonId,
                 exercise_id: exerciseId,

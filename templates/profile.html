@@ -50,6 +50,7 @@
             {% endif %}
             {% if is_own_profile %}
             <form method="POST" action="{{ url_for('student_join_section') }}" style="margin-top: 0.9rem; display: flex; gap: 0.4rem;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="next" value="{{ url_for('profile') }}">
                 <input type="text" name="class_code" required maxlength="20" placeholder="Código clase..."
                     style="flex: 1; min-width: 0; padding: 0.4rem 0.6rem; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-code); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; text-transform: uppercase;">

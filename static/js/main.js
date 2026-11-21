@@ -87,9 +87,13 @@ function initTranslator() {
                 lesson_id: window.currentLessonId || "unknown"
             };
 
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
             const response = await fetch("/api/traducir", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken,
+                },
                 body: JSON.stringify(payload),
             });
 

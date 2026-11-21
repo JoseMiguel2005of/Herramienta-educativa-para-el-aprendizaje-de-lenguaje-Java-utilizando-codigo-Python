@@ -232,11 +232,18 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchProgressSummary();
 });
 
+function _getCsrfToken() {
+    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+}
+
 // Función global para que los ejercicios puedan registrar progreso
 window.trackProgress = function(lessonId, exerciseId) {
     fetch('/api/progreso/ejercicio', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': _getCsrfToken()
+        },
         body: JSON.stringify({ lesson_id: lessonId, exercise_id: exerciseId, passed: true })
     })
     .then(res => res.json())
@@ -256,7 +263,10 @@ window.trackProgress = function(lessonId, exerciseId) {
 function markLessonCompleted(lessonId) {
     fetch('/api/progreso/leccion', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': _getCsrfToken()
+        },
         body: JSON.stringify({ lesson_id: lessonId })
     })
     .then(res => res.json())

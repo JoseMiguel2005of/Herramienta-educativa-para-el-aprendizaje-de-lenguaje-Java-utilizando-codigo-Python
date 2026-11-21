@@ -5,10 +5,26 @@ Lee archivos JSON desde content/ y los expone al resto de la aplicación.
 
 import json
 import os
+import re
 from functools import lru_cache
 
 CONTENT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "content")
 LESSONS_DIR = os.path.join(CONTENT_DIR, "lessons")
+SAFE_CONTENT_ID_RE = re.compile(r"^[a-z0-9\-]+$")
+
+
+def _safe_content_json_path(base_dir, content_id):
+    """Valida el ID contra ^[a-z0-9\\-]+$ y verifica commonpath para impedir Path Traversal."""
+    if not isinstance(content_id, str) or not SAFE_CONTENT_ID_RE.fullmatch(content_id):
+        return None
+    base_real = os.path.realpath(base_dir)
+    candidate = os.path.realpath(os.path.join(base_real, f"{content_id}.json"))
+    try:
+        if os.path.commonpath([base_real, candidate]) != base_real:
+            return None
+    except ValueError:
+        return None
+    return candidate
 
 
 def _load_json(path):
@@ -42,11 +58,11 @@ LESSON_ALIASES = {
 @lru_cache(maxsize=100)
 def load_lesson(lesson_id):
     """Carga una lección individual por su ID."""
-    if not isinstance(lesson_id, str):
+    if not isinstance(lesson_id, str) or not SAFE_CONTENT_ID_RE.fullmatch(lesson_id):
         return None
     lesson_id = LESSON_ALIASES.get(lesson_id, lesson_id)
-    path = os.path.join(LESSONS_DIR, f"{lesson_id}.json")
-    if not os.path.exists(path):
+    path = _safe_content_json_path(LESSONS_DIR, lesson_id)
+    if not path or not os.path.exists(path):
         return None
     return _load_json(path)
 
@@ -107,8 +123,8 @@ PRACTICE_DIR = os.path.join(CONTENT_DIR, "practice")
 @lru_cache(maxsize=20)
 def load_quiz(quiz_id):
     """Carga un quiz por su ID."""
-    path = os.path.join(QUIZZES_DIR, f"{quiz_id}.json")
-    if not os.path.exists(path):
+    path = _safe_content_json_path(QUIZZES_DIR, quiz_id)
+    if not path or not os.path.exists(path):
         return None
     return _load_json(path)
 
@@ -171,8 +187,8 @@ EVALUATIONS_DIR = os.path.join(CONTENT_DIR, "evaluations")
 @lru_cache(maxsize=10)
 def load_evaluation(eval_id):
     """Carga una evaluación por su ID."""
-    path = os.path.join(EVALUATIONS_DIR, f"{eval_id}.json")
-    if not os.path.exists(path):
+    path = _safe_content_json_path(EVALUATIONS_DIR, eval_id)
+    if not path or not os.path.exists(path):
         return None
     return _load_json(path)
 

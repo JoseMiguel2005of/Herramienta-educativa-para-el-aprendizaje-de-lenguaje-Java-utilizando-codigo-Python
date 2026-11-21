@@ -77,6 +77,13 @@
             }
         });
         document.getElementById('ai-btn-analyze').addEventListener('click', analyzeCode);
+        const messagesEl = document.getElementById('ai-tutor-messages');
+        if (messagesEl) {
+            messagesEl.addEventListener('click', (e) => {
+                const copyBtn = e.target.closest('.ai-code-copy');
+                if (copyBtn) window.copyAiCode(copyBtn);
+            });
+        }
     }
 
     // ===== Create the floating toggle button =====
@@ -170,27 +177,31 @@
         if (el) el.remove();
     }
 
-    // ===== Format response (Robust Markdown Parser) =====
+    // ===== Format response (XSS-safe Markdown Parser) =====
     function escapeHtml(str) {
-        return str
+        return String(str)
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;');
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
     }
 
     function formatResponse(text) {
         if (!text) return '';
 
-        // 1. Proteger bloques de código ```...```
+        const tokenPrefix = `AITEMP${Math.random().toString(36).slice(2, 10)}`;
+
+        // 1. Extraer y proteger bloques de código ```...``` (con contenido escapado)
         const codeBlocks = [];
-        let cleanText = text.replace(/```(\w+)?\n?([\s\S]*?)```/g, (match, lang, code) => {
-            const placeholder = `__CODE_BLOCK_${codeBlocks.length}__`;
+        let working = String(text).replace(/```(\w+)?\n?([\s\S]*?)```/g, (match, lang, code) => {
+            const placeholder = `${tokenPrefix}CODEBLOCK${codeBlocks.length}END`;
             const langLabel = lang ? `<span class="ai-code-lang">${escapeHtml(lang)}</span>` : '';
             codeBlocks.push(`
                 <div class="ai-code-block">
                     <div class="ai-code-header">
                         ${langLabel}
-                        <button type="button" class="ai-code-copy" onclick="copyAiCode(this)">Copiar</button>
+                        <button type="button" class="ai-code-copy">Copiar</button>
                     </div>
                     <pre><code>${escapeHtml(code.trim())}</code></pre>
                 </div>
@@ -198,24 +209,31 @@
             return `\n\n${placeholder}\n\n`;
         });
 
-        // 2. Proteger código inline `...`
-        cleanText = cleanText.replace(/`([^`]+)`/g, (match, inline) => {
-            return `<code class="ai-inline-code">${escapeHtml(inline)}</code>`;
+        // 2. Extraer y proteger código inline `...` (con contenido escapado)
+        const inlineCodes = [];
+        working = working.replace(/`([^`]+)`/g, (match, inline) => {
+            const placeholder = `${tokenPrefix}INLINECODE${inlineCodes.length}END`;
+            inlineCodes.push(`<code class="ai-inline-code">${escapeHtml(inline)}</code>`);
+            return placeholder;
         });
 
-        // 3. Encabezados
+        // 3. Escapar TODO el texto restante antes de transformar Markdown
+        //    (previene XSS y preserva genéricos Java como List<String>)
+        let cleanText = escapeHtml(working);
+
+        // 4. Encabezados
         cleanText = cleanText.replace(/^### (.*$)/gim, '<h4 class="ai-msg-h4">$1</h4>');
         cleanText = cleanText.replace(/^## (.*$)/gim, '<h3 class="ai-msg-h3">$1</h3>');
         cleanText = cleanText.replace(/^# (.*$)/gim, '<h2 class="ai-msg-h2">$1</h2>');
 
-        // 4. Separadores
+        // 5. Separadores
         cleanText = cleanText.replace(/^---$/gim, '<hr class="ai-msg-hr">');
 
-        // 5. Negrita y Cursiva
+        // 6. Negrita y Cursiva
         cleanText = cleanText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         cleanText = cleanText.replace(/\*(.*?)\*/g, '<em>$1</em>');
 
-        // 6. Formateo línea a línea para listas y párrafos limpios
+        // 7. Formateo línea a línea para listas y párrafos limpios
         const lines = cleanText.split('\n');
         let inList = false;
         let listType = 'ul';
@@ -257,7 +275,11 @@
                     formattedLines.push(`</${listType}>`);
                     inList = false;
                 }
-                if (line.startsWith('<h') || line.startsWith('<hr') || line.startsWith('__CODE_BLOCK_')) {
+                if (
+                    line.startsWith('<h') ||
+                    line.startsWith('<hr') ||
+                    line.startsWith(`${tokenPrefix}CODEBLOCK`)
+                ) {
                     formattedLines.push(line);
                 } else {
                     formattedLines.push(`<p class="ai-msg-p">${line}</p>`);
@@ -270,9 +292,12 @@
 
         let resultHtml = formattedLines.join('');
 
-        // 7. Restaurar bloques de código
+        // 8. Restaurar código inline y bloques de código usando funciones (evita interpretación de $&/$1)
+        inlineCodes.forEach((snippet, index) => {
+            resultHtml = resultHtml.replace(`${tokenPrefix}INLINECODE${index}END`, () => snippet);
+        });
         codeBlocks.forEach((block, index) => {
-            resultHtml = resultHtml.replace(`__CODE_BLOCK_${index}__`, block);
+            resultHtml = resultHtml.replace(`${tokenPrefix}CODEBLOCK${index}END`, () => block);
         });
 
         return resultHtml;
@@ -374,9 +399,13 @@
         addLoadingMessage();
 
         try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
             const resp = await fetch('/api/ai/tutor', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
                 body: JSON.stringify(payload)
             });
             const data = await resp.json();

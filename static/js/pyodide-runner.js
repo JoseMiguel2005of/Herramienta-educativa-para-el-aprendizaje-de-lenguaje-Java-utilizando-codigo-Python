@@ -72,11 +72,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Si la ejecución no imprimió nada pero fue exitosa
                 if (output.textContent.trim() === "") {
-                    output.innerHTML = "<span style='color:#a6e22e;'>[Ejecución completada sin salida en consola]</span>";
+                    output.textContent = "";
+                    const doneSpan = document.createElement("span");
+                    doneSpan.style.color = "#a6e22e";
+                    doneSpan.textContent = "[Ejecución completada sin salida en consola]";
+                    output.appendChild(doneSpan);
                 }
             } catch (err) {
-                // Mostrar error en la consola de manera amigable
-                output.innerHTML = `<span style="color:#ef5350;">${err.message || err.toString()}</span>`;
+                // Mostrar error en la consola usando nodos de texto seguros
+                output.textContent = "";
+                const errSpan = document.createElement("span");
+                errSpan.style.color = "#ef5350";
+                errSpan.textContent = err.message || String(err);
+                output.appendChild(errSpan);
             } finally {
                 btnRun.textContent = originalText;
                 btnRun.disabled = false;

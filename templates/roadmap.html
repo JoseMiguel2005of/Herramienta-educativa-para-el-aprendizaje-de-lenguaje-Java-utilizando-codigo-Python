@@ -447,7 +447,7 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
+<script nonce="{{ csp_nonce }}">
     window.ROADMAP_DATA = {{ categories | tojson }};
     window.COMPLETED_LESSONS = {{ summary.completed_lessons | tojson }};
 

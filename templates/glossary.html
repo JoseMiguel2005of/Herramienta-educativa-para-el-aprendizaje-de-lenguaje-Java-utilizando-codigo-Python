@@ -157,7 +157,7 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
+<script nonce="{{ csp_nonce }}">
 document.addEventListener('DOMContentLoaded', () => {
     let activeTag = '';
     const PAGE_SIZE = 6;

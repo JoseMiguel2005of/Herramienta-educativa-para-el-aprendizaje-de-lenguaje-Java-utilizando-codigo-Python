@@ -159,7 +159,7 @@
 }
 </style>
 
-<script>
+<script nonce="{{ csp_nonce }}">
 document.addEventListener('DOMContentLoaded', () => {
     const cards = Array.from(document.querySelectorAll('.practice-card'));
     const tabs = document.querySelectorAll('.practice-hub-page .module-filter-tab');
