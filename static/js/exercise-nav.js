@@ -292,16 +292,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Navegación con teclado
+    // Navegación con teclado (solo Alt + Flecha Izquierda/Derecha para no bloquear el scroll nativo con ArrowUp/ArrowDown)
     document.addEventListener('keydown', (e) => {
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+        const tag = e.target && e.target.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (e.target && e.target.isContentEditable)) {
+            return;
+        }
+        if (!e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
 
-        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        if (e.key === 'ArrowRight') {
             const nextBtn = document.querySelector('.exercise-nav-next');
-            if (nextBtn) nextBtn.click();
-        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            if (nextBtn) {
+                e.preventDefault();
+                nextBtn.click();
+            }
+        } else if (e.key === 'ArrowLeft') {
             const prevBtn = document.querySelector('.exercise-nav-prev');
-            if (prevBtn) prevBtn.click();
+            if (prevBtn) {
+                e.preventDefault();
+                prevBtn.click();
+            }
         }
     });
 

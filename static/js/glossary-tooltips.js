@@ -438,9 +438,63 @@ if (typeof window !== 'undefined') {
     window.GLOSSARY_MASTER = GLOSSARY_MASTER;
 }
 
+// Palabras demasiado ambiguas en prosa en español/inglés para auto-resaltar vía alias "alt"
+const EXCLUDED_ALT_TERMS = new Set([
+    'final',
+    'error',
+    'else',
+    'for',
+    'if',
+    'arrow',
+    'consulta'
+]);
+
+let _cachedGlossaryMatcher = null;
+
+function buildGlossaryMatcher() {
+    if (_cachedGlossaryMatcher) return _cachedGlossaryMatcher;
+
+    const termMap = new Map();
+    GLOSSARY_MASTER.forEach(item => {
+        const tooltip = item.tooltip || item.def;
+        const primary = item.term.trim().toLowerCase();
+        if (primary) {
+            termMap.set(primary, tooltip);
+        }
+        if (item.alt) {
+            const parts = item.alt
+                .split(/[\/,]/)
+                .map(p => p.trim())
+                .filter(p => p.length > 2 && !/[()\[\]]/.test(p));
+            parts.forEach(p => {
+                const key = p.toLowerCase();
+                if (!EXCLUDED_ALT_TERMS.has(key) && !termMap.has(key)) {
+                    termMap.set(key, tooltip);
+                }
+            });
+        }
+    });
+
+    // Ordenar términos por longitud descendente para evitar colisiones parciales
+    const sortedTerms = Array.from(termMap.keys()).sort((a, b) => b.length - a.length);
+    const pattern = sortedTerms
+        .map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+        .join('|');
+
+    // Compilar la expresión regular UNA SOLA VEZ con límites Unicode (\p{L}, \p{N}, _) para soportar tildes
+    let regex;
+    try {
+        regex = new RegExp(`(?<![\\p{L}\\p{N}_])(${pattern})(?![\\p{L}\\p{N}_])`, 'giu');
+    } catch (e) {
+        regex = new RegExp(`\\b(${pattern})\\b`, 'gi');
+    }
+
+    _cachedGlossaryMatcher = { termMap, regex };
+    return _cachedGlossaryMatcher;
+}
+
 // Función para inicializar los tooltips en la página actual
 function initGlossaryTooltips() {
-    // Contenedores a los que se les aplicarán los tooltips interactivos
     const targetSelectors = [
         '.section-text',
         '.note-body',
@@ -456,19 +510,9 @@ function initGlossaryTooltips() {
     const elements = document.querySelectorAll(targetSelectors.join(', '));
     if (!elements || elements.length === 0) return;
 
-    // Crear mapa de términos a partir del catálogo
-    const termMap = new Map();
-    GLOSSARY_MASTER.forEach(item => {
-        const tooltip = item.tooltip || item.def;
-        termMap.set(item.term.toLowerCase(), tooltip);
-        if (item.alt) {
-            const parts = item.alt.split(/[\/,]/).map(p => p.trim()).filter(p => p.length > 2);
-            parts.forEach(p => termMap.set(p.toLowerCase(), tooltip));
-        }
-    });
+    const { termMap, regex } = buildGlossaryMatcher();
 
     elements.forEach(container => {
-        // Recorrer nodos de texto evitando etiquetas de código <code>, <pre>, <a>, etc.
         const walker = document.createTreeWalker(
             container,
             NodeFilter.SHOW_TEXT,
@@ -477,7 +521,7 @@ function initGlossaryTooltips() {
                     const parent = node.parentElement;
                     if (!parent) return NodeFilter.FILTER_REJECT;
                     const tag = parent.tagName.toLowerCase();
-                    if (['code', 'pre', 'script', 'style', 'a', 'button', 'input', 'span'].includes(tag)) {
+                    if (['code', 'pre', 'script', 'style', 'a', 'button', 'input', 'textarea', 'select', 'span', 'abbr'].includes(tag)) {
                         return NodeFilter.FILTER_REJECT;
                     }
                     if (parent.classList.contains('glossary-term')) {
@@ -491,57 +535,74 @@ function initGlossaryTooltips() {
         const nodesToReplace = [];
         let currentNode;
         while ((currentNode = walker.nextNode())) {
-            nodesToReplace.push(currentNode);
+            if (currentNode.nodeValue && currentNode.nodeValue.trim().length > 0) {
+                nodesToReplace.push(currentNode);
+            }
         }
 
         nodesToReplace.forEach(textNode => {
-            let text = textNode.nodeValue;
-            let replaced = false;
+            const text = textNode.nodeValue;
+            regex.lastIndex = 0;
 
-            // Ordenar términos por longitud descendente para evitar colisiones parciales
-            const sortedTerms = Array.from(termMap.keys()).sort((a, b) => b.length - a.length);
+            let match;
+            let lastIndex = 0;
+            let fragment = null;
 
-            // Escapar caracteres especiales para regex
-            const pattern = sortedTerms.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
-            const regex = new RegExp(`\\b(${pattern})\\b`, 'gi');
+            while ((match = regex.exec(text)) !== null) {
+                const matchedWord = match[0];
+                const def = termMap.get(matchedWord.toLowerCase());
+                if (!def) continue;
 
-            const newText = text.replace(regex, (match) => {
-                const def = termMap.get(match.toLowerCase());
-                if (def) {
-                    replaced = true;
-                    return `###GLOSSARY_START###${def}###GLOSSARY_MID###${match}###GLOSSARY_END###`;
+                if (!fragment) {
+                    fragment = document.createDocumentFragment();
                 }
-                return match;
-            });
 
-            if (replaced) {
-                const span = document.createElement('span');
-                const parts = newText.split(/(###GLOSSARY_START###.*?###GLOSSARY_END###)/g);
+                if (match.index > lastIndex) {
+                    fragment.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+                }
 
-                parts.forEach(part => {
-                    if (part.startsWith('###GLOSSARY_START###')) {
-                        const content = part.replace('###GLOSSARY_START###', '').replace('###GLOSSARY_END###', '');
-                        const [tooltipText, termWord] = content.split('###GLOSSARY_MID###');
-                        const termSpan = document.createElement('span');
-                        termSpan.className = 'glossary-term';
-                        termSpan.setAttribute('data-tooltip', tooltipText);
-                        termSpan.setAttribute('tabindex', '0');
-                        termSpan.textContent = termWord;
-                        span.appendChild(termSpan);
-                    } else if (part) {
-                        span.appendChild(document.createTextNode(part));
-                    }
-                });
+                // Sin tabindex="0" para evitar inyectar decenas de paradas de tabulación en párrafos
+                const termSpan = document.createElement('span');
+                termSpan.className = 'glossary-term';
+                termSpan.setAttribute('data-tooltip', def);
+                termSpan.setAttribute('title', def);
+                termSpan.textContent = matchedWord;
+                fragment.appendChild(termSpan);
 
-                textNode.parentNode.replaceChild(span, textNode);
+                lastIndex = match.index + matchedWord.length;
+            }
+
+            if (fragment) {
+                if (lastIndex < text.length) {
+                    fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+                }
+                if (textNode.parentNode) {
+                    textNode.parentNode.replaceChild(fragment, textNode);
+                }
             }
         });
     });
+
+    // Soporte táctil ligero sin contaminar el orden de tabulación
+    document.addEventListener('click', (e) => {
+        const term = e.target.closest('.glossary-term');
+        document.querySelectorAll('.glossary-term.tooltip-open').forEach(el => {
+            if (el !== term) el.classList.remove('tooltip-open');
+        });
+        if (term) {
+            term.classList.toggle('tooltip-open');
+        }
+    });
 }
 
-// Ejecutar cuando el DOM esté listo
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initGlossaryTooltips);
-} else {
-    initGlossaryTooltips();
+if (typeof window !== 'undefined') {
+    window.buildGlossaryMatcher = buildGlossaryMatcher;
+}
+
+if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initGlossaryTooltips);
+    } else {
+        initGlossaryTooltips();
+    }
 }

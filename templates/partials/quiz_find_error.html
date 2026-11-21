@@ -1,14 +1,15 @@
 <div class="quiz-find-error">
-    <p class="find-error-instruction">Haz click en la línea que contiene el error.</p>
-    <div class="find-error-code">
+    <p class="find-error-instruction">Selecciona la línea que contiene el error (haz clic o usa teclado con Enter/Espacio).</p>
+    <div class="find-error-code" role="group" aria-label="Líneas de código para identificar el error">
         {% set lines = ex.code.split('\n') %}
         {% set is_python_lesson = current_lesson and (current_lesson.startswith('py-') or current_lesson.startswith('ref-') or current_lesson.startswith('ex-')) %}
         {% set lang_class = 'language-python' if is_python_lesson else 'language-java' %}
         {% for line in lines %}
-        <div class="error-line" data-line-index="{{ loop.index0 }}">
-            <span class="line-number">{{ loop.index }}</span>
+        <button type="button" class="error-line" data-line-index="{{ loop.index0 }}" aria-pressed="false"
+            aria-label="Línea {{ loop.index }}: {{ line | trim }}">
+            <span class="line-number" aria-hidden="true">{{ loop.index }}</span>
             <code class="{{ lang_class }}">{{ line }}</code>
-        </div>
+        </button>
         {% endfor %}
     </div>
 </div>

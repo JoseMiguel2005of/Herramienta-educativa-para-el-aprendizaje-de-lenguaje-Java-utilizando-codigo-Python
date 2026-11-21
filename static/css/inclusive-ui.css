@@ -1278,7 +1278,11 @@ html[data-a11y-contrast="high"] .example-card,
 html[data-a11y-contrast="high"] .glossary-card,
 html[data-a11y-contrast="high"] .eval-dash-item,
 html[data-a11y-contrast="high"] .term-btn,
-html[data-a11y-contrast="high"] .status-pill {
+html[data-a11y-contrast="high"] .status-pill,
+html[data-a11y-contrast="high"] .study-timer-modal,
+html[data-a11y-contrast="high"] .modal-dialog-card,
+html[data-a11y-contrast="high"] .reorder-item,
+html[data-a11y-contrast="high"] .btn-reorder-move {
     border-width: 2px !important;
 }
 

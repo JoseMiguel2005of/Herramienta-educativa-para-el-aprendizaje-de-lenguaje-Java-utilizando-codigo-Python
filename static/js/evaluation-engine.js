@@ -32,12 +32,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (startScreen) {
             const notice = document.createElement('p');
-            notice.style.color = '#ef5350';
+            notice.style.color = 'var(--status-danger)';
             notice.style.marginTop = '1rem';
             notice.textContent = 'No hay preguntas disponibles para esta evaluación en este momento. Vuelve al panel de progreso.';
             startScreen.appendChild(notice);
         }
         return;
+    }
+
+    function shouldReduceMotion() {
+        return (
+            (typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) ||
+            document.documentElement.dataset.a11yMotion === 'reduce'
+        );
     }
 
     // Progress
@@ -107,7 +114,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Update dots
         document.querySelectorAll('.dot-btn').forEach((dot, i) => {
-            dot.classList.toggle('active', i === idx);
+            const isCurrent = (i === idx);
+            dot.classList.toggle('active', isCurrent);
+            if (isCurrent) {
+                dot.setAttribute('aria-current', 'step');
+            } else {
+                dot.removeAttribute('aria-current');
+            }
         });
 
         // Update nav buttons
@@ -182,8 +195,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const value = btn.dataset.value === 'true';
 
             // Deselect siblings
-            slide.querySelectorAll('.eval-tf-btn').forEach(b => b.classList.remove('selected'));
+            slide.querySelectorAll('.eval-tf-btn').forEach(b => {
+                b.classList.remove('selected');
+                b.setAttribute('aria-pressed', 'false');
+            });
             btn.classList.add('selected');
+            btn.setAttribute('aria-pressed', 'true');
 
             answers[qid] = value;
             markDotAnswered(parseInt(slide.dataset.question, 10));
@@ -364,6 +381,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ===== ANIMATE NUMBER =====
     function animateNumber(el, start, end, duration) {
+        if (shouldReduceMotion()) {
+            el.textContent = `${end}%`;
+            return;
+        }
         const range = end - start;
         const startTimestamp = Date.now();
 
@@ -383,6 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ===== CONFETTI =====
     function launchConfetti() {
+        if (shouldReduceMotion()) return;
         const canvas = document.getElementById('confetti-canvas');
         if (!canvas) return;
         const ctx = canvas.getContext('2d');

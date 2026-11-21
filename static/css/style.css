@@ -1261,11 +1261,12 @@ body::before {
 }
 
 .ref-table th {
-    background: linear-gradient(135deg, var(--green), var(--green-dark));
-    color: var(--text);
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
     text-align: left;
     padding: 0.75rem 1rem;
-    font-weight: 600;
+    font-weight: 700;
+    border-bottom: 2px solid var(--border-strong);
 }
 
 .ref-table td {
@@ -1338,12 +1339,12 @@ body::before {
 }
 
 .exercise-card.correct {
-    border-color: var(--green);
-    background: var(--green-light);
+    border-color: var(--status-success);
+    background: var(--status-success-bg);
 }
 
 .exercise-card.incorrect {
-    border-color: #000;
+    border-color: var(--status-danger);
     animation: shake 0.4s ease;
 }
 
@@ -1376,8 +1377,8 @@ body::before {
 }
 
 .exercise-badge {
-    background: linear-gradient(135deg, var(--green), var(--green-dark));
-    color: var(--text);
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
     padding: 0.2rem 0.75rem;
     border-radius: var(--radius);
     font-size: 0.8rem;
@@ -1403,7 +1404,7 @@ body::before {
 }
 
 .exercise-python-ref code {
-    font-family: "JetBrains Mono", monospace;
+    font-family: var(--font-mono);
     font-size: 0.9rem;
 }
 
@@ -1415,22 +1416,21 @@ body::before {
     padding: 0.75rem 1rem;
     border-radius: var(--radius);
     margin-bottom: 1rem;
-    font-family: "JetBrains Mono", monospace;
+    font-family: var(--font-mono);
     font-size: 0.9rem;
     flex-wrap: wrap;
     border: 1px solid var(--border);
 }
 
 .exercise-input {
-    border: 2px solid var(--green);
-    border-radius: var(--radius);
+    border: 2px solid var(--border-strong);
+    border-radius: var(--radius-sm, 8px);
     padding: 0.25rem 0.5rem;
-    font-family: "JetBrains Mono", monospace;
+    font-family: var(--font-mono);
     font-size: 0.9rem;
-    background: white;
-    color: #1a1a1a;
-    outline: none;
-    transition: all 0.25s ease;
+    background: var(--bg-secondary);
+    color: var(--text);
+    transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
 .exercise-input:focus {
@@ -1439,13 +1439,15 @@ body::before {
 }
 
 .exercise-input.input-correct {
-    border-color: var(--green);
-    background: #e8f5e9;
+    border-color: var(--status-success);
+    background: var(--status-success-bg);
+    color: var(--status-success);
 }
 
 .exercise-input.input-incorrect {
-    border-color: #000;
-    background: transparent;
+    border-color: var(--status-danger);
+    background: var(--status-danger-bg);
+    color: var(--status-danger);
 }
 
 .exercise-controls {
@@ -1455,21 +1457,21 @@ body::before {
 }
 
 .btn-check {
-    background: linear-gradient(135deg, var(--green), var(--green-dark));
-    color: var(--text);
-    border: none;
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+    border: 1px solid var(--btn-primary-bg);
     padding: 0.5rem 1.1rem;
     border-radius: var(--radius);
     font-family: inherit;
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: background-color 0.2s ease, transform 0.2s ease;
     box-shadow: var(--shadow);
 }
 
 .btn-check:hover {
-    background: linear-gradient(135deg, var(--green-dark), #027a4d);
+    background: var(--btn-primary-hover);
     transform: translateY(-1px);
     box-shadow: var(--shadow);
 }
@@ -1483,20 +1485,20 @@ body::before {
 
 .btn-hint {
     background: transparent;
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-strong);
     color: var(--text-muted);
     padding: 0.5rem 0.95rem;
     border-radius: var(--radius);
     font-family: inherit;
     font-size: 0.9rem;
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
 }
 
 .btn-hint:hover {
-    border-color: #f5d442;
-    color: #b8860b;
-    background: rgba(245, 212, 66, 0.08);
+    border-color: var(--status-warning-border);
+    color: var(--status-warning);
+    background: var(--status-warning-bg);
 }
 
 .exercise-feedback {
@@ -1508,26 +1510,17 @@ body::before {
 }
 
 .exercise-feedback.feedback-correct {
-    background: rgba(46, 125, 50, 0.12);
-    color: #2e7d32;
-    border-left: 4px solid var(--green);
+    background: var(--status-success-bg);
+    color: var(--status-success);
+    border: 1px solid var(--status-success-border);
+    border-left: 4px solid var(--status-success);
 }
 
 .exercise-feedback.feedback-incorrect {
-    background: rgba(0, 0, 0, 0.06);
-    color: inherit;
-    border: 2px solid #000;
-}
-
-[data-theme="dark"] .exercise-feedback.feedback-correct {
-    background: rgba(4, 170, 109, 0.15);
-    color: #4ade80;
-}
-
-[data-theme="dark"] .exercise-feedback.feedback-incorrect {
-    background: rgba(255, 255, 255, 0.06);
-    color: inherit;
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35);
+    background: var(--status-danger-bg);
+    color: var(--status-danger);
+    border: 1px solid var(--status-danger-border);
+    border-left: 4px solid var(--status-danger);
 }
 
 .exercise-explanation-box {
@@ -2351,9 +2344,8 @@ body::before {
 }
 
 .glossary-term:hover,
-.glossary-term:focus {
+.glossary-term.tooltip-open {
     color: var(--green);
-    outline: none;
 }
 
 .glossary-term::after {
@@ -2362,13 +2354,13 @@ body::before {
     bottom: 125%;
     left: 50%;
     transform: translateX(-50%) translateY(4px);
-    background: var(--bg-code);
+    background: var(--bg-secondary);
     border: 1px solid var(--green);
     color: var(--text);
     padding: 0.5rem 0.85rem;
-    border-radius: 6px;
-    font-size: 0.78rem;
-    font-family: 'Inter', sans-serif;
+    border-radius: var(--radius-sm, 8px);
+    font-size: 0.8rem;
+    font-family: var(--font-body);
     font-weight: 400;
     width: max-content;
     max-width: 290px;
@@ -2378,13 +2370,13 @@ body::before {
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
-    line-height: 1.4;
+    box-shadow: var(--shadow-lg);
+    line-height: 1.45;
     text-align: left;
 }
 
 .glossary-term:hover::after,
-.glossary-term:focus::after {
+.glossary-term.tooltip-open::after {
     opacity: 1;
     visibility: visible;
     transform: translateX(-50%) translateY(0);

@@ -4,40 +4,40 @@
 
 {% block content %}
 <div class="practice-layout">
-    
+
     <!-- LEFT PANEL: Problem description and cases -->
     <div class="practice-left data-module module-log" style="display: flex; flex-direction: column; overflow: hidden;">
         <div class="module-header" style="display: flex; justify-content: space-between; align-items: center;">
-            <a href="{{ url_for('practice_list') }}" style="color: var(--text-muted); text-decoration: none; font-size: 0.85rem;">← VOLVER</a>
-            <span style="color: var(--python-color); font-weight: bold;">[LAB_IDE]</span>
+            <a href="{{ url_for('practice_list') }}" style="color: var(--text-muted); text-decoration: none; font-size: 0.85rem; font-weight: 600;">← VOLVER</a>
+            <span style="color: var(--python-color); font-weight: 700;">[LAB_IDE]</span>
         </div>
         <div class="module-body" style="overflow-y: auto; padding: 1.5rem; flex-grow: 1;">
-            <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
                 <span class="glossary-tag">{{ problem.category }}</span>
-                <span class="glossary-tag" style="color: #a6e22e; border-color: #a6e22e;">{{ problem.difficulty | upper }}</span>
+                <span class="status-pill status-pill--completed">{{ problem.difficulty | upper }}</span>
             </div>
-            
-            <h1 style="font-family: 'Space Grotesk', sans-serif; margin: 0 0 1rem 0; font-size: 1.8rem; color: var(--text);">{{ problem.title }}</h1>
-            
+
+            <h1 style="font-family: var(--font-display); margin: 0 0 1rem 0; font-size: 1.8rem; color: var(--text);">{{ problem.title }}</h1>
+
             <div class="problem-description" style="font-size: 1rem; line-height: 1.6; color: var(--text); margin-bottom: 2rem;">
                 {{ problem.description | safe }}
             </div>
 
-            <h3 style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: var(--text-muted); border-bottom: 1px dashed var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem;">// CASOS DE PRUEBA</h3>
+            <h3 style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--text-muted); border-bottom: 1px dashed var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem;">// CASOS DE PRUEBA</h3>
             <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 2rem;">
                 {% for test in problem.test_cases %}
-                <div class="test-case-item" style="background: var(--bg-code); border: 1px solid var(--border); padding: 0.75rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;">
+                <div class="test-case-item" style="background: var(--bg-code); border: 1px solid var(--border); padding: 0.75rem; border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 0.85rem;">
                     <div style="color: var(--text-muted); margin-bottom: 0.25rem;">Input:</div>
-                    <div style="color: var(--green); margin-bottom: 0.5rem;">{{ test.input }}</div>
+                    <div style="color: var(--green); margin-bottom: 0.5rem; font-weight: 600;">{{ test.input }}</div>
                     <div style="color: var(--text-muted); margin-bottom: 0.25rem;">Expected:</div>
-                    <div style="color: #a6e22e;">{{ test.expected }}</div>
+                    <div style="color: var(--status-success); font-weight: 600;">{{ test.expected }}</div>
                 </div>
                 {% endfor %}
             </div>
 
             {% if problem.hints %}
-            <h3 style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: var(--text-muted); border-bottom: 1px dashed var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem;">// PISTAS (HINTS)</h3>
-            <ul style="color: var(--text-muted); font-size: 0.9rem; padding-left: 1.5rem;">
+            <h3 style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--text-muted); border-bottom: 1px dashed var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem;">// PISTAS (HINTS)</h3>
+            <ul style="color: var(--text-muted); font-size: 0.92rem; padding-left: 1.5rem;">
                 {% for hint in problem.hints %}
                 <li style="margin-bottom: 0.5rem;">{{ hint }}</li>
                 {% endfor %}
@@ -48,30 +48,31 @@
 
     <!-- RIGHT PANEL: Editor and Console -->
     <div class="practice-right data-module module-log" style="display: flex; flex-direction: column; overflow: hidden;">
-        <div class="module-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; background: var(--bg-code);">
-            <span>// main.py</span>
+        <div class="module-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; background: var(--bg-elevated);">
+            <span style="font-family: var(--font-mono); color: var(--text);">// main.py</span>
             <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                <button type="button" id="btn-reset" class="btn-translate" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 0.3rem 0.8rem; font-size: 0.75rem; cursor: pointer;">
+                <button type="button" id="btn-reset" class="btn-secondary-inclusive" style="padding: 0.35rem 0.9rem; font-size: 0.82rem;">
                     RESET
                 </button>
-                <button type="button" id="btn-run-tests" class="btn-translate" style="background: var(--python-color); color: #000; border: none; padding: 0.3rem 1rem; font-weight: bold; cursor: pointer;">
+                <button type="button" id="btn-run-tests" class="btn-primary-inclusive" style="padding: 0.35rem 1.05rem; font-size: 0.85rem;">
                     ▶ EJECUTAR PRUEBAS
                 </button>
             </div>
         </div>
-        
+
         <!-- Editor -->
         <div style="flex-grow: 1; display: flex; flex-direction: column; border-bottom: 1px solid var(--border);">
-            <textarea id="practice-editor" spellcheck="false" style="width: 100%; flex-grow: 1; background: var(--bg-code); color: var(--green); font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; padding: 1rem; border: none; outline: none; resize: none; line-height: 1.5;">{{ previous_code }}</textarea>
+            <label for="practice-editor" class="sr-only">Editor de código Python para {{ problem.title }}</label>
+            <textarea id="practice-editor" spellcheck="false" style="width: 100%; flex-grow: 1; background: var(--editor-bg); color: var(--editor-text); font-family: var(--font-mono); font-size: 0.95rem; padding: 1rem; border: none; resize: none; line-height: 1.55;">{{ previous_code }}</textarea>
         </div>
-        
+
         <!-- Console Output -->
-        <div class="console-panel" style="height: 250px; background: #000; display: flex; flex-direction: column;">
-            <div style="background: #111; border-bottom: 1px solid #333; padding: 0.4rem 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #888; display: flex; justify-content: space-between;">
-                <span>TERMINAL DE PRUEBAS</span>
-                <span id="pyodide-status">Cargando Pyodide...</span>
+        <div class="console-panel" style="height: 250px; background: var(--editor-bg); border-top: 1px solid var(--border); display: flex; flex-direction: column;">
+            <div style="background: var(--bg-elevated); border-bottom: 1px solid var(--border); padding: 0.45rem 1rem; font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;">
+                <span style="color: var(--text); font-weight: 600;">TERMINAL DE PRUEBAS</span>
+                <span id="pyodide-status" role="status" aria-live="polite">Cargando Pyodide...</span>
             </div>
-            <div id="test-output" style="padding: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text); overflow-y: auto; flex-grow: 1;">
+            <div id="test-output" role="log" aria-live="polite" style="padding: 1rem; font-family: var(--font-mono); font-size: 0.85rem; color: var(--editor-text); overflow-y: auto; flex-grow: 1;">
                 Listo para ejecutar. Presiona "Ejecutar Pruebas".
             </div>
         </div>
@@ -94,6 +95,13 @@
     const starterCode = {{ problem.starter_code | tojson }};
     const testCases = {{ problem.test_cases | tojson }};
 
+    function shouldReduceMotion() {
+        return (
+            (typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) ||
+            document.documentElement.dataset.a11yMotion === 'reduce'
+        );
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         const editor = document.getElementById('practice-editor');
         const btnRun = document.getElementById('btn-run-tests');
@@ -102,7 +110,7 @@
 
         function appendLine(text, opts = {}) {
             const el = document.createElement('div');
-            if (opts.color) el.style.color = opts.color;
+            if (opts.tone) el.className = `console-line console-line--${opts.tone}`;
             if (opts.marginTop) el.style.marginTop = opts.marginTop;
             if (opts.fontSize) el.style.fontSize = opts.fontSize;
             if (opts.bold) el.style.fontWeight = 'bold';
@@ -111,19 +119,19 @@
             return el;
         }
 
-        function appendPre(text, color) {
+        function appendPre(text, tone) {
             const pre = document.createElement('pre');
-            pre.style.color = color || '#f92672';
+            pre.className = `console-line console-line--${tone || 'error'}`;
             pre.style.marginTop = '0.5rem';
             pre.style.whiteSpace = 'pre-wrap';
             pre.textContent = text;
             output.appendChild(pre);
             return pre;
         }
-        
+
         // Reset code (soporte de tecla Tab gestionado de forma única en static/js/main.js)
         btnReset.addEventListener('click', () => {
-            if(confirm("¿Seguro que quieres borrar tu código y volver al estado inicial?")) {
+            if (confirm("¿Seguro que quieres borrar tu código y volver al estado inicial?")) {
                 editor.value = starterCode;
             }
         });
@@ -138,7 +146,7 @@
         btnRun.addEventListener('click', async () => {
             const userCode = editor.value;
             output.textContent = '';
-            appendLine('Ejecutando pruebas...', { color: '#fd971f' });
+            appendLine('Ejecutando pruebas...', { tone: 'warning' });
             btnRun.disabled = true;
             btnRun.textContent = "EVALUANDO...";
 
@@ -151,9 +159,9 @@
                 // 1. Load user code into pyodide environment
                 try {
                     await pyodide.runPythonAsync(userCode);
-                } catch(e) {
-                    appendLine('[Error] Error de sintaxis o ejecución en tu código:', { color: '#f92672', marginTop: '0.75rem' });
-                    appendPre(e.message || String(e), '#f92672');
+                } catch (e) {
+                    appendLine('[Error] Error de sintaxis o ejecución en tu código:', { tone: 'error', marginTop: '0.75rem' });
+                    appendPre(e.message || String(e), 'error');
                     btnRun.disabled = false;
                     btnRun.textContent = "▶ EJECUTAR PRUEBAS";
                     return;
@@ -162,10 +170,10 @@
                 // 2. Run test cases
                 let allPassed = true;
                 let passedCount = 0;
-                
-                for(let i=0; i<testCases.length; i++) {
+
+                for (let i = 0; i < testCases.length; i++) {
                     const test = testCases[i];
-                    
+
                     const testScript = `
 import json
 try:
@@ -182,16 +190,16 @@ json.dumps({"passed": _passed, "actual": _actual_repr})
                     try {
                         const resultJson = await pyodide.runPythonAsync(testScript);
                         const result = JSON.parse(resultJson);
-                        
-                        if(result.passed) {
-                            appendLine(`[PASÓ] Caso ${i+1}: ${test.input} == ${test.expected}`, { color: '#a6e22e', marginTop: '0.5rem' });
+
+                        if (result.passed) {
+                            appendLine(`[PASÓ] Caso ${i + 1}: ${test.input} == ${test.expected}`, { tone: 'success', marginTop: '0.5rem' });
                             passedCount++;
                         } else {
                             const failBox = document.createElement('div');
-                            failBox.style.color = '#f92672';
+                            failBox.className = 'console-line console-line--error';
                             failBox.style.marginTop = '0.5rem';
                             const details = [
-                                `[FALLÓ] Caso ${i+1} Falló.`,
+                                `[FALLÓ] Caso ${i + 1} Falló.`,
                                 `  Entrada: ${test.input}`,
                                 `  Esperado: ${test.expected}`,
                                 `  Obtenido: ${result.actual}`
@@ -204,14 +212,14 @@ json.dumps({"passed": _passed, "actual": _actual_repr})
                             output.appendChild(failBox);
                             allPassed = false;
                         }
-                    } catch(e) {
-                        appendLine(`[FALLÓ] Caso ${i+1} Falló con error interno de test.`, { color: '#f92672', marginTop: '0.5rem' });
+                    } catch (e) {
+                        appendLine(`[FALLÓ] Caso ${i + 1} Falló con error interno de test.`, { tone: 'error', marginTop: '0.5rem' });
                         allPassed = false;
                     }
                 }
 
                 // 3. Submit results to backend
-                appendLine('Enviando resultados...', { color: '#888', marginTop: '0.75rem' });
+                appendLine('Enviando resultados...', { tone: 'muted', marginTop: '0.75rem' });
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
                 const response = await fetch('/api/submit_practice', {
                     method: 'POST',
@@ -227,29 +235,30 @@ json.dumps({"passed": _passed, "actual": _actual_repr})
                         tests_total: testCases.length
                     })
                 });
-                
+
                 const data = await response.json().catch(() => ({ ok: false, anonymous: true, xp_gained: 0 }));
-                
-                if(allPassed) {
-                    appendLine('TODAS LAS PRUEBAS SUPERADAS', { color: '#a6e22e', fontSize: '1.1rem', bold: true, marginTop: '0.9rem' });
-                    
-                    if(data.anonymous) {
-                        appendLine('Inicia sesión para guardar tu progreso y ganar XP.', { color: '#fd971f', marginTop: '0.35rem' });
-                    } else if(data.xp_gained > 0) {
-                        appendLine(`+${data.xp_gained} XP obtenidos.`, { color: '#fd971f', marginTop: '0.35rem' });
-                        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-                        
-                        // Fire global event to update UI if needed
-                        if(window.parent && window.parent.updateXpUi) {
+
+                if (allPassed) {
+                    appendLine('TODAS LAS PRUEBAS SUPERADAS', { tone: 'success', fontSize: '1.05rem', bold: true, marginTop: '0.9rem' });
+
+                    if (data.anonymous) {
+                        appendLine('Inicia sesión para guardar tu progreso y ganar XP.', { tone: 'warning', marginTop: '0.35rem' });
+                    } else if (data.xp_gained > 0) {
+                        appendLine(`+${data.xp_gained} XP obtenidos.`, { tone: 'warning', marginTop: '0.35rem' });
+                        if (!shouldReduceMotion() && typeof confetti === 'function') {
+                            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                        }
+
+                        if (window.parent && window.parent.updateXpUi) {
                             window.parent.updateXpUi(data.xp_gained, data.new_total, data.level, data.title);
                         }
                     }
                 } else {
-                    appendLine('Algunas pruebas fallaron. Revisa tu código e intenta de nuevo.', { color: '#f92672', bold: true, marginTop: '0.9rem' });
+                    appendLine('Algunas pruebas fallaron. Revisa tu código e intenta de nuevo.', { tone: 'error', bold: true, marginTop: '0.9rem' });
                 }
 
             } catch (err) {
-                appendLine(`Error del entorno de evaluación: ${err.message || String(err)}`, { color: '#f92672', marginTop: '0.75rem' });
+                appendLine(`Error del entorno de evaluación: ${err.message || String(err)}`, { tone: 'error', marginTop: '0.75rem' });
             } finally {
                 btnRun.disabled = false;
                 btnRun.textContent = "▶ EJECUTAR PRUEBAS";
@@ -268,13 +277,20 @@ json.dumps({"passed": _passed, "actual": _actual_repr})
 }
 
 .problem-description code {
-    background: rgba(255,255,255,0.1);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
     color: var(--green);
-    padding: 0.1rem 0.3rem;
-    border-radius: 3px;
-    font-family: 'JetBrains Mono', monospace;
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    font-family: var(--font-mono);
     font-size: 0.9em;
 }
+
+/* Colores de consola de alto contraste sobre --editor-bg en todos los temas */
+.console-line--success { color: #4ADE80; }
+.console-line--error   { color: #FDA4AF; }
+.console-line--warning { color: #FCD34D; }
+.console-line--muted   { color: #CBD5E1; }
 
 @media (max-width: 900px) {
     .practice-layout {

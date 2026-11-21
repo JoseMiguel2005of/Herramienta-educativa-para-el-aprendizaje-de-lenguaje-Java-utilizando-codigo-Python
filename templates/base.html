@@ -39,7 +39,7 @@
     <meta name="theme-color" content="#0F172A">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <script src="{{ url_for('static', filename='js/glossary-tooltips.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/glossary-tooltips.js') }}" defer></script>
 </head>
 
 <body>
@@ -65,7 +65,8 @@
 
             <div class="topbar-actions">
                 <button type="button" id="btn-study-timer" class="term-btn study-timer-btn"
-                    title="Modo Estudio (Fijar meta de tiempo)" aria-label="Abrir cronómetro de estudio">
+                    title="Modo Estudio (Fijar meta de tiempo)" aria-label="Abrir cronómetro de estudio"
+                    aria-expanded="false" aria-controls="study-timer-modal">
                     <span class="timer-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></span>
                     <span id="study-timer-display" class="timer-digits">00:00</span>
                     <span id="study-timer-goal-pill" class="timer-goal-pill" style="display:none;">/ 25m</span>

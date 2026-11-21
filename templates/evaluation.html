@@ -70,7 +70,7 @@
                 </ul>
             </div>
 
-            <button class="btn-eval-start" id="btn-start-eval">
+            <button type="button" class="btn-eval-start" id="btn-start-eval">
                 Comenzar Evaluación ❯
             </button>
         </div>
@@ -82,7 +82,7 @@
             <div class="eval-header-top">
                 <h2 class="eval-title-small">{{ eval_data.title }}</h2>
                 <div class="eval-timer" id="eval-timer">
-                    <span class="timer-icon"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></span>
+                    <span class="timer-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></span>
                     <span class="timer-value" id="timer-value">{{ (time_limit // 60) }}:00</span>
                 </div>
             </div>
@@ -93,9 +93,11 @@
             <div class="eval-progress-track">
                 <div class="eval-progress-fill" id="eval-progress-fill" style="width: 0%"></div>
             </div>
-            <div class="eval-question-dots" id="eval-question-dots">
+            <div class="eval-question-dots" id="eval-question-dots" role="navigation" aria-label="Navegación por preguntas">
                 {% for q in questions %}
-                <button class="dot-btn {% if loop.first %}active{% endif %}" data-idx="{{ loop.index0 }}"
+                <button type="button" class="dot-btn {% if loop.first %}active{% endif %}" data-idx="{{ loop.index0 }}"
+                    aria-label="Ir a la pregunta {{ loop.index }}"
+                    {% if loop.first %}aria-current="step"{% endif %}
                     title="Pregunta {{ loop.index }}"></button>
                 {% endfor %}
             </div>
@@ -122,11 +124,11 @@
 
                 <div class="eval-answer-area">
                     {% if q.type == 'multiple_choice' %}
-                    <div class="eval-options-list">
+                    <div class="eval-options-list" role="radiogroup" aria-label="Opciones de respuesta para pregunta {{ loop.index }}">
                         {% for opt in q.options %}
                         <label class="eval-option">
-                            <input type="radio" name="eval_q{{ outer_loop_index }}" value="{{ loop.index0 }}">
-                            <span class="eval-option-marker"></span>
+                            <input type="radio" class="sr-only" name="eval_q{{ outer_loop_index }}" value="{{ loop.index0 }}">
+                            <span class="eval-option-marker" aria-hidden="true"></span>
                             <span class="eval-option-content">{{ opt }}</span>
                         </label>
                         {% endfor %}
@@ -141,12 +143,12 @@
                         </div>
                     </div>
                     {% elif q.type == 'true_false' %}
-                    <div class="eval-tf-buttons">
-                        <button class="eval-tf-btn" data-value="true">
-                            <span class="tf-icon">✓</span> Verdadero
+                    <div class="eval-tf-buttons" role="group" aria-label="Verdadero o Falso">
+                        <button type="button" class="eval-tf-btn" data-value="true" aria-pressed="false">
+                            <span class="tf-icon" aria-hidden="true">✓</span> Verdadero
                         </button>
-                        <button class="eval-tf-btn" data-value="false">
-                            <span class="tf-icon">✗</span> Falso
+                        <button type="button" class="eval-tf-btn" data-value="false" aria-pressed="false">
+                            <span class="tf-icon" aria-hidden="true">✗</span> Falso
                         </button>
                     </div>
                     {% endif %}
@@ -156,9 +158,9 @@
         </div>
 
         <div class="eval-actions">
-            <button class="btn-eval-prev" id="btn-eval-prev" disabled>❮ Anterior</button>
-            <button class="btn-eval-next" id="btn-eval-next">Siguiente ❯</button>
-            <button class="btn-eval-submit" id="btn-eval-submit" hidden>Enviar Evaluación ✓</button>
+            <button type="button" class="btn-eval-prev" id="btn-eval-prev" disabled>❮ Anterior</button>
+            <button type="button" class="btn-eval-next" id="btn-eval-next">Siguiente ❯</button>
+            <button type="button" class="btn-eval-submit" id="btn-eval-submit" hidden>Enviar Evaluación ✓</button>
         </div>
     </div>
 
@@ -195,7 +197,7 @@
             </div>
 
             <div class="eval-results-actions">
-                <button class="btn-eval-retry" id="btn-eval-retry">Reintentar</button>
+                <button type="button" class="btn-eval-retry" id="btn-eval-retry">Reintentar</button>
                 <a href="{{ url_for('dashboard') }}" class="btn-eval-dashboard">Dashboard</a>
             </div>
         </div>

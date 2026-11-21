@@ -73,7 +73,7 @@
 
         .cert-type {
             font-size: 0.85rem;
-            color: #8B949E;
+            color: #A8B8CC;
             text-transform: uppercase;
             letter-spacing: 0.2em;
             font-family: "JetBrains Mono", monospace;
@@ -83,13 +83,13 @@
             width: 60%;
             margin: 1.5rem auto;
             height: 1px;
-            background: linear-gradient(90deg, transparent, #00E5FF, transparent);
+            background: linear-gradient(90deg, transparent, #38BDF8, transparent);
         }
 
         .cert-body h2 {
             font-family: "Space Grotesk", sans-serif;
             font-size: 1.2rem;
-            color: #8B949E;
+            color: #A8B8CC;
             font-weight: 400;
             margin-bottom: 0.5rem;
         }
@@ -98,14 +98,14 @@
             font-family: "Space Grotesk", sans-serif;
             font-size: 2.5rem;
             font-weight: 700;
-            color: #F0F6FC;
+            color: #F8FAFC;
             margin-bottom: 0.5rem;
             text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
         }
 
         .cert-achievement {
             font-size: 1rem;
-            color: #C9D1D9;
+            color: #E2E8F0;
             margin-bottom: 0.25rem;
         }
 
@@ -113,26 +113,27 @@
             font-family: "Space Grotesk", sans-serif;
             font-size: 1.6rem;
             font-weight: 700;
-            color: #00E5FF;
-            text-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+            color: #38BDF8;
+            text-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
             margin: 0.5rem 0 1rem;
         }
 
         .cert-lessons {
-            font-size: 0.85rem;
-            color: #8B949E;
+            font-size: 0.88rem;
+            color: #CBD5E1;
             font-family: "JetBrains Mono", monospace;
         }
 
         .cert-date {
-            font-size: 0.85rem;
-            color: #8B949E;
+            font-size: 0.88rem;
+            color: #CBD5E1;
             margin-top: 1rem;
             font-family: "JetBrains Mono", monospace;
         }
 
         .cert-footer {
             margin-top: 2rem;
+            padding-bottom: 1.75rem;
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
@@ -145,30 +146,31 @@
         .cert-sig-line {
             width: 160px;
             height: 1px;
-            background: #30363D;
+            background: #64748B;
             margin-bottom: 0.5rem;
         }
 
         .cert-sig-title {
-            font-size: 0.7rem;
-            color: #8B949E;
+            font-size: 0.74rem;
+            color: #CBD5E1;
             text-transform: uppercase;
             letter-spacing: 0.1em;
         }
 
         .cert-id {
             font-family: "JetBrains Mono", monospace;
-            font-size: 0.65rem;
-            color: #30363D;
+            font-size: 0.76rem;
+            color: #A8B8CC;
             position: absolute;
-            bottom: 20px;
+            bottom: 18px;
             left: 50%;
             transform: translateX(-50%);
+            white-space: nowrap;
         }
 
         /* Locked state */
         .cert-locked-overlay {
-            background: rgba(13, 17, 23, 0.85);
+            background: rgba(13, 17, 23, 0.92);
             position: absolute;
             top: 0;
             left: 0;
@@ -188,14 +190,14 @@
         }
 
         .cert-locked-text {
-            color: #8B949E;
+            color: #CBD5E1;
             font-size: 1.1rem;
             font-family: "JetBrains Mono", monospace;
             margin-bottom: 0.5rem;
         }
 
         .cert-locked-progress {
-            color: #00E5FF;
+            color: #38BDF8;
             font-family: "JetBrains Mono", monospace;
             font-size: 1.2rem;
             font-weight: 700;
@@ -203,17 +205,17 @@
 
         .cert-locked-back {
             margin-top: 1.5rem;
-            color: #00E5FF;
+            color: #38BDF8;
             text-decoration: none;
             font-family: "JetBrains Mono", monospace;
             font-size: 0.85rem;
-            border: 1px solid rgba(0, 229, 255, 0.4);
-            padding: 0.5rem 1.5rem;
-            border-radius: 4px;
-            transition: all 0.2s ease;
+            border: 1px solid rgba(56, 189, 248, 0.55);
+            padding: 0.55rem 1.5rem;
+            border-radius: 6px;
+            transition: background-color 0.2s ease;
         }
         .cert-locked-back:hover {
-            background: rgba(0, 229, 255, 0.1);
+            background: rgba(56, 189, 248, 0.14);
         }
 
         /* Print */
@@ -222,43 +224,88 @@
             display: flex;
             gap: 1rem;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
         .cert-btn {
             background: transparent;
-            border: 1px solid #00E5FF;
-            color: #00E5FF;
-            padding: 0.6rem 1.5rem;
-            border-radius: 4px;
+            border: 1px solid #38BDF8;
+            color: #38BDF8;
+            padding: 0.65rem 1.5rem;
+            border-radius: 6px;
             font-family: "JetBrains Mono", monospace;
             font-size: 0.85rem;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: background-color 0.2s ease;
             text-decoration: none;
         }
         .cert-btn:hover {
-            background: rgba(0, 229, 255, 0.1);
+            background: rgba(56, 189, 248, 0.14);
         }
         .cert-btn-primary {
-            background: #00E5FF;
-            color: #0D1117;
+            background: #0369A1;
+            border-color: #0369A1;
+            color: #FFFFFF;
             font-weight: 700;
         }
         .cert-btn-primary:hover {
-            background: #00f7ff;
+            background: #0284C7;
+        }
+
+        .cert-btn:focus-visible,
+        .cert-locked-back:focus-visible {
+            outline: 3px solid #38BDF8;
+            outline-offset: 2px;
         }
 
         @media print {
-            body { background: #fff; padding: 0; }
-            .cert-container {
-                border-color: #000;
-                box-shadow: none;
-                background: #fff;
+            * {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
-            .cert-logo, .cert-course-name { color: #006080; text-shadow: none; }
-            .cert-name { color: #000; text-shadow: none; }
-            .cert-actions { display: none; }
-            .cert-container::before, .cert-container::after { border-color: #000; }
+            body {
+                background: #FFFFFF !important;
+                color: #0F172A !important;
+                padding: 0;
+                min-height: auto;
+            }
+            .cert-container {
+                border: 2px solid #0F172A !important;
+                box-shadow: none !important;
+                background: #FFFFFF !important;
+                color: #0F172A !important;
+            }
+            .cert-container::before,
+            .cert-container::after {
+                border-color: #0F172A !important;
+            }
+            .cert-divider {
+                background: #0F172A !important;
+            }
+            .cert-logo,
+            .cert-course-name {
+                color: #0369A1 !important;
+                text-shadow: none !important;
+            }
+            .cert-name {
+                color: #0F172A !important;
+                text-shadow: none !important;
+            }
+            .cert-type,
+            .cert-body h2,
+            .cert-achievement,
+            .cert-lessons,
+            .cert-date,
+            .cert-sig-title,
+            .cert-id {
+                color: #1E293B !important;
+            }
+            .cert-sig-line {
+                background: #334155 !important;
+            }
+            .cert-actions {
+                display: none !important;
+            }
         }
 
         @media (max-width: 600px) {
@@ -322,8 +369,8 @@
         <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" style="vertical-align:-2px; margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
         Descargar PDF
     </a>
-    <button onclick="window.print()" class="cert-btn">
-        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" style="vertical-align:-2px; margin-right:4px;"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+    <button type="button" onclick="window.print()" class="cert-btn">
+        <svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" style="vertical-align:-2px; margin-right:4px;"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
         Imprimir
     </button>
     <a href="{{ url_for('dashboard') }}" class="cert-btn">← Dashboard</a>

@@ -204,6 +204,10 @@ function showAchievementUnlockModal(achievements) {
 
 function spawnConfetti(container) {
     if (!container) return;
+    const reduceMotion =
+        (typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) ||
+        document.documentElement.dataset.a11yMotion === 'reduce';
+    if (reduceMotion) return;
     const colors = ['#ffd700', '#ff6b6b', '#00e5ff', '#51cf66', '#845ef7', '#ff922b', '#ff85c0'];
     for (let i = 0; i < 40; i++) {
         const confetti = document.createElement('span');

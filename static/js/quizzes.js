@@ -25,9 +25,42 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // === REORDER ===
+    // === REORDER (Drag & Drop + Botones accesibles Subir/Bajar) ===
+    function announceA11y(msg) {
+        if (window.Py2JavaA11y && typeof window.Py2JavaA11y.announce === 'function') {
+            window.Py2JavaA11y.announce(msg);
+            return;
+        }
+        const region = document.getElementById('a11y-announcer');
+        if (region) {
+            region.textContent = '';
+            requestAnimationFrame(() => { region.textContent = msg; });
+        }
+    }
+
+    function updateReorderButtons(list) {
+        if (!list) return;
+        const items = Array.from(list.querySelectorAll('.reorder-item'));
+        const total = items.length;
+        items.forEach((item, idx) => {
+            const upBtn = item.querySelector('.btn-reorder-up');
+            const downBtn = item.querySelector('.btn-reorder-down');
+            if (upBtn) {
+                upBtn.disabled = (idx === 0);
+                upBtn.setAttribute('aria-label', `Subir línea ${idx + 1} de ${total}`);
+            }
+            if (downBtn) {
+                downBtn.disabled = (idx === total - 1);
+                downBtn.setAttribute('aria-label', `Bajar línea ${idx + 1} de ${total}`);
+            }
+        });
+    }
+
+    window._updateReorderButtons = updateReorderButtons;
+
     document.querySelectorAll('.reorder-list').forEach(list => {
         let draggedItem = null;
+        updateReorderButtons(list);
 
         list.querySelectorAll('.reorder-item').forEach(item => {
             item.addEventListener('dragstart', function() {
@@ -39,11 +72,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => {
                     this.classList.remove('dragging');
                     draggedItem = null;
+                    updateReorderButtons(list);
                 }, 0);
             });
 
             item.addEventListener('dragover', function(e) {
                 e.preventDefault();
+                if (!draggedItem) return;
                 const afterElement = getDragAfterElement(list, e.clientY);
                 if (afterElement == null) {
                     list.appendChild(draggedItem);
@@ -51,6 +86,40 @@ document.addEventListener('DOMContentLoaded', () => {
                     list.insertBefore(draggedItem, afterElement);
                 }
             });
+        });
+
+        // Controles táctiles y de teclado (Subir / Bajar)
+        list.addEventListener('click', (e) => {
+            const upBtn = e.target.closest('.btn-reorder-up');
+            const downBtn = e.target.closest('.btn-reorder-down');
+            if (!upBtn && !downBtn) return;
+
+            const item = e.target.closest('.reorder-item');
+            if (!item || item.parentElement !== list) return;
+
+            if (upBtn && item.previousElementSibling) {
+                list.insertBefore(item, item.previousElementSibling);
+                updateReorderButtons(list);
+                const newPos = Array.from(list.children).indexOf(item) + 1;
+                announceA11y(`Línea movida a la posición ${newPos} de ${list.children.length}`);
+                if (!upBtn.disabled) {
+                    upBtn.focus();
+                } else {
+                    const fallbackBtn = item.querySelector('.btn-reorder-down');
+                    if (fallbackBtn) fallbackBtn.focus();
+                }
+            } else if (downBtn && item.nextElementSibling) {
+                list.insertBefore(item.nextElementSibling, item);
+                updateReorderButtons(list);
+                const newPos = Array.from(list.children).indexOf(item) + 1;
+                announceA11y(`Línea movida a la posición ${newPos} de ${list.children.length}`);
+                if (!downBtn.disabled) {
+                    downBtn.focus();
+                } else {
+                    const fallbackBtn = item.querySelector('.btn-reorder-up');
+                    if (fallbackBtn) fallbackBtn.focus();
+                }
+            }
         });
 
         function getDragAfterElement(container, y) {
@@ -72,8 +141,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const errorLine = e.target.closest('.error-line');
         if (errorLine) {
             const container = errorLine.closest('.find-error-code');
-            container.querySelectorAll('.error-line').forEach(l => l.classList.remove('selected'));
+            if (container) {
+                container.querySelectorAll('.error-line').forEach(l => {
+                    l.classList.remove('selected', 'selected-line');
+                    l.setAttribute('aria-pressed', 'false');
+                });
+            }
             errorLine.classList.add('selected');
+            errorLine.setAttribute('aria-pressed', 'true');
         }
     });
 
@@ -346,12 +421,19 @@ async function showAnswer(exerciseId, type, lessonId) {
                 const items = Array.from(list.querySelectorAll('.reorder-item'));
                 items.sort((a, b) => parseInt(a.dataset.originalIndex, 10) - parseInt(b.dataset.originalIndex, 10));
                 items.forEach(item => list.appendChild(item));
+                if (typeof window._updateReorderButtons === 'function') {
+                    window._updateReorderButtons(list);
+                }
             }
         } else if (data.type === 'find-error') {
             const errorLineEl = card.querySelector(`.error-line[data-line-index="${data.error_line}"]`);
             if (errorLineEl) {
-                card.querySelectorAll('.error-line').forEach(l => l.classList.remove('selected', 'selected-line'));
+                card.querySelectorAll('.error-line').forEach(l => {
+                    l.classList.remove('selected', 'selected-line');
+                    l.setAttribute('aria-pressed', 'false');
+                });
                 errorLineEl.classList.add('selected-line');
+                errorLineEl.setAttribute('aria-pressed', 'true');
             }
         }
 

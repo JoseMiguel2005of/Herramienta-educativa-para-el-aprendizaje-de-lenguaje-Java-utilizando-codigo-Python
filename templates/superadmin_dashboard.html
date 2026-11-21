@@ -6,9 +6,9 @@
 <article class="telemetry-dashboard">
     <header class="telemetry-header" style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
         <div>
-            <h1 style="color: #ef5350;">PANEL DE SUPER ADMIN</h1>
+            <h1 style="color: var(--status-danger);">PANEL DE SUPER ADMIN</h1>
             <div class="system-status">
-                <span class="status-indicator" style="background: #ef5350; box-shadow: 0 0 8px #ef5350;"></span>
+                <span class="status-indicator" aria-hidden="true" style="background: var(--status-danger);"></span>
                 SUPERADMIN_ROOT_ACCESS · USUARIO: {{ current_user.username | upper }}
             </div>
         </div>
@@ -19,13 +19,13 @@
             <button type="button" id="btn-sa-pdf" class="term-btn btn-login" data-url="{{ url_for('superadmin_export_pdf') }}" style="font-weight: bold; padding: 0.5rem 1rem; cursor: pointer;">
                 <span id="btn-sa-pdf-label">GENERAR PDF GLOBAL</span>
             </button>
-            <span id="sa-pdf-status" role="status" style="font-size: 0.75rem; font-family: 'JetBrains Mono', monospace;"></span>
+            <span id="sa-pdf-status" role="status" aria-live="polite" style="font-size: 0.78rem; font-family: var(--font-mono);"></span>
         </div>
     </header>
 
     {% with flashed_messages = get_flashed_messages(with_categories=true, category_filter=['success', 'error']) %}
     {% for category, msg in flashed_messages %}
-    <div role="{{ 'alert' if category == 'error' else 'status' }}" style="margin-bottom: 1.5rem; padding: 0.85rem 1rem; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; border: 1px solid {{ '#a6e22e' if category == 'success' else '#ef5350' }}; background: {{ 'rgba(166,226,46,0.08)' if category == 'success' else 'rgba(239,83,80,0.08)' }}; color: {{ '#a6e22e' if category == 'success' else '#ef5350' }};">
+    <div role="{{ 'alert' if category == 'error' else 'status' }}" class="alert-inclusive {{ 'alert-inclusive--success' if category == 'success' else 'alert-inclusive--danger' }}">
         {{ msg }}
     </div>
     {% endfor %}
@@ -50,14 +50,14 @@
         <div class="data-module module-metric">
             <div class="module-header"><span>// SECCIONES_ACTIVAS</span></div>
             <div class="module-body center-data">
-                <span class="metric-value" style="color: #a6e22e;">{{ metrics.total_classrooms }}</span>
+                <span class="metric-value" style="color: var(--status-success);">{{ metrics.total_classrooms }}</span>
                 <span class="metric-total">GRUPOS_EN_PLATAFORMA</span>
             </div>
         </div>
         <div class="data-module module-metric">
             <div class="module-header"><span>// AUDITORÍA_GLOBAL</span></div>
             <div class="module-body center-data">
-                <span class="metric-value" style="color: #ef5350;">{{ metrics.audit_total }}</span>
+                <span class="metric-value" style="color: var(--status-danger);">{{ metrics.audit_total }}</span>
                 <span class="metric-total">EVENTOS_REGISTRADOS</span>
             </div>
         </div>
@@ -69,12 +69,12 @@
         <div class="data-module module-log" style="grid-column: 1 / -1;">
             <div class="module-header">
                 <span>// GESTIÓN_DE_PROFESORES ({{ teachers | length }})</span>
-                <span style="font-size: 0.72rem; color: var(--text-muted);">Control centralizado de cuentas docentes</span>
+                <span style="font-size: 0.76rem; color: var(--text-muted);">Control centralizado de cuentas docentes</span>
             </div>
             <div class="module-body" style="padding: 0; overflow-x: auto;">
-                <table class="leaderboard-table" style="width: 100%; min-width: 640px; border-collapse: collapse; text-align: left; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;">
+                <table class="leaderboard-table" style="width: 100%; min-width: 640px; border-collapse: collapse; text-align: left; font-family: var(--font-mono); font-size: 0.82rem;">
                     <thead>
-                        <tr style="border-bottom: 1px dashed var(--border); background: var(--bg-code);">
+                        <tr style="border-bottom: 1px dashed var(--border); background: var(--bg-elevated); color: var(--text);">
                             <th style="padding: 0.8rem 1rem;">PROFESOR</th>
                             <th style="padding: 0.8rem;">ESTADO</th>
                             <th style="padding: 0.8rem;">SECCIONES</th>
@@ -85,10 +85,10 @@
                     </thead>
                     <tbody>
                         {% for t_user in teachers %}
-                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); {{ 'opacity: 0.72; background: rgba(239,83,80,0.04);' if t_user.is_suspended else '' }}">
+                        <tr style="border-bottom: 1px solid var(--border); {{ 'background: var(--status-danger-bg);' if t_user.is_suspended else '' }}">
                             <td style="padding: 0.8rem 1rem;">
                                 <strong style="color: var(--text);">{{ t_user.username }}</strong>
-                                {% if t_user.email %}<div style="font-size: 0.7rem; color: var(--text-muted);">{{ t_user.email }}</div>{% endif %}
+                                {% if t_user.email %}<div style="font-size: 0.74rem; color: var(--text-muted);">{{ t_user.email }}</div>{% endif %}
                             </td>
                             <td style="padding: 0.8rem;">
                                 {% if t_user.is_suspended %}
@@ -98,13 +98,13 @@
                                 {% endif %}
                             </td>
                             <td style="padding: 0.8rem;">{{ t_user.sections_count }}</td>
-                            <td style="padding: 0.8rem; color: var(--green);">{{ t_user.students_count }}</td>
+                            <td style="padding: 0.8rem; color: var(--green); font-weight: 600;">{{ t_user.students_count }}</td>
                             <td style="padding: 0.8rem; color: var(--text-muted);">{{ t_user.created_at_str }}</td>
                             <td style="padding: 0.8rem 1rem; text-align: center;">
                                 {% if t_user.is_suspended %}
-                                <button type="button" data-user-id="{{ t_user.id }}" data-username="{{ t_user.username }}" onclick="saRestoreUser(this)" style="background: none; border: 1px solid #a6e22e; color: #a6e22e; padding: 0.25rem 0.6rem; border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.74rem;">Restaurar</button>
+                                <button type="button" data-user-id="{{ t_user.id }}" data-username="{{ t_user.username }}" onclick="saRestoreUser(this)" style="background: var(--status-success-bg); border: 1px solid var(--status-success-border); color: var(--status-success); padding: 0.28rem 0.65rem; border-radius: 5px; cursor: pointer; font-family: inherit; font-size: 0.74rem; font-weight: 600;">Restaurar</button>
                                 {% else %}
-                                <button type="button" data-user-id="{{ t_user.id }}" data-username="{{ t_user.username }}" data-role-label="profesor" onclick="openSaSuspendModal(this)" style="background: none; border: 1px solid #F44336; color: #F44336; padding: 0.25rem 0.6rem; border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.74rem;">Suspender</button>
+                                <button type="button" data-user-id="{{ t_user.id }}" data-username="{{ t_user.username }}" data-role-label="profesor" onclick="openSaSuspendModal(this)" style="background: var(--status-danger-bg); border: 1px solid var(--status-danger-border); color: var(--status-danger); padding: 0.28rem 0.65rem; border-radius: 5px; cursor: pointer; font-family: inherit; font-size: 0.74rem; font-weight: 600;">Suspender</button>
                                 {% endif %}
                             </td>
                         </tr>
@@ -120,12 +120,12 @@
         <div class="data-module module-log" style="grid-column: 1 / -1;">
             <div class="module-header">
                 <span>// TODAS_LAS_SECCIONES ({{ classrooms | length }})</span>
-                <span style="font-size: 0.72rem; color: var(--text-muted);">Supervisión global de secciones y códigos de clase</span>
+                <span style="font-size: 0.76rem; color: var(--text-muted);">Supervisión global de secciones y códigos de clase</span>
             </div>
             <div class="module-body" style="padding: 0; overflow-x: auto;">
-                <table class="leaderboard-table" style="width: 100%; min-width: 600px; border-collapse: collapse; text-align: left; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;">
+                <table class="leaderboard-table" style="width: 100%; min-width: 600px; border-collapse: collapse; text-align: left; font-family: var(--font-mono); font-size: 0.82rem;">
                     <thead>
-                        <tr style="border-bottom: 1px dashed var(--border); background: var(--bg-code);">
+                        <tr style="border-bottom: 1px dashed var(--border); background: var(--bg-elevated); color: var(--text);">
                             <th style="padding: 0.75rem 1rem;">SECCIÓN</th>
                             <th style="padding: 0.75rem;">CÓDIGO</th>
                             <th style="padding: 0.75rem;">PROFESOR</th>
@@ -136,13 +136,13 @@
                     <tbody>
                         {% for cls in classrooms %}
                         {% set owner = teacher_map.get(cls.teacher_id) %}
-                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <tr style="border-bottom: 1px solid var(--border);">
                             <td style="padding: 0.75rem 1rem; font-weight: bold;">{{ cls.name }}</td>
-                            <td style="padding: 0.75rem;"><code style="color: var(--green);">{{ cls.code }}</code></td>
+                            <td style="padding: 0.75rem;"><code style="color: var(--green); font-weight: 700;">{{ cls.code }}</code></td>
                             <td style="padding: 0.75rem; color: var(--text-muted);">{{ owner.username if owner else 'ID ' ~ cls.teacher_id }}</td>
                             <td style="padding: 0.75rem;">{{ classroom_counts.get(cls.id, 0) }}</td>
                             <td style="padding: 0.75rem 1rem; text-align: center;">
-                                <button type="button" data-section-id="{{ cls.id }}" data-section-name="{{ cls.name }}" data-students-count="{{ classroom_counts.get(cls.id, 0) }}" onclick="saDeleteSection(this)" style="background: none; border: 1px solid #ef5350; color: #ef5350; padding: 0.22rem 0.55rem; border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.72rem;">Eliminar sección</button>
+                                <button type="button" data-section-id="{{ cls.id }}" data-section-name="{{ cls.name }}" data-students-count="{{ classroom_counts.get(cls.id, 0) }}" onclick="saDeleteSection(this)" style="background: var(--status-danger-bg); border: 1px solid var(--status-danger-border); color: var(--status-danger); padding: 0.25rem 0.6rem; border-radius: 5px; cursor: pointer; font-family: inherit; font-size: 0.74rem; font-weight: 600;">Eliminar sección</button>
                             </td>
                         </tr>
                         {% else %}
@@ -157,25 +157,29 @@
         <div class="data-module module-log" style="grid-column: 1 / -1;">
             <div class="module-header" style="flex-wrap: wrap; gap: 0.5rem;">
                 <span>// DIRECTORIO_GLOBAL_ESTUDIANTES ({{ filters.total_filtered }})</span>
-                <span style="font-size: 0.72rem; color: var(--text-muted);">Vista completa de todos los estudiantes (con o sin sección)</span>
+                <span style="font-size: 0.76rem; color: var(--text-muted);">Vista completa de todos los estudiantes (con o sin sección)</span>
             </div>
 
-            <form method="GET" action="{{ url_for('superadmin_dashboard') }}" style="padding: 0.9rem 1rem; border-bottom: 1px dashed var(--border); display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center;">
-                <input type="text" name="q" value="{{ filters.q }}" placeholder="Buscar estudiante o correo..."
-                    style="flex: 1 1 200px; padding: 0.48rem 0.75rem; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-code); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;">
-                <select name="section_id" style="padding: 0.48rem 0.65rem; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-code); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;">
+            <form method="GET" action="{{ url_for('superadmin_dashboard') }}" style="padding: 0.9rem 1rem; border-bottom: 1px dashed var(--border); background: var(--bg-elevated); display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center;">
+                <label for="sa-filter-q" class="sr-only">Buscar estudiante o correo</label>
+                <input id="sa-filter-q" type="text" name="q" value="{{ filters.q }}" placeholder="Buscar estudiante o correo..."
+                    style="flex: 1 1 200px; padding: 0.48rem 0.75rem; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--bg-secondary); color: var(--text); font-family: var(--font-mono); font-size: 0.82rem;">
+                <label for="sa-filter-section" class="sr-only">Filtrar por sección</label>
+                <select id="sa-filter-section" name="section_id" style="padding: 0.48rem 0.65rem; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--bg-secondary); color: var(--text); font-family: var(--font-mono); font-size: 0.8rem;">
                     <option value="">Todas las secciones</option>
                     <option value="unassigned" {% if filters.section_id == 'unassigned' %}selected{% endif %}>Sin sección asignada</option>
                     {% for cls in classrooms %}
                     <option value="{{ cls.id }}" {% if filters.section_id == (cls.id | string) %}selected{% endif %}>{{ cls.name }} ({{ cls.code }})</option>
                     {% endfor %}
                 </select>
-                <select name="status" style="padding: 0.48rem 0.65rem; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-code); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;">
+                <label for="sa-filter-status" class="sr-only">Filtrar por estado</label>
+                <select id="sa-filter-status" name="status" style="padding: 0.48rem 0.65rem; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--bg-secondary); color: var(--text); font-family: var(--font-mono); font-size: 0.8rem;">
                     <option value="all" {% if filters.status == 'all' %}selected{% endif %}>Estado: Todos</option>
                     <option value="active" {% if filters.status == 'active' %}selected{% endif %}>Activos</option>
                     <option value="suspended" {% if filters.status == 'suspended' %}selected{% endif %}>Suspendidos</option>
                 </select>
-                <select name="sort" style="padding: 0.48rem 0.65rem; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-code); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;">
+                <label for="sa-filter-sort" class="sr-only">Ordenar estudiantes</label>
+                <select id="sa-filter-sort" name="sort" style="padding: 0.48rem 0.65rem; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--bg-secondary); color: var(--text); font-family: var(--font-mono); font-size: 0.8rem;">
                     <option value="xp_desc" {% if filters.sort == 'xp_desc' %}selected{% endif %}>Mayor XP</option>
                     <option value="xp_asc" {% if filters.sort == 'xp_asc' %}selected{% endif %}>Menor XP</option>
                     <option value="progress_desc" {% if filters.sort == 'progress_desc' %}selected{% endif %}>Mayor progreso</option>
@@ -187,9 +191,9 @@
             </form>
 
             <div class="module-body" style="padding: 0; overflow-x: auto;">
-                <table class="leaderboard-table" style="width: 100%; min-width: 840px; border-collapse: collapse; text-align: left; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;">
+                <table class="leaderboard-table" style="width: 100%; min-width: 840px; border-collapse: collapse; text-align: left; font-family: var(--font-mono); font-size: 0.8rem;">
                     <thead>
-                        <tr style="border-bottom: 1px dashed var(--border); background: var(--bg-code);">
+                        <tr style="border-bottom: 1px dashed var(--border); background: var(--bg-elevated); color: var(--text);">
                             <th style="padding: 0.8rem 1rem;">ESTUDIANTE</th>
                             <th style="padding: 0.8rem;">SECCIÓN / PROFESOR</th>
                             <th style="padding: 0.8rem;">ESTADO</th>
@@ -200,14 +204,14 @@
                     </thead>
                     <tbody>
                         {% for s in students %}
-                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); {{ 'opacity: 0.72; background: rgba(239,83,80,0.04);' if s.is_suspended else '' }}">
+                        <tr style="border-bottom: 1px solid var(--border); {{ 'background: var(--status-danger-bg);' if s.is_suspended else '' }}">
                             <td style="padding: 0.8rem 1rem;">
                                 <a href="{{ url_for('profile', username=s.username) }}" style="color: var(--green); text-decoration: none; font-weight: bold;">{{ s.username }} ↗</a>
-                                {% if s.email %}<div style="font-size: 0.68rem; color: var(--text-muted);">{{ s.email }}</div>{% endif %}
+                                {% if s.email %}<div style="font-size: 0.72rem; color: var(--text-muted);">{{ s.email }}</div>{% endif %}
                             </td>
                             <td style="padding: 0.8rem;">
                                 <div>{{ s.section_name }}</div>
-                                <div style="font-size: 0.68rem; color: var(--text-muted);">Prof: {{ s.teacher_name }}</div>
+                                <div style="font-size: 0.72rem; color: var(--text-muted);">Prof: {{ s.teacher_name }}</div>
                             </td>
                             <td style="padding: 0.8rem;">
                                 {% if s.is_suspended %}
@@ -217,25 +221,26 @@
                                 {% endif %}
                             </td>
                             <td style="padding: 0.8rem;">
-                                <span style="color: #FF9800;">{{ s.total_xp }} XP</span>
-                                <div style="font-size: 0.7rem; color: var(--text-muted);">{{ s.completed }}/{{ metrics.total_course_lessons }} ({{ s.progress_pct }}%)</div>
+                                <span style="color: var(--status-warning); font-weight: 700;">{{ s.total_xp }} XP</span>
+                                <div style="font-size: 0.74rem; color: var(--text-muted);">{{ s.completed }}/{{ metrics.total_course_lessons }} ({{ s.progress_pct }}%)</div>
                             </td>
                             <td style="padding: 0.8rem;">
                                 <div style="display: flex; gap: 0.35rem; align-items: center;">
-                                    <select id="assign-sec-{{ s.id }}" style="padding: 0.25rem 0.4rem; border-radius: 3px; border: 1px solid var(--border); background: var(--bg-code); color: var(--text); font-family: inherit; font-size: 0.72rem; max-width: 150px;">
+                                    <label for="assign-sec-{{ s.id }}" class="sr-only">Sección para {{ s.username }}</label>
+                                    <select id="assign-sec-{{ s.id }}" style="padding: 0.28rem 0.45rem; border-radius: 4px; border: 1px solid var(--border-strong); background: var(--bg-secondary); color: var(--text); font-family: inherit; font-size: 0.74rem; max-width: 150px;">
                                         <option value="">Sin sección</option>
                                         {% for cls in classrooms %}
                                         <option value="{{ cls.id }}" {% if s.section_id == cls.id %}selected{% endif %}>{{ cls.name }}</option>
                                         {% endfor %}
                                     </select>
-                                    <button type="button" data-student-id="{{ s.id }}" onclick="saAssignSection(this)" style="background: none; border: 1px solid var(--python-color); color: var(--python-color); padding: 0.2rem 0.45rem; border-radius: 3px; cursor: pointer; font-family: inherit; font-size: 0.68rem;">OK</button>
+                                    <button type="button" data-student-id="{{ s.id }}" onclick="saAssignSection(this)" style="background: var(--status-info-bg); border: 1px solid var(--status-info-border); color: var(--status-info); padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.72rem; font-weight: 700;">OK</button>
                                 </div>
                             </td>
                             <td style="padding: 0.8rem 1rem; text-align: center;">
                                 {% if s.is_suspended %}
-                                <button type="button" data-user-id="{{ s.id }}" data-username="{{ s.username }}" onclick="saRestoreUser(this)" style="background: none; border: 1px solid #a6e22e; color: #a6e22e; padding: 0.22rem 0.55rem; border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.72rem;">Restaurar</button>
+                                <button type="button" data-user-id="{{ s.id }}" data-username="{{ s.username }}" onclick="saRestoreUser(this)" style="background: var(--status-success-bg); border: 1px solid var(--status-success-border); color: var(--status-success); padding: 0.26rem 0.6rem; border-radius: 5px; cursor: pointer; font-family: inherit; font-size: 0.74rem; font-weight: 600;">Restaurar</button>
                                 {% else %}
-                                <button type="button" data-user-id="{{ s.id }}" data-username="{{ s.username }}" data-role-label="estudiante" onclick="openSaSuspendModal(this)" style="background: none; border: 1px solid #F44336; color: #F44336; padding: 0.22rem 0.55rem; border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.72rem;">Suspender</button>
+                                <button type="button" data-user-id="{{ s.id }}" data-username="{{ s.username }}" data-role-label="estudiante" onclick="openSaSuspendModal(this)" style="background: var(--status-danger-bg); border: 1px solid var(--status-danger-border); color: var(--status-danger); padding: 0.26rem 0.6rem; border-radius: 5px; cursor: pointer; font-family: inherit; font-size: 0.74rem; font-weight: 600;">Suspender</button>
                                 {% endif %}
                             </td>
                         </tr>
@@ -246,7 +251,7 @@
                 </table>
             </div>
 
-            <div style="padding: 0.8rem 1rem; border-top: 1px dashed var(--border); display: flex; justify-content: space-between; align-items: center; font-family: 'JetBrains Mono', monospace; font-size: 0.76rem; color: var(--text-muted);">
+            <div style="padding: 0.8rem 1rem; border-top: 1px dashed var(--border); display: flex; justify-content: space-between; align-items: center; font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted);">
                 <span>Página {{ filters.page }} de {{ filters.total_pages }} · {{ filters.total_filtered }} estudiante(s)</span>
                 <div style="display: flex; gap: 0.5rem;">
                     {% if filters.page > 1 %}
@@ -263,12 +268,12 @@
         <div class="data-module module-log" style="grid-column: 1 / -1;">
             <div class="module-header">
                 <span>// BITÁCORA_GLOBAL_DE_AUDITORÍA ({{ metrics.audit_total }})</span>
-                <span style="font-size: 0.72rem; color: var(--text-muted);">Historial completo de todos los profesores y Super Admin</span>
+                <span style="font-size: 0.76rem; color: var(--text-muted);">Historial completo de todos los profesores y Super Admin</span>
             </div>
             <div class="module-body" style="padding: 0; overflow-x: auto;">
-                <table class="leaderboard-table" style="width: 100%; min-width: 680px; border-collapse: collapse; text-align: left; font-family: 'JetBrains Mono', monospace; font-size: 0.76rem;">
+                <table class="leaderboard-table" style="width: 100%; min-width: 680px; border-collapse: collapse; text-align: left; font-family: var(--font-mono); font-size: 0.78rem;">
                     <thead>
-                        <tr style="border-bottom: 1px dashed var(--border); background: var(--bg-code);">
+                        <tr style="border-bottom: 1px dashed var(--border); background: var(--bg-elevated); color: var(--text);">
                             <th style="padding: 0.7rem 1rem;">FECHA / HORA</th>
                             <th style="padding: 0.7rem;">ACTOR</th>
                             <th style="padding: 0.7rem;">ACCIÓN</th>
@@ -278,17 +283,17 @@
                     </thead>
                     <tbody>
                         {% for log in audit_logs %}
-                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+                        <tr style="border-bottom: 1px solid var(--border);">
                             <td style="padding: 0.65rem 1rem; color: var(--text-muted); white-space: nowrap;">{{ log.created_at.strftime('%d/%m/%Y %H:%M') if log.created_at else '' }}</td>
                             <td style="padding: 0.65rem;">{{ log.admin_username }}</td>
                             <td style="padding: 0.65rem;">
-                                {% set bc = '#ef5350' if ('SUSPEND' in log.action or 'UNAUTHORIZED' in log.action or 'DELETE' in log.action) else ('#a6e22e' if ('RESTORE' in log.action or 'JOIN' in log.action) else '#00E5FF') %}
-                                <span style="padding: 0.12rem 0.4rem; border-radius: 3px; border: 1px solid {{ bc }}; color: {{ bc }}; font-size: 0.68rem;">{{ log.action }}</span>
+                                {% set pill_cls = 'status-pill--danger' if ('SUSPEND' in log.action or 'UNAUTHORIZED' in log.action or 'DELETE' in log.action) else ('status-pill--completed' if ('RESTORE' in log.action or 'JOIN' in log.action) else 'status-pill--available') %}
+                                <span class="status-pill {{ pill_cls }}" style="font-size: 0.72rem;">{{ log.action }}</span>
                             </td>
-                            <td style="padding: 0.65rem; color: var(--green);">{{ log.target_username or '—' }}</td>
+                            <td style="padding: 0.65rem; color: var(--green); font-weight: 600;">{{ log.target_username or '—' }}</td>
                             <td style="padding: 0.65rem 1rem; color: var(--text-muted);">
                                 {% if log.reason %}<span style="color: var(--text);">{{ log.reason }}</span>{% endif %}
-                                {% if log.details %}<div style="font-size: 0.68rem; opacity: 0.8;">{{ log.details }}</div>{% endif %}
+                                {% if log.details %}<div style="font-size: 0.72rem; color: var(--text-muted);">{{ log.details }}</div>{% endif %}
                             </td>
                         </tr>
                         {% else %}
@@ -298,7 +303,7 @@
                 </table>
             </div>
             {% if filters.audit_total_pages > 1 %}
-            <div style="padding: 0.75rem 1rem; border-top: 1px dashed var(--border); display: flex; justify-content: space-between; align-items: center; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-muted);">
+            <div style="padding: 0.75rem 1rem; border-top: 1px dashed var(--border); display: flex; justify-content: space-between; align-items: center; font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted);">
                 <span>Auditoría: Página {{ filters.audit_page }} de {{ filters.audit_total_pages }}</span>
                 <div style="display: flex; gap: 0.5rem;">
                     {% if filters.audit_page > 1 %}
@@ -314,20 +319,20 @@
     </div>
 </article>
 
-<!-- MODAL SUSPENDER USUARIO (SUPER ADMIN) -->
-<div id="sa-suspend-modal" role="dialog" aria-modal="true" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 9999; align-items: center; justify-content: center; padding: 1rem;">
-    <div style="background: var(--bg-secondary, #161b22); border: 1px solid #ef5350; border-radius: 8px; max-width: 460px; width: 100%; padding: 1.5rem; font-family: 'JetBrains Mono', monospace;">
-        <h3 style="margin: 0 0 0.5rem; color: #ef5350; font-size: 1rem;">SUSPENDER CUENTA</h3>
-        <p style="margin: 0 0 1rem; font-size: 0.82rem; color: var(--text-muted);">
+<!-- MODAL SUSPENDER USUARIO (SUPER ADMIN — WCAG 2.1 AA) -->
+<div id="sa-suspend-modal" role="dialog" aria-modal="true" aria-labelledby="sa-suspend-modal-title" hidden style="display: none; position: fixed; inset: 0; background: rgba(2, 6, 23, 0.78); z-index: 9999; align-items: center; justify-content: center; padding: 1rem;">
+    <div class="modal-dialog-card" style="background: var(--bg-secondary); border: 2px solid var(--status-danger-border); border-radius: 12px; max-width: 460px; width: 100%; padding: 1.5rem; font-family: var(--font-body); box-shadow: var(--shadow-lg); color: var(--text);">
+        <h3 id="sa-suspend-modal-title" style="margin: 0 0 0.5rem; color: var(--status-danger); font-size: 1.05rem;">SUSPENDER CUENTA</h3>
+        <p style="margin: 0 0 1rem; font-size: 0.88rem; color: var(--text-muted); line-height: 1.55;">
             Suspenderás la cuenta de <span id="sa-target-role"></span> <strong id="sa-target-name" style="color: var(--text);"></strong>.
         </p>
-        <label for="sa-suspend-reason" style="display: block; font-size: 0.78rem; margin-bottom: 0.4rem;">Motivo obligatorio (mínimo 5 caracteres):</label>
+        <label for="sa-suspend-reason" style="display: block; font-size: 0.84rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem;">Motivo obligatorio (mínimo 5 caracteres):</label>
         <textarea id="sa-suspend-reason" rows="3" maxlength="500" placeholder="Motivo de la suspensión..."
-            style="width: 100%; box-sizing: border-box; padding: 0.65rem; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-code); color: var(--text); font-family: inherit; font-size: 0.82rem;"></textarea>
-        <div id="sa-suspend-error" style="display: none; margin-top: 0.5rem; color: #ef5350; font-size: 0.76rem;"></div>
-        <div style="display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 1rem;">
-            <button type="button" onclick="closeSaSuspendModal()" class="term-btn" style="padding: 0.45rem 0.9rem; cursor: pointer;">Cancelar</button>
-            <button type="button" id="btn-sa-confirm-suspend" onclick="confirmSaSuspend()" style="background: #ef5350; color: #fff; border: none; padding: 0.45rem 1rem; border-radius: 4px; font-family: inherit; font-size: 0.8rem; font-weight: 700; cursor: pointer;">Confirmar</button>
+            style="width: 100%; box-sizing: border-box; padding: 0.65rem; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: inherit; font-size: 0.88rem; resize: vertical;"></textarea>
+        <div id="sa-suspend-error" role="alert" style="display: none; margin-top: 0.5rem; color: var(--status-danger); font-size: 0.82rem; font-weight: 600;"></div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 1.15rem;">
+            <button type="button" id="btn-sa-cancel-suspend" onclick="closeSaSuspendModal()" class="btn-secondary-inclusive" style="padding: 0.48rem 0.95rem; font-size: 0.85rem;">Cancelar</button>
+            <button type="button" id="btn-sa-confirm-suspend" onclick="confirmSaSuspend()" style="background: var(--status-danger); color: var(--bg); border: 1px solid var(--status-danger); padding: 0.48rem 1.05rem; border-radius: 8px; font-family: inherit; font-size: 0.85rem; font-weight: 700; cursor: pointer;">Confirmar</button>
         </div>
     </div>
 </div>
@@ -339,32 +344,86 @@
         return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
     }
     let _saTargetId = null;
+    let _saTriggerEl = null;
+
+    function _handleSaModalKeydown(e) {
+        const modal = document.getElementById('sa-suspend-modal');
+        if (!modal || modal.hidden) return;
+        if (window.Py2JavaA11y && typeof window.Py2JavaA11y.trapFocusKeydown === 'function') {
+            window.Py2JavaA11y.trapFocusKeydown(e, modal, closeSaSuspendModal);
+            return;
+        }
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            closeSaSuspendModal();
+            return;
+        }
+        if (e.key === 'Tab') {
+            const focusables = Array.from(modal.querySelectorAll('textarea:not([disabled]), button:not([disabled])'));
+            if (!focusables.length) return;
+            const first = focusables[0];
+            const last = focusables[focusables.length - 1];
+            if (e.shiftKey && (document.activeElement === first || !modal.contains(document.activeElement))) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && (document.activeElement === last || !modal.contains(document.activeElement))) {
+                e.preventDefault();
+                first.focus();
+            }
+        }
+    }
 
     function openSaSuspendModal(btn) {
         _saTargetId = btn.dataset.userId;
+        _saTriggerEl = btn;
         document.getElementById('sa-target-name').textContent = btn.dataset.username || '';
         document.getElementById('sa-target-role').textContent = btn.dataset.roleLabel || 'usuario';
         const inp = document.getElementById('sa-suspend-reason');
         inp.value = '';
         const err = document.getElementById('sa-suspend-error');
         err.style.display = 'none';
-        document.getElementById('sa-suspend-modal').style.display = 'flex';
-        setTimeout(() => inp.focus(), 50);
+        err.textContent = '';
+        const modal = document.getElementById('sa-suspend-modal');
+        modal.hidden = false;
+        modal.style.display = 'flex';
+        document.addEventListener('keydown', _handleSaModalKeydown);
+        setTimeout(() => inp.focus(), 30);
     }
 
     function closeSaSuspendModal() {
         _saTargetId = null;
-        document.getElementById('sa-suspend-modal').style.display = 'none';
+        const modal = document.getElementById('sa-suspend-modal');
+        if (modal) {
+            modal.style.display = 'none';
+            modal.hidden = true;
+        }
+        document.removeEventListener('keydown', _handleSaModalKeydown);
+        if (_saTriggerEl && document.body.contains(_saTriggerEl)) {
+            _saTriggerEl.focus();
+        }
+        _saTriggerEl = null;
     }
+
+    // Cerrar al hacer clic en el fondo oscuro del modal
+    (function () {
+        const modal = document.getElementById('sa-suspend-modal');
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeSaSuspendModal();
+            });
+        }
+    })();
 
     async function confirmSaSuspend() {
         if (!_saTargetId) return;
-        const reason = (document.getElementById('sa-suspend-reason').value || '').trim();
+        const inp = document.getElementById('sa-suspend-reason');
+        const reason = (inp.value || '').trim();
         const err = document.getElementById('sa-suspend-error');
         const btn = document.getElementById('btn-sa-confirm-suspend');
         if (reason.length < 5) {
             err.textContent = 'Debes ingresar un motivo de al menos 5 caracteres.';
             err.style.display = 'block';
+            inp.focus();
             return;
         }
         btn.disabled = true;
@@ -479,10 +538,10 @@
                 a.click();
                 a.remove();
                 setTimeout(() => URL.revokeObjectURL(url), 1000);
-                status.style.color = '#a6e22e';
+                status.style.color = 'var(--status-success)';
                 status.textContent = 'PDF global descargado.';
             } catch (err) {
-                status.style.color = '#ef5350';
+                status.style.color = 'var(--status-danger)';
                 status.textContent = err.message;
             } finally {
                 btn.disabled = false;

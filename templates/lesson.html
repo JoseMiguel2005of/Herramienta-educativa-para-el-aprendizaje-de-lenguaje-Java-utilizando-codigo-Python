@@ -122,18 +122,17 @@
             {% if mapping.python %}
             <div class="example-run-container" style="margin-bottom: 1rem;">
                 {% if is_external_db_lesson %}
-                <div class="external-db-notice" role="note" style="font-size: 0.82rem; color: var(--status-warning, #f59e0b); background: var(--status-warning-bg, rgba(245,158,11,0.08)); border: 1px solid var(--status-warning-border, rgba(245,158,11,0.35)); border-radius: 8px; padding: 0.55rem 0.85rem; font-family: var(--font-body);">
+                <div class="external-db-notice" role="note" style="font-size: 0.82rem; color: var(--status-warning); background: var(--status-warning-bg); border: 1px solid var(--status-warning-border); border-radius: 8px; padding: 0.55rem 0.85rem; font-family: var(--font-body);">
                     ℹ Ejemplo de consola / solo lectura: requiere un servidor {{ 'MySQL' if current_lesson.startswith('sql-') else 'MongoDB' }} local o remoto (no ejecutable en navegador).
                 </div>
                 {% else %}
-                <button class="btn-run-example"
+                <button type="button" class="btn-run-example"
                     data-code="{{ mapping.python }}"
-                    onclick="runExampleCode(this, this.dataset.code)"
-                    style="background: transparent; border: 1px solid var(--python-color); color: var(--python-color); padding: 0.3rem 0.8rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; cursor: pointer; transition: all 0.2s;">
+                    onclick="runExampleCode(this, this.dataset.code)">
                     ▶ Ejecutar ejemplo
                 </button>
                 <pre class="example-output"
-                    style="display:none; background: #000; color: var(--text); padding: 0.5rem 0.75rem; margin-top: 0.5rem; border-left: 3px solid var(--python-color); font-size: 0.85rem; border-radius: 2px; max-height: 120px; overflow-y: auto;"><code></code></pre>
+                    style="display:none; background: var(--editor-bg); color: var(--editor-text); border: 1px solid var(--border); padding: 0.6rem 0.85rem; margin-top: 0.5rem; border-left: 3px solid var(--python-color); font-size: 0.85rem; border-radius: var(--radius-sm); max-height: 140px; overflow-y: auto;"><code></code></pre>
                 {% endif %}
             </div>
             {% endif %}
@@ -193,18 +192,17 @@
         {% if mapping.python %}
         <div class="example-run-container" style="margin-bottom: 1rem;">
             {% if is_external_db_lesson %}
-            <div class="external-db-notice" role="note" style="font-size: 0.82rem; color: var(--status-warning, #f59e0b); background: var(--status-warning-bg, rgba(245,158,11,0.08)); border: 1px solid var(--status-warning-border, rgba(245,158,11,0.35)); border-radius: 8px; padding: 0.55rem 0.85rem; font-family: var(--font-body);">
+            <div class="external-db-notice" role="note" style="font-size: 0.82rem; color: var(--status-warning); background: var(--status-warning-bg); border: 1px solid var(--status-warning-border); border-radius: 8px; padding: 0.55rem 0.85rem; font-family: var(--font-body);">
                 ℹ Ejemplo de consola / solo lectura: requiere un servidor {{ 'MySQL' if current_lesson.startswith('sql-') else 'MongoDB' }} local o remoto (no ejecutable en navegador).
             </div>
             {% else %}
-            <button class="btn-run-example"
+            <button type="button" class="btn-run-example"
                 data-code="{{ mapping.python }}"
-                onclick="runExampleCode(this, this.dataset.code)"
-                style="background: transparent; border: 1px solid var(--python-color); color: var(--python-color); padding: 0.3rem 0.8rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; cursor: pointer; transition: all 0.2s;">
+                onclick="runExampleCode(this, this.dataset.code)">
                 ▶ Ejecutar ejemplo
             </button>
             <pre class="example-output"
-                style="display:none; background: #000; color: var(--text); padding: 0.5rem 0.75rem; margin-top: 0.5rem; border-left: 3px solid var(--python-color); font-size: 0.85rem; border-radius: 2px; max-height: 120px; overflow-y: auto;"><code></code></pre>
+                style="display:none; background: var(--editor-bg); color: var(--editor-text); border: 1px solid var(--border); padding: 0.6rem 0.85rem; margin-top: 0.5rem; border-left: 3px solid var(--python-color); font-size: 0.85rem; border-radius: var(--radius-sm); max-height: 140px; overflow-y: auto;"><code></code></pre>
             {% endif %}
         </div>
         {% endif %}
@@ -320,7 +318,7 @@
                     <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.4rem; display: flex; justify-content: space-between; gap: 0.5rem;">
                         <span style="font-weight: 600; color: var(--text);">Consola interactiva</span>
                         {% if is_external_db_lesson %}
-                        <span id="pyodide-status" style="color: var(--status-warning, #f59e0b);">(Ejemplo de consola: requiere servidor {{ 'MySQL' if current_lesson.startswith('sql-') else 'MongoDB' }} local/remoto)</span>
+                        <span id="pyodide-status" style="color: var(--status-warning);">(Ejemplo de consola: requiere servidor {{ 'MySQL' if current_lesson.startswith('sql-') else 'MongoDB' }} local/remoto)</span>
                         {% else %}
                         <span id="pyodide-status" style="color: var(--text-muted);">(Iniciando bajo demanda...)</span>
                         {% endif %}

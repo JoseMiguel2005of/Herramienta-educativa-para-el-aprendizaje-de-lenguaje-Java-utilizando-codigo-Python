@@ -211,5 +211,56 @@
         syncUI();
     });
 
-    window.Py2JavaA11y = { loadPrefs, applyPrefs };
+    function prefersReducedMotion() {
+        return (
+            (typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) ||
+            document.documentElement.dataset.a11yMotion === 'reduce'
+        );
+    }
+
+    function getFocusableElements(container) {
+        if (!container) return [];
+        const selector = [
+            'a[href]',
+            'button:not([disabled])',
+            'textarea:not([disabled])',
+            'input:not([disabled]):not([type="hidden"])',
+            'select:not([disabled])',
+            '[tabindex]:not([tabindex="-1"])'
+        ].join(', ');
+        return Array.from(container.querySelectorAll(selector)).filter(el => {
+            if (el.hidden) return false;
+            const style = window.getComputedStyle(el);
+            return style.display !== 'none' && style.visibility !== 'hidden';
+        });
+    }
+
+    function trapFocusKeydown(e, container, onEscape) {
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            if (typeof onEscape === 'function') onEscape();
+            return;
+        }
+        if (e.key !== 'Tab') return;
+        const focusables = getFocusableElements(container);
+        if (focusables.length === 0) {
+            e.preventDefault();
+            return;
+        }
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (e.shiftKey) {
+            if (document.activeElement === first || !container.contains(document.activeElement)) {
+                e.preventDefault();
+                last.focus();
+            }
+        } else {
+            if (document.activeElement === last || !container.contains(document.activeElement)) {
+                e.preventDefault();
+                first.focus();
+            }
+        }
+    }
+
+    window.Py2JavaA11y = { loadPrefs, applyPrefs, announce, prefersReducedMotion, getFocusableElements, trapFocusKeydown };
 })();

@@ -8,26 +8,26 @@
         <div>
             <h1>PANEL DE PROFESOR</h1>
             <div class="system-status">
-                <span class="status-indicator"></span>
+                <span class="status-indicator" aria-hidden="true"></span>
                 TEACHER_DASHBOARD_ACTIVE · PROFESOR: {{ current_user.username | upper }}
             </div>
         </div>
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
             <a href="{{ url_for('teacher_export_csv', section_id=filters.section_id or None) }}" class="term-btn btn-login" style="font-weight: bold; padding: 0.5rem 1rem;">
-                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                <svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                 DESCARGAR CSV
             </a>
             <button type="button" id="btn-export-pdf" class="term-btn btn-login" data-url="{{ url_for('admin_export_pdf', section_id=filters.section_id or None) }}" style="font-weight: bold; padding: 0.5rem 1rem; cursor: pointer;">
-                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+                <svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="9" y1="15" x2="15" y2="15"></line></svg>
                 <span id="btn-export-pdf-label">GENERAR PDF</span>
             </button>
-            <span id="pdf-export-status" role="status" aria-live="polite" style="font-size: 0.75rem; font-family: 'JetBrains Mono', monospace;"></span>
+            <span id="pdf-export-status" role="status" aria-live="polite" style="font-size: 0.78rem; font-family: var(--font-mono);"></span>
         </div>
     </header>
 
     {% with flashed_messages = get_flashed_messages(with_categories=true, category_filter=['success', 'error']) %}
     {% for category, msg in flashed_messages %}
-    <div role="{{ 'alert' if category == 'error' else 'status' }}" style="margin-bottom: 1.5rem; padding: 0.85rem 1rem; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; border: 1px solid {{ '#a6e22e' if category == 'success' else '#ef5350' }}; background: {{ 'rgba(166,226,46,0.08)' if category == 'success' else 'rgba(239,83,80,0.08)' }}; color: {{ '#a6e22e' if category == 'success' else '#ef5350' }};">
+    <div role="{{ 'alert' if category == 'error' else 'status' }}" class="alert-inclusive {{ 'alert-inclusive--success' if category == 'success' else 'alert-inclusive--danger' }}">
         {{ msg }}
     </div>
     {% endfor %}
@@ -52,7 +52,7 @@
         <div class="data-module module-metric">
             <div class="module-header"><span>// LECCIONES_COMPLETAS</span></div>
             <div class="module-body center-data">
-                <span class="metric-value" style="color: #a6e22e;">{{ metrics.total_completed }}</span>
+                <span class="metric-value" style="color: var(--status-success);">{{ metrics.total_completed }}</span>
                 <span class="metric-total">CURSO: {{ metrics.total_course_lessons }} LECC.</span>
             </div>
         </div>
@@ -64,16 +64,18 @@
         <div class="data-module module-log" style="grid-column: 1 / -1;">
             <div class="module-header">
                 <span>// MIS_SECCIONES_Y_CÓDIGOS</span>
-                <span style="font-size: 0.72rem; color: var(--text-muted);">Comparte el código para que tus estudiantes se inscriban</span>
+                <span style="font-size: 0.76rem; color: var(--text-muted);">Comparte el código para que tus estudiantes se inscriban</span>
             </div>
             <div class="module-body" style="padding: 1rem;">
                 <form method="POST" action="{{ url_for('admin_create_section') }}" style="display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin-bottom: 1rem;">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <input type="text" name="name" required minlength="2" maxlength="100" placeholder="Nombre de sección (ej. PROG1-A)"
-                        style="flex: 1 1 220px; padding: 0.55rem 0.8rem; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-code); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;">
-                    <input type="text" name="code" maxlength="20" placeholder="Código opcional (auto si vacío)"
-                        style="flex: 0 1 230px; padding: 0.55rem 0.8rem; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-code); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; text-transform: uppercase;">
-                    <button type="submit" class="term-btn" style="padding: 0.55rem 1rem; border-color: var(--green); color: var(--green); font-weight: bold; cursor: pointer;">
+                    <label for="teacher-section-name" class="sr-only">Nombre de sección</label>
+                    <input id="teacher-section-name" type="text" name="name" required minlength="2" maxlength="100" placeholder="Nombre de sección (ej. PROG1-A)"
+                        style="flex: 1 1 220px; padding: 0.55rem 0.8rem; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: var(--font-mono); font-size: 0.82rem;">
+                    <label for="teacher-section-code" class="sr-only">Código de sección opcional</label>
+                    <input id="teacher-section-code" type="text" name="code" maxlength="20" placeholder="Código opcional (auto si vacío)"
+                        style="flex: 0 1 230px; padding: 0.55rem 0.8rem; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: var(--font-mono); font-size: 0.82rem; text-transform: uppercase;">
+                    <button type="submit" class="btn-primary-inclusive" style="padding: 0.55rem 1.05rem; font-size: 0.84rem;">
                         + CREAR SECCIÓN
                     </button>
                 </form>
@@ -81,22 +83,22 @@
                 {% if classrooms %}
                 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.85rem;">
                     {% for cls in classrooms %}
-                    <div style="background: var(--bg-code); border: 1px solid {{ 'var(--green)' if filters.section_id == cls.id else 'var(--border)' }}; border-radius: 6px; padding: 0.85rem 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <div style="background: var(--bg-code); border: 1px solid {{ 'var(--green)' if filters.section_id == cls.id else 'var(--border)' }}; border-radius: 8px; padding: 0.85rem 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
                         <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;">
-                            <strong style="color: var(--text); font-size: 0.9rem;">{{ cls.name }}</strong>
-                            <span style="font-size: 0.72rem; color: var(--text-muted);">{{ classroom_counts.get(cls.id, 0) }} alum.</span>
+                            <strong style="color: var(--text); font-size: 0.92rem;">{{ cls.name }}</strong>
+                            <span style="font-size: 0.76rem; color: var(--text-muted);">{{ classroom_counts.get(cls.id, 0) }} alum.</span>
                         </div>
-                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; background: rgba(0, 229, 255, 0.06); border: 1px dashed rgba(0, 229, 255, 0.35); border-radius: 4px; padding: 0.35rem 0.6rem;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; background: var(--green-light); border: 1px dashed var(--green); border-radius: 6px; padding: 0.35rem 0.6rem;">
                             <code style="color: var(--green); font-weight: 700; letter-spacing: 0.08em; font-size: 0.88rem;">{{ cls.code }}</code>
-                            <button type="button" data-code="{{ cls.code }}" onclick="copyClassCode(this)" style="background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 0.15rem 0.45rem; border-radius: 3px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;">
+                            <button type="button" data-code="{{ cls.code }}" onclick="copyClassCode(this)" style="background: var(--bg-secondary); border: 1px solid var(--border-strong); color: var(--text); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600;">
                                 COPIAR
                             </button>
                         </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; font-size: 0.72rem; margin-top: 0.15rem;">
-                            <a href="{{ url_for('teacher_dashboard', section_id=cls.id) }}" style="color: var(--python-color); text-decoration: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; font-size: 0.76rem; margin-top: 0.15rem;">
+                            <a href="{{ url_for('teacher_dashboard', section_id=cls.id) }}" style="color: var(--python-color); font-weight: 600; text-decoration: none;">
                                 {{ '✓ Filtrando' if filters.section_id == cls.id else 'Filtrar grupo →' }}
                             </a>
-                            <button type="button" data-section-id="{{ cls.id }}" data-section-name="{{ cls.name }}" data-students-count="{{ classroom_counts.get(cls.id, 0) }}" onclick="deleteSection(this)" style="background: none; border: 1px solid rgba(239,83,80,0.6); color: #ef5350; padding: 0.12rem 0.45rem; border-radius: 3px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;">
+                            <button type="button" data-section-id="{{ cls.id }}" data-section-name="{{ cls.name }}" data-students-count="{{ classroom_counts.get(cls.id, 0) }}" onclick="deleteSection(this)" style="background: var(--status-danger-bg); border: 1px solid var(--status-danger-border); color: var(--status-danger); padding: 0.2rem 0.55rem; border-radius: 4px; cursor: pointer; font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600;">
                                 Eliminar
                             </button>
                         </div>
@@ -104,7 +106,7 @@
                     {% endfor %}
                 </div>
                 {% else %}
-                <div style="padding: 1rem; border: 1px dashed var(--border); border-radius: 6px; color: var(--text-muted); font-size: 0.84rem; text-align: center;">
+                <div style="padding: 1rem; border: 1px dashed var(--border); border-radius: 6px; color: var(--text-muted); font-size: 0.86rem; text-align: center;">
                     Aún no has creado ninguna sección. Crea tu primera sección arriba y comparte el código de clase con tus estudiantes para verlos y gestionarlos aquí.
                 </div>
                 {% endif %}
@@ -115,29 +117,33 @@
         <div class="data-module module-log" style="grid-column: 1 / -1; min-height: 360px;">
             <div class="module-header" style="flex-wrap: wrap; gap: 0.5rem;">
                 <span>// ESTUDIANTES_DETALLE ({{ filters.total_filtered }})</span>
-                <span style="font-size: 0.72rem; color: var(--text-muted);">Solo estudiantes inscritos en tus secciones · Haz clic en un usuario para ver su perfil</span>
+                <span style="font-size: 0.76rem; color: var(--text-muted);">Solo estudiantes inscritos en tus secciones · Haz clic en un usuario para ver su perfil</span>
             </div>
 
             <!-- Barra de búsqueda y filtros (GET) -->
-            <form method="GET" action="{{ url_for('teacher_dashboard') }}" style="padding: 0.9rem 1rem; border-bottom: 1px dashed var(--border); background: rgba(255,255,255,0.015); display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center;">
-                <input type="text" name="q" value="{{ filters.q }}" placeholder="Buscar usuario o correo..."
-                    style="flex: 1 1 200px; padding: 0.48rem 0.75rem; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-code); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;">
+            <form method="GET" action="{{ url_for('teacher_dashboard') }}" style="padding: 0.9rem 1rem; border-bottom: 1px dashed var(--border); background: var(--bg-elevated); display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center;">
+                <label for="teacher-filter-q" class="sr-only">Buscar estudiante por usuario o correo</label>
+                <input id="teacher-filter-q" type="text" name="q" value="{{ filters.q }}" placeholder="Buscar usuario o correo..."
+                    style="flex: 1 1 200px; padding: 0.48rem 0.75rem; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--bg-secondary); color: var(--text); font-family: var(--font-mono); font-size: 0.82rem;">
 
-                <select name="section_id" style="padding: 0.48rem 0.65rem; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-code); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;">
+                <label for="teacher-filter-section" class="sr-only">Filtrar por sección</label>
+                <select id="teacher-filter-section" name="section_id" style="padding: 0.48rem 0.65rem; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--bg-secondary); color: var(--text); font-family: var(--font-mono); font-size: 0.8rem;">
                     <option value="">Todos mis grupos</option>
                     {% for cls in classrooms %}
                     <option value="{{ cls.id }}" {% if filters.section_id == cls.id %}selected{% endif %}>{{ cls.name }} ({{ cls.code }})</option>
                     {% endfor %}
                 </select>
 
-                <select name="level" style="padding: 0.48rem 0.65rem; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-code); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;">
+                <label for="teacher-filter-level" class="sr-only">Filtrar por nivel</label>
+                <select id="teacher-filter-level" name="level" style="padding: 0.48rem 0.65rem; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--bg-secondary); color: var(--text); font-family: var(--font-mono); font-size: 0.8rem;">
                     <option value="">Todos los niveles</option>
                     {% for lv_num, lv_name in level_titles.items() %}
                     <option value="{{ lv_num }}" {% if filters.level == lv_num %}selected{% endif %}>Lv.{{ lv_num }} - {{ lv_name }}</option>
                     {% endfor %}
                 </select>
 
-                <select name="status" style="padding: 0.48rem 0.65rem; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-code); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;">
+                <label for="teacher-filter-status" class="sr-only">Filtrar por estado</label>
+                <select id="teacher-filter-status" name="status" style="padding: 0.48rem 0.65rem; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--bg-secondary); color: var(--text); font-family: var(--font-mono); font-size: 0.8rem;">
                     <option value="all" {% if filters.status == 'all' %}selected{% endif %}>Estado: Todos</option>
                     <option value="active" {% if filters.status == 'active' %}selected{% endif %}>Activos</option>
                     <option value="suspended" {% if filters.status == 'suspended' %}selected{% endif %}>Suspendidos</option>
@@ -145,7 +151,8 @@
                     <option value="no_activity" {% if filters.status == 'no_activity' %}selected{% endif %}>Sin actividad</option>
                 </select>
 
-                <select name="sort" style="padding: 0.48rem 0.65rem; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-code); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;">
+                <label for="teacher-filter-sort" class="sr-only">Ordenar resultados</label>
+                <select id="teacher-filter-sort" name="sort" style="padding: 0.48rem 0.65rem; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--bg-secondary); color: var(--text); font-family: var(--font-mono); font-size: 0.8rem;">
                     <option value="xp_desc" {% if filters.sort == 'xp_desc' %}selected{% endif %}>Orden: Mayor XP</option>
                     <option value="xp_asc" {% if filters.sort == 'xp_asc' %}selected{% endif %}>Orden: Menor XP</option>
                     <option value="progress_desc" {% if filters.sort == 'progress_desc' %}selected{% endif %}>Orden: Mayor progreso</option>
@@ -165,9 +172,9 @@
             </form>
 
             <div class="module-body" style="padding: 0; overflow-x: auto; -webkit-overflow-scrolling: touch;">
-                <table class="leaderboard-table" style="width: 100%; min-width: 760px; border-collapse: collapse; text-align: left; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;">
+                <table class="leaderboard-table" style="width: 100%; min-width: 760px; border-collapse: collapse; text-align: left; font-family: var(--font-mono); font-size: 0.82rem;">
                     <thead>
-                        <tr style="border-bottom: 1px dashed var(--border); background: var(--bg-code);">
+                        <tr style="border-bottom: 1px dashed var(--border); background: var(--bg-elevated); color: var(--text);">
                             <th style="padding: 0.85rem 1rem;">USUARIO</th>
                             <th style="padding: 0.85rem 0.75rem;">SECCIÓN</th>
                             <th style="padding: 0.85rem 0.75rem;">ESTADO</th>
@@ -179,17 +186,17 @@
                     </thead>
                     <tbody>
                         {% for s in students %}
-                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); {{ 'opacity: 0.72; background: rgba(239,83,80,0.04);' if s.is_suspended else '' }}">
+                        <tr style="border-bottom: 1px solid var(--border); {{ 'background: var(--status-danger-bg);' if s.is_suspended else '' }}">
                             <td style="padding: 0.85rem 1rem;">
                                 <a href="{{ url_for('profile', username=s.username) }}" style="color: var(--green); text-decoration: none; font-weight: bold;">
                                     {{ s.username }} ↗
                                 </a>
                                 {% if s.email %}
-                                <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.15rem;">{{ s.email }}</div>
+                                <div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 0.15rem;">{{ s.email }}</div>
                                 {% endif %}
                             </td>
                             <td style="padding: 0.85rem 0.75rem;">
-                                <span style="padding: 0.15rem 0.45rem; border: 1px solid var(--border); border-radius: 3px; background: var(--bg-code); font-size: 0.72rem; color: var(--text);">
+                                <span style="padding: 0.18rem 0.48rem; border: 1px solid var(--border); border-radius: 4px; background: var(--bg-code); font-size: 0.74rem; color: var(--text);">
                                     {{ s.section_name }}
                                 </span>
                             </td>
@@ -210,12 +217,12 @@
                                 {% endif %}
                             </td>
                             <td style="padding: 0.85rem 0.75rem; color: var(--text-muted);">
-                                Lv.{{ s.level }} <span style="font-size: 0.72rem;">[{{ s.title }}]</span>
+                                Lv.{{ s.level }} <span style="font-size: 0.74rem;">[{{ s.title }}]</span>
                             </td>
-                            <td style="padding: 0.85rem 0.75rem; color: #FF9800;">{{ s.total_xp }} XP</td>
+                            <td style="padding: 0.85rem 0.75rem; color: var(--status-warning); font-weight: 700;">{{ s.total_xp }} XP</td>
                             <td style="padding: 0.85rem 0.75rem;">
                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                    <span style="white-space: nowrap; font-size: 0.78rem;">{{ s.completed }}/{{ metrics.total_course_lessons }}</span>
+                                    <span style="white-space: nowrap; font-size: 0.78rem; color: var(--text);">{{ s.completed }}/{{ metrics.total_course_lessons }}</span>
                                     <div class="xp-bar-container" style="width: 90px; height: 6px; background: var(--bg-code); border: 1px solid var(--border); border-radius: 3px; overflow: hidden;">
                                         <div class="xp-bar-fill" style="width: {{ s.progress_pct }}%; height: 100%; background: var(--python-color);"></div>
                                     </div>
@@ -223,11 +230,11 @@
                             </td>
                             <td style="padding: 0.85rem 1rem; text-align: center;">
                                 {% if s.is_suspended %}
-                                <button type="button" data-student-id="{{ s.id }}" data-username="{{ s.username }}" onclick="restoreStudent(this)" style="background: none; border: 1px solid #a6e22e; color: #a6e22e; padding: 0.25rem 0.6rem; border-radius: 4px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; transition: all 0.2s;">
+                                <button type="button" data-student-id="{{ s.id }}" data-username="{{ s.username }}" onclick="restoreStudent(this)" style="background: var(--status-success-bg); border: 1px solid var(--status-success-border); color: var(--status-success); padding: 0.3rem 0.65rem; border-radius: 5px; cursor: pointer; font-family: var(--font-mono); font-size: 0.74rem; font-weight: 600;">
                                     Restaurar
                                 </button>
                                 {% else %}
-                                <button type="button" data-student-id="{{ s.id }}" data-username="{{ s.username }}" onclick="openSuspendModal(this)" style="background: none; border: 1px solid #F44336; color: #F44336; padding: 0.25rem 0.6rem; border-radius: 4px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; transition: all 0.2s;">
+                                <button type="button" data-student-id="{{ s.id }}" data-username="{{ s.username }}" onclick="openSuspendModal(this)" style="background: var(--status-danger-bg); border: 1px solid var(--status-danger-border); color: var(--status-danger); padding: 0.3rem 0.65rem; border-radius: 5px; cursor: pointer; font-family: var(--font-mono); font-size: 0.74rem; font-weight: 600;">
                                     Suspender
                                 </button>
                                 {% endif %}
@@ -249,7 +256,7 @@
             </div>
 
             <!-- Paginación de estudiantes (conserva filtros activos) -->
-            <div style="padding: 0.85rem 1rem; border-top: 1px dashed var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--text-muted);">
+            <div style="padding: 0.85rem 1rem; border-top: 1px dashed var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted);">
                 <span>Página <strong style="color: var(--text);">{{ filters.page }}</strong> de <strong style="color: var(--text);">{{ filters.total_pages }}</strong> · {{ filters.total_filtered }} estudiante(s)</span>
                 <div style="display: flex; gap: 0.5rem;">
                     {% if filters.page > 1 %}
@@ -257,7 +264,7 @@
                         ← Anterior
                     </a>
                     {% else %}
-                    <span class="term-btn" style="padding: 0.35rem 0.75rem; opacity: 0.4; pointer-events: none;">← Anterior</span>
+                    <span class="term-btn" aria-disabled="true" style="padding: 0.35rem 0.75rem; opacity: 0.5; pointer-events: none;">← Anterior</span>
                     {% endif %}
 
                     {% if filters.page < filters.total_pages %}
@@ -265,7 +272,7 @@
                         Siguiente →
                     </a>
                     {% else %}
-                    <span class="term-btn" style="padding: 0.35rem 0.75rem; opacity: 0.4; pointer-events: none;">Siguiente →</span>
+                    <span class="term-btn" aria-disabled="true" style="padding: 0.35rem 0.75rem; opacity: 0.5; pointer-events: none;">Siguiente →</span>
                     {% endif %}
                 </div>
             </div>
@@ -278,7 +285,7 @@
             </div>
             <div class="module-body" style="padding: 1rem; display: flex; justify-content: center;">
                 <div style="width: 100%; max-width: 800px; height: 300px;">
-                    <canvas id="levelsChart"></canvas>
+                    <canvas id="levelsChart" aria-label="Gráfico de distribución de estudiantes por nivel" role="img"></canvas>
                 </div>
             </div>
         </div>
@@ -287,21 +294,21 @@
         <div class="data-module module-log" style="grid-column: 1 / -1;">
             <div class="module-header">
                 <span>// EVALUACIONES_FINALES</span>
-                <span style="font-size: 0.7rem; color: #888;">Rendimiento real agregado de evaluaciones en tus secciones</span>
+                <span style="font-size: 0.76rem; color: var(--text-muted);">Rendimiento real agregado de evaluaciones en tus secciones</span>
             </div>
             <div class="module-body" style="padding: 1rem;">
                 <div id="teacher-eval-summary" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(215px, 1fr)); gap: 0.85rem;">
                     {% for ev in eval_summary %}
-                    <div style="background: var(--bg-code, #0d1117); border: 1px solid {{ 'rgba(166,226,46,0.45)' if ev.students_passed > 0 else 'var(--border, #2a2a4a)' }}; border-radius: 8px; padding: 1rem; font-family: 'JetBrains Mono', monospace;">
-                        <div style="font-weight: 700; color: var(--green, #00e5ff); margin-bottom: 0.5rem; font-size: 0.88rem;">{{ ev.label }}</div>
+                    <div style="background: var(--bg-code); border: 1px solid {{ 'var(--status-success-border)' if ev.students_passed > 0 else 'var(--border)' }}; border-radius: 8px; padding: 1rem; font-family: var(--font-mono);">
+                        <div style="font-weight: 700; color: var(--green); margin-bottom: 0.5rem; font-size: 0.88rem;">{{ ev.label }}</div>
                         {% if ev.attempts > 0 %}
-                        <div style="font-size: 0.78rem; color: var(--text, #ccc); line-height: 1.7;">
+                        <div style="font-size: 0.8rem; color: var(--text); line-height: 1.7;">
                             <div>Intentos: <strong>{{ ev.attempts }}</strong></div>
-                            <div>Aprobados: <strong style="color: #a6e22e;">{{ ev.students_passed }}/{{ ev.students_attempted }}</strong> ({{ ev.pass_rate }}%)</div>
-                            <div>Promedio: <strong style="color: #FF9800;">{{ ev.avg_score }}%</strong></div>
+                            <div>Aprobados: <strong style="color: var(--status-success);">{{ ev.students_passed }}/{{ ev.students_attempted }}</strong> ({{ ev.pass_rate }}%)</div>
+                            <div>Promedio: <strong style="color: var(--status-warning);">{{ ev.avg_score }}%</strong></div>
                         </div>
                         {% else %}
-                        <div style="font-size: 0.76rem; color: var(--text-muted, #888); line-height: 1.6;">
+                        <div style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.6;">
                             Sin intentos registrados aún
                         </div>
                         {% endif %}
@@ -313,23 +320,23 @@
     </div>
 </article>
 
-<!-- MODAL SUSPENDER ESTUDIANTE (MOTIVO OBLIGATORIO) -->
-<div id="suspend-modal" role="dialog" aria-modal="true" aria-labelledby="suspend-modal-title" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.72); z-index: 9999; align-items: center; justify-content: center; padding: 1rem;">
-    <div style="background: var(--bg-secondary, #161b22); border: 1px solid #ef5350; border-radius: 8px; max-width: 460px; width: 100%; padding: 1.5rem; font-family: 'JetBrains Mono', monospace; box-shadow: 0 20px 50px rgba(0,0,0,0.6);">
-        <h3 id="suspend-modal-title" style="margin: 0 0 0.5rem; color: #ef5350; font-size: 1rem;">SUSPENDER ESTUDIANTE</h3>
-        <p style="margin: 0 0 1rem; font-size: 0.82rem; color: var(--text-muted); line-height: 1.5;">
+<!-- MODAL SUSPENDER ESTUDIANTE (MOTIVO OBLIGATORIO — WCAG 2.1 AA) -->
+<div id="suspend-modal" role="dialog" aria-modal="true" aria-labelledby="suspend-modal-title" hidden style="display: none; position: fixed; inset: 0; background: rgba(2, 6, 23, 0.78); z-index: 9999; align-items: center; justify-content: center; padding: 1rem;">
+    <div class="modal-dialog-card" style="background: var(--bg-secondary); border: 2px solid var(--status-danger-border); border-radius: 12px; max-width: 460px; width: 100%; padding: 1.5rem; font-family: var(--font-body); box-shadow: var(--shadow-lg); color: var(--text);">
+        <h3 id="suspend-modal-title" style="margin: 0 0 0.5rem; color: var(--status-danger); font-size: 1.05rem;">SUSPENDER ESTUDIANTE</h3>
+        <p style="margin: 0 0 1rem; font-size: 0.88rem; color: var(--text-muted); line-height: 1.55;">
             Vas a suspender el acceso de <strong id="suspend-target-name" style="color: var(--text);"></strong>.
             Su historial, XP y progreso permanecerán intactos y podrás restaurar la cuenta cuando lo necesites.
         </p>
-        <label for="suspend-reason-input" style="display: block; font-size: 0.78rem; color: var(--text); margin-bottom: 0.4rem;">
+        <label for="suspend-reason-input" style="display: block; font-size: 0.84rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem;">
             Motivo obligatorio (quedará registrado en la bitácora):
         </label>
         <textarea id="suspend-reason-input" rows="3" maxlength="500" placeholder="Describe el motivo de la suspensión (mínimo 5 caracteres)..."
-            style="width: 100%; box-sizing: border-box; padding: 0.65rem; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-code); color: var(--text); font-family: inherit; font-size: 0.82rem; resize: vertical;"></textarea>
-        <div id="suspend-modal-error" style="display: none; margin-top: 0.5rem; color: #ef5350; font-size: 0.76rem;"></div>
-        <div style="display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 1.1rem;">
-            <button type="button" onclick="closeSuspendModal()" class="term-btn" style="padding: 0.45rem 0.9rem; cursor: pointer;">Cancelar</button>
-            <button type="button" id="btn-confirm-suspend" onclick="confirmSuspendStudent()" style="background: #ef5350; color: #fff; border: none; padding: 0.45rem 1rem; border-radius: 4px; font-family: inherit; font-size: 0.8rem; font-weight: 700; cursor: pointer;">
+            style="width: 100%; box-sizing: border-box; padding: 0.65rem; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: inherit; font-size: 0.88rem; resize: vertical;"></textarea>
+        <div id="suspend-modal-error" role="alert" style="display: none; margin-top: 0.5rem; color: var(--status-danger); font-size: 0.82rem; font-weight: 600;"></div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 1.15rem;">
+            <button type="button" id="btn-cancel-suspend" onclick="closeSuspendModal()" class="btn-secondary-inclusive" style="padding: 0.48rem 0.95rem; font-size: 0.85rem;">Cancelar</button>
+            <button type="button" id="btn-confirm-suspend" onclick="confirmSuspendStudent()" style="background: var(--status-danger); color: var(--bg); border: 1px solid var(--status-danger); padding: 0.48rem 1.05rem; border-radius: 8px; font-family: inherit; font-size: 0.85rem; font-weight: 700; cursor: pointer;">
                 Confirmar Suspensión
             </button>
         </div>
@@ -349,11 +356,16 @@
         const canvas = document.getElementById('levelsChart');
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
+        const styles = getComputedStyle(document.documentElement);
+        const textMuted = styles.getPropertyValue('--text-muted').trim() || '#64748B';
+        const accentColor = styles.getPropertyValue('--green').trim() || '#0369A1';
+        const accentFill = styles.getPropertyValue('--green-light').trim() || 'rgba(3, 105, 161, 0.16)';
+        const borderColor = styles.getPropertyValue('--border').trim() || '#CBD5E1';
 
         const labels = {{ metrics.level_labels | tojson }};
         const data = {{ metrics.level_data | tojson }};
 
-        Chart.defaults.color = '#8B949E';
+        Chart.defaults.color = textMuted;
         Chart.defaults.font.family = "'JetBrains Mono', monospace";
 
         new Chart(ctx, {
@@ -363,11 +375,11 @@
                 datasets: [{
                     label: 'Estudiantes',
                     data: data,
-                    backgroundColor: 'rgba(0, 229, 255, 0.2)',
-                    borderColor: '#00E5FF',
-                    borderWidth: 1,
-                    borderRadius: 2,
-                    hoverBackgroundColor: 'rgba(0, 229, 255, 0.4)'
+                    backgroundColor: accentFill,
+                    borderColor: accentColor,
+                    borderWidth: 2,
+                    borderRadius: 4,
+                    hoverBackgroundColor: accentColor
                 }]
             },
             options: {
@@ -377,11 +389,12 @@
                 scales: {
                     y: {
                         beginAtZero: true,
-                        ticks: { stepSize: 1 },
-                        grid: { color: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(255, 255, 255, 0.1)' }
+                        ticks: { stepSize: 1, color: textMuted },
+                        grid: { color: borderColor }
                     },
                     x: {
-                        grid: { display: false, borderColor: 'rgba(255, 255, 255, 0.1)' }
+                        ticks: { color: textMuted },
+                        grid: { display: false }
                     }
                 }
             }
@@ -394,7 +407,7 @@
         navigator.clipboard.writeText(code).then(() => {
             const orig = btn.textContent;
             btn.textContent = '¡COPIADO!';
-            btn.style.color = '#a6e22e';
+            btn.style.color = 'var(--status-success)';
             setTimeout(() => {
                 btn.textContent = orig;
                 btn.style.color = '';
@@ -439,9 +452,38 @@
     }
 
     let _suspendTargetId = null;
+    let _suspendTriggerEl = null;
+
+    function _handleSuspendModalKeydown(e) {
+        const modal = document.getElementById('suspend-modal');
+        if (!modal || modal.hidden) return;
+        if (window.Py2JavaA11y && typeof window.Py2JavaA11y.trapFocusKeydown === 'function') {
+            window.Py2JavaA11y.trapFocusKeydown(e, modal, closeSuspendModal);
+            return;
+        }
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            closeSuspendModal();
+            return;
+        }
+        if (e.key === 'Tab') {
+            const focusables = Array.from(modal.querySelectorAll('textarea:not([disabled]), button:not([disabled])'));
+            if (!focusables.length) return;
+            const first = focusables[0];
+            const last = focusables[focusables.length - 1];
+            if (e.shiftKey && (document.activeElement === first || !modal.contains(document.activeElement))) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && (document.activeElement === last || !modal.contains(document.activeElement))) {
+                e.preventDefault();
+                first.focus();
+            }
+        }
+    }
 
     function openSuspendModal(btn) {
         _suspendTargetId = btn.dataset.studentId;
+        _suspendTriggerEl = btn;
         const username = btn.dataset.username || '';
         document.getElementById('suspend-target-name').textContent = username;
         const input = document.getElementById('suspend-reason-input');
@@ -450,14 +492,35 @@
         errEl.style.display = 'none';
         errEl.textContent = '';
         const modal = document.getElementById('suspend-modal');
+        modal.hidden = false;
         modal.style.display = 'flex';
-        setTimeout(() => input.focus(), 50);
+        document.addEventListener('keydown', _handleSuspendModalKeydown);
+        setTimeout(() => input.focus(), 30);
     }
 
     function closeSuspendModal() {
         _suspendTargetId = null;
-        document.getElementById('suspend-modal').style.display = 'none';
+        const modal = document.getElementById('suspend-modal');
+        if (modal) {
+            modal.style.display = 'none';
+            modal.hidden = true;
+        }
+        document.removeEventListener('keydown', _handleSuspendModalKeydown);
+        if (_suspendTriggerEl && document.body.contains(_suspendTriggerEl)) {
+            _suspendTriggerEl.focus();
+        }
+        _suspendTriggerEl = null;
     }
+
+    // Cerrar al hacer clic en el fondo oscuro del modal
+    (function () {
+        const modal = document.getElementById('suspend-modal');
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeSuspendModal();
+            });
+        }
+    })();
 
     async function confirmSuspendStudent() {
         if (!_suspendTargetId) return;
@@ -580,11 +643,11 @@
                 a.remove();
                 setTimeout(() => URL.revokeObjectURL(url), 1000);
 
-                status.style.color = 'var(--green)';
+                status.style.color = 'var(--status-success)';
                 status.textContent = 'Reporte descargado.';
             } catch (err) {
                 console.error(err);
-                status.style.color = '#F44336';
+                status.style.color = 'var(--status-danger)';
                 status.textContent = err.message || 'Error al generar el PDF.';
             } finally {
                 btn.disabled = false;

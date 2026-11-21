@@ -102,49 +102,46 @@
 }
 
 .exercise-template-area .exercise-input {
-    background: #fff;
-    border: 2px solid transparent;
-    color: #000;
-    font-family: 'Source Code Pro', monospace;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-strong);
+    color: var(--text);
+    font-family: var(--font-mono);
     font-size: 1.05rem;
     padding: 0.2rem 0.5rem;
     border-radius: 4px;
-    outline: none;
-    transition: border 0.3s, box-shadow 0.3s;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
     min-width: 60px;
 }
 
 .exercise-template-area .exercise-input:focus {
     border-color: var(--green);
-    box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.15);
+    box-shadow: 0 0 0 3px var(--green-light);
 }
 
 .exercise-template-area .exercise-input.input-correct {
-    background: #e8f5e9;
-    border-color: #66bb6a;
-    color: #2e7d32;
+    background: var(--status-success-bg);
+    border-color: var(--status-success);
+    color: var(--status-success);
 }
 
 .exercise-template-area .exercise-input.input-incorrect {
-    background: transparent;
-    border-color: #000;
-    color: inherit;
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35);
+    background: var(--status-danger-bg);
+    border-color: var(--status-danger);
+    color: var(--status-danger);
     animation: shake 0.4s ease;
 }
 
 .exercise-freeform-editor {
     width: 100%;
     min-height: 120px;
-    background: #0a0a0a;
-    border: 1px solid var(--border);
-    color: #e0e0e0;
-    font-family: 'Source Code Pro', monospace;
+    background: var(--editor-bg);
+    border: 1px solid var(--border-strong);
+    color: var(--editor-text);
+    font-family: var(--font-mono);
     font-size: 1.05rem;
     padding: 1rem;
     border-radius: 4px;
     resize: vertical;
-    outline: none;
 }
 
 .exercise-freeform-editor:focus {
@@ -160,51 +157,52 @@
 }
 
 .btn-exercise-submit {
-    background: var(--green);
-    color: var(--text);
-    border: none;
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+    border: 1px solid var(--btn-primary-bg);
     padding: 0.75rem 1.5rem;
     font-size: 1rem;
     font-weight: 700;
     border-radius: 6px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .btn-exercise-submit:hover {
-    filter: brightness(1.15);
+    background: var(--btn-primary-hover);
     transform: translateY(-1px);
 }
 
 .btn-exercise-hint {
-    background: transparent;
-    color: #ffc107;
-    border: 1px solid rgba(255, 193, 7, 0.3);
+    background: var(--status-warning-bg);
+    color: var(--status-warning);
+    border: 1px solid var(--status-warning-border);
     padding: 0.75rem 1.25rem;
     font-size: 0.95rem;
+    font-weight: 600;
     border-radius: 6px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: background-color 0.2s ease;
 }
 
 .btn-exercise-hint:hover {
-    background: rgba(255, 193, 7, 0.08);
+    filter: brightness(0.95);
 }
 
 .btn-exercise-show {
     background: transparent;
     color: var(--text-muted);
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-strong);
     padding: 0.75rem 1.25rem;
     font-size: 0.95rem;
     border-radius: 6px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: color 0.2s ease, border-color 0.2s ease;
 }
 
 .btn-exercise-show:hover {
     color: var(--text);
-    border-color: var(--text-muted);
+    border-color: var(--green);
 }
 
 /* Feedback */
@@ -218,23 +216,24 @@
 }
 
 .exercise-feedback.feedback-correct {
-    background: rgba(4, 170, 109, 0.15);
-    color: #66bb6a;
-    border-left: 4px solid #66bb6a;
+    background: var(--status-success-bg);
+    color: var(--status-success);
+    border: 1px solid var(--status-success-border);
+    border-left: 4px solid var(--status-success);
 }
 
 .exercise-feedback.feedback-incorrect {
-    background: rgba(0, 0, 0, 0.06);
-    color: inherit;
-    border: 2px solid #000;
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35);
+    background: var(--status-danger-bg);
+    color: var(--status-danger);
+    border: 1px solid var(--status-danger-border);
+    border-left: 4px solid var(--status-danger);
 }
 
 /* Hint Box */
 .exercise-hint-box {
     margin-top: 1rem;
-    background: rgba(255, 193, 7, 0.06);
-    border: 1px solid rgba(255, 193, 7, 0.2);
+    background: var(--status-warning-bg);
+    border: 1px solid var(--status-warning-border);
     border-radius: 6px;
     padding: 1rem 1.25rem;
     animation: fadeIn 0.3s ease;
@@ -242,9 +241,9 @@
 
 .hint-header {
     font-weight: 700;
-    color: #ffc107;
+    color: var(--status-warning);
     margin-bottom: 0.5rem;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-mono);
     font-size: 0.85rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -286,19 +285,20 @@
 }
 
 .exercise-nav-next {
-    background: rgba(0, 229, 255, 0.08);
+    background: var(--green-light);
     color: var(--green);
-    border: 1px solid rgba(0, 229, 255, 0.3);
+    border: 1px solid var(--green);
 }
 
 .exercise-nav-next:hover {
-    background: rgba(0, 229, 255, 0.15);
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
 }
 
 .exercise-nav-complete {
-    background: var(--green);
-    color: var(--text);
-    border: none;
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+    border: 1px solid var(--btn-primary-bg);
 }
 
 /* =============================================

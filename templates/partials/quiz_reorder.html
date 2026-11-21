@@ -1,12 +1,26 @@
 <div class="quiz-reorder">
-    <p class="reorder-instruction">Arrastra las líneas para ordenarlas correctamente.</p>
-    <ul class="reorder-list" id="reorder-list-{{ ex.id }}">
+    <p class="reorder-instruction">Arrastra las líneas o usa los botones <strong>Subir</strong> y <strong>Bajar</strong> para ordenarlas correctamente.</p>
+    <ul class="reorder-list" id="reorder-list-{{ ex.id }}" aria-label="Líneas de código para ordenar">
         {% set is_python_lesson = current_lesson and (current_lesson.startswith('py-') or current_lesson.startswith('ref-') or current_lesson.startswith('ex-')) %}
         {% set lang_class = 'language-python' if is_python_lesson else 'language-java' %}
         {% for line_index in ex.shuffled_order %}
         <li class="reorder-item" draggable="true" data-original-index="{{ line_index }}">
-            <span class="drag-handle">☰</span>
-            <code class="{{ lang_class }}">{{ ex.lines[line_index] }}</code>
+            <span class="drag-handle" aria-hidden="true">☰</span>
+            <code class="{{ lang_class }} reorder-code">{{ ex.lines[line_index] }}</code>
+            <div class="reorder-move-controls" role="group" aria-label="Mover línea">
+                <button type="button" class="btn-reorder-move btn-reorder-up"
+                    aria-label="Subir línea {{ loop.index }} de {{ ex.shuffled_order | length }}"
+                    title="Subir línea"
+                    {% if loop.first %}disabled{% endif %}>
+                    <span aria-hidden="true">↑</span> Subir
+                </button>
+                <button type="button" class="btn-reorder-move btn-reorder-down"
+                    aria-label="Bajar línea {{ loop.index }} de {{ ex.shuffled_order | length }}"
+                    title="Bajar línea"
+                    {% if loop.last %}disabled{% endif %}>
+                    <span aria-hidden="true">↓</span> Bajar
+                </button>
+            </div>
         </li>
         {% endfor %}
     </ul>

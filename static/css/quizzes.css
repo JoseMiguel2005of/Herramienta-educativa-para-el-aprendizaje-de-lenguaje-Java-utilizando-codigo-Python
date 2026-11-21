@@ -34,8 +34,8 @@
 }
 
 .exercise-badge {
-    background: var(--green);
-    color: var(--text);
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
     padding: 0.2rem 0.6rem;
     border-radius: var(--radius);
     font-weight: 700;
@@ -58,9 +58,9 @@
 }
 
 .exercise-python-ref code {
-    font-family: 'Source Code Pro', monospace;
+    font-family: var(--font-mono);
     font-size: 1.05rem;
-    color: #a6e22e; /* green string color typical of syntax highlight */
+    color: var(--status-success);
     display: block;
     margin-top: 0.5rem;
 }
@@ -74,7 +74,7 @@
 }
 
 .exercise-template {
-    font-family: 'Source Code Pro', monospace;
+    font-family: var(--font-mono);
     font-size: 1.15rem;
     color: var(--text);
     line-height: 1.8;
@@ -82,62 +82,59 @@
 }
 
 .exercise-input {
-    background: #fff;
-    border: 2px solid transparent;
-    color: #000;
-    font-family: 'Source Code Pro', monospace;
-    font-size: 1.1rem;
-    padding: 0.2rem 0.4rem;
-    border-radius: var(--radius);
-    outline: none;
-    transition: border 0.3s;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-strong);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 1.05rem;
+    padding: 0.22rem 0.45rem;
+    border-radius: var(--radius-sm, 8px);
+    transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
 .exercise-input:focus {
-    border: 2px solid var(--green);
+    border-color: var(--green);
 }
 
 .exercise-input.input-incorrect {
-    background: transparent;
-    border: 2px solid #000;
-    color: inherit;
-}
-
-[data-theme="dark"] .exercise-input.input-incorrect {
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35);
+    background: var(--status-danger-bg);
+    border: 2px solid var(--status-danger);
+    color: var(--status-danger);
 }
 
 .exercise-input.input-correct {
-    background: #e8f5e9;
-    border: 2px solid #66bb6a;
-    color: #2e7d32;
+    background: var(--status-success-bg);
+    border: 2px solid var(--status-success);
+    color: var(--status-success);
 }
 
 .exercise-controls {
     display: flex;
     gap: 1rem;
+    flex-wrap: wrap;
 }
 
 .btn-check {
-    background: var(--green);
-    color: var(--text);
-    border: none;
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+    border: 1px solid var(--btn-primary-bg);
     padding: 0.75rem 1.5rem;
     font-size: 1rem;
     font-weight: 600;
     border-radius: var(--radius);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .btn-check:hover:not(:disabled) {
-    filter: brightness(1.1);
+    background: var(--btn-primary-hover);
     transform: translateY(-2px);
 }
 
 .btn-check:disabled {
-    background: #555;
+    opacity: 0.55;
     cursor: not-allowed;
+    transform: none;
 }
 
 .btn-show-answer {
@@ -149,11 +146,11 @@
     font-weight: 600;
     border-radius: var(--radius);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: background-color 0.2s ease;
 }
 
 .btn-show-answer:hover {
-    background: rgba(4, 170, 109, 0.1);
+    background: var(--green-light);
 }
 
 .exercise-feedback {
@@ -161,24 +158,21 @@
     padding: 1rem;
     border-radius: var(--radius);
     font-weight: 600;
-    font-size: 1.05rem;
+    font-size: 1.02rem;
 }
 
 .feedback-correct {
-    background: rgba(4, 170, 109, 0.15);
-    color: #66bb6a;
-    border-left: 4px solid #66bb6a;
+    background: var(--status-success-bg);
+    color: var(--status-success);
+    border: 1px solid var(--status-success-border);
+    border-left: 4px solid var(--status-success);
 }
 
 .feedback-incorrect {
-    background: rgba(0, 0, 0, 0.06);
-    color: inherit;
-    border: 2px solid #000;
-}
-
-[data-theme="dark"] .feedback-incorrect {
-    background: rgba(255, 255, 255, 0.06);
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35);
+    background: var(--status-danger-bg);
+    color: var(--status-danger);
+    border: 1px solid var(--status-danger-border);
+    border-left: 4px solid var(--status-danger);
 }
 
 /* =============================================
@@ -197,16 +191,18 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    background: var(--bg-code);
+    background: var(--bg-elevated);
     padding: 1rem;
     border-radius: var(--radius);
     cursor: pointer;
-    border: 2px solid transparent;
-    transition: all 0.2s;
+    border: 2px solid var(--border);
+    color: var(--text);
+    transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
 .quiz-option-label:hover {
-    background: var(--accent-glow);
+    background: var(--green-light);
+    border-color: var(--green);
 }
 
 .quiz-option-label input[type="radio"] {
@@ -217,54 +213,28 @@
 }
 
 .quiz-option-text {
-    font-size: 1.1rem;
-    font-family: 'Source Sans 3', sans-serif;
+    font-size: 1.05rem;
+    font-family: var(--font-body);
 }
 
 .quiz-option-label.selected {
     border-color: var(--green);
-    background: rgba(4, 170, 109, 0.1);
+    background: var(--green-light);
 }
 
 .quiz-option-label.option-correct {
-    border-color: #4caf50;
-    background: rgba(76, 175, 80, 0.15);
-    color: #81c784;
+    border-color: var(--status-success);
+    background: var(--status-success-bg);
+    color: var(--status-success);
 }
 
 .quiz-option-label.option-incorrect {
-    border: 2px solid #000;
-    background: transparent;
-    color: inherit;
+    border: 2px solid var(--status-danger);
+    background: var(--status-danger-bg);
+    color: var(--status-danger);
 }
 
-[data-theme="dark"] .quiz-option-label.option-incorrect {
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35);
-}
-
-/* Find-error line selection */
-.error-line {
-    cursor: pointer;
-    transition: background 0.15s;
-}
-.error-line:hover {
-    background: rgba(255, 255, 255, 0.05);
-}
-.error-line.selected-line {
-    background: rgba(255, 193, 7, 0.12);
-    border-left: 3px solid #ffc107;
-}
-.error-line.line-correct {
-    background: rgba(76, 175, 80, 0.15);
-    border-left: 3px solid #4caf50;
-}
-.error-line.line-incorrect {
-    background: transparent;
-    border-left: 3px solid #000;
-    outline: 2px solid #000;
-}
-
-/* Reorder Quiz */
+/* Reorder Quiz (Drag & Drop + Botones accesibles Subir/Bajar) */
 .quiz-reorder {
     margin-bottom: 1.5rem;
 }
@@ -275,7 +245,7 @@
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.55rem;
 }
 
 .reorder-item {
@@ -285,9 +255,11 @@
     cursor: grab;
     display: flex;
     align-items: center;
-    gap: 1rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
     border: 1px solid var(--border);
     border-left: 4px solid var(--java-color);
+    color: var(--text);
 }
 
 .reorder-item:active {
@@ -297,56 +269,147 @@
 .drag-handle {
     cursor: grab;
     color: var(--text-muted);
-    font-size: 1.2rem;
+    font-size: 1.15rem;
+    user-select: none;
+}
+
+.reorder-code {
+    flex: 1 1 200px;
+    min-width: 0;
+    overflow-x: auto;
+    color: var(--text);
+}
+
+.reorder-move-controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.btn-reorder-move {
+    min-height: 36px;
+    padding: 0.35rem 0.7rem;
+    border-radius: var(--radius-sm, 8px);
+    border: 1px solid var(--border-strong);
+    background: var(--bg-elevated);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    transition: border-color 0.18s ease, background-color 0.18s ease, color 0.18s ease;
+}
+
+.btn-reorder-move:hover:not(:disabled) {
+    border-color: var(--green);
+    color: var(--green);
+    background: var(--green-light);
+}
+
+.btn-reorder-move:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
 }
 
 .reorder-item.dragging {
-    opacity: 0.5;
+    opacity: 0.55;
     border: 1px dashed var(--green);
 }
 
 .reorder-instruction, .find-error-instruction {
     margin-bottom: 1rem;
     color: var(--text-muted);
-    font-size: 1.05rem;
+    font-size: 1.02rem;
 }
 
-/* Find Error Quiz */
+/* Find Error Quiz (Semántico con <button type="button">) */
 .quiz-find-error {
     margin-bottom: 1.5rem;
 }
 
 .find-error-code {
-    background: var(--bg-code);
+    background: var(--editor-bg);
+    color: var(--editor-text);
     border-radius: var(--radius);
-    padding: 1rem 0;
-    font-family: 'Source Code Pro', monospace;
-    font-size: 1.05rem;
-    border-left: 4px solid #ef5350;
+    padding: 0.75rem 0;
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--status-danger);
+    display: flex;
+    flex-direction: column;
 }
 
 .error-line {
-    padding: 0.2rem 1rem;
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    border-left: 3px solid transparent;
+    color: var(--editor-text);
+    font: inherit;
+    padding: 0.45rem 1rem;
+    min-height: 38px;
     cursor: pointer;
     display: flex;
+    align-items: baseline;
     gap: 1rem;
-    transition: background 0.2s;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.error-line code {
+    color: inherit;
+    background: transparent;
+    border: none;
+    padding: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
 }
 
 .error-line:hover {
-    background: var(--accent-glow);
+    background: rgba(56, 189, 248, 0.14);
+}
+
+.error-line:focus-visible {
+    outline: 3px solid var(--focus-ring) !important;
+    outline-offset: -3px !important;
+    background: rgba(56, 189, 248, 0.18);
 }
 
 .error-line.selected {
-    background: rgba(239, 83, 80, 0.2);
-    border-left: 3px solid #ef5350;
-    margin-left: -4px;
+    background: rgba(251, 113, 133, 0.22);
+    border-left-color: #FB7185;
+}
+
+.error-line.selected-line {
+    background: rgba(251, 191, 36, 0.2);
+    border-left-color: #FBBF24;
+}
+
+.error-line.line-correct {
+    background: rgba(45, 212, 191, 0.22);
+    border-left-color: #2DD4BF;
+}
+
+.error-line.line-incorrect {
+    background: rgba(251, 113, 133, 0.22);
+    border-left-color: #FB7185;
+    outline: 2px solid #FB7185;
+    outline-offset: -2px;
 }
 
 .error-line .line-number {
-    color: var(--text-muted);
+    color: #94A3B8;
     user-select: none;
     width: 2rem;
+    flex-shrink: 0;
     text-align: right;
 }
 
