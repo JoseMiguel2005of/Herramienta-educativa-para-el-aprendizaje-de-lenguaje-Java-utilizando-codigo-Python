@@ -100,9 +100,8 @@
                             {% if entry.id == current_uid %}<span class="lb-you-badge">TÚ</span>{% endif %}
                         </td>
                         <td class="lb-level">
-                            {% set titles = {1:'Iniciado',2:'Novato',3:'Aprendiz',4:'Estudiante',5:'Practicante',6:'Competente',7:'Hábil',8:'Experto',9:'Veterano',10:'Pythonista',11:'Maestro',12:'Arquitecto',13:'Virtuoso',14:'Gurú',15:'Sensei',16:'Leyenda',17:'Oráculo',18:'Iluminado',19:'Trascendente',20:'Omnisciente'} %}
                             <span class="lb-lvl-num">{{ entry.level }}</span>
-                            <span class="lb-lvl-title">{{ titles.get(entry.level if entry.level <= 20 else 20, 'Iniciado') }}</span>
+                            <span class="lb-lvl-title">{{ get_level_title(entry.level) }}</span>
                         </td>
                         <td class="lb-xp">{{ entry.total_xp }}</td>
                         <td class="lb-lessons">{{ entry.completed }}</td>

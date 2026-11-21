@@ -12,7 +12,12 @@
                 "id": "enp-in1",
                 "type": "multiple_choice",
                 "question": "¿Para qué se utiliza principalmente la biblioteca NumPy en Python?",
-                "options": ["Crear interfaces gráficas", "Trabajar con arreglos multidimensionales y cálculos numéricos de alto rendimiento", "Diseñar páginas web", "Gestionar conexiones a bases de datos"],
+                "options": [
+                    "Crear interfaces gráficas",
+                    "Trabajar con arreglos multidimensionales y cálculos numéricos de alto rendimiento",
+                    "Diseñar páginas web",
+                    "Gestionar conexiones a bases de datos"
+                ],
                 "correct": 1,
                 "explanation": "NumPy es la biblioteca fundamental para computación científica y manejo eficiente de arreglos multidimensionales.",
                 "difficulty": "easy"
@@ -32,7 +37,12 @@
                 "id": "enp-cr1",
                 "type": "multiple_choice",
                 "question": "¿Qué función crea un arreglo NumPy a partir de una lista de Python?",
-                "options": ["np.create()", "np.array()", "np.list()", "np.matrix()"],
+                "options": [
+                    "np.create()",
+                    "np.array()",
+                    "np.list()",
+                    "np.matrix()"
+                ],
                 "correct": 1,
                 "explanation": "np.array() convierte secuencias (como listas o tuplas) en arreglos ndarray de NumPy.",
                 "difficulty": "easy"
@@ -41,7 +51,12 @@
                 "id": "enp-cr2",
                 "type": "multiple_choice",
                 "question": "¿Qué función crea un arreglo lleno de ceros?",
-                "options": ["np.zeros()", "np.empty()", "np.null()", "np.blank()"],
+                "options": [
+                    "np.zeros()",
+                    "np.empty()",
+                    "np.null()",
+                    "np.blank()"
+                ],
                 "correct": 0,
                 "explanation": "np.zeros(shape) devuelve un nuevo arreglo de la forma especificada lleno de ceros.",
                 "difficulty": "easy"
@@ -61,7 +76,12 @@
                 "id": "enp-idx1",
                 "type": "multiple_choice",
                 "question": "Dado arr = np.array([[1, 2, 3], [4, 5, 6]]), ¿cómo se accede al elemento 5?",
-                "options": ["arr[5]", "arr[1, 1]", "arr[2, 2]", "arr[1][2]"],
+                "options": [
+                    "arr[5]",
+                    "arr[1, 1]",
+                    "arr[2, 2]",
+                    "arr[1][2]"
+                ],
                 "correct": 1,
                 "explanation": "El 5 está en la fila 1 y columna 1 (0-indexado). En NumPy se usa arr[1, 1].",
                 "difficulty": "medium"
@@ -80,7 +100,12 @@
                 "id": "enp-slc1",
                 "type": "multiple_choice",
                 "question": "¿Cuál es el resultado de arr[1:4] si arr = np.array([10, 20, 30, 40, 50])?",
-                "options": ["[10, 20, 30]", "[20, 30, 40]", "[20, 30, 40, 50]", "[30, 40]"],
+                "options": [
+                    "[10, 20, 30]",
+                    "[20, 30, 40]",
+                    "[20, 30, 40, 50]",
+                    "[30, 40]"
+                ],
                 "correct": 1,
                 "explanation": "arr[1:4] toma índices 1, 2 y 3 (valores 20, 30, 40).",
                 "difficulty": "medium"
@@ -99,7 +124,12 @@
                 "id": "enp-shp1",
                 "type": "multiple_choice",
                 "question": "¿Qué atributo devuelve la dimensión/forma de un arreglo NumPy (filas, columnas)?",
-                "options": [".size", ".dim", ".shape", ".length"],
+                "options": [
+                    ".size",
+                    ".dim",
+                    ".shape",
+                    ".length"
+                ],
                 "correct": 2,
                 "explanation": "El atributo .shape devuelve una tupla con el tamaño de cada dimensión.",
                 "difficulty": "easy"
@@ -119,7 +149,12 @@
                 "id": "enp-src1",
                 "type": "multiple_choice",
                 "question": "¿Qué función devuelve los índices de los elementos que cumplen una condición?",
-                "options": ["np.find()", "np.where()", "np.filter()", "np.search()"],
+                "options": [
+                    "np.find()",
+                    "np.where()",
+                    "np.filter()",
+                    "np.search()"
+                ],
                 "correct": 1,
                 "explanation": "np.where(condición) devuelve las posiciones donde la condición es True.",
                 "difficulty": "medium"
@@ -141,7 +176,12 @@
                 "id": "enp-ari1",
                 "type": "multiple_choice",
                 "question": "¿Qué sucede al hacer arr1 + arr2 en NumPy?",
-                "options": ["Se concatenan los dos arreglos", "Se realiza una suma elemento a elemento", "Genera un error", "Se crea una lista de tuplas"],
+                "options": [
+                    "Se concatenan los dos arreglos",
+                    "Se realiza una suma elemento a elemento",
+                    "Genera un error",
+                    "Se crea una lista de tuplas"
+                ],
                 "correct": 1,
                 "explanation": "Las operaciones aritméticas en NumPy se aplican vectorialmente (elemento a elemento).",
                 "difficulty": "easy"
@@ -153,6 +193,464 @@
                 "correct": true,
                 "explanation": "Broadcasting expande automáticamente dimensiones menores para hacer compatibles las operaciones.",
                 "difficulty": "medium"
+            }
+        ],
+        "np-getstarted": [
+            {
+                "id": "enp-gs1",
+                "type": "multiple_choice",
+                "question": "¿Qué comando instala NumPy en un entorno Python estándar?",
+                "options": [
+                    "pip install numpy",
+                    "npm install numpy",
+                    "python add numpy",
+                    "get numpy"
+                ],
+                "correct": 0,
+                "explanation": "NumPy se instala con 'pip install numpy'.",
+                "difficulty": "easy"
+            }
+        ],
+        "np-datatypes": [
+            {
+                "id": "enp-dt1",
+                "type": "multiple_choice",
+                "question": "¿Qué atributo muestra el tipo de dato de los elementos de un arreglo NumPy?",
+                "options": [
+                    ".type",
+                    ".dtype",
+                    ".kind",
+                    ".datatype"
+                ],
+                "correct": 1,
+                "explanation": "arr.dtype devuelve el tipo de dato interno del arreglo (por ejemplo, int64, float64).",
+                "difficulty": "easy"
+            },
+            {
+                "id": "enp-dt2",
+                "type": "complete_code",
+                "question": "Completa el método para crear una copia del arreglo convertida a tipo entero:",
+                "code_template": "nuevo = arr.___('i')",
+                "correct_answer": "astype",
+                "explanation": "arr.astype() convierte los elementos del arreglo a otro tipo de dato devolviendo una copia.",
+                "difficulty": "medium"
+            }
+        ],
+        "np-copyview": [
+            {
+                "id": "enp-cv1",
+                "type": "multiple_choice",
+                "question": "¿Cuál es la diferencia clave entre arr.copy() y arr.view() en NumPy?",
+                "options": [
+                    "No hay diferencia",
+                    "copy() crea un arreglo independiente dueño de sus datos; view() comparte el mismo buffer de memoria que el original",
+                    "view() borra el arreglo original",
+                    "copy() solo funciona en 1D"
+                ],
+                "correct": 1,
+                "explanation": "Modificar una copy() no afecta al original; modificar una view() sí altera al arreglo original.",
+                "difficulty": "medium"
+            }
+        ],
+        "np-reshape": [
+            {
+                "id": "enp-rsh1",
+                "type": "multiple_choice",
+                "question": "Al usar arr.reshape(2, -1) sobre un arreglo de 12 elementos, ¿qué significa el valor -1?",
+                "options": [
+                    "Invertir el orden de los elementos",
+                    "Que NumPy calcule automáticamente esa dimensión (6 en este caso)",
+                    "Eliminar la última columna",
+                    "Generar un error"
+                ],
+                "correct": 1,
+                "explanation": "NumPy permite una dimensión desconocida marcada con -1 y la deduce automáticamente.",
+                "difficulty": "medium"
+            }
+        ],
+        "np-iterating": [
+            {
+                "id": "enp-itr1",
+                "type": "complete_code",
+                "question": "Completa la función de NumPy para iterar cada escalar de un arreglo N-dimensional sin bucles anidados:",
+                "code_template": "for x in np.___(arr):\n    print(x)",
+                "correct_answer": "nditer",
+                "explanation": "np.nditer() permite recorrer eficientemente cada elemento escalar sin importar la dimensionalidad.",
+                "difficulty": "medium"
+            }
+        ],
+        "np-join": [
+            {
+                "id": "enp-jn1",
+                "type": "complete_code",
+                "question": "Completa la función de NumPy para unir dos arreglos a lo largo de un eje existente:",
+                "code_template": "arr = np.___((arr1, arr2), axis=0)",
+                "correct_answer": "concatenate",
+                "explanation": "np.concatenate() une una secuencia de arreglos sobre el eje indicado.",
+                "difficulty": "easy"
+            }
+        ],
+        "np-split": [
+            {
+                "id": "enp-spl1",
+                "type": "complete_code",
+                "question": "Completa la función para dividir un arreglo NumPy en 3 subarreglos:",
+                "code_template": "partes = np.___(arr, 3)",
+                "correct_answer": "array_split",
+                "explanation": "np.array_split() divide un arreglo en N partes incluso si la longitud no es divisible exactamente.",
+                "difficulty": "easy"
+            }
+        ],
+        "np-filter": [
+            {
+                "id": "enp-flt1",
+                "type": "multiple_choice",
+                "question": "Si arr = np.array([10, 25, 40, 15]), ¿qué devuelve arr[arr > 20]?",
+                "options": [
+                    "[False, True, True, False]",
+                    "array([25, 40])",
+                    "25",
+                    "Error de tipo"
+                ],
+                "correct": 1,
+                "explanation": "El indexado booleano filtra el arreglo devolviendo solo los elementos donde la condición es True.",
+                "difficulty": "easy"
+            }
+        ],
+        "np-random-intro": [
+            {
+                "id": "enp-rnd1",
+                "type": "complete_code",
+                "question": "Completa para generar un entero aleatorio entre 0 y 99 con numpy.random:",
+                "code_template": "x = random.___(100)",
+                "correct_answer": "randint",
+                "explanation": "random.randint(100) genera un número entero pseudoaleatorio en [0, 100).",
+                "difficulty": "easy"
+            }
+        ],
+        "np-datadist": [
+            {
+                "id": "enp-dd1",
+                "type": "multiple_choice",
+                "question": "¿Qué función de numpy.random genera valores aleatorios eligiendo de una lista con probabilidades personalizadas 'p'?",
+                "options": [
+                    "random.pick()",
+                    "random.choice()",
+                    "random.select()",
+                    "random.sample_p()"
+                ],
+                "correct": 1,
+                "explanation": "random.choice(valores, p=probabilidades, size=...) muestrea según una distribución discreta definida.",
+                "difficulty": "medium"
+            }
+        ],
+        "np-normal": [
+            {
+                "id": "enp-nrm1",
+                "type": "multiple_choice",
+                "question": "En random.normal(loc=1, scale=2, size=(2, 3)), ¿qué representan 'loc' y 'scale'?",
+                "options": [
+                    "Mínimo y máximo",
+                    "Media (centro de la campana) y desviación estándar",
+                    "Filas y columnas",
+                    "Probabilidad y ensayos"
+                ],
+                "correct": 1,
+                "explanation": "En la distribución normal (gaussiana), loc es la media y scale es la desviación estándar.",
+                "difficulty": "medium"
+            }
+        ],
+        "np-binomial": [
+            {
+                "id": "enp-bin1",
+                "type": "multiple_choice",
+                "question": "¿Qué modela la distribución binomial random.binomial(n=10, p=0.5)?",
+                "options": [
+                    "El tiempo entre llamadas",
+                    "El número de éxitos en n ensayos independientes con probabilidad p",
+                    "Un ángulo aleatorio",
+                    "Una curva exponencial continua"
+                ],
+                "correct": 1,
+                "explanation": "La distribución binomial es discreta y cuenta éxitos en n pruebas binarias (como lanzar una moneda).",
+                "difficulty": "medium"
+            }
+        ],
+        "np-poisson": [
+            {
+                "id": "enp-poi1",
+                "type": "multiple_choice",
+                "question": "¿Qué parámetro define la tasa promedio de ocurrencias en random.poisson()?",
+                "options": [
+                    "lam",
+                    "p",
+                    "df",
+                    "high"
+                ],
+                "correct": 0,
+                "explanation": "El parámetro lam (lambda) indica el número esperado de eventos en un intervalo dado.",
+                "difficulty": "medium"
+            }
+        ],
+        "np-uniform": [
+            {
+                "id": "enp-uni1",
+                "type": "true_false",
+                "question": "En una distribución uniforme (random.uniform), todos los valores dentro del intervalo [low, high) tienen la misma probabilidad de ocurrir.",
+                "correct": true,
+                "explanation": "La distribución uniforme asigna densidad de probabilidad constante en todo el rango.",
+                "difficulty": "easy"
+            }
+        ],
+        "np-logistic": [
+            {
+                "id": "enp-log1",
+                "type": "true_false",
+                "question": "La distribución logística en NumPy (random.logistic) se emplea frecuentemente en modelos de crecimiento y aprendizaje automático.",
+                "correct": true,
+                "explanation": "Tiene una forma similar a la normal pero con colas más pesadas, muy usada en regresión logística y redes neuronales.",
+                "difficulty": "easy"
+            }
+        ],
+        "np-multinomial": [
+            {
+                "id": "enp-mlt1",
+                "type": "multiple_choice",
+                "question": "¿En qué se diferencia la distribución multinomial de la binomial?",
+                "options": [
+                    "Solo admite 2 resultados",
+                    "Generaliza la binomial permitiendo más de dos resultados posibles (como un dado de 6 caras)",
+                    "Es una distribución continua",
+                    "No acepta probabilidades"
+                ],
+                "correct": 1,
+                "explanation": "random.multinomial(n, pvals) modela experimentos con múltiples categorías mutuamente excluyentes.",
+                "difficulty": "medium"
+            }
+        ],
+        "np-exponential": [
+            {
+                "id": "enp-exp1",
+                "type": "multiple_choice",
+                "question": "¿Qué fenómeno suele modelar la distribución exponencial (random.exponential)?",
+                "options": [
+                    "El tiempo de espera hasta el próximo evento",
+                    "El lanzamiento de un dado",
+                    "La suma de matrices",
+                    "La altura exacta de una persona"
+                ],
+                "correct": 0,
+                "explanation": "La distribución exponencial describe el tiempo entre eventos en un proceso de Poisson.",
+                "difficulty": "medium"
+            }
+        ],
+        "np-chisquare": [
+            {
+                "id": "enp-chi1",
+                "type": "multiple_choice",
+                "question": "¿Qué significa el parámetro 'df' en random.chisquare(df=2, size=5)?",
+                "options": [
+                    "DataFrame",
+                    "Grados de libertad (degrees of freedom)",
+                    "Desviación fija",
+                    "Distancia final"
+                ],
+                "correct": 1,
+                "explanation": "df corresponde a los grados de libertad de la distribución Chi Cuadrado, usada en pruebas de hipótesis.",
+                "difficulty": "medium"
+            }
+        ],
+        "np-rayleigh": [
+            {
+                "id": "enp-ray1",
+                "type": "true_false",
+                "question": "La distribución de Rayleigh (random.rayleigh) se utiliza en procesamiento de señales para modelar la magnitud de señales con desvanecimiento.",
+                "correct": true,
+                "explanation": "Rayleigh modela magnitudes vectoriales con componentes gaussianas, común en comunicaciones y señales.",
+                "difficulty": "medium"
+            }
+        ],
+        "np-pareto": [
+            {
+                "id": "enp-par1",
+                "type": "multiple_choice",
+                "question": "¿Con qué principio clásico se asocia la distribución de Pareto (random.pareto)?",
+                "options": [
+                    "La ley 80/20 (donde el 20% de las causas genera el 80% de los efectos)",
+                    "El teorema de Pitágoras",
+                    "La ley de enfriamiento",
+                    "La simetría exacta"
+                ],
+                "correct": 0,
+                "explanation": "La distribución de Pareto modela fenómenos de concentración o ley de potencias (principio 80/20).",
+                "difficulty": "easy"
+            }
+        ],
+        "np-zipf": [
+            {
+                "id": "enp-zip1",
+                "type": "true_false",
+                "question": "En la distribución de Zipf (random.zipf), el parámetro de distribución 'a' debe ser estrictamente mayor que 1.",
+                "correct": true,
+                "explanation": "random.zipf(a=...) requiere a > 1; modela frecuencias como la aparición de palabras en lenguaje natural.",
+                "difficulty": "medium"
+            }
+        ],
+        "np-ufunc-intro": [
+            {
+                "id": "enp-ufi1",
+                "type": "multiple_choice",
+                "question": "¿Qué son las 'ufuncs' (Universal Functions) en NumPy?",
+                "options": [
+                    "Funciones para leer URLs",
+                    "Funciones vectorizadas implementadas en C que operan elemento a elemento sobre ndarrays",
+                    "Funciones exclusivas de gráficos",
+                    "Decoradores de clases"
+                ],
+                "correct": 1,
+                "explanation": "Las ufuncs ejecutan operaciones vectorizadas muy rápidas sobre arreglos NumPy evitando bucles lentos en Python.",
+                "difficulty": "easy"
+            }
+        ],
+        "np-create-ufunc": [
+            {
+                "id": "enp-cuf1",
+                "type": "complete_code",
+                "question": "Completa la función de NumPy que registra una función Python como ufunc:",
+                "code_template": "mi_ufunc = np.___(mi_funcion, 2, 1)",
+                "correct_answer": "frompyfunc",
+                "explanation": "np.frompyfunc(funcion, num_entradas, num_salidas) convierte una función Python en una ufunc de NumPy.",
+                "difficulty": "hard"
+            }
+        ],
+        "np-rounding": [
+            {
+                "id": "enp-rou1",
+                "type": "multiple_choice",
+                "question": "¿Qué hace np.trunc([-3.1666, 3.6667]) en NumPy?",
+                "options": [
+                    "Redondea al entero más cercano",
+                    "Elimina la parte decimal dejando [-3., 3.]",
+                    "Eleva al cuadrado",
+                    "Redondea siempre hacia arriba"
+                ],
+                "correct": 1,
+                "explanation": "np.trunc() (y np.fix()) truncan los decimales hacia cero.",
+                "difficulty": "medium"
+            }
+        ],
+        "np-logs": [
+            {
+                "id": "enp-lgs1",
+                "type": "complete_code",
+                "question": "Completa la función de NumPy para calcular el logaritmo en base 2 de cada elemento:",
+                "code_template": "res = np.___(arr)",
+                "correct_answer": "log2",
+                "explanation": "NumPy ofrece np.log (natural), np.log2 (base 2) y np.log10 (base 10).",
+                "difficulty": "easy"
+            }
+        ],
+        "np-summations": [
+            {
+                "id": "enp-sum1",
+                "type": "multiple_choice",
+                "question": "¿Qué función devuelve la suma acumulada de un arreglo (ej. [1, 2, 3] -> [1, 3, 6])?",
+                "options": [
+                    "np.sum()",
+                    "np.cumsum()",
+                    "np.add()",
+                    "np.total()"
+                ],
+                "correct": 1,
+                "explanation": "np.cumsum() calcula la suma parcial acumulada paso a paso.",
+                "difficulty": "easy"
+            }
+        ],
+        "np-products": [
+            {
+                "id": "enp-prd1",
+                "type": "complete_code",
+                "question": "Completa la función de NumPy para multiplicar todos los elementos de un arreglo:",
+                "code_template": "x = np.___(arr)",
+                "correct_answer": "prod",
+                "explanation": "np.prod(arr) devuelve el producto de todos los elementos del arreglo.",
+                "difficulty": "easy"
+            }
+        ],
+        "np-differences": [
+            {
+                "id": "enp-dif1",
+                "type": "complete_code",
+                "question": "Completa la función que calcula las diferencias discretas entre elementos consecutivos:",
+                "code_template": "saltos = np.___(arr)",
+                "correct_answer": "diff",
+                "explanation": "np.diff([10, 15, 25]) calcula [15-10, 25-15] = [5, 10].",
+                "difficulty": "easy"
+            }
+        ],
+        "np-lcm": [
+            {
+                "id": "enp-lcm1",
+                "type": "complete_code",
+                "question": "Completa la ufunc para obtener el mínimo común múltiplo de todos los elementos de un arreglo:",
+                "code_template": "x = np.___.reduce(arr)",
+                "correct_answer": "lcm",
+                "explanation": "np.lcm.reduce(arr) calcula el mínimo común múltiplo (LCM) acumulado del arreglo.",
+                "difficulty": "medium"
+            }
+        ],
+        "np-gcd": [
+            {
+                "id": "enp-gcd1",
+                "type": "complete_code",
+                "question": "Completa la ufunc para calcular el máximo común divisor de todos los elementos de un arreglo:",
+                "code_template": "x = np.___.reduce(arr)",
+                "correct_answer": "gcd",
+                "explanation": "np.gcd.reduce(arr) calcula el máximo común divisor (GCD) de todos los elementos.",
+                "difficulty": "medium"
+            }
+        ],
+        "np-trig": [
+            {
+                "id": "enp-trg1",
+                "type": "multiple_choice",
+                "question": "¿En qué unidad reciben los ángulos funciones como np.sin() y np.cos()?",
+                "options": [
+                    "Grados sexagesimales",
+                    "Radianes",
+                    "Porcentajes",
+                    "Revoluciones"
+                ],
+                "correct": 1,
+                "explanation": "Las funciones trigonométricas de NumPy trabajan en radianes (se puede convertir con np.deg2rad()).",
+                "difficulty": "easy"
+            }
+        ],
+        "np-hyperbolic": [
+            {
+                "id": "enp-hyp1",
+                "type": "complete_code",
+                "question": "Completa la función de NumPy para calcular el seno hiperbólico de un arreglo:",
+                "code_template": "x = np.___(arr)",
+                "correct_answer": "sinh",
+                "explanation": "NumPy provee np.sinh(), np.cosh() y np.tanh() para funciones hiperbólicas.",
+                "difficulty": "easy"
+            }
+        ],
+        "np-setops": [
+            {
+                "id": "enp-set1",
+                "type": "multiple_choice",
+                "question": "¿Qué función de NumPy encuentra los elementos únicos comunes (intersección) entre dos arreglos 1D?",
+                "options": [
+                    "np.union1d()",
+                    "np.intersect1d()",
+                    "np.setdiff1d()",
+                    "np.unique()"
+                ],
+                "correct": 1,
+                "explanation": "np.intersect1d(arr1, arr2) devuelve los valores ordenados y únicos presentes en ambos arreglos.",
+                "difficulty": "easy"
             }
         ]
     }

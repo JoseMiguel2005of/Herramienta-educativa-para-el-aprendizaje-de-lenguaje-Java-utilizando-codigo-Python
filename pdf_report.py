@@ -10,6 +10,8 @@ from datetime import datetime
 from fpdf import FPDF
 from fpdf.fonts import FontFace
 
+from content_loader import LEVEL_TITLES, get_level_title
+
 # Paleta sobria, apta para impresión
 COLOR_PRIMARY = (30, 58, 95)      # azul oscuro (encabezados)
 COLOR_ACCENT = (55, 118, 171)     # azul Python
@@ -197,10 +199,11 @@ def build_admin_report_pdf(students, metrics, site_title="Py2Java Edu", generate
         ) as table:
             table.row(["#", "Usuario", "Nivel", "XP total", "Progreso (lecciones)", "Racha"])
             for i, s in enumerate(students, start=1):
+                lvl_title = s.get("title") or get_level_title(s.get("level", 1))
                 table.row([
                     str(i),
                     _latin1(s["username"]),
-                    _latin1(f"Lv.{s['level']} - {s['title']}"),
+                    _latin1(f"Lv.{s['level']} - {lvl_title}"),
                     f"{s['total_xp']} XP",
                     f"{s['completed']} / {metrics['total_course_lessons']} ({s['progress_pct']}%)",
                     f"{s['streak']} d",

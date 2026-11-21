@@ -2,7 +2,7 @@
     "id": "quiz-python-functions",
     "title": "Cuestionario de Funciones de Python",
     "description": "Pon a prueba tus conocimientos sobre funciones y lambdas en Python.",
-    "time_limit": null,
+    "time_limit": 600,
     "questions": [
         {
             "id": "qf1",

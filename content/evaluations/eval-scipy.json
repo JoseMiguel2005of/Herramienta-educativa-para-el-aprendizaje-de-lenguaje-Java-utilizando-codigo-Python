@@ -12,7 +12,12 @@
                 "id": "esc-in1",
                 "type": "multiple_choice",
                 "question": "¿Qué es SciPy en el ecosistema de computación científica en Python?",
-                "options": ["Un framework web", "Una biblioteca basada en NumPy para algoritmos científicos y matemáticos avanzados", "Un motor de base de datos", "Un lenguaje de marcado"],
+                "options": [
+                    "Un framework web",
+                    "Una biblioteca basada en NumPy para algoritmos científicos y matemáticos avanzados",
+                    "Un motor de base de datos",
+                    "Un lenguaje de marcado"
+                ],
                 "correct": 1,
                 "explanation": "SciPy amplía NumPy proporcionando submódulos para optimización, integración, estadística, procesamiento de señales y más.",
                 "difficulty": "easy"
@@ -32,7 +37,12 @@
                 "id": "esc-cst1",
                 "type": "multiple_choice",
                 "question": "¿Qué constante física se obtiene con constants.pi en SciPy?",
-                "options": ["El valor de Pi (π)", "La velocidad de la luz", "La constante de Planck", "La gravedad de la Tierra"],
+                "options": [
+                    "El valor de Pi (π)",
+                    "La velocidad de la luz",
+                    "La constante de Planck",
+                    "La gravedad de la Tierra"
+                ],
                 "correct": 0,
                 "explanation": "constants.pi devuelve el valor matemático de π.",
                 "difficulty": "easy"
@@ -51,7 +61,12 @@
                 "id": "esc-opt1",
                 "type": "multiple_choice",
                 "question": "¿Qué submódulo de SciPy contiene funciones para encontrar mínimos de funciones matemáticas?",
-                "options": ["scipy.stats", "scipy.optimize", "scipy.fft", "scipy.spatial"],
+                "options": [
+                    "scipy.stats",
+                    "scipy.optimize",
+                    "scipy.fft",
+                    "scipy.spatial"
+                ],
                 "correct": 1,
                 "explanation": "scipy.optimize proporciona algoritmos de optimización y minimización de funciones.",
                 "difficulty": "easy"
@@ -71,7 +86,12 @@
                 "id": "esc-sp1",
                 "type": "multiple_choice",
                 "question": "¿Qué es una matriz dispersa (sparse matrix)?",
-                "options": ["Una matriz llena de números decimales", "Una matriz donde la mayoría de los elementos son cero", "Una matriz de texto", "Una matriz de tres dimensiones"],
+                "options": [
+                    "Una matriz llena de números decimales",
+                    "Una matriz donde la mayoría de los elementos son cero",
+                    "Una matriz de texto",
+                    "Una matriz de tres dimensiones"
+                ],
                 "correct": 1,
                 "explanation": "Una matriz dispersa contiene mayoritariamente ceros y se almacena en formatos especiales para ahorrar memoria.",
                 "difficulty": "easy"
@@ -91,7 +111,12 @@
                 "id": "esc-sig1",
                 "type": "multiple_choice",
                 "question": "¿Qué submódulo de SciPy se utiliza para realizar pruebas de hipótesis estadísticas (t-test, ANOVA, etc.)?",
-                "options": ["scipy.stats", "scipy.math", "scipy.signal", "scipy.io"],
+                "options": [
+                    "scipy.stats",
+                    "scipy.math",
+                    "scipy.signal",
+                    "scipy.io"
+                ],
                 "correct": 0,
                 "explanation": "scipy.stats ofrece una amplia colección de distribuciones de probabilidad y pruebas de significancia estadística.",
                 "difficulty": "easy"
@@ -102,6 +127,130 @@
                 "question": "Un valor p (p-value) bajo en una prueba estadística sugiere rechazar la hipótesis nula.",
                 "correct": true,
                 "explanation": "Un p-value < 0.05 es la convención común para rechazar la hipótesis nula a favor de la alternativa.",
+                "difficulty": "medium"
+            }
+        ],
+        "sc-getstarted": [
+            {
+                "id": "esc-gs1",
+                "type": "multiple_choice",
+                "question": "¿Cómo se instala SciPy utilizando el gestor de paquetes oficial de Python?",
+                "options": [
+                    "npm install scipy",
+                    "pip install scipy",
+                    "python get scipy",
+                    "apt scipy"
+                ],
+                "correct": 1,
+                "explanation": "SciPy se instala desde PyPI mediante el comando 'pip install scipy'.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "esc-gs2",
+                "type": "true_false",
+                "question": "SciPy depende de NumPy como base para sus arreglos numéricos.",
+                "correct": true,
+                "explanation": "SciPy está construido directamente sobre los arreglos ndarray de NumPy.",
+                "difficulty": "easy"
+            }
+        ],
+        "sc-graphs": [
+            {
+                "id": "esc-gr1",
+                "type": "multiple_choice",
+                "question": "¿Qué algoritmo de scipy.sparse.csgraph encuentra el camino más corto desde un nodo origen en un grafo con pesos no negativos?",
+                "options": [
+                    "dijkstra",
+                    "bubble_sort",
+                    "linspace",
+                    "fft"
+                ],
+                "correct": 0,
+                "explanation": "dijkstra() calcula las distancias y rutas más cortas desde un nodo origen en grafos ponderados.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "esc-gr2",
+                "type": "complete_code",
+                "question": "Completa el submódulo de scipy.sparse que provee algoritmos de grafos como dijkstra y floyd_warshall:",
+                "code_template": "from scipy.sparse.___ import dijkstra",
+                "correct_answer": "csgraph",
+                "explanation": "scipy.sparse.csgraph (Compressed Sparse Graph) contiene algoritmos de grafos eficientes.",
+                "difficulty": "medium"
+            }
+        ],
+        "sc-spatialdata": [
+            {
+                "id": "esc-spt1",
+                "type": "multiple_choice",
+                "question": "¿Qué función de scipy.spatial.distance calcula la distancia en línea recta entre dos puntos?",
+                "options": [
+                    "euclidean",
+                    "linear_gap",
+                    "straight_dist",
+                    "vector_len"
+                ],
+                "correct": 0,
+                "explanation": "scipy.spatial.distance.euclidean(p1, p2) calcula la distancia euclidiana entre dos puntos.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "esc-spt2",
+                "type": "complete_code",
+                "question": "Completa el submódulo de SciPy orientado a triangulaciones, KDTree y distancias geométricas:",
+                "code_template": "from scipy.___ import KDTree",
+                "correct_answer": "spatial",
+                "explanation": "scipy.spatial incluye estructuras y algoritmos para datos espaciales y geométricos.",
+                "difficulty": "medium"
+            }
+        ],
+        "sc-matlab": [
+            {
+                "id": "esc-mat1",
+                "type": "multiple_choice",
+                "question": "¿Qué funciones de scipy.io permiten exportar e importar arreglos en formato .mat de MATLAB?",
+                "options": [
+                    "export_mat() e import_mat()",
+                    "savemat() y loadmat()",
+                    "write_mat() y read_mat()",
+                    "to_matlab() y from_matlab()"
+                ],
+                "correct": 1,
+                "explanation": "scipy.io.savemat() guarda arreglos en archivos .mat y scipy.io.loadmat() los carga como diccionarios.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "esc-mat2",
+                "type": "complete_code",
+                "question": "Completa el submódulo de SciPy que permite leer y escribir archivos de MATLAB (.mat):",
+                "code_template": "from scipy import ___",
+                "correct_answer": "io",
+                "explanation": "scipy.io gestiona entrada/salida de formatos científicos como archivos .mat.",
+                "difficulty": "easy"
+            }
+        ],
+        "sc-interpolation": [
+            {
+                "id": "esc-int1",
+                "type": "multiple_choice",
+                "question": "¿Qué es la interpolación en SciPy?",
+                "options": [
+                    "Eliminar valores atípicos",
+                    "Estimar valores intermedios entre puntos de datos conocidos",
+                    "Ordenar un arreglo",
+                    "Comprimir una matriz dispersa"
+                ],
+                "correct": 1,
+                "explanation": "La interpolación genera nuevos puntos estimados dentro del rango de un conjunto discreto de puntos conocidos.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "esc-int2",
+                "type": "complete_code",
+                "question": "Completa la función de scipy.interpolate para crear una función de interpolación 1D:",
+                "code_template": "from scipy.interpolate import ___\nf = interp1d(xs, ys)",
+                "correct_answer": "interp1d",
+                "explanation": "interp1d construye una función de interpolación unidimensional a partir de pares (x, y).",
                 "difficulty": "medium"
             }
         ]

@@ -3,7 +3,7 @@
 {% block title %}{{ quiz_data.title }} — {{ t.site_title }}{% endblock %}
 
 {% block content %}
-<article class="quiz-page" id="quiz-container" data-quiz-id="{{ quiz_data.id }}" data-total="{{ quiz_data.questions | length }}">
+<article class="quiz-page" id="quiz-container" data-quiz-id="{{ quiz_data.id }}" data-total="{{ quiz_data.questions | length }}" data-time-limit="{{ quiz_data.time_limit or 0 }}">
     {# ===== START SCREEN ===== #}
     <div class="quiz-start-screen" id="quiz-start">
         <div class="quiz-start-card">

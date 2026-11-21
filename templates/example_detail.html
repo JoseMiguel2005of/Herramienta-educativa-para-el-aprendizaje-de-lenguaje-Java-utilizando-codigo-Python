@@ -71,36 +71,37 @@
 document.addEventListener('DOMContentLoaded', () => {
     const originalCode = {{ example.python_code | tojson }};
 
-    async function runPythonCode(code, outputEl) {
-        outputEl.textContent = 'Running...';
-        outputEl.closest('[id$="-wrapper"]').hidden = false;
+    async function runPythonCode(code, outputEl, triggerBtn) {
+        const wrapper = outputEl.closest('[id$="-wrapper"]');
+        if (wrapper) wrapper.hidden = false;
+        outputEl.textContent = 'Ejecutando...';
+        const origLabel = triggerBtn ? triggerBtn.textContent : '';
+        if (triggerBtn) {
+            triggerBtn.disabled = true;
+            triggerBtn.textContent = 'Ejecutando...';
+        }
         try {
-            if (!window.pyodideReady) {
-                if (!window.pyodideLoading) {
-                    window.pyodideLoading = true;
-                    window.pyodide = await loadPyodide();
-                    window.pyodideReady = true;
-                }
-            }
-            window.pyodide.runPython(`
-import sys, io
-sys.stdout = io.StringIO()
-`);
-            window.pyodide.runPython(code);
-            const output = window.pyodide.runPython('sys.stdout.getvalue()');
-            outputEl.textContent = output || '(No output)';
+            const result = await window.runPythonInBrowser(code);
+            window.renderConsoleResult(outputEl, result);
         } catch (e) {
-            outputEl.textContent = 'Error: ' + e.message;
+            outputEl.textContent = 'Error: ' + (e.message || String(e));
+        } finally {
+            if (triggerBtn) {
+                triggerBtn.disabled = false;
+                triggerBtn.textContent = origLabel;
+            }
         }
     }
 
-    document.getElementById('btn-run-example')?.addEventListener('click', () => {
-        runPythonCode(originalCode, document.getElementById('example-output'));
+    const btnRunExample = document.getElementById('btn-run-example');
+    btnRunExample?.addEventListener('click', () => {
+        runPythonCode(originalCode, document.getElementById('example-output'), btnRunExample);
     });
 
-    document.getElementById('btn-run-tryit')?.addEventListener('click', () => {
+    const btnRunTryit = document.getElementById('btn-run-tryit');
+    btnRunTryit?.addEventListener('click', () => {
         const code = document.getElementById('tryit-editor').value;
-        runPythonCode(code, document.getElementById('tryit-output'));
+        runPythonCode(code, document.getElementById('tryit-output'), btnRunTryit);
     });
 
     document.getElementById('btn-reset-tryit')?.addEventListener('click', () => {

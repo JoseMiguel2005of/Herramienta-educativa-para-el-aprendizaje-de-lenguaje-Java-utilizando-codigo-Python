@@ -1,11 +1,22 @@
 /**
- * Exercise Navigation & Validation (Dual Python/Java Mode)
+ * Exercise Navigation & Validation (Dual Python/Java Mode, Case-Sensitive & Pyodide output validation)
  */
-let standaloneQuizLang = localStorage.getItem('py2java_quiz_lang') || 'python';
+function _standaloneLangStorageKey() {
+    if (typeof window.getScopedStorageKey === 'function') {
+        return window.getScopedStorageKey('py2java_quiz_lang');
+    }
+    const uid = window.PY2JAVA_USER_ID;
+    const scope = (uid !== undefined && uid !== null && String(uid).trim() !== '') ? String(uid) : 'anon';
+    return `py2java_quiz_lang_${scope}`;
+}
+
+let standaloneQuizLang = 'python';
 
 function switchStandaloneExerciseLang(lang) {
     standaloneQuizLang = lang;
-    localStorage.setItem('py2java_quiz_lang', lang);
+    try {
+        localStorage.setItem(_standaloneLangStorageKey(), lang);
+    } catch (e) {}
 
     document.querySelectorAll('.quiz-lang-btn').forEach(btn => {
         if (btn.dataset.lang === lang) {
@@ -55,11 +66,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const feedback = document.getElementById('exercise-feedback');
     const hintBox = document.getElementById('hint-box');
 
-    // Inicializar idioma guardado
-    const saved = localStorage.getItem('py2java_quiz_lang') || 'python';
+    // Inicializar idioma guardado (segmentado por user_id)
+    const saved = localStorage.getItem(_standaloneLangStorageKey()) || 'python';
     switchStandaloneExerciseLang(saved);
 
-    // Enviar / Comprobar respuesta (calificación estricta en servidor)
+    // Enviar / Comprobar respuesta (calificación estricta en servidor + ejecución real Pyodide en ejercicios libres)
     if (submitBtn) {
         submitBtn.addEventListener('click', async () => {
             const card = document.getElementById('exercise-card-main');
@@ -102,6 +113,32 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
                 payload.answer = userCode;
+
+                // Ejecutar en Pyodide para validar salida real cuando está disponible
+                if (lang === 'python' && typeof window.runPythonInBrowser === 'function') {
+                    submitBtn.disabled = true;
+                    const outWrap = document.getElementById('exercise-pyodide-output-wrap');
+                    const outEl = document.getElementById('exercise-pyodide-output');
+                    if (outWrap) outWrap.hidden = false;
+                    if (outEl) outEl.textContent = 'Ejecutando código en Python...';
+                    try {
+                        const runResult = await window.runPythonInBrowser(userCode);
+                        if (outEl && typeof window.renderConsoleResult === 'function') {
+                            window.renderConsoleResult(outEl, runResult);
+                        }
+                        if (!runResult.ok) {
+                            showFeedback(false, 'Tu código generó un error de ejecución. Revisa la consola e intenta de nuevo.');
+                            submitBtn.disabled = false;
+                            return;
+                        }
+                        payload.actual_output = (runResult.stdout || '').trim();
+                    } catch (pyErr) {
+                        if (outEl) outEl.textContent = pyErr.message || String(pyErr);
+                        showFeedback(false, 'No se pudo ejecutar el motor Python en el navegador.');
+                        submitBtn.disabled = false;
+                        return;
+                    }
+                }
             }
 
             submitBtn.disabled = true;
@@ -123,6 +160,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 const isCorrect = Boolean(data.passed);
+                const xpBlocked = Boolean(data.xp_blocked_by_solution || card.dataset.solutionViewed === 'true');
+                const blockedSuffix = xpBlocked ? ' (Sin +25 XP por haber consultado la solución.)' : '';
+
                 if (mcBlock) {
                     mcBlock.querySelectorAll('.quiz-option-label').forEach((label, i) => {
                         label.classList.remove('option-correct', 'option-incorrect');
@@ -132,7 +172,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                     showFeedback(
                         isCorrect,
-                        isCorrect ? '¡Correcto! Excelente trabajo.' : 'Opción incorrecta. Intenta de nuevo o consulta una pista.'
+                        isCorrect
+                            ? `¡Correcto! Excelente trabajo.${blockedSuffix}`
+                            : 'Opción incorrecta. Intenta de nuevo o consulta una pista.'
                     );
                 } else if (templateArea) {
                     const results = Array.isArray(data.input_results) ? data.input_results : [];
@@ -147,16 +189,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                     showFeedback(
                         isCorrect,
-                        isCorrect ? '¡Correcto! Completaste el código adecuadamente.' : 'Revisa los campos resaltados e intenta de nuevo.'
+                        isCorrect
+                            ? `¡Correcto! Completaste el código adecuadamente.${blockedSuffix}`
+                            : 'Revisa los campos resaltados (respeta mayúsculas y minúsculas) e intenta de nuevo.'
                     );
                 } else if (freeformInput) {
                     showFeedback(
                         isCorrect,
-                        isCorrect ? '¡Correcto! Tu respuesta coincide con la solución esperada.' : 'Tu respuesta no coincide aún. Usa la pista o el Tutor IA para revisar.'
+                        isCorrect
+                            ? `¡Correcto! Tu salida coincide con la solución esperada.${blockedSuffix}`
+                            : 'La salida de tu código no coincide aún con lo esperado. Usa la pista o revisa tu lógica.'
                     );
                 }
 
-                if (isCorrect && typeof window.onProgressXpUpdate === 'function') {
+                if (isCorrect && !xpBlocked && typeof window.onProgressXpUpdate === 'function') {
                     window.onProgressXpUpdate(data, '¡Ejercicio completado!');
                 }
                 submitBtn.disabled = isCorrect;
@@ -177,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Ver solución (consulta pedagógica sin otorgar XP)
+    // Ver solución (consulta pedagógica que bloquea +25 XP si aún no se resolvió)
     if (showBtn) {
         showBtn.addEventListener('click', async () => {
             const card = document.getElementById('exercise-card-main');
@@ -206,6 +252,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await resp.json().catch(() => ({ ok: false }));
                 if (!resp.ok || !data.ok) return;
 
+                if (data.xp_blocked) {
+                    card.dataset.solutionViewed = 'true';
+                }
+                const xpNote = data.xp_blocked
+                    ? ' Al consultar la solución, este ejercicio no otorgará +25 XP.'
+                    : '';
+
                 const mcBlock = activeView.querySelector('.exercise-options-block');
                 const templateArea = activeView.querySelector('.exercise-template-area');
                 const freeformInput = activeView.querySelector('.exercise-freeform-editor');
@@ -220,7 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const radio = label.querySelector('input[type="radio"]');
                         if (radio && i === correctIndex) radio.checked = true;
                     });
-                    showFeedback(true, 'Respuesta mostrada.', true);
+                    showFeedback(true, `Respuesta mostrada.${xpNote}`, true);
                 } else if (templateArea && Array.isArray(data.answers)) {
                     const inputs = templateArea.querySelectorAll('.exercise-input');
                     inputs.forEach((input, idx) => {
@@ -228,10 +281,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         input.classList.remove('input-incorrect');
                         input.classList.add('input-correct');
                     });
-                    showFeedback(true, 'Solución completada.', true);
+                    showFeedback(true, `Solución completada.${xpNote}`, true);
                 } else if (freeformInput && Array.isArray(data.answers) && data.answers.length > 0) {
                     freeformInput.value = data.answers[0];
-                    showFeedback(true, 'Solución mostrada.', true);
+                    showFeedback(true, `Solución mostrada.${xpNote}`, true);
                 }
             } catch (err) {
                 console.error('Error al cargar solución:', err);

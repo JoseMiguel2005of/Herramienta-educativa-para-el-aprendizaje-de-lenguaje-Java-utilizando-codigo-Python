@@ -67,7 +67,11 @@
                 <div class="exercise-code-block">
                     <div class="exercise-freeform-area">
                         <textarea id="exercise-freeform-input" class="exercise-freeform-editor" spellcheck="false"
-                                  placeholder="Escribe tu respuesta aquí..."></textarea>
+                                  placeholder="Escribe tu código Python aquí..."></textarea>
+                    </div>
+                    <div id="exercise-pyodide-output-wrap" hidden style="margin-top:0.75rem; background:#0d1117; border:1px solid var(--border); border-left:3px solid var(--python-color); border-radius:6px; padding:0.65rem 0.85rem;">
+                        <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.3rem; font-family:'JetBrains Mono', monospace;">Salida de ejecución (Python):</div>
+                        <pre style="margin:0; font-family:'JetBrains Mono', monospace; font-size:0.85rem; white-space:pre-wrap;"><code id="exercise-pyodide-output"></code></pre>
                     </div>
                 </div>
                 {% endif %}
@@ -144,6 +148,12 @@
 {% endblock %}
 
 {% block scripts %}
+{% if current_exercise.expected_output and not current_exercise.template_html and not current_exercise.options %}
+<script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"
+        integrity="sha384-b4IZetZNE8bVncsQqlcH4ZZFC58BslGU2LVj47xUtIMOw72axMESbPe8spBylXnd"
+        crossorigin="anonymous"></script>
+<script src="{{ url_for('static', filename='js/pyodide-runner.js') }}"></script>
+{% endif %}
 <script src="{{ url_for('static', filename='js/exercise-nav.js') }}"></script>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/exercise-page.css') }}">
 {% endblock %}

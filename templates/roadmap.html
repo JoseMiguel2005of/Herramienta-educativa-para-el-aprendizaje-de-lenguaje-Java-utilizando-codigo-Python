@@ -4,19 +4,7 @@
 
 {% block content %}
 <article class="skill-tree-page">
-    {% set total_all = [] %}
-    {% set completed_all = [] %}
-    {% for cat in categories %}
-        {% for sec in cat.sections %}
-            {% for lesson in sec.lessons %}
-                {% if total_all.append(lesson.id) %}{% endif %}
-                {% if lesson.id in summary.completed_lessons %}
-                    {% if completed_all.append(lesson.id) %}{% endif %}
-                {% endif %}
-            {% endfor %}
-        {% endfor %}
-    {% endfor %}
-    {% set global_pct = ((completed_all | length / total_all | length * 100) | round | int) if (total_all | length) > 0 else 0 %}
+    {% set global_pct = ((completed_course_count / course_lesson_count * 100) | round | int) if course_lesson_count > 0 else 0 %}
 
     <header class="skill-tree-header">
         <div class="header-left">
@@ -25,8 +13,8 @@
         </div>
         <div class="header-stats">
             <div class="global-progress">
-                <span class="gp-label">Progreso global</span>
-                <span class="gp-value">{{ completed_all | length }} de {{ total_all | length }} ({{ global_pct }}%)</span>
+                <span class="gp-label">Progreso global del curso</span>
+                <span class="gp-value">{{ completed_course_count }} de {{ course_lesson_count }} ({{ global_pct }}%)</span>
             </div>
             <div class="global-bar" role="progressbar" aria-label="Progreso global del curso"
                 aria-valuenow="{{ global_pct }}" aria-valuemin="0" aria-valuemax="100">
@@ -58,8 +46,10 @@
         {% for cat in categories %}
             {% for sec in cat.sections %}
                 {% set sec_lessons = sec.lessons | map(attribute='id') | list %}
-                {% set sec_completed = sec_lessons | select("in", summary.completed_lessons) | list %}
-                {% set sec_pct = ((sec_completed | length / sec_lessons | length * 100) | round | int) if (sec_lessons | length) > 0 else 0 %}
+                {% set sec_course_lessons = sec_lessons | select("in", course_lesson_ids) | list %}
+                {% set is_course_sec = (sec_course_lessons | length) > 0 %}
+                {% set sec_completed = sec_course_lessons | select("in", summary.completed_lessons) | list %}
+                {% set sec_pct = ((sec_completed | length / sec_course_lessons | length * 100) | round | int) if is_course_sec else 0 %}
                 {% set branch_id = "branch-" ~ cat.id ~ "-" ~ loop.index %}
                 {% if sec.label_key in ['cat_python_tutorial', 'cat_python_functions', 'cat_python_classes', 'cat_python_modules', 'cat_file_handling'] %}
                     {% set sec_group = 'core' %}
@@ -81,10 +71,15 @@
                             </span>
                             <div class="branch-title-wrap">
                                 <span class="branch-name">{{ t[sec.label_key] }}</span>
-                                <span class="branch-meta">{{ sec_completed | length }} de {{ sec_lessons | length }} temas completados</span>
+                                {% if is_course_sec %}
+                                <span class="branch-meta">{{ sec_completed | length }} de {{ sec_course_lessons | length }} lecciones completadas</span>
+                                {% else %}
+                                <span class="branch-meta">{{ sec_lessons | length }} recurso(s) de práctica / referencia</span>
+                                {% endif %}
                             </div>
                         </div>
                         <div class="branch-right">
+                            {% if is_course_sec %}
                             <div class="branch-progress-bar" aria-hidden="true">
                                 <div class="branch-progress-fill {% if sec_pct == 100 %}complete{% endif %}" style="width: {{ sec_pct }}%;"></div>
                             </div>
@@ -95,14 +90,17 @@
                             {% else %}
                                 <span class="status-pill status-pill--locked">○ Por iniciar</span>
                             {% endif %}
+                            {% else %}
+                            <span class="status-pill status-pill--available">Recurso complementario</span>
+                            {% endif %}
                         </div>
                     </button>
 
                     <div class="branch-content" id="content-{{ branch_id }}" style="display: none;">
                         <div class="skill-nodes-grid">
                             {% for lesson in sec.lessons %}
-                                {% set is_completed = lesson.id in summary.completed_lessons %}
-                                {% set prev_completed = (loop.first) or (sec.lessons[loop.index0 - 1].id in summary.completed_lessons) %}
+                                {% set is_completed = is_course_sec and (lesson.id in summary.completed_lessons) %}
+                                {% set prev_completed = (not is_course_sec) or (loop.first) or (sec.lessons[loop.index0 - 1].id in summary.completed_lessons) %}
                                 {% set is_available = prev_completed or is_completed %}
                                 {% set is_extra = loop.index > max_visible_topics %}
 
@@ -121,8 +119,10 @@
                                 <a href="{{ topic_href }}"
                                    class="skill-node {{ 'completed' if is_completed else ('available' if is_available else 'locked') }} {% if is_extra %}topic-extra-card chunk-hidden{% endif %}">
                                     <div class="skill-node-top">
-                                        <span class="node-step-num">Tema {{ loop.index }}</span>
-                                        {% if is_completed %}
+                                        <span class="node-step-num">{{ 'Tema ' ~ loop.index if is_course_sec else 'Recurso ' ~ loop.index }}</span>
+                                        {% if not is_course_sec %}
+                                            <span class="status-pill status-pill--available">▶ Disponible</span>
+                                        {% elif is_completed %}
                                             <span class="status-pill status-pill--completed">✓ Completado</span>
                                         {% elif is_available %}
                                             <span class="status-pill status-pill--available">▶ Disponible</span>
@@ -133,7 +133,7 @@
                                     <h3 class="node-title">{{ get_lesson_title(lesson.id) }}</h3>
                                     <div class="skill-node-footer">
                                         <span class="node-cta">
-                                            {% if is_completed %}Repasar tema{% elif is_available %}Comenzar tema{% else %}Ver contenido{% endif %} →
+                                            {% if not is_course_sec %}Abrir recurso{% elif is_completed %}Repasar tema{% elif is_available %}Comenzar tema{% else %}Ver contenido{% endif %} →
                                         </span>
                                     </div>
                                 </a>

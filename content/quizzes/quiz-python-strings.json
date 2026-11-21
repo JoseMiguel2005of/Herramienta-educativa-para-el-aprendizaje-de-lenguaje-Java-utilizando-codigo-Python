@@ -2,7 +2,7 @@
     "id": "quiz-python-strings",
     "title": "Cuestionario de Cadenas de Python",
     "description": "Pon a prueba tus conocimientos sobre cadenas de texto en Python: métodos, slicing, formateo.",
-    "time_limit": null,
+    "time_limit": 600,
     "questions": [
         {
             "id": "qs1",

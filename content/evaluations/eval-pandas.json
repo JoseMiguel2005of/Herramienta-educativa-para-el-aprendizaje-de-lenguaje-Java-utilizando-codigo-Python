@@ -12,7 +12,12 @@
                 "id": "epd-in1",
                 "type": "multiple_choice",
                 "question": "¿Cuáles son las dos estructuras de datos principales en Pandas?",
-                "options": ["List y Dict", "Series y DataFrame", "Array y Matrix", "Table y Sheet"],
+                "options": [
+                    "List y Dict",
+                    "Series y DataFrame",
+                    "Array y Matrix",
+                    "Table y Sheet"
+                ],
                 "correct": 1,
                 "explanation": "Series (1D) y DataFrame (2D) son las dos estructuras de datos fundamentales en Pandas.",
                 "difficulty": "easy"
@@ -32,7 +37,12 @@
                 "id": "epd-ser1",
                 "type": "multiple_choice",
                 "question": "¿Qué es una Serie (Series) en Pandas?",
-                "options": ["Una tabla bidimensional", "Un arreglo unidimensional etiquetado capaz de contener cualquier tipo de dato", "Un archivo de texto", "Una función gráfica"],
+                "options": [
+                    "Una tabla bidimensional",
+                    "Un arreglo unidimensional etiquetado capaz de contener cualquier tipo de dato",
+                    "Un archivo de texto",
+                    "Una función gráfica"
+                ],
                 "correct": 1,
                 "explanation": "Una Serie es una columna etiquetada de 1 dimensión.",
                 "difficulty": "easy"
@@ -52,7 +62,12 @@
                 "id": "epd-df1",
                 "type": "multiple_choice",
                 "question": "¿Qué es un DataFrame en Pandas?",
-                "options": ["Una lista de números", "Una estructura de datos bidimensional en forma de tabla con filas y columnas etiquetadas", "Un gráfico 2D", "Una consulta a base de datos"],
+                "options": [
+                    "Una lista de números",
+                    "Una estructura de datos bidimensional en forma de tabla con filas y columnas etiquetadas",
+                    "Un gráfico 2D",
+                    "Una consulta a base de datos"
+                ],
                 "correct": 1,
                 "explanation": "Un DataFrame es una tabla 2D con etiquetas en filas (índice) y columnas.",
                 "difficulty": "easy"
@@ -61,7 +76,12 @@
                 "id": "epd-df2",
                 "type": "multiple_choice",
                 "question": "¿Qué método muestra las primeras N filas de un DataFrame?",
-                "options": [".top()", ".head()", ".first()", ".preview()"],
+                "options": [
+                    ".top()",
+                    ".head()",
+                    ".first()",
+                    ".preview()"
+                ],
                 "correct": 1,
                 "explanation": ".head(n) devuelve las primeras n filas (por defecto 5).",
                 "difficulty": "easy"
@@ -81,7 +101,12 @@
                 "id": "epd-csv1",
                 "type": "multiple_choice",
                 "question": "¿Qué función de Pandas se utiliza para cargar un archivo CSV en un DataFrame?",
-                "options": ["pd.load_csv()", "pd.read_csv()", "pd.open_csv()", "pd.get_csv()"],
+                "options": [
+                    "pd.load_csv()",
+                    "pd.read_csv()",
+                    "pd.open_csv()",
+                    "pd.get_csv()"
+                ],
                 "correct": 1,
                 "explanation": "pd.read_csv('archivo.csv') lee un CSV y devuelve un DataFrame.",
                 "difficulty": "easy"
@@ -100,7 +125,12 @@
                 "id": "epd-anz1",
                 "type": "multiple_choice",
                 "question": "¿Qué método calcula estadísticas descriptivas resumidas (media, std, min, max, etc.) para las columnas numéricas?",
-                "options": [".summary()", ".describe()", ".info()", ".stats()"],
+                "options": [
+                    ".summary()",
+                    ".describe()",
+                    ".info()",
+                    ".stats()"
+                ],
                 "correct": 1,
                 "explanation": ".describe() genera estadísticas descriptivas resumidas de las columnas numéricas.",
                 "difficulty": "easy"
@@ -109,7 +139,12 @@
                 "id": "epd-anz2",
                 "type": "multiple_choice",
                 "question": "¿Qué método imprime un resumen de la estructura del DataFrame (tipos de datos, memoria, nulos)?",
-                "options": [".describe()", ".info()", ".shape()", ".schema()"],
+                "options": [
+                    ".describe()",
+                    ".info()",
+                    ".shape()",
+                    ".schema()"
+                ],
                 "correct": 1,
                 "explanation": ".info() muestra los nombres de columnas, recuento de no nulos, tipos de datos y uso de memoria.",
                 "difficulty": "medium"
@@ -120,7 +155,12 @@
                 "id": "epd-cln1",
                 "type": "multiple_choice",
                 "question": "¿Qué método elimina las filas que contienen valores nulos (NaN) en Pandas?",
-                "options": [".remove_null()", ".dropna()", ".clean()", ".delete_na()"],
+                "options": [
+                    ".remove_null()",
+                    ".dropna()",
+                    ".clean()",
+                    ".delete_na()"
+                ],
                 "correct": 1,
                 "explanation": ".dropna() devuelve un DataFrame eliminando las filas con valores faltantes.",
                 "difficulty": "easy"
@@ -141,6 +181,198 @@
                 "correct": true,
                 "explanation": "df.duplicated() identifica filas repetidas en un DataFrame.",
                 "difficulty": "medium"
+            }
+        ],
+        "pd-getstarted": [
+            {
+                "id": "epd-gs1",
+                "type": "multiple_choice",
+                "question": "¿Cómo se instala Pandas usando pip en Python?",
+                "options": [
+                    "pip install pandas",
+                    "install pandas-py",
+                    "python -get pandas",
+                    "npm i pandas"
+                ],
+                "correct": 0,
+                "explanation": "El comando estándar para instalar Pandas desde PyPI es 'pip install pandas'.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "epd-gs2",
+                "type": "complete_code",
+                "question": "Completa el atributo para verificar la versión instalada de Pandas:",
+                "code_template": "print(pd.___)",
+                "correct_answer": "__version__",
+                "explanation": "El atributo __version__ devuelve la cadena de versión de la biblioteca instalada.",
+                "difficulty": "medium"
+            }
+        ],
+        "pd-readjson": [
+            {
+                "id": "epd-jsn1",
+                "type": "complete_code",
+                "question": "Completa la función de Pandas para cargar un archivo JSON en un DataFrame:",
+                "code_template": "df = pd.___('data.json')",
+                "correct_answer": "read_json",
+                "explanation": "pd.read_json() analiza un archivo o cadena JSON y construye un DataFrame.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "epd-jsn2",
+                "type": "true_false",
+                "question": "Un objeto JSON tiene la misma estructura de pares clave-valor que un diccionario de Python, por lo que puede cargarse directamente en un DataFrame.",
+                "correct": true,
+                "explanation": "Pandas puede construir DataFrames tanto desde archivos JSON con read_json() como desde diccionarios de Python.",
+                "difficulty": "easy"
+            }
+        ],
+        "pd-emptycells": [
+            {
+                "id": "epd-emp1",
+                "type": "multiple_choice",
+                "question": "¿Qué parámetro permite modificar el DataFrame original directamente al usar dropna() o fillna() sin crear una copia?",
+                "options": [
+                    "modify=True",
+                    "inplace=True",
+                    "direct=True",
+                    "overwrite=True"
+                ],
+                "correct": 1,
+                "explanation": "inplace=True aplica la limpieza sobre el mismo DataFrame en lugar de devolver uno nuevo.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "epd-emp2",
+                "type": "multiple_choice",
+                "question": "¿Cuál es una estrategia común para reemplazar celdas vacías numéricas en una columna con Pandas?",
+                "options": [
+                    "Usar df['col'].mean(), median() o mode()[0] dentro de fillna()",
+                    "Eliminar toda la columna siempre",
+                    "Convertir los números a cadenas vacías",
+                    "Reiniciar el índice"
+                ],
+                "correct": 0,
+                "explanation": "Imputar valores faltantes con la media, mediana o moda mediante fillna() preserva los registros del conjunto de datos.",
+                "difficulty": "medium"
+            }
+        ],
+        "pd-wrongformat": [
+            {
+                "id": "epd-wfm1",
+                "type": "complete_code",
+                "question": "Completa la función de Pandas para convertir una columna de texto en tipo fecha (datetime):",
+                "code_template": "df['Fecha'] = pd.___(df['Fecha'], format='mixed')",
+                "correct_answer": "to_datetime",
+                "explanation": "pd.to_datetime() convierte cadenas con fechas en objetos datetime estandarizados de Pandas.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "epd-wfm2",
+                "type": "true_false",
+                "question": "Cuando pd.to_datetime() encuentra una celda vacía que no puede convertir, la representa como NaT (Not a Time).",
+                "correct": true,
+                "explanation": "NaT es el valor faltante equivalente a NaN para columnas de tipo fecha y hora en Pandas.",
+                "difficulty": "medium"
+            }
+        ],
+        "pd-wrongdata": [
+            {
+                "id": "epd-wdt1",
+                "type": "multiple_choice",
+                "question": "¿Cómo se corrige el valor en la fila índice 7 y columna 'Duracion' de un DataFrame?",
+                "options": [
+                    "df.loc[7, 'Duracion'] = 45",
+                    "df.set(7, 'Duracion', 45)",
+                    "df.replace_cell(7, 45)",
+                    "df.edit[7]['Duracion'] = 45"
+                ],
+                "correct": 0,
+                "explanation": "df.loc[fila, columna] permite acceder y reasignar valores específicos por etiqueta.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "epd-wdt2",
+                "type": "true_false",
+                "question": "Se puede recorrer df.index para detectar valores fuera de rango y corregirlos o eliminar esas filas con df.drop().",
+                "correct": true,
+                "explanation": "Iterar o aplicar máscaras booleanas sobre el DataFrame permite corregir valores erróneos o descartar filas inválidas.",
+                "difficulty": "easy"
+            }
+        ],
+        "pd-removedup": [
+            {
+                "id": "epd-dup1",
+                "type": "complete_code",
+                "question": "Completa el método de Pandas que elimina las filas duplicadas de un DataFrame:",
+                "code_template": "df.___(inplace=True)",
+                "correct_answer": "drop_duplicates",
+                "explanation": "df.drop_duplicates() remueve filas repetidas dejando una sola ocurrencia.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "epd-dup2",
+                "type": "multiple_choice",
+                "question": "¿Qué devuelve df.duplicated()?",
+                "options": [
+                    "Un número entero",
+                    "Una Serie de valores booleanos (True para cada fila duplicada)",
+                    "Un diccionario con los índices",
+                    "Un nuevo DataFrame ya limpio"
+                ],
+                "correct": 1,
+                "explanation": "duplicated() devuelve una Serie booleana marcando con True las filas que ya aparecieron antes.",
+                "difficulty": "easy"
+            }
+        ],
+        "pd-correlations": [
+            {
+                "id": "epd-cor1",
+                "type": "complete_code",
+                "question": "Completa el método que calcula la matriz de correlación entre columnas numéricas en Pandas:",
+                "code_template": "matriz = df.___(numeric_only=True)",
+                "correct_answer": "corr",
+                "explanation": "df.corr() calcula el coeficiente de correlación (por defecto Pearson) entre pares de columnas numéricas.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "epd-cor2",
+                "type": "multiple_choice",
+                "question": "¿En qué rango se encuentran los valores de correlación devueltos por df.corr()?",
+                "options": [
+                    "De 0 a 100",
+                    "De -1 a 1",
+                    "De 0 a infinito",
+                    "De -10 a 10"
+                ],
+                "correct": 1,
+                "explanation": "El coeficiente de correlación varía entre -1 (correlación negativa perfecta) y 1 (positiva perfecta); 0 indica sin correlación lineal.",
+                "difficulty": "easy"
+            }
+        ],
+        "pd-plotting": [
+            {
+                "id": "epd-plt1",
+                "type": "complete_code",
+                "question": "Completa el método de un DataFrame para generar un gráfico directamente con Matplotlib:",
+                "code_template": "df.___(kind='scatter', x='Duracion', y='Calorias')",
+                "correct_answer": "plot",
+                "explanation": "El método df.plot() utiliza Matplotlib internamente para crear gráficos de líneas, dispersión, histogramas, etc.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "epd-plt2",
+                "type": "multiple_choice",
+                "question": "¿Qué valor del parámetro 'kind' en df.plot(kind=...) dibuja un histograma?",
+                "options": [
+                    "'bar_hist'",
+                    "'hist'",
+                    "'distribution'",
+                    "'freq'"
+                ],
+                "correct": 1,
+                "explanation": "df['col'].plot(kind='hist') genera un histograma de frecuencias de la columna.",
+                "difficulty": "easy"
             }
         ]
     }

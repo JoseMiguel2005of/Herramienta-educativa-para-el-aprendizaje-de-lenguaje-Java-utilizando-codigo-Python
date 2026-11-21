@@ -17,8 +17,7 @@
         </div>
     </header>
 
-    {% set titles = {1:'Iniciado',2:'Novato',3:'Aprendiz',4:'Estudiante',5:'Practicante',6:'Competente',7:'Hábil',8:'Experto',9:'Veterano',10:'Pythonista',11:'Maestro',12:'Arquitecto',13:'Virtuoso',14:'Gurú',15:'Sensei',16:'Leyenda',17:'Oráculo',18:'Iluminado',19:'Trascendente',20:'Omnisciente'} %}
-    {% set current_title = titles.get(level if level <= 20 else 20, 'Iniciado') %}
+    {% set current_title = get_level_title(level) %}
 
     <div class="profile-layout">
 

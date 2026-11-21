@@ -8,9 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const sectionKey = container.dataset.sectionKey;
     const evalSessionId = container.dataset.sessionId ? parseInt(container.dataset.sessionId, 10) : null;
-    const totalQuestions = parseInt(container.dataset.total);
-    const timeLimit = parseInt(container.dataset.timeLimit);
-    const passingScore = parseInt(container.dataset.passingScore);
+    const totalQuestions = parseInt(container.dataset.total, 10);
+    const timeLimit = parseInt(container.dataset.timeLimit, 10);
+    const passingScore = parseInt(container.dataset.passingScore, 10);
 
     // Screens
     const startScreen = document.getElementById('eval-start');
@@ -24,6 +24,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnSubmit = document.getElementById('btn-eval-submit');
     const btnRetry = document.getElementById('btn-eval-retry');
 
+    // Guard when no questions are available
+    if (!Number.isFinite(totalQuestions) || totalQuestions <= 0) {
+        if (btnStart) {
+            btnStart.disabled = true;
+            btnStart.textContent = 'Sin preguntas disponibles';
+        }
+        if (startScreen) {
+            const notice = document.createElement('p');
+            notice.style.color = '#ef5350';
+            notice.style.marginTop = '1rem';
+            notice.textContent = 'No hay preguntas disponibles para esta evaluación en este momento. Vuelve al panel de progreso.';
+            startScreen.appendChild(notice);
+        }
+        return;
+    }
+
     // Progress
     const counterEl = document.getElementById('eval-counter');
     const answeredEl = document.getElementById('eval-answered');
@@ -35,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentQuestion = 0;
     let answers = {};
     let timerInterval = null;
-    let secondsRemaining = timeLimit;
+    let secondsRemaining = Number.isFinite(timeLimit) && timeLimit > 0 ? timeLimit : 300;
     let startTime = null;
 
     // ===== START =====
@@ -49,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ===== TIMER =====
     function startTimer() {
-        secondsRemaining = timeLimit;
+        secondsRemaining = Number.isFinite(timeLimit) && timeLimit > 0 ? timeLimit : 300;
         updateTimerDisplay();
         timerInterval = setInterval(() => {
             secondsRemaining--;
@@ -70,8 +86,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateTimerDisplay() {
-        const mins = Math.floor(secondsRemaining / 60);
-        const secs = secondsRemaining % 60;
+        const safeSeconds = Math.max(0, secondsRemaining);
+        const mins = Math.floor(safeSeconds / 60);
+        const secs = safeSeconds % 60;
         timerValue.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
     }
 
@@ -122,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Dot navigation
     document.querySelectorAll('.dot-btn').forEach(dot => {
         dot.addEventListener('click', () => {
-            showQuestion(parseInt(dot.dataset.idx));
+            showQuestion(parseInt(dot.dataset.idx, 10));
         });
     });
 
@@ -133,20 +150,25 @@ document.addEventListener('DOMContentLoaded', () => {
         radio.addEventListener('change', () => {
             const slide = radio.closest('.eval-question-slide');
             const qid = slide.dataset.qid;
-            answers[qid] = parseInt(radio.value);
-            markDotAnswered(parseInt(slide.dataset.question));
+            answers[qid] = parseInt(radio.value, 10);
+            markDotAnswered(parseInt(slide.dataset.question, 10));
             updateAnsweredCount();
         });
     });
 
-    // Complete code - input
+    // Complete code - input (al vaciar el campo, elimina respuesta y quita .answered)
     document.querySelectorAll('.eval-code-input').forEach(input => {
         input.addEventListener('input', () => {
             const slide = input.closest('.eval-question-slide');
             const qid = slide.dataset.qid;
-            answers[qid] = input.value.trim();
-            if (input.value.trim()) {
-                markDotAnswered(parseInt(slide.dataset.question));
+            const slideIdx = parseInt(slide.dataset.question, 10);
+            const trimmed = input.value.trim();
+            if (trimmed) {
+                answers[qid] = trimmed;
+                markDotAnswered(slideIdx);
+            } else {
+                delete answers[qid];
+                unmarkDotAnswered(slideIdx);
             }
             updateAnsweredCount();
         });
@@ -164,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.classList.add('selected');
 
             answers[qid] = value;
-            markDotAnswered(parseInt(slide.dataset.question));
+            markDotAnswered(parseInt(slide.dataset.question, 10));
             updateAnsweredCount();
         });
     });
@@ -172,6 +194,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function markDotAnswered(idx) {
         const dot = document.querySelector(`.dot-btn[data-idx="${idx}"]`);
         if (dot) dot.classList.add('answered');
+    }
+
+    function unmarkDotAnswered(idx) {
+        const dot = document.querySelector(`.dot-btn[data-idx="${idx}"]`);
+        if (dot) dot.classList.remove('answered');
     }
 
     function updateAnsweredCount() {
@@ -192,7 +219,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function submitEvaluation() {
         clearInterval(timerInterval);
-        const timeTaken = Math.round((Date.now() - startTime) / 1000);
 
         // Disable submit button
         btnSubmit.disabled = true;

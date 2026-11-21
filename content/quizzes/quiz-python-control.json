@@ -2,7 +2,7 @@
     "id": "quiz-python-control",
     "title": "Cuestionario de Flujo de Control en Python",
     "description": "Pon a prueba tus conocimientos sobre condicionales y bucles en Python: if/else, while, for.",
-    "time_limit": null,
+    "time_limit": 600,
     "questions": [
         {
             "id": "qcf1",

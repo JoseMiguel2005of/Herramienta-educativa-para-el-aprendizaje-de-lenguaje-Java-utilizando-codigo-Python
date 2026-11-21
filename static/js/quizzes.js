@@ -1,9 +1,19 @@
-// quizzes.js - Soporte completo para evaluación en Python y Java
+// quizzes.js - Soporte completo para evaluación en Python y Java (sensible a mayúsculas/minúsculas)
 
-let currentQuizLanguage = localStorage.getItem('py2java_quiz_lang') || 'python';
+function _quizLangStorageKey() {
+    if (typeof window.getScopedStorageKey === 'function') {
+        return window.getScopedStorageKey('py2java_quiz_lang');
+    }
+    const uid = window.PY2JAVA_USER_ID;
+    const scope = (uid !== undefined && uid !== null && String(uid).trim() !== '') ? String(uid) : 'anon';
+    return `py2java_quiz_lang_${scope}`;
+}
+
+let currentQuizLanguage = 'python';
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Inicializar idioma guardado
+    currentQuizLanguage = localStorage.getItem(_quizLangStorageKey()) || 'python';
+    // Inicializar idioma guardado (segmentado por user_id)
     initQuizLanguageSelector();
 
     // === MULTIPLE CHOICE ===
@@ -18,20 +28,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // === REORDER ===
     document.querySelectorAll('.reorder-list').forEach(list => {
         let draggedItem = null;
-        
+
         list.querySelectorAll('.reorder-item').forEach(item => {
             item.addEventListener('dragstart', function() {
                 draggedItem = this;
                 setTimeout(() => this.classList.add('dragging'), 0);
             });
-            
+
             item.addEventListener('dragend', function() {
                 setTimeout(() => {
                     this.classList.remove('dragging');
                     draggedItem = null;
                 }, 0);
             });
-            
+
             item.addEventListener('dragover', function(e) {
                 e.preventDefault();
                 const afterElement = getDragAfterElement(list, e.clientY);
@@ -42,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         });
-        
+
         function getDragAfterElement(container, y) {
             const draggableElements = [...container.querySelectorAll('.reorder-item:not(.dragging)')];
             return draggableElements.reduce((closest, child) => {
@@ -89,13 +99,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Selector de Idioma para los Quizzes
 function initQuizLanguageSelector() {
-    const saved = localStorage.getItem('py2java_quiz_lang') || 'python';
+    const saved = localStorage.getItem(_quizLangStorageKey()) || 'python';
     switchQuizLanguage(saved);
 }
 
 function switchQuizLanguage(lang) {
     currentQuizLanguage = lang;
-    localStorage.setItem('py2java_quiz_lang', lang);
+    try {
+        localStorage.setItem(_quizLangStorageKey(), lang);
+    } catch (e) {}
 
     // Actualizar botones de la barra
     document.querySelectorAll('.quiz-lang-btn').forEach(btn => {
@@ -202,8 +214,12 @@ async function checkQuiz(exerciseId, type, btn) {
         }
 
         const isCorrect = Boolean(data.passed);
+        const xpBlocked = Boolean(data.xp_blocked_by_solution || card.dataset.solutionViewed === 'true');
         const explanation = data.explanation || '';
         const hint = data.hint || card.dataset.hint || '';
+        const blockedNote = xpBlocked
+            ? ' <span style="opacity:0.85;">(Sin +25 XP porque consultaste la solución)</span>'
+            : '';
         let message = '';
 
         if (type === 'fill-blank' || !type) {
@@ -219,9 +235,9 @@ async function checkQuiz(exerciseId, type, btn) {
             });
             if (isCorrect) {
                 const langLabel = isJavaActive ? "Java" : "Python";
-                message = `¡Correcto en ${langLabel}! Excelente trabajo.` + (explanation ? `<div class="exercise-explanation-box"><b>Explicación:</b> ${escapeFeedbackHtml(explanation)}</div>` : "");
+                message = `¡Correcto en ${langLabel}!${blockedNote}` + (explanation ? `<div class="exercise-explanation-box"><b>Explicación:</b> ${escapeFeedbackHtml(explanation)}</div>` : "");
             } else {
-                const expText = explanation || hint || "Revisa la sintaxis requerida y los campos resaltados.";
+                const expText = explanation || hint || "Revisa la sintaxis requerida (respeta mayúsculas y minúsculas) y los campos resaltados.";
                 message = `<b>Hay errores en tu respuesta.</b><div class="exercise-explanation-box"><b>Orientación:</b> ${escapeFeedbackHtml(expText)}</div>`;
             }
         } else if (type === 'multiple-choice') {
@@ -235,19 +251,19 @@ async function checkQuiz(exerciseId, type, btn) {
                 }
             });
             if (isCorrect) {
-                message = "¡Correcto! " + (explanation ? `<div class="exercise-explanation-box"><b>Explicación:</b> ${escapeFeedbackHtml(explanation)}</div>` : "");
+                message = `¡Correcto!${blockedNote} ` + (explanation ? `<div class="exercise-explanation-box"><b>Explicación:</b> ${escapeFeedbackHtml(explanation)}</div>` : "");
             } else {
                 message = "<b>Opción incorrecta.</b> " + (explanation ? `<div class="exercise-explanation-box"><b>Explicación:</b> ${escapeFeedbackHtml(explanation)}</div>` : "Esa opción no es la adecuada.");
             }
         } else if (type === 'reorder') {
             if (isCorrect) {
-                message = "¡Correcto! El código está ordenado perfectamente." + (explanation ? `<div class="exercise-explanation-box"><b>Explicación:</b> ${escapeFeedbackHtml(explanation)}</div>` : "");
+                message = `¡Correcto! El código está ordenado perfectamente.${blockedNote}` + (explanation ? `<div class="exercise-explanation-box"><b>Explicación:</b> ${escapeFeedbackHtml(explanation)}</div>` : "");
             } else {
                 message = "<b>El orden no es el correcto.</b> Recuerda el flujo lógico de ejecución.";
             }
         } else if (type === 'find-error') {
             if (isCorrect) {
-                message = "¡Correcto! " + (explanation ? `<div class="exercise-explanation-box"><b>Explicación:</b> ${escapeFeedbackHtml(explanation)}</div>` : "Has identificado la línea con el error.");
+                message = `¡Correcto!${blockedNote} ` + (explanation ? `<div class="exercise-explanation-box"><b>Explicación:</b> ${escapeFeedbackHtml(explanation)}</div>` : "Has identificado la línea con el error.");
             } else {
                 message = "<b>Línea incorrecta.</b> El error sintáctico o lógico no se encuentra en esa línea.";
             }
@@ -256,7 +272,7 @@ async function checkQuiz(exerciseId, type, btn) {
         if (btn) btn.disabled = isCorrect;
         showFeedback(feedback, isCorrect, message, card, exerciseId);
         if (window.QuizSounds) window.QuizSounds.play(isCorrect);
-        if (isCorrect && typeof window.onProgressXpUpdate === 'function') {
+        if (isCorrect && !xpBlocked && typeof window.onProgressXpUpdate === 'function') {
             window.onProgressXpUpdate(data, '¡Ejercicio completado!');
         }
     } catch (err) {
@@ -300,6 +316,10 @@ async function showAnswer(exerciseId, type, lessonId) {
         const data = await resp.json().catch(() => ({ ok: false }));
         if (!resp.ok || !data.ok) return;
 
+        if (data.xp_blocked) {
+            card.dataset.solutionViewed = 'true';
+        }
+
         if (data.type === 'fill-blank') {
             const inputs = activeView.querySelectorAll('.exercise-input');
             const solAnswers = Array.isArray(data.answers) ? data.answers : [];
@@ -337,7 +357,10 @@ async function showAnswer(exerciseId, type, lessonId) {
 
         const feedback = card.querySelector('.exercise-feedback');
         const explanation = data.explanation || '';
-        const msg = "<b>Respuesta mostrada.</b>" + (explanation ? `<div class="exercise-explanation-box"><b>Explicación:</b> ${escapeFeedbackHtml(explanation)}</div>` : "");
+        const xpNote = data.xp_blocked
+            ? ' Al consultar la solución, este ejercicio no otorgará +25 XP.'
+            : '';
+        const msg = `<b>Respuesta mostrada.</b>${xpNote}` + (explanation ? `<div class="exercise-explanation-box"><b>Explicación:</b> ${escapeFeedbackHtml(explanation)}</div>` : "");
         showFeedback(feedback, true, msg, card, exerciseId);
     } catch (err) {
         console.error('Error al cargar solución:', err);
@@ -348,7 +371,7 @@ function showFeedback(element, isCorrect, messageHtml, card, exerciseId) {
     if (!element) return;
     element.innerHTML = messageHtml;
     element.hidden = false;
-    
+
     if (isCorrect) {
         element.classList.remove('feedback-incorrect');
         element.classList.add('feedback-correct');
@@ -362,15 +385,15 @@ function showFeedback(element, isCorrect, messageHtml, card, exerciseId) {
             const qJava = card.querySelector('.exercise-question-java');
             const isJava = currentQuizLanguage === 'java' && card.dataset.hasJava === 'true';
             const questionText = (isJava && qJava) ? qJava.textContent.trim() : (qPy ? qPy.textContent.trim() : '');
-            
+
             const helpWrap = document.createElement('div');
             helpWrap.style.marginTop = '0.5rem';
-            
+
             const helpBtn = document.createElement('button');
             helpBtn.type = 'button';
             helpBtn.className = 'btn-ask-ai-error';
             helpBtn.innerHTML = '<b>¿Por qué me equivoqué?</b> (Explicación con Tutor IA)';
-            
+
             helpBtn.addEventListener('click', () => {
                 let userAnswer = '';
                 const checkedRadio = card.querySelector('input[type="radio"]:checked');
@@ -381,12 +404,12 @@ function showFeedback(element, isCorrect, messageHtml, card, exerciseId) {
                     const inputs = card.querySelectorAll('.exercise-input');
                     inputs.forEach(inp => { if (inp.value) userAnswer += inp.value + ' '; });
                 }
-                const promptDetail = userAnswer.trim() 
-                    ? `Mi respuesta en ${isJava ? 'Java' : 'Python'} fue: "${userAnswer.trim()}". ¿Por qué es incorrecta y qué concepto debo repasar?` 
+                const promptDetail = userAnswer.trim()
+                    ? `Mi respuesta en ${isJava ? 'Java' : 'Python'} fue: "${userAnswer.trim()}". ¿Por qué es incorrecta y qué concepto debo repasar?`
                     : 'No entendí cómo resolver este ejercicio, ¿me das una pista conceptual?';
                 window.AITutor.hint(exerciseId, questionText, promptDetail);
             });
-            
+
             helpWrap.appendChild(helpBtn);
             element.appendChild(helpWrap);
         }

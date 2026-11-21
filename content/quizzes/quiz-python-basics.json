@@ -2,7 +2,7 @@
     "id": "quiz-python-basics",
     "title": "Cuestionario de Conceptos Básicos de Python",
     "description": "Pon a prueba tus conocimientos sobre los fundamentos de Python: sintaxis, comentarios, variables y tipos de datos.",
-    "time_limit": null,
+    "time_limit": 600,
     "questions": [
         {
             "id": "qb1",

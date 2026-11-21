@@ -12,6 +12,53 @@ CONTENT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "content"
 LESSONS_DIR = os.path.join(CONTENT_DIR, "lessons")
 SAFE_CONTENT_ID_RE = re.compile(r"^[a-z0-9\-]+$")
 
+# Fuente única de verdad para los títulos de nivel (consumida en app.py, plantillas, JS y pdf_report.py)
+LEVEL_TITLES = {
+    1: "Iniciado",
+    2: "Novato",
+    3: "Aprendiz",
+    4: "Entusiasta",
+    5: "Programador Junior",
+    6: "Programador",
+    7: "Desarrollador",
+    8: "Ingeniero de Software",
+    9: "Arquitecto",
+    10: "Maestro del Código",
+    11: "Mago de la Sintaxis",
+    12: "Gurú de Algoritmos",
+    13: "Hacker",
+    14: "Ninja del Desarrollo",
+    15: "Jedi del Software",
+    16: "Titán de la Programación",
+    17: "Leyenda Viva",
+    18: "Semidiós del Código",
+    19: "Dios del Código",
+    20: "Entidad Binaria Superior",
+}
+
+
+def get_level_title(level):
+    """Devuelve el título oficial del nivel desde la fuente única LEVEL_TITLES."""
+    try:
+        lvl = int(level)
+    except (TypeError, ValueError):
+        lvl = 1
+    if lvl >= 20:
+        return LEVEL_TITLES[20]
+    if lvl <= 1:
+        return LEVEL_TITLES[1]
+    return LEVEL_TITLES.get(lvl, LEVEL_TITLES[1])
+
+
+def get_level_info(total_xp):
+    """Calcula nivel y título oficial a partir del XP total."""
+    try:
+        xp = max(0, int(total_xp))
+    except (TypeError, ValueError):
+        xp = 0
+    level = (xp // 100) + 1
+    return {"level": level, "title": get_level_title(level)}
+
 
 def _safe_content_json_path(base_dir, content_id):
     """Valida el ID contra ^[a-z0-9\\-]+$ y verifica commonpath para impedir Path Traversal."""
@@ -55,7 +102,7 @@ LESSON_ALIASES = {
 }
 
 
-@lru_cache(maxsize=100)
+@lru_cache(maxsize=256)
 def load_lesson(lesson_id):
     """Carga una lección individual por su ID."""
     if not isinstance(lesson_id, str) or not SAFE_CONTENT_ID_RE.fullmatch(lesson_id):
@@ -150,14 +197,15 @@ def load_examples_catalog():
 
 
 def get_example_by_id(example_id):
-    """Busca un ejemplo individual por su ID en el catálogo."""
+    """Busca un ejemplo individual por su ID en el catálogo devolviendo una copia segura (sin mutar caché)."""
     catalog = load_examples_catalog()
     for cat in catalog.get("categories", []):
         for ex in cat.get("examples", []):
             if ex["id"] == example_id:
-                ex["category"] = cat.get("title", "")
-                ex["related_lesson"] = cat.get("related_lesson", "")
-                return ex
+                ex_copy = dict(ex)
+                ex_copy["category"] = cat.get("title", "")
+                ex_copy["related_lesson"] = cat.get("related_lesson", "")
+                return ex_copy
     return None
 
 
@@ -229,7 +277,7 @@ def get_lesson_exercise(lesson_id, exercise_id):
 EVALUATIONS_DIR = os.path.join(CONTENT_DIR, "evaluations")
 
 
-@lru_cache(maxsize=10)
+@lru_cache(maxsize=32)
 def load_evaluation(eval_id):
     """Carga una evaluación por su ID."""
     path = _safe_content_json_path(EVALUATIONS_DIR, eval_id)
@@ -273,6 +321,11 @@ def invalidate_cache():
     get_valid_exercise_ids.cache_clear()
     load_evaluation.cache_clear()
     load_all_evaluations.cache_clear()
+    try:
+        from search_index import invalidate_search_index
+        invalidate_search_index()
+    except Exception:
+        pass
 
 
 

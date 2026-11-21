@@ -12,7 +12,12 @@
                 "id": "emg-gs1",
                 "type": "multiple_choice",
                 "question": "¿Qué controlador (driver) oficial de Python se utiliza para conectarse a MongoDB?",
-                "options": ["mongo-python", "PyMongo", "MongoDB-Py", "pymysql"],
+                "options": [
+                    "mongo-python",
+                    "PyMongo",
+                    "MongoDB-Py",
+                    "pymysql"
+                ],
                 "correct": 1,
                 "explanation": "PyMongo es la biblioteca oficial de Python para interactuar con bases de datos MongoDB.",
                 "difficulty": "easy"
@@ -32,7 +37,12 @@
                 "id": "emg-cdb1",
                 "type": "multiple_choice",
                 "question": "¿Cómo almacena MongoDB los datos estructuralmente?",
-                "options": ["Tablas con filas y columnas", "Documentos flexibles similares a JSON (BSON)", "Hojas de cálculo", "Archivos XML"],
+                "options": [
+                    "Tablas con filas y columnas",
+                    "Documentos flexibles similares a JSON (BSON)",
+                    "Hojas de cálculo",
+                    "Archivos XML"
+                ],
                 "correct": 1,
                 "explanation": "MongoDB es una base de datos de documentos NoSQL que almacena datos en formato BSON (Binary JSON).",
                 "difficulty": "easy"
@@ -51,7 +61,12 @@
                 "id": "emg-ins1",
                 "type": "multiple_choice",
                 "question": "¿Qué método de PyMongo se usa para insertar un solo documento en una colección?",
-                "options": ["col.add()", "col.insert_one()", "col.save()", "col.push()"],
+                "options": [
+                    "col.add()",
+                    "col.insert_one()",
+                    "col.save()",
+                    "col.push()"
+                ],
                 "correct": 1,
                 "explanation": "col.insert_one(documento) inserta un solo documento en la colección.",
                 "difficulty": "easy"
@@ -71,7 +86,12 @@
                 "id": "emg-fnd1",
                 "type": "multiple_choice",
                 "question": "¿Qué método devuelve el primer documento que coincide con la consulta en PyMongo?",
-                "options": ["col.find_one()", "col.find()", "col.get_first()", "col.search()"],
+                "options": [
+                    "col.find_one()",
+                    "col.find()",
+                    "col.get_first()",
+                    "col.search()"
+                ],
                 "correct": 0,
                 "explanation": "find_one() devuelve un solo documento (el primero que coincide) o None.",
                 "difficulty": "easy"
@@ -91,7 +111,12 @@
                 "id": "emg-qry1",
                 "type": "multiple_choice",
                 "question": "¿Qué operador de consulta de MongoDB significa 'mayor que' (greater than)?",
-                "options": ["$gt", "$greater", "$max", "$above"],
+                "options": [
+                    "$gt",
+                    "$greater",
+                    "$max",
+                    "$above"
+                ],
                 "correct": 0,
                 "explanation": "$gt es el operador NoSQL para 'greater than' (mayor que).",
                 "difficulty": "medium"
@@ -110,10 +135,138 @@
                 "id": "emg-upd1",
                 "type": "multiple_choice",
                 "question": "¿Qué operador atómico de MongoDB se utiliza dentro de update_one() para modificar el valor de un campo?",
-                "options": ["$set", "$update", "$change", "$modify"],
+                "options": [
+                    "$set",
+                    "$update",
+                    "$change",
+                    "$modify"
+                ],
                 "correct": 0,
                 "explanation": "$set reemplaza el valor de un campo con el valor especificado.",
                 "difficulty": "medium"
+            }
+        ],
+        "mongo-collection": [
+            {
+                "id": "emg-col1",
+                "type": "multiple_choice",
+                "question": "¿Cómo se crea o referencia una colección llamada 'clientes' en una base de datos 'mydb' con PyMongo?",
+                "options": [
+                    "mydb.create_table('clientes')",
+                    "mydb['clientes']",
+                    "mydb.newCollection('clientes')",
+                    "mydb.select('clientes')"
+                ],
+                "correct": 1,
+                "explanation": "En PyMongo se accede o crea una colección usando notación de diccionario mydb['clientes'] (o mydb.clientes).",
+                "difficulty": "easy"
+            },
+            {
+                "id": "emg-col2",
+                "type": "true_false",
+                "question": "En MongoDB, una colección solo se crea físicamente en el servidor cuando se inserta al menos un documento en ella.",
+                "correct": true,
+                "explanation": "MongoDB crea la base de datos y las colecciones de forma diferida al insertar el primer documento.",
+                "difficulty": "medium"
+            }
+        ],
+        "mongo-sort": [
+            {
+                "id": "emg-srt1",
+                "type": "multiple_choice",
+                "question": "¿Cómo se ordenan los resultados en orden descendente por el campo 'nombre' en PyMongo?",
+                "options": [
+                    "col.find().sort('nombre', -1)",
+                    "col.find().order_by('nombre', 'DESC')",
+                    "col.find().sort('nombre', 0)",
+                    "col.find().descending('nombre')"
+                ],
+                "correct": 0,
+                "explanation": "sort('campo', -1) ordena descendentemente y sort('campo', 1) ordena ascendentemente.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "emg-srt2",
+                "type": "complete_code",
+                "question": "Completa el método para ordenar el cursor por 'edad' en orden ascendente:",
+                "code_template": "resultados = coleccion.find().___('edad', 1)",
+                "correct_answer": "sort",
+                "explanation": "El método .sort(campo, dirección) ordena los documentos devueltos por find().",
+                "difficulty": "easy"
+            }
+        ],
+        "mongo-delete": [
+            {
+                "id": "emg-del1",
+                "type": "multiple_choice",
+                "question": "¿Qué método de PyMongo elimina TODOS los documentos que coincidan con un filtro?",
+                "options": [
+                    "col.delete_one()",
+                    "col.delete_many()",
+                    "col.remove_all()",
+                    "col.erase()"
+                ],
+                "correct": 1,
+                "explanation": "delete_many(filtro) elimina todos los documentos coincidentes; delete_one() solo elimina el primero.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "emg-del2",
+                "type": "complete_code",
+                "question": "Completa el método para eliminar un único documento que cumpla el criterio:",
+                "code_template": "coleccion.___({'estado': 'inactivo'})",
+                "correct_answer": "delete_one",
+                "explanation": "delete_one() elimina el primer documento que coincide con el filtro.",
+                "difficulty": "easy"
+            }
+        ],
+        "mongo-drop": [
+            {
+                "id": "emg-drp1",
+                "type": "multiple_choice",
+                "question": "¿Qué método elimina por completo una colección y todos sus documentos en PyMongo?",
+                "options": [
+                    "col.drop()",
+                    "col.destroy()",
+                    "col.clear_table()",
+                    "col.delete_collection()"
+                ],
+                "correct": 0,
+                "explanation": "col.drop() elimina permanentemente la colección completa de la base de datos.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "emg-drp2",
+                "type": "true_false",
+                "question": "Al ejecutar col.drop() en PyMongo, los documentos se borran pero la estructura y los índices de la colección permanecen intactos.",
+                "correct": false,
+                "explanation": "drop() elimina toda la colección, incluidos sus documentos e índices asociados.",
+                "difficulty": "medium"
+            }
+        ],
+        "mongo-limit": [
+            {
+                "id": "emg-lim1",
+                "type": "complete_code",
+                "question": "Completa el método para restringir una consulta en PyMongo a un máximo de 5 documentos:",
+                "code_template": "docs = coleccion.find().___(5)",
+                "correct_answer": "limit",
+                "explanation": "El método .limit(n) limita el número máximo de documentos devueltos por el cursor.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "emg-lim2",
+                "type": "multiple_choice",
+                "question": "¿Cuál es el propósito principal de encadenar .limit(10) después de .find() en MongoDB?",
+                "options": [
+                    "Borrar los últimos 10 documentos",
+                    "Devolver únicamente los primeros 10 documentos del resultado",
+                    "Limitar el tamaño en bytes de cada campo",
+                    "Actualizar solo 10 campos"
+                ],
+                "correct": 1,
+                "explanation": "limit(n) restringe la cantidad de documentos devueltos por una consulta.",
+                "difficulty": "easy"
             }
         ]
     }

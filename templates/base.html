@@ -383,11 +383,15 @@
         }
     </style>
 
+    <script nonce="{{ csp_nonce }}">
+        window.PY2JAVA_USER_ID = {{ current_user_id | tojson }};
+        window.PY2JAVA_LEVEL_TITLES = {{ level_titles | tojson }};
+    </script>
     <script src="{{ url_for('static', filename='js/accessibility.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/quiz-sounds.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/quizzes.js') }}"></script>
     <script src="{{ url_for('static', filename='js/progress.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/quizzes.js') }}"></script>
     <script src="{{ url_for('static', filename='js/ai-tutor.js') }}"></script>
     <script src="{{ url_for('static', filename='js/search.js') }}"></script>
     <script src="{{ url_for('static', filename='js/study-timer.js') }}"></script>

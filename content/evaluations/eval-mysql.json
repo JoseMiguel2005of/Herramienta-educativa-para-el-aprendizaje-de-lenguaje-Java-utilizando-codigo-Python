@@ -12,7 +12,12 @@
                 "id": "esql-gs1",
                 "type": "multiple_choice",
                 "question": "¿Qué conector oficial se utiliza frecuentemente para conectar Python con MySQL?",
-                "options": ["mysql-connector-python", "py-sql-db", "mysql-python-link", "connect-mysql"],
+                "options": [
+                    "mysql-connector-python",
+                    "py-sql-db",
+                    "mysql-python-link",
+                    "connect-mysql"
+                ],
                 "correct": 0,
                 "explanation": "mysql.connector es el conector estándar de MySQL para Python.",
                 "difficulty": "easy"
@@ -32,7 +37,12 @@
                 "id": "esql-sel1",
                 "type": "multiple_choice",
                 "question": "¿Cuál es la sintaxis SQL correcta para seleccionar todas las columnas de la tabla 'usuarios'?",
-                "options": ["GET ALL FROM usuarios", "SELECT * FROM usuarios", "FETCH EVERYTHING usuarios", "SELECT ALL usuarios"],
+                "options": [
+                    "GET ALL FROM usuarios",
+                    "SELECT * FROM usuarios",
+                    "FETCH EVERYTHING usuarios",
+                    "SELECT ALL usuarios"
+                ],
                 "correct": 1,
                 "explanation": "SELECT * FROM tabla es la sentencia SQL estándar para recuperar todas las columnas.",
                 "difficulty": "easy"
@@ -52,7 +62,12 @@
                 "id": "esql-whr1",
                 "type": "multiple_choice",
                 "question": "¿Qué cláusula SQL se utiliza para filtrar registros que cumplen una condición determinada?",
-                "options": ["HAVING", "FILTER", "WHERE", "CONDITION"],
+                "options": [
+                    "HAVING",
+                    "FILTER",
+                    "WHERE",
+                    "CONDITION"
+                ],
                 "correct": 2,
                 "explanation": "La cláusula WHERE filtra las filas devueltas por una consulta SQL.",
                 "difficulty": "easy"
@@ -71,7 +86,12 @@
                 "id": "esql-ins1",
                 "type": "multiple_choice",
                 "question": "¿Qué palabra clave se usa para insertar nuevos registros en una tabla de MySQL?",
-                "options": ["ADD INTO", "INSERT INTO", "NEW RECORD", "PUT INTO"],
+                "options": [
+                    "ADD INTO",
+                    "INSERT INTO",
+                    "NEW RECORD",
+                    "PUT INTO"
+                ],
                 "correct": 1,
                 "explanation": "INSERT INTO nombre_tabla (columnas) VALUES (valores) inserta una nueva fila.",
                 "difficulty": "easy"
@@ -90,7 +110,12 @@
                 "id": "esql-upd1",
                 "type": "multiple_choice",
                 "question": "¿Qué peligro existe al ejecutar UPDATE sin una cláusula WHERE?",
-                "options": ["Genera un error de sintaxis", "Se actualizan TODAS las filas de la tabla", "No actualiza nada", "Borra la tabla"],
+                "options": [
+                    "Genera un error de sintaxis",
+                    "Se actualizan TODAS las filas de la tabla",
+                    "No actualiza nada",
+                    "Borra la tabla"
+                ],
                 "correct": 1,
                 "explanation": "Sin la cláusula WHERE, la sentencia UPDATE modifica todas las filas de la tabla indiscriminadamente.",
                 "difficulty": "medium"
@@ -110,7 +135,12 @@
                 "id": "esql-del1",
                 "type": "multiple_choice",
                 "question": "¿Cuál es la diferencia entre DELETE FROM tabla y DROP TABLE tabla?",
-                "options": ["Son idénticos", "DELETE elimina filas de la tabla; DROP TABLE borra la estructura completa de la tabla", "DELETE borra la base de datos; DROP borra la tabla", "DROP es solo para columnas"],
+                "options": [
+                    "Son idénticos",
+                    "DELETE elimina filas de la tabla; DROP TABLE borra la estructura completa de la tabla",
+                    "DELETE borra la base de datos; DROP borra la tabla",
+                    "DROP es solo para columnas"
+                ],
                 "correct": 1,
                 "explanation": "DELETE borra los datos dentro de la tabla. DROP TABLE borra la tabla completa junto con su esquema.",
                 "difficulty": "medium"
@@ -121,7 +151,12 @@
                 "id": "esql-jn1",
                 "type": "multiple_choice",
                 "question": "¿Qué tipo de JOIN devuelve las filas cuando hay una coincidencia en AMBAS tablas?",
-                "options": ["LEFT JOIN", "INNER JOIN", "RIGHT JOIN", "FULL OUTER JOIN"],
+                "options": [
+                    "LEFT JOIN",
+                    "INNER JOIN",
+                    "RIGHT JOIN",
+                    "FULL OUTER JOIN"
+                ],
                 "correct": 1,
                 "explanation": "INNER JOIN devuelve solo las filas que tienen valores coincidentes en ambas tablas.",
                 "difficulty": "medium"
@@ -133,6 +168,125 @@
                 "code_template": "SELECT * FROM pedidos INNER JOIN clientes ___ pedidos.cliente_id = clientes.id",
                 "correct_answer": "ON",
                 "explanation": "La palabra clave ON define la condición de igualdad para la unión entre tablas.",
+                "difficulty": "medium"
+            }
+        ],
+        "sql-createdb": [
+            {
+                "id": "esql-cdb1",
+                "type": "complete_code",
+                "question": "Completa la sentencia SQL para crear una nueva base de datos llamada 'escuela':",
+                "code_template": "CREATE ___ escuela",
+                "correct_answer": "DATABASE",
+                "explanation": "CREATE DATABASE nombre crea una nueva base de datos en MySQL.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "esql-cdb2",
+                "type": "multiple_choice",
+                "question": "¿Qué sentencia SQL muestra la lista de bases de datos existentes en un servidor MySQL?",
+                "options": [
+                    "LIST DATABASES",
+                    "SHOW DATABASES",
+                    "GET SCHEMAS",
+                    "SELECT DATABASES"
+                ],
+                "correct": 1,
+                "explanation": "SHOW DATABASES devuelve todas las bases de datos accesibles en MySQL.",
+                "difficulty": "easy"
+            }
+        ],
+        "sql-createtable": [
+            {
+                "id": "esql-ctb1",
+                "type": "complete_code",
+                "question": "Completa la sentencia SQL para crear una tabla llamada 'clientes':",
+                "code_template": "CREATE ___ clientes (id INT AUTO_INCREMENT PRIMARY KEY, nombre VARCHAR(255))",
+                "correct_answer": "TABLE",
+                "explanation": "CREATE TABLE define el nombre y las columnas de una nueva tabla relacional.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "esql-ctb2",
+                "type": "multiple_choice",
+                "question": "¿Para qué sirve la restricción PRIMARY KEY al crear una tabla en MySQL?",
+                "options": [
+                    "Ordenar alfabéticamente la tabla",
+                    "Identificar de forma única cada registro impidiendo valores duplicados o nulos",
+                    "Encriptar las contraseñas automáticamente",
+                    "Limitar el número de columnas"
+                ],
+                "correct": 1,
+                "explanation": "PRIMARY KEY garantiza unicidad y no nulidad para identificar cada fila de la tabla.",
+                "difficulty": "easy"
+            }
+        ],
+        "sql-orderby": [
+            {
+                "id": "esql-ord1",
+                "type": "complete_code",
+                "question": "Completa la cláusula SQL para ordenar los clientes alfabéticamente por nombre:",
+                "code_template": "SELECT * FROM clientes ___ BY nombre",
+                "correct_answer": "ORDER",
+                "explanation": "ORDER BY ordena el conjunto de resultados de forma ascendente (ASC) o descendente (DESC).",
+                "difficulty": "easy"
+            },
+            {
+                "id": "esql-ord2",
+                "type": "multiple_choice",
+                "question": "¿Qué palabra clave se agrega al final de ORDER BY para ordenar de mayor a menor?",
+                "options": [
+                    "DOWN",
+                    "REVERSE",
+                    "DESC",
+                    "TOP"
+                ],
+                "correct": 2,
+                "explanation": "DESC ordena en orden descendente (Z-A o de mayor a menor); ASC es el valor por defecto.",
+                "difficulty": "easy"
+            }
+        ],
+        "sql-droptable": [
+            {
+                "id": "esql-drp1",
+                "type": "complete_code",
+                "question": "Completa la sentencia para eliminar una tabla solo si existe, evitando errores:",
+                "code_template": "___ TABLE IF EXISTS temporal",
+                "correct_answer": "DROP",
+                "explanation": "DROP TABLE IF EXISTS elimina la tabla de forma segura sin lanzar error si no existe.",
+                "difficulty": "medium"
+            },
+            {
+                "id": "esql-drp2",
+                "type": "true_false",
+                "question": "La cláusula 'IF EXISTS' en DROP TABLE evita que MySQL genere un error cuando la tabla no existe.",
+                "correct": true,
+                "explanation": "DROP TABLE IF EXISTS verifica primero si la tabla existe antes de intentar eliminarla.",
+                "difficulty": "easy"
+            }
+        ],
+        "sql-limit": [
+            {
+                "id": "esql-lim1",
+                "type": "complete_code",
+                "question": "Completa la consulta para obtener únicamente los primeros 5 registros:",
+                "code_template": "SELECT * FROM clientes ___ 5",
+                "correct_answer": "LIMIT",
+                "explanation": "LIMIT restringe la cantidad máxima de filas devueltas por una consulta SELECT.",
+                "difficulty": "easy"
+            },
+            {
+                "id": "esql-lim2",
+                "type": "multiple_choice",
+                "question": "¿Qué hace la cláusula 'LIMIT 5 OFFSET 2' en MySQL?",
+                "options": [
+                    "Devuelve 2 filas saltando las primeras 5",
+                    "Devuelve 5 filas empezando después de saltar las primeras 2",
+                    "Repite las primeras 5 filas 2 veces",
+                    "Genera un error de sintaxis"
+                ],
+                "correct": 1,
+                "explanation": "OFFSET 2 omite las 2 primeras filas y LIMIT 5 toma las siguientes 5 filas.",
                 "difficulty": "medium"
             }
         ]

@@ -41,7 +41,8 @@ import smtplib
 import socket
 import ssl
 
-from content_loader import (LESSON_ALIASES, get_lesson, get_lesson_title, get_reference,
+from content_loader import (LESSON_ALIASES, LEVEL_TITLES, get_lesson, get_lesson_title,
+                            get_level_info, get_level_title, get_reference,
                             load_lesson, get_lesson_exercise,
                             get_valid_exercise_ids, get_valid_practice_ids,
                             load_ui_strings, load_quiz, load_all_quizzes,
@@ -873,14 +874,24 @@ def lesson(lesson_id):
     current_category = get_lesson_category(lesson_id)
     current_category_id = current_category["id"] if current_category else "py2java"
 
-    # Verificar prerrequisito
+    # Verificar prerrequisito y estado de completado de la lección actual
     prereq_warning = False
     prereq_lesson_id = None
     prereq_lesson_title = None
-    if prev_lesson and lesson_id != "py-home":
-        try:
-            user = get_current_user()
-            if user and user.id:
+    is_course_lesson = lesson_id in _course_lesson_ids()
+    lesson_completed = False
+    is_external_db_lesson = lesson_id.startswith(("sql-", "mongo-"))
+    try:
+        user = get_current_user()
+        if user and user.id:
+            if is_course_lesson:
+                lesson_completed = (
+                    LessonProgress.query.filter_by(
+                        user_id=user.id, lesson_id=lesson_id, completed=True
+                    ).first()
+                    is not None
+                )
+            if prev_lesson and lesson_id != "py-home" and prev_lesson in _course_lesson_ids():
                 prev_completed = LessonProgress.query.filter_by(
                     user_id=user.id, lesson_id=prev_lesson, completed=True
                 ).first()
@@ -888,9 +899,9 @@ def lesson(lesson_id):
                     prereq_warning = True
                     prereq_lesson_id = prev_lesson
                     prereq_lesson_title = get_lesson_title(prev_lesson) or prev_lesson
-        except Exception as e:
-            logger.warning("Prerequisite check failed (DB issue): %s", e)
-            db.session.rollback()
+    except Exception as e:
+        logger.warning("Prerequisite/completion check failed (DB issue): %s", e)
+        db.session.rollback()
 
     return render_template(
         "lesson.html",
@@ -903,6 +914,9 @@ def lesson(lesson_id):
         prereq_warning=prereq_warning,
         prereq_lesson_id=prereq_lesson_id,
         prereq_lesson_title=prereq_lesson_title,
+        is_course_lesson=is_course_lesson,
+        lesson_completed=lesson_completed,
+        is_external_db_lesson=is_external_db_lesson,
         page="lesson",
         role=session.get("role", "student"),
     )
@@ -955,10 +969,13 @@ XP_PER_EXERCISE = 25
 XP_PER_PRACTICE = 50
 XP_PER_EVALUATION = 100
 MAX_PRACTICE_CODE_CHARS = 8000
+SOLUTION_VIEWED_MARKER = "__SOLUTION_VIEWED__"
+PASSED_AFTER_SOLUTION_MARKER = "__PASSED_AFTER_SOLUTION__"
 
 
 def _normalize_answer_text(val):
-    return re.sub(r"\s+", " ", str(val).strip().lower())
+    """Normaliza espacios en blanco preservando estrictamente mayúsculas y minúsculas (Python/Java)."""
+    return re.sub(r"\s+", " ", str(val).strip())
 
 
 def _is_trivial_function_body(body):
@@ -1032,7 +1049,7 @@ def _extract_exercise_blanks(ex, lang="python"):
     return []
 
 
-def _grade_exercise_submission(ex, lang, raw_answer, raw_answers):
+def _grade_exercise_submission(ex, lang, raw_answer, raw_answers, raw_actual_output=None):
     """Califica estrictamente en el servidor una respuesta de ejercicio del currículo."""
     ex_type = ex.get("type") or "fill-blank"
     use_java = lang == "java" and bool(
@@ -1103,7 +1120,34 @@ def _grade_exercise_submission(ex, lang, raw_answer, raw_answers):
             "correct_line": correct_line if passed else None,
         }
 
-    # fill-blank o freeform
+    # Ejercicio libre con expected_output (sin plantilla fill-blank ni opciones)
+    has_template = bool(ex.get("template_html_java") if use_java else ex.get("template_html"))
+    if not has_template and ex.get("expected_output") is not None:
+        expected_out = str(ex["expected_output"])
+        user_code = str(raw_answer or "").strip() if raw_answer is not None else ""
+        if not user_code:
+            passed = False
+        else:
+            norm_expected = _normalize_answer_text(expected_out)
+            if _normalize_answer_text(user_code) == norm_expected:
+                passed = True
+            else:
+                # Validar que el código Python tenga sintaxis válida y coincida con la salida real ejecutada en Pyodide
+                passed = False
+                if isinstance(raw_actual_output, str) and _normalize_answer_text(raw_actual_output) == norm_expected:
+                    try:
+                        parsed_tree = ast.parse(user_code)
+                        if parsed_tree.body and not _is_trivial_function_body(parsed_tree.body):
+                            passed = True
+                    except SyntaxError:
+                        passed = False
+        return passed, {
+            "type": "freeform",
+            "explanation": explanation,
+            "hint": ex.get("hint") or "",
+        }
+
+    # fill-blank
     expected_blanks = _extract_exercise_blanks(ex, "java" if use_java else "python")
     if isinstance(raw_answers, list):
         user_blanks = ["" if v is None else str(v) for v in raw_answers]
@@ -1298,8 +1342,12 @@ def api_ejercicio():
     # El servidor califica estrictamente la respuesta (ignora cualquier 'passed' del cliente)
     raw_answer = data.get("answer")
     raw_answers = data.get("answers")
-    passed, verdict = _grade_exercise_submission(exercise, lang, raw_answer, raw_answers)
+    raw_actual_output = data.get("actual_output")
+    passed, verdict = _grade_exercise_submission(
+        exercise, lang, raw_answer, raw_answers, raw_actual_output=raw_actual_output
+    )
 
+    viewed_in_session = set(session.get("viewed_solutions") or [])
     user = get_current_user()
     if not user or not user.id:
         return jsonify({
@@ -1307,14 +1355,26 @@ def api_ejercicio():
             "anonymous": True,
             "passed": passed,
             "xp_gained": 0,
+            "xp_blocked_by_solution": bool(passed and canonical_exercise_id in viewed_in_session),
             **verdict,
         })
 
-    prev_passed = None
-    if passed:
-        prev_passed = ExerciseAttempt.query.filter_by(
-            user_id=user.id, exercise_id=canonical_exercise_id, passed=True
+    prev_passed = ExerciseAttempt.query.filter_by(
+        user_id=user.id, exercise_id=canonical_exercise_id, passed=True
+    ).first()
+
+    solution_viewed_db = (
+        ExerciseAttempt.query.filter_by(
+            user_id=user.id,
+            exercise_id=canonical_exercise_id,
+            answer=SOLUTION_VIEWED_MARKER,
         ).first()
+        is not None
+    )
+    solution_viewed = (not prev_passed) and (
+        solution_viewed_db or canonical_exercise_id in viewed_in_session
+    )
+    xp_blocked_by_solution = bool(passed and solution_viewed)
 
     submitted_repr = raw_answers if raw_answers is not None else raw_answer
     try:
@@ -1322,17 +1382,27 @@ def api_ejercicio():
     except (TypeError, ValueError):
         answer_str = str(submitted_repr)[:1000]
 
-    attempt = ExerciseAttempt(
-        user_id=user.id,
-        lesson_id=canonical_lesson_id,
-        exercise_id=canonical_exercise_id,
-        passed=passed,
-        answer=answer_str,
-    )
+    # Si el usuario consultó "Ver Solución" antes de aprobar por cuenta propia, no se otorga XP ni passed=True
+    if xp_blocked_by_solution:
+        attempt = ExerciseAttempt(
+            user_id=user.id,
+            lesson_id=canonical_lesson_id,
+            exercise_id=canonical_exercise_id,
+            passed=False,
+            answer=PASSED_AFTER_SOLUTION_MARKER,
+        )
+    else:
+        attempt = ExerciseAttempt(
+            user_id=user.id,
+            lesson_id=canonical_lesson_id,
+            exercise_id=canonical_exercise_id,
+            passed=passed,
+            answer=answer_str,
+        )
     db.session.add(attempt)
 
     xp_gained = 0
-    if passed:
+    if passed and not xp_blocked_by_solution:
         if not prev_passed:
             xp_gained = XP_PER_EXERCISE
         record_daily_activity(user.id)
@@ -1343,6 +1413,7 @@ def api_ejercicio():
         "anonymous": False,
         "passed": passed,
         "xp_gained": xp_gained,
+        "xp_blocked_by_solution": xp_blocked_by_solution,
         "summary": get_progress_summary(user),
         **verdict,
     })
@@ -1351,7 +1422,7 @@ def api_ejercicio():
 @app.route("/api/ejercicio/solucion", methods=["POST"])
 @limiter.limit("30 per minute", methods=["POST"], key_func=_user_rate_limit_key)
 def api_exercise_solution():
-    """Devuelve la solución pedagógica de un ejercicio existente sin otorgar XP ni registrar aprobación."""
+    """Devuelve la solución pedagógica de un ejercicio y bloquea el +25 XP si aún no fue aprobado."""
     data = _get_json_dict()
     lesson_id = data.get("lesson_id", "").strip() if isinstance(data.get("lesson_id"), str) else ""
     exercise_id = data.get("exercise_id", "").strip() if isinstance(data.get("exercise_id"), str) else ""
@@ -1363,7 +1434,47 @@ def api_exercise_solution():
     if not lesson_data or not exercise:
         return jsonify({"ok": False, "error": "Ejercicio no encontrado."}), 400
 
-    return jsonify({"ok": True, **_get_exercise_solution(exercise, lang)})
+    canonical_lesson_id = LESSON_ALIASES.get(lesson_id, lesson_id)
+    canonical_exercise_id = exercise.get("id") or exercise_id
+
+    viewed_list = list(session.get("viewed_solutions") or [])
+    if canonical_exercise_id not in viewed_list:
+        viewed_list.append(canonical_exercise_id)
+        session["viewed_solutions"] = viewed_list[-200:]
+
+    xp_blocked = True
+    user = get_current_user()
+    if user and user.id:
+        already_passed = (
+            ExerciseAttempt.query.filter_by(
+                user_id=user.id, exercise_id=canonical_exercise_id, passed=True
+            ).first()
+            is not None
+        )
+        if already_passed:
+            xp_blocked = False
+        else:
+            already_marked = (
+                ExerciseAttempt.query.filter_by(
+                    user_id=user.id,
+                    exercise_id=canonical_exercise_id,
+                    answer=SOLUTION_VIEWED_MARKER,
+                ).first()
+                is not None
+            )
+            if not already_marked:
+                db.session.add(
+                    ExerciseAttempt(
+                        user_id=user.id,
+                        lesson_id=canonical_lesson_id,
+                        exercise_id=canonical_exercise_id,
+                        passed=False,
+                        answer=SOLUTION_VIEWED_MARKER,
+                    )
+                )
+                db.session.commit()
+
+    return jsonify({"ok": True, "xp_blocked": xp_blocked, **_get_exercise_solution(exercise, lang)})
 
 
 @app.route("/api/progreso/leccion", methods=["POST"])
@@ -1680,42 +1791,12 @@ def get_bulk_progress_summaries(users):
     return result
 
 
-LEVEL_TITLES = {
-    1: "Iniciado",
-    2: "Novato",
-    3: "Aprendiz",
-    4: "Entusiasta",
-    5: "Programador Junior",
-    6: "Programador",
-    7: "Desarrollador",
-    8: "Ingeniero de Software",
-    9: "Arquitecto",
-    10: "Maestro del Código",
-    11: "Mago de la Sintaxis",
-    12: "Gurú de Algoritmos",
-    13: "Hacker",
-    14: "Ninja del Desarrollo",
-    15: "Jedi del Software",
-    16: "Titán de la Programación",
-    17: "Leyenda Viva",
-    18: "Semidiós del Código",
-    19: "Dios del Código",
-    20: "Entidad Binaria Superior"
-}
-
-def get_level_info(total_xp):
-    level = (total_xp // 100) + 1
-    if level >= 20:
-        title = LEVEL_TITLES[20]
-    else:
-        title = LEVEL_TITLES.get(level, "Iniciado")
-    return {"level": level, "title": title}
-
-
 @app.route("/api/progreso/resumen", methods=["GET"])
 def api_resumen():
     user = get_current_user()
-    return jsonify(get_progress_summary(user))
+    summary = get_progress_summary(user)
+    summary["authenticated"] = bool(user and getattr(user, "id", None))
+    return jsonify(summary)
 
 
 @app.route("/api/buscar", methods=["GET"])
@@ -1793,16 +1874,23 @@ def dashboard():
     ui = load_ui_strings()
     category_breakdown = []
     for cat in LESSON_CATEGORIES:
-        cat_lessons = _category_course_lessons(cat)
-        done_cnt = sum(1 for lid in cat_lessons if lid in completed_set)
-        total_cnt = len(cat_lessons)
-        category_breakdown.append({
-            "id": cat["id"],
-            "name": ui.get(cat["label_key"], cat["id"]),
-            "completed": done_cnt,
-            "total": total_cnt,
-            "pct": round(done_cnt / total_cnt * 100) if total_cnt > 0 else 0,
-        })
+        for sec in cat.get("sections", []):
+            sec_lessons = [
+                lesson_item["id"]
+                for lesson_item in sec.get("lessons", [])
+                if lesson_item["id"] in course_ids
+            ]
+            if not sec_lessons:
+                continue
+            done_cnt = sum(1 for lid in sec_lessons if lid in completed_set)
+            total_cnt = len(sec_lessons)
+            category_breakdown.append({
+                "id": sec["label_key"],
+                "name": ui.get(sec["label_key"], sec["label_key"]),
+                "completed": done_cnt,
+                "total": total_cnt,
+                "pct": round(done_cnt / total_cnt * 100) if total_cnt > 0 else 0,
+            })
 
     return render_template(
         "dashboard.html",
@@ -1885,8 +1973,16 @@ def student_join_section():
 @login_required
 def roadmap():
     summary = get_progress_summary(current_user)
+    course_ids = _course_lesson_ids()
+    completed_course_count = len(set(summary["completed_lessons"]) & course_ids)
     return render_template(
-        "roadmap.html", categories=LESSON_CATEGORIES, summary=summary, page="roadmap"
+        "roadmap.html",
+        categories=LESSON_CATEGORIES,
+        summary=summary,
+        course_lesson_ids=course_ids,
+        course_lesson_count=len(course_ids),
+        completed_course_count=completed_course_count,
+        page="roadmap",
     )
 
 
@@ -2691,6 +2787,7 @@ def teacher_dashboard():
     active_count = 0
     suspended_count = 0
     level_counts = {}
+    eval_agg_map = {}
     active_section_id = None
     course_ids = _course_lesson_ids()
     total_course_lessons = len(course_ids) or 1
@@ -2838,6 +2935,29 @@ def teacher_dashboard():
                     "created_at": created_utc,
                     "created_at_str": created_utc.astimezone(app_tz).strftime("%d/%m/%Y") if created_utc else "N/A",
                 })
+
+            # 4) Resumen agregado real de SectionEvaluation para los estudiantes del docente (1 consulta SQL)
+            eval_rows = (
+                db.session.query(
+                    SectionEvaluation.section_id,
+                    func.count(SectionEvaluation.id).label("attempts"),
+                    func.count(distinct(SectionEvaluation.user_id)).label("students_attempted"),
+                    func.count(
+                        distinct(case((SectionEvaluation.passed.is_(True), SectionEvaluation.user_id), else_=None))
+                    ).label("students_passed"),
+                    func.avg(SectionEvaluation.percentage).label("avg_score"),
+                )
+                .filter(SectionEvaluation.user_id.in_(scope_user_ids_select))
+                .group_by(SectionEvaluation.section_id)
+                .all()
+            )
+            for sec_id, attempts_cnt, stu_att, stu_pass, avg_pct in eval_rows:
+                eval_agg_map[sec_id] = {
+                    "attempts": int(attempts_cnt or 0),
+                    "students_attempted": int(stu_att or 0),
+                    "students_passed": int(stu_pass or 0),
+                    "avg_score": round(float(avg_pct or 0.0), 1),
+                }
     except Exception as e:
         logger.error("Error en teacher_dashboard: %s", e)
         try:
@@ -2845,6 +2965,27 @@ def teacher_dashboard():
         except Exception:
             pass
         active_section_id = None
+
+    ui = load_ui_strings()
+    eval_summary = []
+    for sec_key in SECTION_EVAL_MAP:
+        agg = eval_agg_map.get(sec_key) or {
+            "attempts": 0,
+            "students_attempted": 0,
+            "students_passed": 0,
+            "avg_score": 0.0,
+        }
+        stu_att = agg["students_attempted"]
+        pass_rate = round((agg["students_passed"] / stu_att) * 100) if stu_att > 0 else 0
+        eval_summary.append({
+            "key": sec_key,
+            "label": ui.get(sec_key, sec_key),
+            "attempts": agg["attempts"],
+            "students_attempted": stu_att,
+            "students_passed": agg["students_passed"],
+            "pass_rate": pass_rate,
+            "avg_score": agg["avg_score"],
+        })
 
     metrics = {
         "total_students": total_scoped_students,
@@ -2876,6 +3017,7 @@ def teacher_dashboard():
         classroom_counts=classroom_counts,
         metrics=metrics,
         filters=filters,
+        eval_summary=eval_summary,
         level_titles=LEVEL_TITLES,
         categories=LESSON_CATEGORIES,
     )
@@ -3194,10 +3336,10 @@ def teacher_export_csv():
 
 # --- Exportar PDF ---
 def _course_lesson_ids():
-    """IDs de lecciones teóricas del curso (excluye quizzes, hubs y temas de ejercicios)."""
+    """IDs de lecciones teóricas completables del curso (excluye quizzes, hubs, ex-* y ref-*)."""
     return {
         l["id"] for l in LESSONS
-        if not l.get("type") and not l["id"].startswith("ex-")
+        if not l.get("type") and not l["id"].startswith(("ex-", "ref-"))
     }
 
 
@@ -3872,7 +4014,13 @@ def profile(username=None):
             .limit(10)
             .all()
         )
-        total_exercises = ExerciseAttempt.query.filter_by(user_id=user.id).count()
+        total_exercises = ExerciseAttempt.query.filter(
+            ExerciseAttempt.user_id == user.id,
+            or_(
+                ExerciseAttempt.answer.is_(None),
+                ExerciseAttempt.answer.notin_((SOLUTION_VIEWED_MARKER, PASSED_AFTER_SOLUTION_MARKER)),
+            ),
+        ).count()
         passed_exercises = ExerciseAttempt.query.filter_by(user_id=user.id, passed=True).count()
     except Exception as e:
         logger.error("Error en profile queries: %s", e)
@@ -3925,12 +4073,12 @@ def _format_spanish_date(dt):
 
 
 def _category_course_lessons(cat):
-    """Devuelve solo las lecciones teóricas completables de una categoría (sin quizzes, hubs ni ex-*)."""
+    """Devuelve solo las lecciones teóricas completables de una categoría (sin quizzes, hubs, ex-* ni ref-*)."""
     lessons_out = []
     for sec in cat.get("sections", []):
         for lesson_item in sec.get("lessons", []):
             lid = lesson_item["id"]
-            if not lesson_item.get("type") and not lid.startswith("ex-"):
+            if not lesson_item.get("type") and not lid.startswith(("ex-", "ref-")):
                 lessons_out.append(lid)
     return lessons_out
 
@@ -4350,10 +4498,24 @@ def api_quiz_result():
         })
 
     percentage = round((score / total) * 100) if total > 0 else 0
+    raw_time_taken = data.get("time_taken")
+    time_taken = None
+    if raw_time_taken is not None and not isinstance(raw_time_taken, bool):
+        parsed_time = _safe_int(raw_time_taken, -1)
+        if parsed_time >= 0:
+            max_allowed = (_safe_int(quiz_data.get("time_limit"), 0) or 7200) + 60
+            time_taken = min(parsed_time, max_allowed)
+
     saved = False
     user = get_current_user()
     if user and user.id:
-        result = QuizResult(user_id=user.id, quiz_id=quiz_id, score=score, total=total)
+        result = QuizResult(
+            user_id=user.id,
+            quiz_id=quiz_id,
+            score=score,
+            total=total,
+            time_taken=time_taken,
+        )
         db.session.add(result)
         record_daily_activity(user.id)
         db.session.commit()
@@ -4403,6 +4565,9 @@ def inject_globals():
         "lang": "es",
         "theme": session.get("theme", "light"),
         "t": ui,
+        "level_titles": LEVEL_TITLES,
+        "get_level_title": get_level_title,
+        "current_user_id": current_user.id if current_user.is_authenticated else None,
         "get_lesson": lambda lid: get_lesson(lid),
         "get_lesson_title": lambda lid: get_lesson_title(lid),
         "get_reference": lambda cat: get_reference(cat),
@@ -4427,12 +4592,14 @@ SECTION_EVAL_MAP = {
 
 
 def get_section_lessons(section_key):
-    """Returns the list of lesson IDs for a given section label_key."""
+    """Returns the list of completable lesson IDs for a given section label_key."""
     for cat in LESSON_CATEGORIES:
         for sec in cat["sections"]:
             if sec["label_key"] == section_key:
-                return [lesson["id"] for lesson in sec["lessons"]
-                        if not lesson.get("type")]  # Exclude quiz/practice/examples entries
+                return [
+                    lesson["id"] for lesson in sec["lessons"]
+                    if not lesson.get("type") and not lesson["id"].startswith(("ex-", "ref-"))
+                ]
     return []
 
 
@@ -4473,7 +4640,7 @@ def get_section_eval_status(user_id, section_key):
 
 
 def generate_adaptive_questions(section_key, user_id):
-    """Generate an adaptive set of questions based on completed lessons."""
+    """Generate an adaptive set of questions based on completed lessons, with full section fallback."""
     eval_data = get_evaluation_for_section(section_key)
     if not eval_data:
         return [], eval_data
@@ -4490,7 +4657,7 @@ def generate_adaptive_questions(section_key, user_id):
     ).all()
     completed_ids = {r.lesson_id for r in completed_records}
 
-    # Collect questions only from completed lessons
+    # Collect questions from completed lessons first
     available = []
     for lesson_id in completed_ids:
         qs = lesson_questions.get(lesson_id, [])
@@ -4498,6 +4665,14 @@ def generate_adaptive_questions(section_key, user_id):
             q_copy = dict(q)
             q_copy["source_lesson"] = lesson_id
             available.append(q_copy)
+
+    # Fallback: si available quedó vacío, usar preguntas generales de toda la sección
+    if not available:
+        for lesson_id, qs in lesson_questions.items():
+            for q in qs:
+                q_copy = dict(q)
+                q_copy["source_lesson"] = lesson_id
+                available.append(q_copy)
 
     # Select random subset
     num_questions = min(questions_per_eval, len(available))
@@ -4523,7 +4698,8 @@ def evaluation_page(section_key):
         return redirect(url_for("dashboard"))
 
     questions, eval_data = generate_adaptive_questions(section_key, user.id)
-    if not eval_data:
+    if not eval_data or not questions:
+        flash("No hay preguntas disponibles para esta evaluación en este momento.", "error")
         return redirect(url_for("dashboard"))
 
     # Strip correct answers from questions sent to client (security)

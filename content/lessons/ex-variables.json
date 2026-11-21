@@ -8,6 +8,7 @@
     "exercises": [
         {
             "id": "ex-var-1",
+            "type": "fill-blank",
             "question": "Crea una variable llamada carname y asígnale el valor Volvo.",
             "template_html": "<input type='text' class='exercise-input' data-answer='carname' size='8'> = <input type='text' class='exercise-input' data-answer='\"Volvo\"' size='8'>",
             "hint": "Las variables se asignan usando el operador =.",
@@ -16,6 +17,7 @@
         },
         {
             "id": "ex-var-2",
+            "type": "fill-blank",
             "question": "Crea una variable llamada x y asígnale el valor 50.",
             "template_html": "<input type='text' class='exercise-input' data-answer='x' size='2'> = <input type='text' class='exercise-input' data-answer='50' size='3'>",
             "hint": "Las variables se crean en el momento en que les asignas un valor por primera vez.",
@@ -24,6 +26,7 @@
         },
         {
             "id": "ex-var-3",
+            "type": "fill-blank",
             "question": "Muestra la suma de 5 + 10, usando dos variables: x e y.",
             "template_html": "<input type='text' class='exercise-input' data-answer='x' size='2'> = 5<br><input type='text' class='exercise-input' data-answer='y' size='2'> = 10<br>print(x <input type='text' class='exercise-input' data-answer='+' size='2'> y)",
             "hint": "Usa el operador + para sumar números.",
@@ -32,6 +35,7 @@
         },
         {
             "id": "ex-var-4",
+            "type": "fill-blank",
             "question": "Crea una variable llamada z, asígnale x + y, y muestra el resultado.",
             "template_html": "x = 5<br>y = 10<br><input type='text' class='exercise-input' data-answer='z' size='2'> = x + y<br>print(<input type='text' class='exercise-input' data-answer='z' size='2'>)",
             "hint": "Imprime la variable que contiene el resultado de la suma.",
@@ -40,6 +44,7 @@
         },
         {
             "id": "ex-var-5",
+            "type": "fill-blank",
             "question": "Elimina los caracteres ilegales en el nombre de la variable: 2my-first_name = 'John'",
             "template_html": "<input type='text' class='exercise-input' data-answer='myfirst_name' size='12'> = 'John'",
             "hint": "Las variables no pueden empezar con un número y no pueden contener guiones (-).",
@@ -48,6 +53,7 @@
         },
         {
             "id": "ex-var-6",
+            "type": "fill-blank",
             "question": "Inserta la sintaxis correcta para asignar el mismo valor a las tres variables en una sola línea de código.",
             "template_html": "x <input type='text' class='exercise-input' data-answer='=' size='2'> y <input type='text' class='exercise-input' data-answer='=' size='2'> z <input type='text' class='exercise-input' data-answer='=' size='2'> 'Orange'",
             "hint": "Puedes asignar el mismo valor a múltiples variables usando = entre cada variable.",
@@ -56,6 +62,7 @@
         },
         {
             "id": "ex-var-7",
+            "type": "fill-blank",
             "question": "Inserta la palabra clave correcta para hacer que la variable x pertenezca al ámbito global.",
             "template_html": "def myfunc():<br>&nbsp;&nbsp;&nbsp;&nbsp;<input type='text' class='exercise-input' data-answer='global' size='7'> x<br>&nbsp;&nbsp;&nbsp;&nbsp;x = 'fantastic'",
             "hint": "Usa la palabra clave 'global' para definir una variable global dentro de una función.",

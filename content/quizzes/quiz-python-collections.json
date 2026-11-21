@@ -2,7 +2,7 @@
     "id": "quiz-python-collections",
     "title": "Cuestionario de Colecciones de Python",
     "description": "Pon a prueba tus conocimientos sobre listas, tuplas, sets y diccionarios en Python.",
-    "time_limit": null,
+    "time_limit": 600,
     "questions": [
         {
             "id": "qc1",

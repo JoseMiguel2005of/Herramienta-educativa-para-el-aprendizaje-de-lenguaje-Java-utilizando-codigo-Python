@@ -2,7 +2,7 @@
     "id": "quiz-python-oop",
     "title": "Cuestionario de POO en Python",
     "description": "Pon a prueba tus conocimientos sobre Programación Orientada a Objetos en Python: clases, herencia, polimorfismo.",
-    "time_limit": null,
+    "time_limit": 600,
     "questions": [
         {
             "id": "qo1",

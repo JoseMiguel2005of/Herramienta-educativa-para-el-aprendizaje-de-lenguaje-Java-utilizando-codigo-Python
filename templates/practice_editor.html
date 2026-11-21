@@ -121,18 +121,7 @@
             return pre;
         }
         
-        // Handle Tab key in textarea
-        editor.addEventListener('keydown', function(e) {
-            if (e.key === 'Tab') {
-                e.preventDefault();
-                const start = this.selectionStart;
-                const end = this.selectionEnd;
-                this.value = this.value.substring(0, start) + "    " + this.value.substring(end);
-                this.selectionStart = this.selectionEnd = start + 4;
-            }
-        });
-
-        // Reset code
+        // Reset code (soporte de tecla Tab gestionado de forma única en static/js/main.js)
         btnReset.addEventListener('click', () => {
             if(confirm("¿Seguro que quieres borrar tu código y volver al estado inicial?")) {
                 editor.value = starterCode;
@@ -142,6 +131,8 @@
         // Start pyodide load in background
         loadPyodideIfNeeded().then(() => {
             document.getElementById('pyodide-status').textContent = 'Pyodide Listo';
+        }).catch(() => {
+            document.getElementById('pyodide-status').textContent = 'Error al cargar Pyodide (reintentará al ejecutar)';
         });
 
         btnRun.addEventListener('click', async () => {
@@ -153,7 +144,10 @@
 
             try {
                 const pyodide = await loadPyodideIfNeeded();
-                
+                if (typeof pyodide.loadPackagesFromImports === 'function') {
+                    await pyodide.loadPackagesFromImports(userCode);
+                }
+
                 // 1. Load user code into pyodide environment
                 try {
                     await pyodide.runPythonAsync(userCode);

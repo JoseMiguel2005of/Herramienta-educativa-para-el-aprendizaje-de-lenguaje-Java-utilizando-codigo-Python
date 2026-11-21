@@ -4,8 +4,7 @@
 
 {% block content %}
 {% set level = (summary.total_xp // 100) + 1 %}
-{% set titles = {1:'Iniciado',2:'Novato',3:'Aprendiz',4:'Estudiante',5:'Practicante',6:'Competente',7:'Hábil',8:'Experto',9:'Veterano',10:'Pythonista',11:'Maestro',12:'Arquitecto',13:'Virtuoso',14:'Gurú',15:'Sensei',16:'Leyenda',17:'Oráculo',18:'Iluminado',19:'Trascendente',20:'Omnisciente'} %}
-{% set current_title = titles.get(level if level <= 20 else 20, 'Iniciado') %}
+{% set current_title = get_level_title(level) %}
 {% set comp_pct = ((completed_course_count / course_lesson_count * 100) | round | int) if course_lesson_count > 0 else 0 %}
 
 <article class="telemetry-dashboard">
@@ -45,7 +44,7 @@
                     {% if level < 20 %}
                     <div class="data-row">
                         <span class="data-key">Próximo rango:</span>
-                        <span class="data-val muted-val">{{ titles.get(level + 1, 'Maestro') }}</span>
+                        <span class="data-val muted-val">{{ get_level_title(level + 1) }}</span>
                     </div>
                     {% endif %}
                 </div>
@@ -83,9 +82,9 @@
                 <span class="metric-total">{{ 'días consecutivos' if summary.streak != 1 else 'día consecutivo' }}</span>
                 <div style="margin-top: 0.75rem;">
                     {% if summary.streak >= 7 %}
-                        <span class="status-pill status-pill--pending">★ Bonificación ×1.5 XP</span>
+                        <span class="status-pill status-pill--completed">★ Constancia sobresaliente (7+ días)</span>
                     {% elif summary.streak >= 3 %}
-                        <span class="status-pill status-pill--pending">★ Bonificación ×1.25 XP</span>
+                        <span class="status-pill status-pill--available">★ Buena racha activa (3+ días)</span>
                     {% elif summary.streak >= 1 %}
                         <span class="status-pill status-pill--completed">✓ Activo hoy</span>
                     {% else %}

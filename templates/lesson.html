@@ -121,6 +121,11 @@
             {# ===== RUN BUTTON (Sprint 3 — 2.1) ===== #}
             {% if mapping.python %}
             <div class="example-run-container" style="margin-bottom: 1rem;">
+                {% if is_external_db_lesson %}
+                <div class="external-db-notice" role="note" style="font-size: 0.82rem; color: var(--status-warning, #f59e0b); background: var(--status-warning-bg, rgba(245,158,11,0.08)); border: 1px solid var(--status-warning-border, rgba(245,158,11,0.35)); border-radius: 8px; padding: 0.55rem 0.85rem; font-family: var(--font-body);">
+                    ℹ Ejemplo de consola / solo lectura: requiere un servidor {{ 'MySQL' if current_lesson.startswith('sql-') else 'MongoDB' }} local o remoto (no ejecutable en navegador).
+                </div>
+                {% else %}
                 <button class="btn-run-example"
                     data-code="{{ mapping.python }}"
                     onclick="runExampleCode(this, this.dataset.code)"
@@ -129,6 +134,7 @@
                 </button>
                 <pre class="example-output"
                     style="display:none; background: #000; color: var(--text); padding: 0.5rem 0.75rem; margin-top: 0.5rem; border-left: 3px solid var(--python-color); font-size: 0.85rem; border-radius: 2px; max-height: 120px; overflow-y: auto;"><code></code></pre>
+                {% endif %}
             </div>
             {% endif %}
         </div>
@@ -186,6 +192,11 @@
 
         {% if mapping.python %}
         <div class="example-run-container" style="margin-bottom: 1rem;">
+            {% if is_external_db_lesson %}
+            <div class="external-db-notice" role="note" style="font-size: 0.82rem; color: var(--status-warning, #f59e0b); background: var(--status-warning-bg, rgba(245,158,11,0.08)); border: 1px solid var(--status-warning-border, rgba(245,158,11,0.35)); border-radius: 8px; padding: 0.55rem 0.85rem; font-family: var(--font-body);">
+                ℹ Ejemplo de consola / solo lectura: requiere un servidor {{ 'MySQL' if current_lesson.startswith('sql-') else 'MongoDB' }} local o remoto (no ejecutable en navegador).
+            </div>
+            {% else %}
             <button class="btn-run-example"
                 data-code="{{ mapping.python }}"
                 onclick="runExampleCode(this, this.dataset.code)"
@@ -194,6 +205,7 @@
             </button>
             <pre class="example-output"
                 style="display:none; background: #000; color: var(--text); padding: 0.5rem 0.75rem; margin-top: 0.5rem; border-left: 3px solid var(--python-color); font-size: 0.85rem; border-radius: 2px; max-height: 120px; overflow-y: auto;"><code></code></pre>
+            {% endif %}
         </div>
         {% endif %}
     </div>
@@ -282,8 +294,15 @@
                 <div class="translator-panel-header">
                     <span class="lang-badge python-badge">{{ t.python_label }}</span>
                     <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        {% if is_external_db_lesson %}
+                        <button type="button" id="btn-run-python" class="btn-secondary-inclusive" disabled
+                            title="Los ejemplos de {{ 'MySQL' if current_lesson.startswith('sql-') else 'MongoDB' }} requieren un servidor externo">
+                            Solo lectura (servidor externo)
+                        </button>
+                        {% else %}
                         <button type="button" id="btn-run-python" class="btn-primary-inclusive">
                             ▶ Ejecutar Python</button>
+                        {% endif %}
                         <button type="button" id="btn-restore-editor" class="btn-secondary-inclusive"
                             title="Restaurar código original">Restaurar</button>
                     </div>
@@ -300,10 +319,14 @@
                 <div class="python-console-wrapper" style="padding: 0.75rem 1rem; background: var(--bg-secondary); border-top: 1px solid var(--border);">
                     <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.4rem; display: flex; justify-content: space-between; gap: 0.5rem;">
                         <span style="font-weight: 600; color: var(--text);">Consola interactiva</span>
+                        {% if is_external_db_lesson %}
+                        <span id="pyodide-status" style="color: var(--status-warning, #f59e0b);">(Ejemplo de consola: requiere servidor {{ 'MySQL' if current_lesson.startswith('sql-') else 'MongoDB' }} local/remoto)</span>
+                        {% else %}
                         <span id="pyodide-status" style="color: var(--text-muted);">(Iniciando bajo demanda...)</span>
+                        {% endif %}
                     </div>
                     <pre class="code-block"
-                        style="min-height: 80px; max-height: 150px; overflow-y: auto; padding: 0.75rem; margin: 0; border-left: 4px solid var(--python-color); border-radius: 8px;"><code id="python-console-output"></code></pre>
+                        style="min-height: 80px; max-height: 150px; overflow-y: auto; padding: 0.75rem; margin: 0; border-left: 4px solid var(--python-color); border-radius: 8px;"><code id="python-console-output">{% if is_external_db_lesson %}ℹ Modo solo lectura en navegador: esta lección requiere un servidor {{ 'MySQL' if current_lesson.startswith('sql-') else 'MongoDB' }} real. Puedes editar el código arriba para compararlo con el transpilador a Java.{% endif %}</code></pre>
                 </div>
             </div>
 
@@ -393,6 +416,36 @@
             <div class="exercise-feedback" id="feedback-{{ ex.id }}" hidden></div>
         </div>
         {% endfor %}
+    </section>
+    {% endif %}
+
+    {% if is_course_lesson %}
+    <section class="lesson-complete-bar" aria-label="Completar lección"
+        style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-top: 2.5rem; padding: 1.1rem 1.35rem; background: var(--bg-secondary); border: 1px solid var(--border); border-left: 4px solid var(--green); border-radius: 10px;">
+        <div>
+            <strong style="display: block; font-family: var(--font-display); font-size: 1rem; color: var(--text);">
+                {% if lesson_completed %}✓ Lección completada{% else %}¿Terminaste de estudiar esta lección?{% endif %}
+            </strong>
+            <span id="lesson-complete-status" role="status" aria-live="polite" style="font-size: 0.88rem; color: var(--text-muted);">
+                {% if current_user.is_authenticated %}
+                    {% if lesson_completed %}Tu progreso en esta lección ya está registrado.{% else %}Márcala como completada para registrar tu avance y sumar +10 XP.{% endif %}
+                {% else %}
+                    Inicia sesión para guardar tu progreso y desbloquear evaluaciones y certificados.
+                {% endif %}
+            </span>
+        </div>
+        {% if current_user.is_authenticated %}
+        <button type="button" id="btn-complete-lesson"
+            data-lesson-id="{{ current_lesson }}"
+            class="{{ 'btn-secondary-inclusive is-completed' if lesson_completed else 'btn-primary-inclusive' }}"
+            {% if lesson_completed %}disabled{% endif %}>
+            {% if lesson_completed %}✓ Lección completada{% else %}✓ Marcar lección como completada (+10 XP){% endif %}
+        </button>
+        {% else %}
+        <a href="{{ url_for('login', next=url_for('lesson', lesson_id=current_lesson)) }}" class="btn-primary-inclusive">
+            Iniciar sesión para guardar
+        </a>
+        {% endif %}
     </section>
     {% endif %}
 
@@ -704,34 +757,20 @@
     };
     window.currentLessonId = "{{ current_lesson }}";
 
-    // ===== RUN EXAMPLE CODE (Sprint 3 — 2.1) =====
+    // ===== RUN EXAMPLE CODE (reutiliza pyodide-runner.js con paquetes, stderr y bloqueo BD externa) =====
     async function runExampleCode(btn, code) {
         const container = btn.closest('.example-run-container');
         const outputEl = container.querySelector('.example-output');
         const codeEl = outputEl.querySelector('code');
 
         outputEl.style.display = 'block';
+        codeEl.style.color = '';
         codeEl.textContent = 'Ejecutando...';
         btn.disabled = true;
 
         try {
-            const pyodide = await loadPyodideIfNeeded();
-            // Reset stdout capture
-            let capturedOutput = '';
-            pyodide.setStdout({
-                batched: (str) => { capturedOutput += str + '\n'; }
-            });
-            await pyodide.runPythonAsync(code);
-            codeEl.textContent = capturedOutput || '[Ejecución completada sin salida]';
-            codeEl.style.color = '#2DD4BF';
-
-            // Restore stdout for main editor
-            pyodide.setStdout({
-                batched: (str) => {
-                    const out = document.getElementById('python-console-output');
-                    if (out) out.textContent += str + '\n';
-                }
-            });
+            const result = await window.runPythonInBrowser(code);
+            window.renderConsoleResult(codeEl, result);
         } catch (err) {
             codeEl.textContent = err.message || err.toString();
             codeEl.style.color = '#FB7185';

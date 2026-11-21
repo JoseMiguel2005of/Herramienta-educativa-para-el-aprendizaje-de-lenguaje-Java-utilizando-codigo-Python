@@ -1,37 +1,40 @@
 // progress.js - Manejo del progreso y gamificación en el cliente
 
-const LEVEL_TITLES = {
-    1: "Iniciado",
-    2: "Novato",
-    3: "Aprendiz",
-    4: "Entusiasta",
-    5: "Programador Junior",
-    6: "Programador",
-    7: "Desarrollador",
-    8: "Ingeniero de Software",
-    9: "Arquitecto",
-    10: "Maestro del Código",
-    11: "Mago de la Sintaxis",
-    12: "Gurú de Algoritmos",
-    13: "Hacker",
-    14: "Ninja del Desarrollo",
-    15: "Jedi del Software",
-    16: "Titán de la Programación",
-    17: "Leyenda Viva",
-    18: "Semidiós del Código",
-    19: "Dios del Código",
-    20: "Entidad Binaria Superior"
-};
+function getScopedStorageKey(baseKey) {
+    const uid = window.PY2JAVA_USER_ID;
+    const scope = (uid !== undefined && uid !== null && String(uid).trim() !== '') ? String(uid) : 'anon';
+    return `${baseKey}_${scope}`;
+}
+
+window.getScopedStorageKey = getScopedStorageKey;
+
+function _getLevelTitlesMap() {
+    return (window.PY2JAVA_LEVEL_TITLES && typeof window.PY2JAVA_LEVEL_TITLES === 'object')
+        ? window.PY2JAVA_LEVEL_TITLES
+        : {};
+}
 
 function getLevelTitle(level) {
-    if (level >= 20) return LEVEL_TITLES[20];
-    return LEVEL_TITLES[level] || "Iniciado";
+    const titles = _getLevelTitlesMap();
+    const lvl = parseInt(level, 10) || 1;
+    if (lvl >= 20) return titles[20] || titles['20'] || 'Entidad Binaria Superior';
+    return titles[lvl] || titles[String(lvl)] || titles[1] || titles['1'] || 'Iniciado';
 }
 
 function getNextLevelTitle(level) {
-    const next = level + 1;
+    const titles = _getLevelTitlesMap();
+    const next = (parseInt(level, 10) || 1) + 1;
     if (next > 20) return null;
-    return LEVEL_TITLES[next] || null;
+    return titles[next] || titles[String(next)] || null;
+}
+
+function _isAuthPage() {
+    const path = (window.location.pathname || '').toLowerCase();
+    return path.startsWith('/login') || path.startsWith('/register') || path.startsWith('/recuperar');
+}
+
+function _isAuthenticatedClient() {
+    return window.PY2JAVA_USER_ID !== undefined && window.PY2JAVA_USER_ID !== null && String(window.PY2JAVA_USER_ID).trim() !== '';
 }
 
 // Definiciones de logros del cliente
@@ -53,18 +56,28 @@ function computeAchievements(summary) {
 }
 
 function checkForNewAchievements(summary, isLiveAction = false) {
-    if (!summary) return;
+    if (!summary || !_isAuthenticatedClient()) return;
     const currentAchievements = computeAchievements(summary);
     const unlockedIds = currentAchievements.filter(a => a.unlocked).map(a => a.id);
 
-    const storedStr = localStorage.getItem('py2java_achievements');
-    const previousIds = storedStr ? JSON.parse(storedStr) : [];
+    const storageKey = getScopedStorageKey('py2java_achievements');
+    const storedStr = localStorage.getItem(storageKey);
+    let previousIds = [];
+    if (storedStr) {
+        try {
+            previousIds = JSON.parse(storedStr) || [];
+        } catch (e) {
+            previousIds = [];
+        }
+    }
 
     // Identificar logros recién desbloqueados
     const newlyUnlocked = unlockedIds.filter(id => !previousIds.includes(id));
 
-    // Actualizar estado en almacenamiento local
-    localStorage.setItem('py2java_achievements', JSON.stringify(unlockedIds));
+    // Actualizar estado en almacenamiento local segmentado por user_id
+    try {
+        localStorage.setItem(storageKey, JSON.stringify(unlockedIds));
+    } catch (e) {}
 
     // SOLO mostrar modal si fue una acción en vivo (ej: terminar ejercicio/lección) y ya existía historial previo
     if (isLiveAction && newlyUnlocked.length > 0 && storedStr !== null) {
@@ -84,17 +97,32 @@ function showXPNotification(xpText, title) {
 
     const toast = document.createElement('div');
     toast.className = 'xp-toast';
-    toast.innerHTML = `
-        <div class="xp-toast-icon"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg></div>
-        <div class="xp-toast-content">
-            <span class="xp-toast-title">${title}</span>
-            <span class="xp-toast-amount">${xpText}</span>
-        </div>
-        <div class="xp-toast-particles" aria-hidden="true"></div>
-    `;
+
+    const iconDiv = document.createElement('div');
+    iconDiv.className = 'xp-toast-icon';
+    iconDiv.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>';
+
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'xp-toast-content';
+    const titleSpan = document.createElement('span');
+    titleSpan.className = 'xp-toast-title';
+    titleSpan.textContent = title;
+    const amountSpan = document.createElement('span');
+    amountSpan.className = 'xp-toast-amount';
+    amountSpan.textContent = xpText;
+    contentDiv.appendChild(titleSpan);
+    contentDiv.appendChild(amountSpan);
+
+    const particlesDiv = document.createElement('div');
+    particlesDiv.className = 'xp-toast-particles';
+    particlesDiv.setAttribute('aria-hidden', 'true');
+
+    toast.appendChild(iconDiv);
+    toast.appendChild(contentDiv);
+    toast.appendChild(particlesDiv);
 
     container.appendChild(toast);
-    spawnParticles(toast.querySelector('.xp-toast-particles'));
+    spawnParticles(particlesDiv);
 
     requestAnimationFrame(() => {
         toast.classList.add('xp-toast-show');
@@ -194,13 +222,19 @@ function showBadgeNotification(badge) {
     if (!badge) return;
     const notif = document.createElement('div');
     notif.className = 'badge-notification';
-    notif.innerHTML = `
-        <div class="badge-icon">${badge.icon}</div>
-        <div class="badge-text">
-            <small>¡Insignia Desbloqueada!</small>
-            <strong>${badge.name}</strong>
-        </div>
-    `;
+    const iconDiv = document.createElement('div');
+    iconDiv.className = 'badge-icon';
+    iconDiv.textContent = badge.icon || '★';
+    const textDiv = document.createElement('div');
+    textDiv.className = 'badge-text';
+    const small = document.createElement('small');
+    small.textContent = '¡Insignia Desbloqueada!';
+    const strong = document.createElement('strong');
+    strong.textContent = badge.name || '';
+    textDiv.appendChild(small);
+    textDiv.appendChild(strong);
+    notif.appendChild(iconDiv);
+    notif.appendChild(textDiv);
     document.body.appendChild(notif);
 
     setTimeout(() => notif.classList.add('show'), 10);
@@ -210,26 +244,22 @@ function showBadgeNotification(badge) {
     }, 5000);
 }
 
-// Inicialización
+// Inicialización (sin autocompletado por scroll; utiliza botón explícito en lesson.html)
 document.addEventListener('DOMContentLoaded', () => {
-    // Rastrear si el usuario llega al final de la lección para marcarla completada
-    const observer = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
-            const lessonId = window.currentLessonId;
+    const completeBtn = document.getElementById('btn-complete-lesson');
+    if (completeBtn && !completeBtn.disabled) {
+        completeBtn.addEventListener('click', () => {
+            const lessonId = completeBtn.dataset.lessonId || window.currentLessonId;
             if (lessonId) {
-                markLessonCompleted(lessonId);
+                markLessonCompleted(lessonId, completeBtn);
             }
-            observer.disconnect();
-        }
-    }, { threshold: 0.5 });
-
-    const lessonNav = document.querySelector('.lesson-navigation');
-    if (lessonNav) {
-        observer.observe(lessonNav);
+        });
     }
 
-    // Actualizar sidebar inmediatamente al cargar
-    fetchProgressSummary();
+    // No consultar ni renderizar "0 XP Total" en /login, /register, /recuperar o sin sesión
+    if (_isAuthenticatedClient() && !_isAuthPage()) {
+        fetchProgressSummary();
+    }
 });
 
 function _getCsrfToken() {
@@ -251,7 +281,14 @@ window.onProgressXpUpdate = function(data, titleText) {
     }
 };
 
-function markLessonCompleted(lessonId) {
+function markLessonCompleted(lessonId, triggerBtn) {
+    const statusEl = document.getElementById('lesson-complete-status');
+    const origText = triggerBtn ? triggerBtn.textContent : '';
+    if (triggerBtn) {
+        triggerBtn.disabled = true;
+        triggerBtn.textContent = 'Guardando progreso...';
+    }
+
     fetch('/api/progreso/leccion', {
         method: 'POST',
         headers: {
@@ -260,26 +297,61 @@ function markLessonCompleted(lessonId) {
         },
         body: JSON.stringify({ lesson_id: lessonId })
     })
-    .then(res => res.json())
+    .then(async res => {
+        const data = await res.json().catch(() => ({ ok: false }));
+        if (!res.ok || !data.ok) {
+            throw new Error(data.error || 'No se pudo marcar la lección como completada.');
+        }
+        return data;
+    })
     .then(data => {
         if (data.xp_gained > 0) {
             showXPNotification(`+${data.xp_gained} XP`, '¡Lección completada!');
+        }
+        if (data.summary) {
             updateSidebarProgress(data.summary);
             checkForNewAchievements(data.summary, true);
-            markSidebarLesson(lessonId);
+        }
+        markSidebarLesson(lessonId);
+        if (triggerBtn) {
+            triggerBtn.textContent = '✓ Lección completada';
+            triggerBtn.classList.add('is-completed');
+            triggerBtn.disabled = true;
+        }
+        if (statusEl) {
+            statusEl.textContent = data.xp_gained > 0
+                ? `Progreso guardado (+${data.xp_gained} XP).`
+                : 'Esta lección ya estaba marcada como completada.';
         }
         if (data.badge_unlocked) {
             showBadgeNotification(data.badge);
         }
     })
-    .catch(err => console.error("Error al registrar lección:", err));
+    .catch(err => {
+        console.error('Error al registrar lección:', err);
+        if (triggerBtn) {
+            triggerBtn.disabled = false;
+            triggerBtn.textContent = origText || 'Marcar lección como completada';
+        }
+        if (statusEl) {
+            statusEl.textContent = err.message || 'No se pudo guardar el progreso.';
+        }
+    });
 }
 
 function markSidebarLesson(lessonId) {
+    if (!lessonId) return;
+    const expectedPath = `/leccion/${lessonId}`;
     const links = document.querySelectorAll('.nav-link');
     links.forEach(link => {
         const href = link.getAttribute('href') || '';
-        if (href.includes(lessonId) && !link.querySelector('.sidebar-check')) {
+        let linkPath = '';
+        try {
+            linkPath = new URL(href, window.location.origin).pathname;
+        } catch (e) {
+            linkPath = href.split('?')[0].split('#')[0];
+        }
+        if (linkPath === expectedPath && !link.querySelector('.sidebar-check')) {
             const check = document.createElement('span');
             check.className = 'sidebar-check';
             check.textContent = '✓';
@@ -292,10 +364,11 @@ function markSidebarLesson(lessonId) {
 }
 
 function fetchProgressSummary() {
+    if (!_isAuthenticatedClient() || _isAuthPage()) return;
     fetch('/api/progreso/resumen')
         .then(res => res.json())
         .then(data => {
-            if (data && data.success !== false) {
+            if (data && data.authenticated && data.success !== false) {
                 updateSidebarProgress(data);
                 if (data.completed_lessons) {
                     data.completed_lessons.forEach(lid => {
@@ -306,11 +379,11 @@ function fetchProgressSummary() {
                 checkForNewAchievements(data, false);
             }
         })
-        .catch(err => console.error("Error al sincronizar resumen:", err));
+        .catch(err => console.error('Error al sincronizar resumen:', err));
 }
 
 function updateSidebarProgress(data) {
-    if (!data) return;
+    if (!data || !_isAuthenticatedClient() || _isAuthPage()) return;
 
     let infoDiv = document.getElementById('sidebar-user-info');
     if (!infoDiv) {
@@ -324,8 +397,9 @@ function updateSidebarProgress(data) {
     }
 
     if (infoDiv) {
-        const level = Math.floor(data.total_xp / 100) + 1;
-        const progressToNext = (data.total_xp % 100);
+        const totalXp = Number(data.total_xp) || 0;
+        const level = Math.floor(totalXp / 100) + 1;
+        const progressToNext = totalXp % 100;
         const title = getLevelTitle(level);
         const nextTitle = getNextLevelTitle(level);
         const nextTitleHtml = nextTitle
@@ -334,7 +408,7 @@ function updateSidebarProgress(data) {
 
         infoDiv.innerHTML = `
             <div class="user-level-badge">LVL ${level} — ${title}</div>
-            <div class="user-xp-text">${data.total_xp} XP Total</div>
+            <div class="user-xp-text">${totalXp} XP Total</div>
             <div class="xp-bar-container">
                 <div class="xp-bar-fill" style="width: ${progressToNext}%"></div>
             </div>
