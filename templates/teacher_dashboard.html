@@ -192,17 +192,17 @@
                             </td>
                             <td style="padding: 0.85rem 0.75rem;">
                                 {% if s.is_suspended %}
-                                <span title="{{ s.suspended_reason }}" style="display: inline-block; padding: 0.15rem 0.5rem; border-radius: 3px; border: 1px solid #ef5350; background: rgba(239,83,80,0.12); color: #ef5350; font-size: 0.72rem; font-weight: 700;">
-                                    SUSPENDIDO
+                                <span title="{{ s.suspended_reason }}" class="status-pill status-pill--danger">
+                                    ⛔ Suspendido
                                 </span>
                                 {% if s.suspended_reason %}
-                                <div style="font-size: 0.68rem; color: var(--text-muted); max-width: 170px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 0.2rem;" title="{{ s.suspended_reason }}">
+                                <div style="font-size: 0.76rem; color: var(--text-muted); max-width: 190px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 0.25rem;" title="{{ s.suspended_reason }}">
                                     {{ s.suspended_reason }}
                                 </div>
                                 {% endif %}
                                 {% else %}
-                                <span style="display: inline-block; padding: 0.15rem 0.5rem; border-radius: 3px; border: 1px solid rgba(166,226,46,0.5); background: rgba(166,226,46,0.1); color: #a6e22e; font-size: 0.72rem; font-weight: 700;">
-                                    ACTIVO
+                                <span class="status-pill status-pill--completed">
+                                    ✓ Activo
                                 </span>
                                 {% endif %}
                             </td>

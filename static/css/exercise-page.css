@@ -302,103 +302,109 @@
 }
 
 /* =============================================
-   EXERCISE HUB — Topic Overview
+   EXERCISE HUB — Topic Overview (2 columnas limpias)
    ============================================= */
 
 .exercise-hub {
-    max-width: 800px;
+    max-width: 960px;
     margin: 0 auto;
-    padding: 2rem 1rem;
+    padding: 0.5rem 0 3rem;
 }
 
 .exercise-hub-header {
-    text-align: center;
-    margin-bottom: 2.5rem;
-}
-
-.exercise-hub-icon {
-    font-size: 2.5rem;
+    text-align: left;
+    margin-bottom: 2rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border);
 }
 
 .exercise-hub-title {
-    font-size: 1.8rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.65rem, 2.5vw, 2.1rem);
     color: var(--text);
-    margin: 0.5rem 0;
+    margin: 0 0 0.5rem;
 }
 
 .exercise-hub-desc {
     color: var(--text-muted);
     font-size: 1rem;
-    margin-bottom: 1.25rem;
+    margin: 0 0 1.25rem;
+    max-width: 68ch;
+    text-align: left;
 }
 
 .exercise-hub-stats {
     display: flex;
-    gap: 0.75rem;
-    justify-content: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
 }
 
-.stat-badge {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    padding: 0.3rem 0.8rem;
-    border-radius: 100px;
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    font-family: 'JetBrains Mono', monospace;
-}
-
-.stat-completed {
-    color: var(--green);
-    border-color: rgba(0, 229, 255, 0.2);
-}
-
-/* Exercise List */
+/* Exercise List (2 columnas amplias) */
 .exercise-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 2rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.75rem;
 }
 
 .exercise-list-item {
     display: flex;
-    align-items: center;
-    gap: 1rem;
+    flex-direction: column;
+    gap: 0.65rem;
     background: var(--bg-secondary);
     border: 1px solid var(--border);
-    padding: 1rem 1.25rem;
-    border-radius: 6px;
+    border-left: 4px solid var(--border-strong);
+    padding: 1.2rem 1.3rem;
+    border-radius: var(--radius);
     text-decoration: none;
     color: var(--text);
-    transition: all 0.2s;
+    transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .exercise-list-item:hover {
     border-color: var(--green);
-    background: rgba(0, 229, 255, 0.03);
-    transform: translateX(4px);
+    transform: translateY(-2px);
+    box-shadow: var(--card-hover-shadow);
 }
 
 .exercise-list-item.completed {
-    border-left: 3px solid var(--green);
+    border-left-color: var(--status-success);
+}
+
+.ex-item-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
 }
 
 .exercise-list-number {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.85rem;
-    color: var(--green);
-    min-width: 2rem;
-    text-align: center;
+    font-family: var(--font-display);
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--text-muted);
 }
 
 .exercise-list-question {
     flex: 1;
-    font-size: 0.95rem;
+    font-size: 0.98rem;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--text);
 }
 
-.exercise-list-status {
-    font-size: 1.1rem;
+.ex-item-cta {
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: var(--green);
+    margin-top: auto;
+}
+
+@media (max-width: 720px) {
+    .exercise-list {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* CTA */

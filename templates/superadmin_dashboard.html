@@ -90,9 +90,9 @@
                             </td>
                             <td style="padding: 0.8rem;">
                                 {% if t_user.is_suspended %}
-                                <span title="{{ t_user.suspended_reason }}" style="padding: 0.15rem 0.5rem; border-radius: 3px; border: 1px solid #ef5350; color: #ef5350; font-size: 0.7rem; font-weight: 700;">SUSPENDIDO</span>
+                                <span title="{{ t_user.suspended_reason }}" class="status-pill status-pill--danger">⛔ Suspendido</span>
                                 {% else %}
-                                <span style="padding: 0.15rem 0.5rem; border-radius: 3px; border: 1px solid rgba(166,226,46,0.5); color: #a6e22e; font-size: 0.7rem; font-weight: 700;">ACTIVO</span>
+                                <span class="status-pill status-pill--completed">✓ Activo</span>
                                 {% endif %}
                             </td>
                             <td style="padding: 0.8rem;">{{ t_user.sections_count }}</td>
@@ -209,9 +209,9 @@
                             </td>
                             <td style="padding: 0.8rem;">
                                 {% if s.is_suspended %}
-                                <span title="{{ s.suspended_reason }}" style="padding: 0.15rem 0.45rem; border-radius: 3px; border: 1px solid #ef5350; color: #ef5350; font-size: 0.7rem; font-weight: 700;">SUSPENDIDO</span>
+                                <span title="{{ s.suspended_reason }}" class="status-pill status-pill--danger">⛔ Suspendido</span>
                                 {% else %}
-                                <span style="padding: 0.15rem 0.45rem; border-radius: 3px; border: 1px solid rgba(166,226,46,0.5); color: #a6e22e; font-size: 0.7rem; font-weight: 700;">ACTIVO</span>
+                                <span class="status-pill status-pill--completed">✓ Activo</span>
                                 {% endif %}
                             </td>
                             <td style="padding: 0.8rem;">

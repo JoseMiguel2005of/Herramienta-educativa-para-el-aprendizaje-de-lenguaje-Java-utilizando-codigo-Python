@@ -282,6 +282,8 @@ function markSidebarLesson(lessonId) {
             const check = document.createElement('span');
             check.className = 'sidebar-check';
             check.textContent = '✓';
+            check.setAttribute('aria-label', 'Lección completada');
+            check.setAttribute('title', 'Completada');
             link.appendChild(check);
             link.classList.add('lesson-completed');
         }

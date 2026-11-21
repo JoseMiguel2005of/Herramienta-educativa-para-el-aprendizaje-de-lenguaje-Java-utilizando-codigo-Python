@@ -1,157 +1,134 @@
 {% extends "base.html" %}
 
-{% block title %}Glosario de Términos — Py2Java Edu{% endblock %}
+{% block title %}Glosario Técnico — Py2Java Edu{% endblock %}
 
 {% block content %}
-<article class="telemetry-dashboard">
-    <header class="telemetry-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-        <h1 style="display:flex; align-items:center; gap:0.75rem; margin:0;">
-            <div class="neu-icon-box">
-                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-            </div>
-            GLOSARIO TÉCNICO
-        </h1>
-        <div class="system-status" style="display: flex; gap: 0.5rem; align-items: center;">
-            <span class="status-indicator"></span>
-            <span id="glossary-count" style="font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: var(--green);">CARGANDO...</span>
+<article class="telemetry-dashboard glossary-page">
+    <header class="telemetry-header">
+        <div>
+            <h1>Glosario Técnico</h1>
+            <p class="dash-subtitle">Consulta definiciones claras de conceptos clave de Python y Java filtrando por tema.</p>
         </div>
+        <span class="status-pill status-pill--available" id="glossary-count">Cargando...</span>
     </header>
 
-    <!-- Search & Category Filters -->
+    <!-- Buscador y filtros por categoría -->
     <div style="margin-bottom: 1.5rem;">
         <div class="glossary-search-box">
-            <span style="color: var(--green); font-weight: bold;">>_</span>
-            <input type="text" id="glossary-search" placeholder="Buscar término, concepto, definición o lenguaje (ej: variable, lista, OOP, SQL)..." class="glossary-search-input" autofocus>
+            <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="2" style="color: var(--text-muted); flex-shrink: 0;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <label for="glossary-search" class="sr-only">Buscar término técnico</label>
+            <input type="search" id="glossary-search" placeholder="Buscar término o concepto (ej. variable, lista, POO, SQL)..." class="glossary-search-input">
         </div>
 
-        <div class="glossary-filter-bar" id="glossary-filters">
-            <button class="glossary-filter-btn active" data-filter="">Todos</button>
-            <button class="glossary-filter-btn" data-filter="básico">Fundamentos</button>
-            <button class="glossary-filter-btn" data-filter="OOP">POO</button>
-            <button class="glossary-filter-btn" data-filter="colecciones">Colecciones</button>
-            <button class="glossary-filter-btn" data-filter="control">Control de Flujo</button>
-            <button class="glossary-filter-btn" data-filter="arquitectura">Arquitectura & JVM</button>
-            <button class="glossary-filter-btn" data-filter="bases de datos">Bases de Datos</button>
-            <button class="glossary-filter-btn" data-filter="data science">Data Science</button>
+        <div class="module-filter-tabs" id="glossary-filters" role="group" aria-label="Filtrar términos por categoría">
+            <button type="button" class="glossary-filter-btn module-filter-tab active" data-filter="" aria-pressed="true">Todos</button>
+            <button type="button" class="glossary-filter-btn module-filter-tab" data-filter="básico" aria-pressed="false">Fundamentos</button>
+            <button type="button" class="glossary-filter-btn module-filter-tab" data-filter="OOP" aria-pressed="false">POO</button>
+            <button type="button" class="glossary-filter-btn module-filter-tab" data-filter="colecciones" aria-pressed="false">Colecciones</button>
+            <button type="button" class="glossary-filter-btn module-filter-tab" data-filter="control" aria-pressed="false">Control de Flujo</button>
+            <button type="button" class="glossary-filter-btn module-filter-tab" data-filter="arquitectura" aria-pressed="false">Arquitectura y JVM</button>
+            <button type="button" class="glossary-filter-btn module-filter-tab" data-filter="bases de datos" aria-pressed="false">Bases de Datos</button>
+            <button type="button" class="glossary-filter-btn module-filter-tab" data-filter="data science" aria-pressed="false">Ciencia de Datos</button>
         </div>
     </div>
 
     <div class="glossary-grid" id="glossary-grid">
-        <!-- Terms populated by JS -->
+        <!-- Términos cargados por JS -->
     </div>
 
-    <div id="glossary-empty" style="display:none; text-align: center; padding: 3rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; background: var(--bg-code); border: 1px dashed var(--border); border-radius: 8px;">
-        // No se encontraron términos que coincidan con la búsqueda.
+    <div class="section-more-wrap" id="glossary-more-wrap" style="display:none;">
+        <button type="button" id="btn-glossary-more" class="section-more-btn">
+            Mostrar más términos
+        </button>
+    </div>
+
+    <div id="glossary-empty" class="data-module" style="display:none; text-align: center; padding: 2.5rem; color: var(--text-muted);">
+        No se encontraron términos que coincidan con tu búsqueda.
     </div>
 </article>
 
 <style>
+.glossary-page {
+    max-width: 1020px;
+    margin: 0 auto;
+}
+
 .glossary-search-box {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    background: var(--bg-code);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 0.75rem 1.2rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-strong);
+    border-radius: 12px;
+    padding: 0.4rem 1rem;
     margin-bottom: 1rem;
-    font-family: 'JetBrains Mono', monospace;
+    min-height: 48px;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .glossary-search-box:focus-within {
     border-color: var(--green);
-    box-shadow: 0 0 15px rgba(0, 229, 255, 0.15);
+    box-shadow: var(--neu-glow);
 }
 
 .glossary-search-input {
     background: transparent;
     border: none;
     color: var(--text);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.95rem;
+    font-family: var(--font-body);
+    font-size: 1rem;
     width: 100%;
     outline: none;
-}
-
-.glossary-filter-bar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
-}
-
-.glossary-filter-btn {
-    background: var(--bg-code);
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    padding: 0.35rem 0.8rem;
-    border-radius: 6px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.78rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.glossary-filter-btn:hover {
-    color: var(--text);
-    border-color: rgba(255, 255, 255, 0.2);
-}
-
-.glossary-filter-btn.active {
-    background: rgba(0, 229, 255, 0.12);
-    border-color: var(--green);
-    color: var(--green);
-    font-weight: 600;
+    min-height: 40px;
 }
 
 .glossary-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.15rem;
 }
 
 .glossary-card {
     background: var(--bg-secondary);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 1.2rem 1.4rem;
-    transition: all 0.25s ease;
-    font-family: 'JetBrains Mono', monospace;
+    border-radius: var(--radius);
+    padding: 1.3rem 1.45rem;
+    transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+    font-family: var(--font-body);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    gap: 0.65rem;
+    box-shadow: var(--shadow);
 }
 
 .glossary-card:hover {
     border-color: var(--green);
-    background: rgba(0, 229, 255, 0.03);
     transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+    box-shadow: var(--card-hover-shadow);
 }
 
 .glossary-card-term {
-    color: var(--green);
+    color: var(--text);
     font-weight: 700;
-    font-size: 1.1rem;
-    margin-bottom: 0.25rem;
-    font-family: 'Space Grotesk', sans-serif;
-    letter-spacing: 0.02em;
+    font-size: 1.15rem;
+    margin: 0 0 0.25rem;
+    font-family: var(--font-display);
 }
 
 .glossary-card-alt {
     color: var(--text-muted);
-    font-size: 0.75rem;
+    font-size: 0.82rem;
     margin-bottom: 0.65rem;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-mono);
 }
 
 .glossary-card-def {
     color: var(--text);
-    font-size: 0.86rem;
-    line-height: 1.55;
-    font-family: 'Inter', sans-serif;
-    margin-bottom: 0.8rem;
+    font-size: 0.95rem;
+    line-height: 1.62;
+    font-family: var(--font-body);
+    margin: 0 0 0.75rem;
     flex-grow: 1;
 }
 
@@ -162,16 +139,16 @@
 }
 
 .glossary-tag {
-    background: rgba(0, 229, 255, 0.08);
-    border: 1px solid rgba(0, 229, 255, 0.25);
-    color: var(--green);
-    padding: 0.15rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.68rem;
-    letter-spacing: 0.03em;
+    background: var(--status-info-bg);
+    border: 1px solid var(--status-info-border);
+    color: var(--status-info);
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 600;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 720px) {
     .glossary-grid {
         grid-template-columns: 1fr;
     }
@@ -183,6 +160,8 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     let activeTag = '';
+    const PAGE_SIZE = 6;
+    let visibleLimit = PAGE_SIZE;
 
     function getGlossaryData() {
         if (typeof GLOSSARY_MASTER !== 'undefined' && Array.isArray(GLOSSARY_MASTER) && GLOSSARY_MASTER.length > 0) {
@@ -193,68 +172,104 @@ document.addEventListener('DOMContentLoaded', () => {
         ];
     }
 
+    function escapeHtml(str) {
+        return String(str || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
     function renderGlossary() {
         const glossaryList = getGlossaryData();
         const searchVal = (document.getElementById('glossary-search').value || '').toLowerCase().trim();
         const grid = document.getElementById('glossary-grid');
         const empty = document.getElementById('glossary-empty');
         const countBadge = document.getElementById('glossary-count');
+        const moreWrap = document.getElementById('glossary-more-wrap');
+        const moreBtn = document.getElementById('btn-glossary-more');
 
         const filtered = glossaryList.filter(item => {
-            const matchesSearch = !searchVal || 
+            const matchesSearch = !searchVal ||
                 item.term.toLowerCase().includes(searchVal) ||
                 (item.alt && item.alt.toLowerCase().includes(searchVal)) ||
                 item.def.toLowerCase().includes(searchVal) ||
                 (item.tags && item.tags.some(t => t.toLowerCase().includes(searchVal)));
 
-            const matchesTag = !activeTag || 
+            const matchesTag = !activeTag ||
                 (item.tags && item.tags.some(t => t.toLowerCase() === activeTag.toLowerCase()));
 
             return matchesSearch && matchesTag;
         });
 
+        const visibleItems = filtered.slice(0, visibleLimit);
+
         if (countBadge) {
-            countBadge.textContent = `${filtered.length} DE ${glossaryList.length} TÉRMINOS`;
+            countBadge.textContent = `Mostrando ${visibleItems.length} de ${filtered.length} términos`;
         }
 
         if (filtered.length === 0) {
             grid.style.display = 'none';
             empty.style.display = 'block';
+            if (moreWrap) moreWrap.style.display = 'none';
             return;
         }
 
         grid.style.display = '';
         empty.style.display = 'none';
 
-        grid.innerHTML = filtered.map(item => `
-            <div class="glossary-card">
+        grid.innerHTML = visibleItems.map(item => `
+            <article class="glossary-card">
                 <div>
-                    <div class="glossary-card-term">${item.term}</div>
-                    <div class="glossary-card-alt">${item.alt || ''}</div>
-                    <div class="glossary-card-def">${item.def}</div>
+                    <h2 class="glossary-card-term">${escapeHtml(item.term)}</h2>
+                    ${item.alt ? `<div class="glossary-card-alt">${escapeHtml(item.alt)}</div>` : ''}
+                    <p class="glossary-card-def">${escapeHtml(item.def)}</p>
                 </div>
                 <div class="glossary-card-tags">
-                    ${(item.tags || []).map(t => `<span class="glossary-tag">${t}</span>`).join('')}
+                    ${(item.tags || []).map(t => `<span class="glossary-tag">${escapeHtml(t)}</span>`).join('')}
                 </div>
-            </div>
+            </article>
         `).join('');
+
+        if (moreWrap && moreBtn) {
+            const remaining = filtered.length - visibleItems.length;
+            if (remaining > 0) {
+                moreWrap.style.display = 'flex';
+                moreBtn.textContent = `Mostrar ${Math.min(remaining, PAGE_SIZE)} términos más (${remaining} restantes)`;
+            } else {
+                moreWrap.style.display = 'none';
+            }
+        }
     }
 
-    // Search input event
     const searchInput = document.getElementById('glossary-search');
     if (searchInput) {
-        searchInput.addEventListener('input', renderGlossary);
+        searchInput.addEventListener('input', () => {
+            visibleLimit = PAGE_SIZE;
+            renderGlossary();
+        });
     }
 
-    // Filter category buttons
     document.querySelectorAll('.glossary-filter-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            document.querySelectorAll('.glossary-filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.glossary-filter-btn').forEach(b => {
+                const isActive = b === btn;
+                b.classList.toggle('active', isActive);
+                b.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+            });
             activeTag = btn.dataset.filter || '';
+            visibleLimit = PAGE_SIZE;
             renderGlossary();
         });
     });
+
+    const moreBtn = document.getElementById('btn-glossary-more');
+    if (moreBtn) {
+        moreBtn.addEventListener('click', () => {
+            visibleLimit += PAGE_SIZE;
+            renderGlossary();
+        });
+    }
 
     renderGlossary();
 });

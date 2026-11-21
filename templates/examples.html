@@ -1,41 +1,92 @@
 {% extends "base.html" %}
 
-{% block title %}Python Examples — {{ t.site_title }}{% endblock %}
+{% block title %}Ejemplos de Python — {{ t.site_title }}{% endblock %}
 
 {% block content %}
 <article class="examples-page">
     <header class="examples-header">
-        <h1 class="examples-title" style="display:flex; align-items:center; gap:0.75rem;">
-            <div class="neu-icon-box">
-                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
-            </div>
-            Ejemplos de Python
-        </h1>
-        <p class="examples-desc">Aprende Python viendo ejemplos prácticos. Cada ejemplo incluye código que puedes ejecutar y modificar.</p>
+        <h1 class="examples-title">Ejemplos de Python</h1>
+        <p class="examples-desc">Explora ejemplos prácticos organizados por tema. Abre solo el bloque que necesites estudiar para mantener una vista limpia.</p>
     </header>
 
-    {% for category in example_categories %}
-    <section class="examples-category" id="cat-{{ category.id }}">
-        <h2 class="examples-category-title">
-            <span class="category-marker"></span>
-            {{ category.title }}
-        </h2>
-        <div class="examples-grid">
-            {% for ex in category.examples %}
-            <a href="{{ url_for('example_detail', example_id=ex.id) }}" class="example-card">
-                <div class="example-card-header">
-                    <span class="example-card-title">{{ ex.title }}</span>
+    <div class="examples-accordion-list">
+        {% for category in example_categories %}
+        {% set is_first = loop.first %}
+        {% set panel_id = 'ex-cat-panel-' ~ category.id %}
+        {% set max_ex = 6 %}
+        <section class="examples-category" id="cat-{{ category.id }}">
+            <button type="button" class="examples-category-toggle"
+                aria-expanded="{{ 'true' if is_first else 'false' }}"
+                aria-controls="{{ panel_id }}"
+                onclick="toggleExampleCategory(this, '{{ panel_id }}')">
+                <span class="examples-cat-left">
+                    <span class="category-marker" aria-hidden="true"></span>
+                    <span class="examples-category-title">{{ category.title }}</span>
+                </span>
+                <span class="examples-cat-right">
+                    <span class="status-pill status-pill--available">{{ category.examples | length }} ejemplos</span>
+                    <span class="examples-cat-chevron {{ 'open' if is_first else '' }}" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </span>
+                </span>
+            </button>
+
+            <div class="examples-category-body" id="{{ panel_id }}" {% if not is_first %}hidden{% endif %}>
+                <div class="examples-grid">
+                    {% for ex in category.examples %}
+                    <a href="{{ url_for('example_detail', example_id=ex.id) }}"
+                       class="example-card {% if loop.index > max_ex %}example-extra-card chunk-hidden{% endif %}">
+                        <div class="example-card-header">
+                            <span class="example-card-title">{{ ex.title }}</span>
+                        </div>
+                        <p class="example-card-desc">{{ ex.description }}</p>
+                        <span class="example-card-cta">Probar ejemplo →</span>
+                    </a>
+                    {% endfor %}
                 </div>
-                <p class="example-card-desc">{{ ex.description }}</p>
-                <span class="example-card-cta">Pruébalo tú mismo ❯</span>
-            </a>
-            {% endfor %}
-        </div>
-    </section>
-    {% endfor %}
+
+                {% if category.examples | length > max_ex %}
+                {% set extra_ex = (category.examples | length) - max_ex %}
+                <div class="section-more-wrap">
+                    <button type="button" class="section-more-btn"
+                        data-panel="{{ panel_id }}"
+                        data-more-label="Ver {{ extra_ex }} ejemplos más"
+                        data-less-label="Mostrar menos ejemplos"
+                        aria-expanded="false"
+                        onclick="toggleMoreExamples(this)">
+                        Ver {{ extra_ex }} ejemplos más
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+        {% endfor %}
+    </div>
 </article>
 {% endblock %}
 
 {% block scripts %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/examples-page.css') }}">
+<script>
+function toggleExampleCategory(btn, panelId) {
+    const panel = document.getElementById(panelId);
+    if (!panel) return;
+    const isOpen = !panel.hidden;
+    panel.hidden = isOpen;
+    btn.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+    const chevron = btn.querySelector('.examples-cat-chevron');
+    if (chevron) chevron.classList.toggle('open', !isOpen);
+}
+
+function toggleMoreExamples(btn) {
+    const panel = document.getElementById(btn.dataset.panel);
+    if (!panel) return;
+    const expanded = btn.getAttribute('aria-expanded') === 'true';
+    panel.querySelectorAll('.example-extra-card').forEach(el => {
+        el.classList.toggle('chunk-hidden', expanded);
+    });
+    btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+    btn.textContent = expanded ? btn.dataset.moreLabel : btn.dataset.lessLabel;
+}
+</script>
 {% endblock %}

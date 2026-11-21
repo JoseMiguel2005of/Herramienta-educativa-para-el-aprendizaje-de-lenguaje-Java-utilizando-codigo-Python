@@ -3,52 +3,224 @@
 {% block title %}Laboratorio de Práctica — {{ t.site_title }}{% endblock %}
 
 {% block content %}
-<article class="telemetry-dashboard">
-    <header class="telemetry-header" style="margin-bottom: 2rem;">
-        <h1><span style="color: var(--green);">[LAB]</span> EJERCICIOS LIBRES</h1>
-        <div class="terminal-intro" style="margin-top: 1rem; background: var(--bg-code); border: 1px solid var(--border); padding: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; color: var(--text-muted);">
-            <span style="color: var(--green);">>_ </span>Resuelve estos problemas escribiendo código Python real. Tu código será evaluado contra casos de prueba. ¡Gana 50 XP por cada reto superado!
+<article class="telemetry-dashboard practice-hub-page">
+    <header class="telemetry-header">
+        <div>
+            <h1>Laboratorio de Práctica</h1>
+            <p class="dash-subtitle">Resuelve retos escribiendo código Python real evaluado contra casos de prueba y gana 50 XP por cada desafío completado.</p>
         </div>
+        <span class="status-pill status-pill--completed">
+            ✓ {{ completed_ids | length }} de {{ problems | length }} completados
+        </span>
     </header>
 
-    <div class="telemetry-grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;">
-        {% for problem in problems %}
-        <div class="data-module module-metric" style="display: flex; flex-direction: column; justify-content: space-between; position: relative;">
-            
-            {% if problem.id in completed_ids %}
-            <div style="position: absolute; top: -10px; right: -10px; background: var(--green); color: #000; font-size: 0.75rem; font-weight: bold; padding: 0.2rem 0.6rem; border-radius: 12px; font-family: 'JetBrains Mono', monospace;">
-                ✓ COMPLETADO
-            </div>
-            {% endif %}
+    <!-- Filtros accesibles para reducir la carga visual -->
+    <div class="module-filter-tabs" role="group" aria-label="Filtrar retos de práctica">
+        <button type="button" class="module-filter-tab active" data-filter="all" aria-pressed="true">Todos ({{ problems | length }})</button>
+        <button type="button" class="module-filter-tab" data-filter="fácil" aria-pressed="false">● Fácil</button>
+        <button type="button" class="module-filter-tab" data-filter="medio" aria-pressed="false">▲ Medio</button>
+        <button type="button" class="module-filter-tab" data-filter="difícil" aria-pressed="false">◆ Difícil</button>
+        <button type="button" class="module-filter-tab" data-filter="pending" aria-pressed="false">○ Pendientes</button>
+        <button type="button" class="module-filter-tab" data-filter="completed" aria-pressed="false">✓ Completados</button>
+    </div>
 
-            <div>
-                <div class="module-header" style="display: flex; justify-content: space-between;">
-                    <span style="font-size: 0.8rem;">// {{ problem.category | upper }}</span>
-                    {% if problem.difficulty == 'fácil' %}
-                        <span style="color: #a6e22e; font-size: 0.75rem;">[FÁCIL]</span>
-                    {% elif problem.difficulty == 'medio' %}
-                        <span style="color: #fd971f; font-size: 0.75rem;">[MEDIO]</span>
+    <div class="practice-cards-grid" id="practice-cards-grid">
+        {% for problem in problems %}
+        {% set is_done = problem.id in completed_ids %}
+        {% set diff_norm = (problem.difficulty or 'medio') | lower %}
+        <article class="practice-card data-module"
+            data-difficulty="{{ diff_norm }}"
+            data-status="{{ 'completed' if is_done else 'pending' }}">
+
+            <div class="practice-card-top">
+                <span class="practice-category">{{ problem.category }}</span>
+                <div class="practice-badges">
+                    {% if diff_norm == 'fácil' %}
+                        <span class="status-pill status-pill--completed">● Fácil</span>
+                    {% elif diff_norm == 'medio' %}
+                        <span class="status-pill status-pill--pending">▲ Medio</span>
                     {% else %}
-                        <span style="color: #f92672; font-size: 0.75rem;">[DIFÍCIL]</span>
+                        <span class="status-pill status-pill--danger">◆ Difícil</span>
+                    {% endif %}
+
+                    {% if is_done %}
+                        <span class="status-pill status-pill--completed">✓ Completado</span>
+                    {% else %}
+                        <span class="status-pill status-pill--locked">○ Pendiente</span>
                     {% endif %}
                 </div>
-                <h3 style="margin: 0.5rem 0; font-size: 1.2rem; font-family: 'Space Grotesk', sans-serif;">{{ problem.title }}</h3>
-                <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
-                    {{ problem.description | striptags }}
-                </p>
             </div>
-            
-            <div style="margin-top: 1.5rem;">
-                <a href="{{ url_for('practice_editor', problem_id=problem.id) }}" class="btn-translate" style="display: block; text-align: center; background: {% if problem.id in completed_ids %}transparent{% else %}var(--python-color){% endif %}; color: {% if problem.id in completed_ids %}var(--python-color){% else %}#000{% endif %}; border: 1px solid var(--python-color); font-weight: bold; padding: 0.5rem; text-decoration: none;">
-                    {% if problem.id in completed_ids %}REINTENTAR RETO{% else %}▶ INICIAR RETO{% endif %}
+
+            <h2 class="practice-card-title">{{ problem.title }}</h2>
+            <p class="practice-card-desc">{{ problem.description | striptags }}</p>
+
+            <div class="practice-card-actions">
+                <a href="{{ url_for('practice_editor', problem_id=problem.id) }}"
+                   class="{{ 'btn-secondary-inclusive' if is_done else 'btn-primary-inclusive' }}"
+                   style="width: 100%;">
+                    {% if is_done %}Repasar reto →{% else %}▶ Iniciar reto{% endif %}
                 </a>
             </div>
-        </div>
+        </article>
         {% else %}
-        <div class="module-log" style="grid-column: 1 / -1; padding: 2rem; text-align: center;">
-            <p style="color: var(--text-muted);">No hay ejercicios disponibles en este momento.</p>
+        <div class="data-module" style="grid-column: 1 / -1; padding: 2.5rem; text-align: center;">
+            <p style="color: var(--text-muted); margin: 0;">No hay ejercicios de práctica disponibles en este momento.</p>
         </div>
         {% endfor %}
     </div>
+
+    <div id="practice-empty" class="data-module" style="display:none; padding: 2rem; text-align: center; margin-top: 1rem;">
+        <p style="color: var(--text-muted); margin: 0;">No hay retos que coincidan con el filtro seleccionado.</p>
+    </div>
+
+    <div class="section-more-wrap" id="practice-more-wrap" style="display:none;">
+        <button type="button" id="btn-practice-more" class="section-more-btn">
+            Mostrar más retos
+        </button>
+    </div>
 </article>
+
+<style>
+.practice-hub-page {
+    max-width: 1020px;
+    margin: 0 auto;
+}
+
+.practice-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+}
+
+.practice-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.35rem 1.4rem;
+    transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.practice-card:hover {
+    border-color: var(--green);
+    transform: translateY(-2px);
+    box-shadow: var(--card-hover-shadow);
+}
+
+.practice-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.practice-category {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+}
+
+.practice-badges {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+
+.practice-card-title {
+    margin: 0.15rem 0 0;
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    color: var(--text);
+}
+
+.practice-card-desc {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.94rem;
+    line-height: 1.55;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex: 1;
+}
+
+.practice-card-actions {
+    margin-top: 0.75rem;
+}
+
+@media (max-width: 720px) {
+    .practice-cards-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const cards = Array.from(document.querySelectorAll('.practice-card'));
+    const tabs = document.querySelectorAll('.practice-hub-page .module-filter-tab');
+    const emptyEl = document.getElementById('practice-empty');
+    const moreWrap = document.getElementById('practice-more-wrap');
+    const moreBtn = document.getElementById('btn-practice-more');
+
+    const PAGE_SIZE = 6;
+    let activeFilter = 'all';
+    let visibleLimit = PAGE_SIZE;
+
+    function applyFilter() {
+        const matched = cards.filter(card => {
+            if (activeFilter === 'all') return true;
+            if (activeFilter === 'completed' || activeFilter === 'pending') {
+                return card.dataset.status === activeFilter;
+            }
+            return card.dataset.difficulty === activeFilter;
+        });
+
+        cards.forEach(c => c.classList.add('chunk-hidden'));
+        matched.forEach((card, idx) => {
+            if (idx < visibleLimit) {
+                card.classList.remove('chunk-hidden');
+            }
+        });
+
+        if (emptyEl) emptyEl.style.display = matched.length === 0 ? 'block' : 'none';
+
+        if (moreWrap && moreBtn) {
+            const remaining = matched.length - visibleLimit;
+            if (remaining > 0) {
+                moreWrap.style.display = 'flex';
+                moreBtn.textContent = `Mostrar ${Math.min(remaining, PAGE_SIZE)} retos más (${remaining} restantes)`;
+            } else {
+                moreWrap.style.display = 'none';
+            }
+        }
+    }
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            activeFilter = tab.dataset.filter;
+            visibleLimit = PAGE_SIZE;
+            tabs.forEach(t => {
+                const isActive = t === tab;
+                t.classList.toggle('active', isActive);
+                t.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+            });
+            applyFilter();
+        });
+    });
+
+    if (moreBtn) {
+        moreBtn.addEventListener('click', () => {
+            visibleLimit += PAGE_SIZE;
+            applyFilter();
+        });
+    }
+
+    applyFilter();
+});
+</script>
 {% endblock %}

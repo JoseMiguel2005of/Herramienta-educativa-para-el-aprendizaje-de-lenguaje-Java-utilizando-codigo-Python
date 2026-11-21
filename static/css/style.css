@@ -1,102 +1,170 @@
 /* =============================================
-   TEMA Y VARIABLES
+   TEMA Y VARIABLES (WCAG 2.1 AA · Paleta Inclusiva)
    ============================================= */
 :root,
 body {
-    /* NEUMORPHIC DARK SOFT UI THEME */
-    --green: #00E5FF;
-    --green-dark: #00B2CC;
-    --green-light: rgba(0, 229, 255, 0.12);
+    /* TIPOGRAFÍA MODERNA Y LEGIBLE */
+    --font-display: "Plus Jakarta Sans", "Inter", system-ui, -apple-system, sans-serif;
+    --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-dyslexia: "Lexend", "Inter", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", "Fira Code", Consolas, monospace;
 
-    --bg: #181C26;             /* Base Neumorphic Surface */
-    --bg-secondary: #181C26;   /* Card Surface (same tone for extruded feel) */
-    --bg-code: #12151E;        /* Inset Editor Surface */
+    /* PALETA OSCURA INCLUSIVA (Midnight Slate Studio — WCAG AA/AAA) */
+    --green: #38BDF8;              /* Acento principal (Azul cielo, 8.33:1 sobre --bg) */
+    --green-dark: #0284C7;
+    --green-light: rgba(56, 189, 248, 0.14);
 
-    --text: #E2E8F0;
-    --text-muted: #8E9AAF;
+    --btn-primary-bg: #0369A1;     /* Botón primario sólido (5.93:1 con #FFFFFF) */
+    --btn-primary-hover: #0284C7;
+    --btn-primary-text: #FFFFFF;
 
-    --border: rgba(255, 255, 255, 0.05);
+    --bg: #0F172A;                 /* Fondo principal */
+    --bg-secondary: #162033;       /* Superficie de tarjetas */
+    --bg-elevated: #1E293B;        /* Hover / superficie elevada */
+    --bg-code: #0B1120;            /* Entradas / áreas técnicas */
+    --editor-bg: #0B1120;          /* Bloques de código */
+    --editor-text: #F1F5F9;
 
-    --sidebar-bg: #181C26;
-    --sidebar-text: #8E9AAF;
+    --text: #F1F5F9;               /* Texto principal (16.3:1 sobre --bg) */
+    --text-muted: #A8B8CC;         /* Texto secundario (8.84:1 sobre --bg) */
+
+    --border: #2B3B55;
+    --border-strong: #475D7F;
+
+    --sidebar-bg: #111A2E;
+    --sidebar-text: #CBD5E1;
     --sidebar-hover: #FFFFFF;
-    --sidebar-active: #00E5FF;
+    --sidebar-active: #38BDF8;
 
-    --python-color: #00E5FF;
-    --java-color: #FF4B6E;
+    /* Par Python vs Java seguro para daltonismo (Azul vs Naranja Bermellón) */
+    --python-color: #38BDF8;
+    --python-badge-bg: #0369A1;
+    --java-color: #FB923C;
+    --java-badge-bg: #C2410C;
 
-    /* Neumorphic Shadows */
-    --neu-flat: 6px 6px 14px #10131B, -6px -6px 14px #202531;
-    --neu-flat-hover: 8px 8px 18px #0E1017, -8px -8px 18px #222835;
-    --neu-pressed: inset 3px 3px 7px #10131B, inset -3px -3px 7px #202531;
-    --neu-glow: 0 0 15px rgba(0, 229, 255, 0.35);
+    /* Estados semánticos seguros para daltonismo (Azul / Turquesa / Ámbar / Coral) */
+    --status-success: #2DD4BF;
+    --status-success-bg: rgba(45, 212, 191, 0.14);
+    --status-success-border: rgba(45, 212, 191, 0.45);
+    --status-info: #38BDF8;
+    --status-info-bg: rgba(56, 189, 248, 0.14);
+    --status-info-border: rgba(56, 189, 248, 0.45);
+    --status-warning: #FBBF24;
+    --status-warning-bg: rgba(251, 191, 36, 0.14);
+    --status-warning-border: rgba(251, 191, 36, 0.45);
+    --status-danger: #FB7185;
+    --status-danger-bg: rgba(251, 113, 133, 0.14);
+    --status-danger-border: rgba(251, 113, 133, 0.5);
+    --status-locked: #94A3B8;
+    --status-locked-bg: rgba(148, 163, 184, 0.12);
+    --status-locked-border: #475569;
+
+    --focus-ring: #38BDF8;
+
+    /* Sombras suaves y limpias (sin ruido visual) */
+    --neu-flat: 0 2px 10px rgba(2, 6, 23, 0.35);
+    --neu-flat-hover: 0 8px 24px rgba(2, 6, 23, 0.48);
+    --neu-pressed: inset 0 2px 4px rgba(2, 6, 23, 0.4);
+    --neu-glow: 0 0 0 3px rgba(56, 189, 248, 0.25);
 
     --shadow: var(--neu-flat);
-    --shadow-lg: 10px 10px 24px #10131B, -10px -10px 24px #202531;
+    --shadow-lg: 0 12px 32px rgba(2, 6, 23, 0.55);
 
-    --explanation-bg: #181C26;
-    --explanation-border: #FF4B6E;
+    --explanation-bg: #162033;
+    --explanation-border: #38BDF8;
 
-    --topbar-text: #E2E8F0;
-    --accent-glow: rgba(0, 229, 255, 0.15);
-    --page-bg: #181C26;
+    --topbar-text: #F1F5F9;
+    --accent-glow: rgba(56, 189, 248, 0.14);
+    --page-bg: #0F172A;
     --card-hover-shadow: var(--neu-flat-hover);
 
-    /* Structural variables */
-    --radius: 14px;
+    /* Variables estructurales */
+    --radius: 12px;
+    --radius-sm: 8px;
+    --touch-min: 44px;
+    --measure-prose: 70ch;
 }
 
 /* =============================================
-   LIGHT THEME (Neumorphic Soft Light UI)
+   LIGHT THEME (Clean Paper Campus — WCAG AA/AAA)
    ============================================= */
 [data-theme="light"],
 [data-theme="light"] body {
-    --green: #0284C7;
-    --green-dark: #0369A1;
-    --green-light: rgba(2, 132, 199, 0.1);
+    --green: #0369A1;              /* Azul océano profundo (5.93:1 sobre #FFFFFF) */
+    --green-dark: #075985;
+    --green-light: rgba(3, 105, 161, 0.1);
 
-    --bg: #EAEFF5;
-    --bg-secondary: #EAEFF5;
-    --bg-code: #E2E7EE;
+    --btn-primary-bg: #0369A1;
+    --btn-primary-hover: #075985;
+    --btn-primary-text: #FFFFFF;
 
-    --text: #1E293B;
-    --text-muted: #64748B;
+    --bg: #F8FAFC;
+    --bg-secondary: #FFFFFF;
+    --bg-elevated: #F1F5F9;
+    --bg-code: #F1F5F9;
+    --editor-bg: #0F172A;
+    --editor-text: #F1F5F9;
 
-    --border: rgba(255, 255, 255, 0.6);
+    --text: #0F172A;               /* 17.85:1 sobre #FFFFFF */
+    --text-muted: #475569;         /* 7.58:1 sobre #FFFFFF (AAA) */
 
-    --sidebar-bg: #EAEFF5;
-    --sidebar-text: #64748B;
-    --sidebar-hover: #1E293B;
-    --sidebar-active: #0284C7;
+    --border: #CBD5E1;
+    --border-strong: #94A3B8;
 
-    --python-color: #0284C7;
-    --java-color: #E11D48;
+    --sidebar-bg: #FFFFFF;
+    --sidebar-text: #334155;
+    --sidebar-hover: #0F172A;
+    --sidebar-active: #0369A1;
 
-    --neu-flat: 6px 6px 14px #C8D0DC, -6px -6px 14px #FFFFFF;
-    --neu-flat-hover: 8px 8px 18px #BE88C6, -8px -8px 18px #FFFFFF;
-    --neu-pressed: inset 3px 3px 7px #C8D0DC, inset -3px -3px 7px #FFFFFF;
-    --neu-glow: 0 0 15px rgba(2, 132, 199, 0.3);
+    --python-color: #0369A1;
+    --python-badge-bg: #0369A1;
+    --java-color: #C2410C;         /* 5.18:1 sobre #FFFFFF */
+    --java-badge-bg: #C2410C;
+
+    --status-success: #0F766E;     /* 5.47:1 sobre #FFFFFF */
+    --status-success-bg: #CCFBF1;
+    --status-success-border: #0F766E;
+    --status-info: #0369A1;
+    --status-info-bg: #E0F2FE;
+    --status-info-border: #0369A1;
+    --status-warning: #92400E;     /* 7.09:1 sobre #FFFFFF */
+    --status-warning-bg: #FEF3C7;
+    --status-warning-border: #B45309;
+    --status-danger: #BE123C;      /* 6.29:1 sobre #FFFFFF */
+    --status-danger-bg: #FFE4E6;
+    --status-danger-border: #BE123C;
+    --status-locked: #475569;
+    --status-locked-bg: #F1F5F9;
+    --status-locked-border: #94A3B8;
+
+    --focus-ring: #0369A1;
+
+    --neu-flat: 0 1px 3px rgba(15, 23, 42, 0.08), 0 4px 12px rgba(15, 23, 42, 0.04);
+    --neu-flat-hover: 0 6px 20px rgba(15, 23, 42, 0.1);
+    --neu-pressed: inset 0 2px 4px rgba(15, 23, 42, 0.08);
+    --neu-glow: 0 0 0 3px rgba(3, 105, 161, 0.22);
 
     --shadow: var(--neu-flat);
-    --shadow-lg: 10px 10px 24px #C8D0DC, -10px -10px 24px #FFFFFF;
+    --shadow-lg: 0 12px 28px rgba(15, 23, 42, 0.12);
 
-    --explanation-bg: #EAEFF5;
-    --explanation-border: #E11D48;
+    --explanation-bg: #FFFFFF;
+    --explanation-border: #0369A1;
 
-    --topbar-text: #1E293B;
-    --accent-glow: rgba(2, 132, 199, 0.1);
-    --page-bg: #EAEFF5;
+    --topbar-text: #0F172A;
+    --accent-glow: rgba(3, 105, 161, 0.08);
+    --page-bg: #F8FAFC;
     --card-hover-shadow: var(--neu-flat-hover);
 }
 
 /* --- Topbar --- */
 [data-theme="light"] .topbar {
-    background: #F6F8FA !important;
-    border-bottom-color: #D0D7DE !important;
+    background: #FFFFFF !important;
+    border-bottom-color: #CBD5E1 !important;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.06);
 }
 
 [data-theme="light"] .brand strong {
-    color: #0097A7 !important;
+    color: var(--green) !important;
     text-shadow: none !important;
 }
 
@@ -104,56 +172,56 @@ body {
     text-shadow: none;
 }
 
-/* --- Sidebar terminal links --- */
+/* --- Sidebar links --- */
 [data-theme="light"] .term-btn {
-    color: #57606A;
+    color: #334155;
 }
 
 [data-theme="light"] .term-btn:hover {
-    color: #0097A7;
-    background: rgba(0, 151, 167, 0.06);
+    color: var(--green);
+    background: rgba(3, 105, 161, 0.07);
 }
 
 [data-theme="light"] .term-btn.text-green {
-    color: #0097A7;
+    color: var(--green);
 }
 
 [data-theme="light"] .term-btn.text-python {
-    color: #0097A7;
+    color: var(--python-color);
 }
 
 [data-theme="light"] .term-btn.text-orange {
-    color: #D97706;
+    color: var(--status-warning);
 }
 
 [data-theme="light"] .sidebar {
-    background: #EAECEF;
-    border-right-color: #D0D7DE;
+    background: #FFFFFF;
+    border-right-color: #CBD5E1;
 }
 
 [data-theme="light"] .term-nav-link.active {
-    color: #0097A7;
-    background: rgba(0, 151, 167, 0.08);
+    color: var(--green);
+    background: rgba(3, 105, 161, 0.1);
 }
 
 [data-theme="light"] .prompt-char {
-    color: #0097A7;
+    color: var(--green);
 }
 
 /* --- Grid pattern reduction for light mode --- */
 [data-theme="light"] body::before {
-    opacity: 0.12;
+    opacity: 0;
 }
 
 /* --- XP Toast --- */
 [data-theme="light"] .xp-toast {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(246, 248, 250, 0.95));
-    border-color: #0097A7;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    background: #FFFFFF;
+    border-color: var(--green);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.14);
 }
 
 [data-theme="light"] .xp-toast-title {
-    color: #57606A;
+    color: var(--text-muted);
 }
 
 [data-theme="light"] .xp-toast-amount {
@@ -162,28 +230,25 @@ body {
 
 /* --- Achievement modal --- */
 [data-theme="light"] .achievement-modal-content {
-    background: linear-gradient(135deg, #F6F8FA, #FFFFFF);
-    border-color: #0097A7;
+    background: #FFFFFF;
+    border-color: var(--green);
 }
 
-[data-theme="light"] .achievement-modal-header h2 {
-    color: #24292F;
-}
-
+[data-theme="light"] .achievement-modal-header h2,
 [data-theme="light"] .achievement-modal-name {
-    color: #24292F;
+    color: var(--text);
 }
 
 [data-theme="light"] .achievement-modal-card {
-    background: rgba(0, 151, 167, 0.06);
-    border-color: rgba(0, 151, 167, 0.25);
+    background: rgba(3, 105, 161, 0.06);
+    border-color: rgba(3, 105, 161, 0.25);
 }
 
 [data-theme="light"] .achievement-modal-id {
     text-shadow: none;
 }
 
-/* --- Action buttons: white text for contrast --- */
+/* --- Action buttons: high contrast text --- */
 [data-theme="light"] .btn-check,
 [data-theme="light"] .btn-translate,
 [data-theme="light"] .btn-quiz-start,
@@ -202,72 +267,44 @@ body {
 
 /* --- Dashboard & Leaderboard module headers --- */
 [data-theme="light"] .module-header {
-    background: rgba(0, 0, 0, 0.03);
+    background: #F1F5F9;
 }
 
 [data-theme="light"] .lb-table thead {
-    background: rgba(0, 0, 0, 0.03);
+    background: #F1F5F9;
 }
 
 /* --- Achievement progress bar --- */
 [data-theme="light"] .achievement-progress-bar {
-    background: rgba(0, 0, 0, 0.06);
+    background: #E2E8F0;
 }
 
 /* --- Practice editor & output --- */
-[data-theme="light"] .practice-editor-textarea {
-    background: #F0F2F5;
-    color: #24292F;
-}
-
-[data-theme="light"] .practice-output-pre {
-    background: #F0F2F5;
-    color: #24292F;
+[data-theme="light"] .practice-editor-textarea,
+[data-theme="light"] .practice-output-pre,
+[data-theme="light"] .practice-solution-code,
+[data-theme="light"] .exercise-code-block,
+[data-theme="light"] .exercise-freeform-editor,
+[data-theme="light"] .example-code-block,
+[data-theme="light"] .example-output,
+[data-theme="light"] .tryit-textarea {
+    background: #0F172A;
+    color: #F1F5F9;
 }
 
 [data-theme="light"] .practice-editor-header,
 [data-theme="light"] .practice-output-header,
 [data-theme="light"] .practice-tests-header {
-    background: rgba(0, 0, 0, 0.04);
-}
-
-[data-theme="light"] .practice-solution-code {
-    background: #F0F2F5;
-}
-
-/* --- Exercise code blocks --- */
-[data-theme="light"] .exercise-code-block {
-    background: #F0F2F5;
-    color: #24292F;
-}
-
-[data-theme="light"] .exercise-freeform-editor {
-    background: #F0F2F5;
-    color: #24292F;
+    background: #F1F5F9;
 }
 
 [data-theme="light"] .exercise-progress-track {
-    background: rgba(0, 0, 0, 0.06);
-}
-
-/* --- Examples --- */
-[data-theme="light"] .example-code-block {
-    background: #F0F2F5;
-}
-
-[data-theme="light"] .example-output {
-    background: #F0F2F5;
-    color: #24292F;
-}
-
-[data-theme="light"] .tryit-textarea {
-    background: #F0F2F5;
-    color: #24292F;
+    background: #E2E8F0;
 }
 
 /* --- Quiz page --- */
 [data-theme="light"] .quiz-option:hover {
-    background: rgba(0, 151, 167, 0.06);
+    background: rgba(3, 105, 161, 0.06);
 }
 
 /* --- Sidebar checkmark glow removal --- */
@@ -285,19 +322,23 @@ body {
 }
 
 html {
+    font-size: 16px;
     scroll-behavior: smooth;
 }
 
 body {
     margin: 0;
-    font-family: "Inter", sans-serif;
-    font-size: 15px;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 400;
     line-height: 1.6;
     color: var(--text);
     background: var(--page-bg);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
 }
 
 h1,
@@ -306,13 +347,14 @@ h3,
 h4,
 h5,
 h6 {
-    font-family: "Space Grotesk", sans-serif;
+    font-family: var(--font-display);
     letter-spacing: -0.02em;
     font-weight: 700;
+    line-height: 1.25;
     color: var(--text);
 }
 
-/* Patrón de fondo geométrico sutil (Grid / Terminal) */
+/* Fondo limpio sin patrón intrusivo que genere ruido visual */
 body::before {
     content: '';
     position: fixed;
@@ -321,11 +363,8 @@ body::before {
     width: 100%;
     height: 100%;
     z-index: -1;
-    opacity: 0.3;
-    background-image:
-        linear-gradient(var(--border) 1px, transparent 1px),
-        linear-gradient(90deg, var(--border) 1px, transparent 1px);
-    background-size: 40px 40px;
+    opacity: 0;
+    pointer-events: none;
 }
 
 /* =============================================

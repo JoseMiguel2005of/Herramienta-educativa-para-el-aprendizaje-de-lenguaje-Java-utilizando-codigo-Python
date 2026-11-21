@@ -5,37 +5,50 @@
 {% block content %}
 <article class="exercise-hub">
     <header class="exercise-hub-header">
-        <h1 class="exercise-hub-title">
-            <span class="exercise-hub-icon" style="font-family: 'JetBrains Mono', monospace;">[#]</span>
-            {{ exercise_data.title }}
-        </h1>
+        <h1 class="exercise-hub-title">{{ exercise_data.title }}</h1>
         <p class="exercise-hub-desc">{{ exercise_data.explanation | safe }}</p>
         <div class="exercise-hub-stats">
-            <span class="stat-badge">{{ exercises | length }} Exercises</span>
-            <span class="stat-badge stat-completed" id="stat-completed">{{ completed_count }} Completed</span>
+            <span class="status-pill status-pill--available">{{ exercises | length }} ejercicios</span>
+            <span class="status-pill status-pill--completed" id="stat-completed">✓ {{ completed_count }} completados</span>
         </div>
     </header>
 
-    <section class="exercise-list">
+    {% set max_ex_visible = 6 %}
+    <section class="exercise-list" aria-label="Lista de ejercicios">
         {% for ex in exercises %}
         {% set is_ex_done = (ex.id in completed_exercises) or ((topic ~ '-' ~ loop.index) in completed_exercises) %}
-        <a href="{{ url_for('exercise_page', topic=topic, exercise_num=loop.index) }}" class="exercise-list-item {% if is_ex_done %}completed{% endif %}">
-            <span class="exercise-list-number">{{ loop.index }}</span>
-            <span class="exercise-list-question">{{ ex.question | truncate(80) }}</span>
-            <span class="exercise-list-status">
+        <a href="{{ url_for('exercise_page', topic=topic, exercise_num=loop.index) }}"
+           class="exercise-list-item {% if is_ex_done %}completed{% endif %} {% if loop.index > max_ex_visible %}ex-hub-extra chunk-hidden{% endif %}">
+            <div class="ex-item-top">
+                <span class="exercise-list-number">Ejercicio {{ loop.index }}</span>
                 {% if is_ex_done %}
-                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" style="color: var(--green);"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <span class="status-pill status-pill--completed">✓ Completado</span>
                 {% else %}
-                    ○
+                    <span class="status-pill status-pill--locked">○ Pendiente</span>
                 {% endif %}
-            </span>
+            </div>
+            <span class="exercise-list-question">{{ ex.question | truncate(95) }}</span>
+            <span class="ex-item-cta">{{ 'Repasar →' if is_ex_done else 'Resolver →' }}</span>
         </a>
         {% endfor %}
     </section>
 
+    {% if exercises | length > max_ex_visible %}
+    {% set hidden_ex_count = (exercises | length) - max_ex_visible %}
+    <div class="section-more-wrap" style="margin-bottom: 1.75rem;">
+        <button type="button" class="section-more-btn"
+            data-more-label="Ver {{ hidden_ex_count }} ejercicios más"
+            data-less-label="Mostrar menos ejercicios"
+            aria-expanded="false"
+            onclick="toggleExHubMore(this)">
+            Ver {{ hidden_ex_count }} ejercicios más
+        </button>
+    </div>
+    {% endif %}
+
     <div class="exercise-hub-cta">
         <a href="{{ url_for('exercise_page', topic=topic, exercise_num=1) }}" class="btn-start-exercises">
-            Start Exercises
+            ▶ Comenzar ejercicios
         </a>
     </div>
 </article>
@@ -43,4 +56,14 @@
 
 {% block scripts %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/exercise-page.css') }}">
+<script>
+function toggleExHubMore(btn) {
+    const expanded = btn.getAttribute('aria-expanded') === 'true';
+    document.querySelectorAll('.ex-hub-extra').forEach(el => {
+        el.classList.toggle('chunk-hidden', expanded);
+    });
+    btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+    btn.textContent = expanded ? btn.dataset.moreLabel : btn.dataset.lessLabel;
+}
+</script>
 {% endblock %}

@@ -1,107 +1,160 @@
 {% extends "base.html" %}
 
-{% block title %}Árbol de Habilidades — {{ t.site_title }}{% endblock %}
+{% block title %}Ruta de Aprendizaje — {{ t.site_title }}{% endblock %}
 
 {% block content %}
 <article class="skill-tree-page">
+    {% set total_all = [] %}
+    {% set completed_all = [] %}
+    {% for cat in categories %}
+        {% for sec in cat.sections %}
+            {% for lesson in sec.lessons %}
+                {% if total_all.append(lesson.id) %}{% endif %}
+                {% if lesson.id in summary.completed_lessons %}
+                    {% if completed_all.append(lesson.id) %}{% endif %}
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    {% endfor %}
+    {% set global_pct = ((completed_all | length / total_all | length * 100) | round | int) if (total_all | length) > 0 else 0 %}
+
     <header class="skill-tree-header">
         <div class="header-left">
-            <h1>
-                <div class="neu-icon-box" style="display:inline-flex; vertical-align:-3px; margin-right:0.5rem;">
-                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-                </div>
-                SKILL_TREE
-            </h1>
-            <p class="header-subtitle">>_ Explora las ramas del conocimiento. Desbloquea habilidades completando lecciones.</p>
+            <h1>Ruta de Aprendizaje</h1>
+            <p class="header-subtitle">Avanza por módulos organizados sin sobrecarga. Cada tema indica su estado con icono y etiqueta.</p>
         </div>
         <div class="header-stats">
-            {% set total_all = [] %}
-            {% set completed_all = [] %}
-            {% for cat in categories %}
-                {% for sec in cat.sections %}
-                    {% for lesson in sec.lessons %}
-                        {% if total_all.append(lesson.id) %}{% endif %}
-                        {% if lesson.id in summary.completed_lessons %}
-                            {% if completed_all.append(lesson.id) %}{% endif %}
-                        {% endif %}
-                    {% endfor %}
-                {% endfor %}
-            {% endfor %}
             <div class="global-progress">
-                <span class="gp-label">PROGRESO GLOBAL</span>
-                <span class="gp-value">{{ completed_all | length }}/{{ total_all | length }}</span>
+                <span class="gp-label">Progreso global</span>
+                <span class="gp-value">{{ completed_all | length }} de {{ total_all | length }} ({{ global_pct }}%)</span>
             </div>
-            <div class="global-bar">
-                <div class="global-fill" style="width: {{ (completed_all | length / total_all | length * 100) | round }}%;"></div>
+            <div class="global-bar" role="progressbar" aria-label="Progreso global del curso"
+                aria-valuenow="{{ global_pct }}" aria-valuemin="0" aria-valuemax="100">
+                <div class="global-fill" style="width: {{ global_pct }}%;"></div>
             </div>
         </div>
     </header>
+
+    <!-- Filtros por área para reducir carga visual -->
+    <div class="module-filter-tabs" role="group" aria-label="Filtrar módulos por área temática">
+        <button type="button" class="module-filter-tab active" data-group="all" aria-pressed="true">
+            Todos los módulos
+        </button>
+        <button type="button" class="module-filter-tab" data-group="core" aria-pressed="false">
+            Fundamentos y POO
+        </button>
+        <button type="button" class="module-filter-tab" data-group="data" aria-pressed="false">
+            Ciencia de Datos
+        </button>
+        <button type="button" class="module-filter-tab" data-group="db" aria-pressed="false">
+            Bases de Datos
+        </button>
+        <button type="button" class="module-filter-tab" data-group="practice" aria-pressed="false">
+            Práctica y Referencia
+        </button>
+    </div>
 
     <div class="branches-container" id="skill-branches">
         {% for cat in categories %}
             {% for sec in cat.sections %}
                 {% set sec_lessons = sec.lessons | map(attribute='id') | list %}
                 {% set sec_completed = sec_lessons | select("in", summary.completed_lessons) | list %}
-                {% set sec_pct = (sec_completed | length / sec_lessons | length * 100) | round %}
+                {% set sec_pct = ((sec_completed | length / sec_lessons | length * 100) | round | int) if (sec_lessons | length) > 0 else 0 %}
                 {% set branch_id = "branch-" ~ cat.id ~ "-" ~ loop.index %}
-                
-                <div class="skill-branch" data-branch="{{ branch_id }}">
-                    <button class="branch-header" onclick="toggleBranch('{{ branch_id }}')" aria-expanded="false">
+                {% if sec.label_key in ['cat_python_tutorial', 'cat_python_functions', 'cat_python_classes', 'cat_python_modules', 'cat_file_handling'] %}
+                    {% set sec_group = 'core' %}
+                {% elif sec.label_key in ['cat_numpy', 'cat_pandas', 'cat_scipy'] %}
+                    {% set sec_group = 'data' %}
+                {% elif sec.label_key in ['cat_mysql', 'cat_mongodb'] %}
+                    {% set sec_group = 'db' %}
+                {% else %}
+                    {% set sec_group = 'practice' %}
+                {% endif %}
+                {% set max_visible_topics = 6 %}
+
+                <section class="skill-branch" data-branch="{{ branch_id }}" data-group="{{ sec_group }}">
+                    <button type="button" class="branch-header" onclick="toggleBranch('{{ branch_id }}')"
+                        aria-expanded="false" aria-controls="content-{{ branch_id }}">
                         <div class="branch-left">
-                            <span class="branch-chevron" id="chevron-{{ branch_id }}">▶</span>
-                            <span class="branch-icon">
-                                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                            <span class="branch-chevron" id="chevron-{{ branch_id }}" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
                             </span>
-                            <span class="branch-name">{{ t[sec.label_key] | upper }}</span>
+                            <div class="branch-title-wrap">
+                                <span class="branch-name">{{ t[sec.label_key] }}</span>
+                                <span class="branch-meta">{{ sec_completed | length }} de {{ sec_lessons | length }} temas completados</span>
+                            </div>
                         </div>
                         <div class="branch-right">
-                            <div class="branch-progress-bar">
+                            <div class="branch-progress-bar" aria-hidden="true">
                                 <div class="branch-progress-fill {% if sec_pct == 100 %}complete{% endif %}" style="width: {{ sec_pct }}%;"></div>
                             </div>
-                            <span class="branch-ratio">{{ sec_completed | length }}/{{ sec_lessons | length }}</span>
                             {% if sec_pct == 100 %}
-                            <span class="branch-badge" style="color: var(--green); font-weight:bold;">100%</span>
+                                <span class="status-pill status-pill--completed">✓ Completado</span>
+                            {% elif sec_completed | length > 0 %}
+                                <span class="status-pill status-pill--available">◐ {{ sec_pct }}% en curso</span>
+                            {% else %}
+                                <span class="status-pill status-pill--locked">○ Por iniciar</span>
                             {% endif %}
                         </div>
                     </button>
-                    
+
                     <div class="branch-content" id="content-{{ branch_id }}" style="display: none;">
-                        <div class="skill-nodes">
+                        <div class="skill-nodes-grid">
                             {% for lesson in sec.lessons %}
                                 {% set is_completed = lesson.id in summary.completed_lessons %}
                                 {% set prev_completed = (loop.first) or (sec.lessons[loop.index0 - 1].id in summary.completed_lessons) %}
                                 {% set is_available = prev_completed or is_completed %}
-                                
-                                <div class="skill-node-wrapper">
-                                    {% if not loop.first %}
-                                    <div class="node-connector {{ 'active' if is_completed else '' }}">
-                                        <div class="connector-line"></div>
-                                        <div class="connector-dot"></div>
+                                {% set is_extra = loop.index > max_visible_topics %}
+
+                                {% if lesson.type == 'quiz' %}
+                                    {% set topic_href = url_for('quiz', topic=lesson.id) %}
+                                {% elif lesson.type == 'examples' %}
+                                    {% set topic_href = url_for('examples') %}
+                                {% elif lesson.type == 'practice' %}
+                                    {% set topic_href = url_for('practice_list') %}
+                                {% elif lesson.id.startswith('ex-') %}
+                                    {% set topic_href = url_for('exercise_topic', topic=lesson.id) %}
+                                {% else %}
+                                    {% set topic_href = url_for('lesson', lesson_id=lesson.id) %}
+                                {% endif %}
+
+                                <a href="{{ topic_href }}"
+                                   class="skill-node {{ 'completed' if is_completed else ('available' if is_available else 'locked') }} {% if is_extra %}topic-extra-card chunk-hidden{% endif %}">
+                                    <div class="skill-node-top">
+                                        <span class="node-step-num">Tema {{ loop.index }}</span>
+                                        {% if is_completed %}
+                                            <span class="status-pill status-pill--completed">✓ Completado</span>
+                                        {% elif is_available %}
+                                            <span class="status-pill status-pill--available">▶ Disponible</span>
+                                        {% else %}
+                                            <span class="status-pill status-pill--locked">🔒 Pendiente</span>
+                                        {% endif %}
                                     </div>
-                                    {% endif %}
-                                    
-                                    <a href="{{ url_for('lesson', lesson_id=lesson.id) }}" 
-                                       class="skill-node {{ 'completed' if is_completed else ('available' if is_available else 'locked') }}">
-                                        <div class="node-icon">
-                                            {% if is_completed %}
-                                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" style="color: var(--green);"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                            {% elif is_available %}
-                                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" style="color: var(--python-color);"><circle cx="12" cy="12" r="10"></circle></svg>
-                                            {% else %}
-                                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" style="color: var(--text-muted);"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                                            {% endif %}
-                                        </div>
-                                        <div class="node-info">
-                                            <span class="node-title">{{ get_lesson_title(lesson.id) }}</span>
-                                            <span class="node-id">{{ lesson.id }}</span>
-                                        </div>
-                                        <div class="node-arrow">→</div>
-                                    </a>
-                                </div>
+                                    <h3 class="node-title">{{ get_lesson_title(lesson.id) }}</h3>
+                                    <div class="skill-node-footer">
+                                        <span class="node-cta">
+                                            {% if is_completed %}Repasar tema{% elif is_available %}Comenzar tema{% else %}Ver contenido{% endif %} →
+                                        </span>
+                                    </div>
+                                </a>
                             {% endfor %}
                         </div>
+
+                        {% if sec.lessons | length > max_visible_topics %}
+                        {% set extra_count = (sec.lessons | length) - max_visible_topics %}
+                        <div class="section-more-wrap">
+                            <button type="button" class="section-more-btn"
+                                data-branch-target="content-{{ branch_id }}"
+                                data-more-label="Mostrar {{ extra_count }} temas más"
+                                data-less-label="Mostrar menos temas"
+                                aria-expanded="false"
+                                onclick="toggleBranchMore(this)">
+                                Mostrar {{ extra_count }} temas más
+                            </button>
+                        </div>
+                        {% endif %}
                     </div>
-                </div>
+                </section>
             {% endfor %}
         {% endfor %}
     </div>
@@ -109,56 +162,56 @@
 
 <style>
 .skill-tree-page {
-    font-family: "JetBrains Mono", monospace;
+    font-family: var(--font-body);
     color: var(--text);
-    padding: 0 1rem 3rem;
-    max-width: 900px;
+    max-width: 980px;
     margin: 0 auto;
+    padding: 0 0 3rem;
 }
 
-/* Header */
 .skill-tree-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    border-bottom: 2px solid var(--text);
-    padding-bottom: 1rem;
-    margin-bottom: 2rem;
-    gap: 2rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
+    gap: 1.5rem;
     flex-wrap: wrap;
 }
 
 .skill-tree-header h1 {
-    font-size: 1.5rem;
-    font-family: "Space Grotesk", sans-serif;
-    letter-spacing: 0.1em;
-    margin: 0;
+    margin: 0 0 0.4rem;
+    font-family: var(--font-display);
     color: var(--text);
 }
 
-.header-accent {
-    font-size: 1.3rem;
-}
-
 .header-subtitle {
-    font-size: 0.85rem;
+    font-size: 0.98rem;
     color: var(--text-muted);
-    margin: 0.5rem 0 0;
+    margin: 0;
+    max-width: 60ch;
 }
 
 .header-stats {
-    min-width: 200px;
+    min-width: 240px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.9rem 1.1rem;
 }
 
 .global-progress {
     display: flex;
     justify-content: space-between;
-    font-size: 0.75rem;
-    margin-bottom: 0.4rem;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
 }
 
 .gp-label {
     color: var(--text-muted);
+    font-weight: 500;
 }
 
 .gp-value {
@@ -167,37 +220,32 @@
 }
 
 .global-bar {
-    height: 8px;
-    background: var(--bg-secondary);
+    height: 10px;
+    background: var(--bg-elevated);
     border: 1px solid var(--border);
-    border-radius: 4px;
+    border-radius: 999px;
     overflow: hidden;
 }
 
 .global-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--green), #00e5ff);
-    border-radius: 4px;
-    transition: width 0.5s ease;
+    background: var(--green);
+    border-radius: 999px;
+    transition: width 0.4s ease;
 }
 
-/* Branches */
 .branches-container {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 1rem;
 }
 
 .skill-branch {
     border: 1px solid var(--border);
-    background: var(--bg);
-    border-radius: 4px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius);
     overflow: hidden;
-    transition: border-color 0.3s;
-}
-
-.skill-branch:hover {
-    border-color: var(--text-muted);
+    box-shadow: var(--shadow);
 }
 
 .branch-header {
@@ -205,64 +253,78 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    padding: 0.9rem 1.2rem;
-    background: rgba(255, 255, 255, 0.02);
+    min-height: 68px;
+    padding: 1rem 1.25rem;
+    background: transparent;
     border: none;
     color: inherit;
     font-family: inherit;
-    font-size: 0.85rem;
+    text-align: left;
     cursor: pointer;
-    transition: background 0.2s;
     gap: 1rem;
+    transition: background-color 0.15s ease;
 }
 
 .branch-header:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--bg-elevated);
 }
 
 .branch-left {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.85rem;
     min-width: 0;
 }
 
 .branch-chevron {
-    font-size: 0.7rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--bg-elevated);
     color: var(--text-muted);
-    transition: transform 0.3s ease;
-    min-width: 1rem;
+    flex-shrink: 0;
+    transition: transform 0.2s ease, color 0.2s ease;
 }
 
 .branch-chevron.open {
     transform: rotate(90deg);
+    color: var(--green);
 }
 
-.branch-icon {
-    font-size: 1.2rem;
+.branch-title-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
 }
 
 .branch-name {
+    font-family: var(--font-display);
     color: var(--text);
     font-weight: 700;
-    font-size: 0.8rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-size: 1.05rem;
+}
+
+.branch-meta {
+    font-size: 0.84rem;
+    color: var(--text-muted);
 }
 
 .branch-right {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.85rem;
     flex-shrink: 0;
 }
 
 .branch-progress-bar {
     width: 100px;
-    height: 6px;
-    background: var(--bg-secondary);
-    border-radius: 3px;
+    height: 8px;
+    background: var(--bg-elevated);
+    border-radius: 999px;
     overflow: hidden;
     border: 1px solid var(--border);
 }
@@ -270,200 +332,115 @@
 .branch-progress-fill {
     height: 100%;
     background: var(--python-color);
-    border-radius: 3px;
-    transition: width 0.4s ease;
+    border-radius: 999px;
+    transition: width 0.35s ease;
 }
 
 .branch-progress-fill.complete {
-    background: var(--green);
+    background: var(--status-success);
 }
 
-.branch-ratio {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    min-width: 40px;
-    text-align: right;
-}
-
-.branch-badge {
-    font-size: 0.9rem;
-}
-
-/* Branch Content */
 .branch-content {
     border-top: 1px solid var(--border);
-    background: rgba(0, 0, 0, 0.2);
-    animation: slideDown 0.3s ease;
+    background: var(--bg);
+    padding: 1.25rem;
 }
 
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        max-height: 0;
-    }
-    to {
-        opacity: 1;
-        max-height: 2000px;
-    }
+/* Cuadrícula amplia de 2 columnas para respiro visual */
+.skill-nodes-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
 }
 
-/* Skill Nodes */
-.skill-nodes {
-    padding: 1rem 1.5rem 1.5rem;
-}
-
-.skill-node-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-}
-
-/* Connector */
-.node-connector {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 28px;
-    position: relative;
-    margin-left: 2rem;
-}
-
-.connector-line {
-    width: 2px;
-    flex-grow: 1;
-    background: var(--border);
-    transition: background 0.3s;
-}
-
-.node-connector.active .connector-line {
-    background: var(--green);
-    box-shadow: 0 0 6px rgba(0, 229, 255, 0.3);
-}
-
-.connector-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--border);
-    flex-shrink: 0;
-}
-
-.node-connector.active .connector-dot {
-    background: var(--green);
-    box-shadow: 0 0 6px rgba(0, 229, 255, 0.4);
-}
-
-/* Node */
 .skill-node {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    justify-content: space-between;
     gap: 0.75rem;
-    padding: 0.7rem 1rem;
+    padding: 1.15rem 1.25rem;
+    min-height: 128px;
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-left: 4px solid var(--border-strong);
+    border-radius: var(--radius);
     text-decoration: none;
-    color: inherit;
-    transition: all 0.25s ease;
-    background: var(--bg);
+    color: var(--text);
+    background: var(--bg-secondary);
+    transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.skill-node:hover {
+    border-color: var(--green);
+    transform: translateY(-2px);
+    box-shadow: var(--card-hover-shadow);
 }
 
 .skill-node.completed {
-    border-color: var(--green);
-    background: rgba(0, 229, 255, 0.04);
-}
-
-.skill-node.completed:hover {
-    background: rgba(0, 229, 255, 0.1);
-    transform: translateX(4px);
-    box-shadow: 0 2px 8px rgba(0, 229, 255, 0.15);
+    border-left-color: var(--status-success);
 }
 
 .skill-node.available {
-    border-color: var(--python-color);
-    background: rgba(55, 118, 171, 0.06);
-    animation: pulseAvailable 2.5s ease-in-out infinite;
-}
-
-.skill-node.available:hover {
-    background: rgba(55, 118, 171, 0.15);
-    transform: translateX(4px);
-    box-shadow: 0 2px 8px rgba(55, 118, 171, 0.2);
-}
-
-@keyframes pulseAvailable {
-    0%, 100% { box-shadow: 0 0 0 rgba(55, 118, 171, 0); }
-    50% { box-shadow: 0 0 10px rgba(55, 118, 171, 0.15); }
+    border-left-color: var(--status-info);
 }
 
 .skill-node.locked {
-    opacity: 0.4;
-    cursor: default;
-    border-style: dashed;
+    border-left-color: var(--status-locked-border);
+    border-style: solid;
+    opacity: 1;
 }
 
-.skill-node.locked:hover {
-    opacity: 0.55;
-}
-
-.node-icon {
-    font-size: 1.3rem;
-    min-width: 2rem;
-    text-align: center;
-}
-
-.node-info {
+.skill-node-top {
     display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    min-width: 0;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.node-step-num {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
 }
 
 .node-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.04rem;
+    font-weight: 700;
     color: var(--text);
-    font-size: 0.85rem;
+    line-height: 1.35;
+}
+
+.skill-node-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: auto;
+}
+
+.node-cta {
+    font-size: 0.86rem;
     font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.node-id {
-    font-size: 0.7rem;
-    color: var(--text-muted);
-}
-
-.node-arrow {
-    color: var(--text-muted);
-    font-size: 1rem;
-    transition: transform 0.2s;
-}
-
-.skill-node:hover .node-arrow {
-    transform: translateX(3px);
     color: var(--green);
 }
 
-/* Mobile */
-@media (max-width: 600px) {
-    .skill-tree-header {
+@media (max-width: 720px) {
+    .skill-nodes-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .branch-header {
         flex-direction: column;
         align-items: flex-start;
     }
-    
+
+    .branch-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+
     .header-stats {
         width: 100%;
-    }
-    
-    .branch-progress-bar {
-        width: 60px;
-    }
-    
-    .branch-name {
-        font-size: 0.75rem;
-    }
-    
-    .skill-nodes {
-        padding: 0.75rem 0.75rem 1rem;
     }
 }
 </style>
@@ -471,57 +448,78 @@
 
 {% block scripts %}
 <script>
-    // Data for the skill tree
     window.ROADMAP_DATA = {{ categories | tojson }};
     window.COMPLETED_LESSONS = {{ summary.completed_lessons | tojson }};
-    
-    // Track which branch is currently open
+
     let currentOpenBranch = null;
-    
+
     function toggleBranch(branchId) {
         const content = document.getElementById('content-' + branchId);
         const chevron = document.getElementById('chevron-' + branchId);
+        if (!content) return;
         const header = content.previousElementSibling;
-        
+
         if (currentOpenBranch && currentOpenBranch !== branchId) {
-            // Close the currently open branch
             const prevContent = document.getElementById('content-' + currentOpenBranch);
             const prevChevron = document.getElementById('chevron-' + currentOpenBranch);
             if (prevContent) {
                 prevContent.style.display = 'none';
-                prevChevron.classList.remove('open');
+                if (prevChevron) prevChevron.classList.remove('open');
                 prevContent.previousElementSibling.setAttribute('aria-expanded', 'false');
             }
         }
-        
+
         const isOpen = content.style.display === 'block';
-        
+
         if (isOpen) {
             content.style.display = 'none';
-            chevron.classList.remove('open');
+            if (chevron) chevron.classList.remove('open');
             header.setAttribute('aria-expanded', 'false');
             currentOpenBranch = null;
         } else {
             content.style.display = 'block';
-            chevron.classList.add('open');
+            if (chevron) chevron.classList.add('open');
             header.setAttribute('aria-expanded', 'true');
             currentOpenBranch = branchId;
-            
-            // Scroll into view smoothly
-            setTimeout(() => {
-                content.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }, 100);
         }
     }
-    
-    // Auto-open the branch that has the first uncompleted lesson
+
+    function toggleBranchMore(btn) {
+        const container = document.getElementById(btn.dataset.branchTarget);
+        if (!container) return;
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        container.querySelectorAll('.topic-extra-card').forEach(card => {
+            card.classList.toggle('chunk-hidden', expanded);
+        });
+        btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+        btn.textContent = expanded ? btn.dataset.moreLabel : btn.dataset.lessLabel;
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
+        // Filtros de áreas temáticas
+        const tabs = document.querySelectorAll('.module-filter-tab');
         const branches = document.querySelectorAll('.skill-branch');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const group = tab.dataset.group;
+                tabs.forEach(t => {
+                    const active = t === tab;
+                    t.classList.toggle('active', active);
+                    t.setAttribute('aria-pressed', active ? 'true' : 'false');
+                });
+                branches.forEach(branch => {
+                    const show = (group === 'all') || (branch.dataset.group === group);
+                    branch.style.display = show ? '' : 'none';
+                });
+            });
+        });
+
+        // Abrir automáticamente el primer módulo con temas disponibles
         for (const branch of branches) {
             const nodes = branch.querySelectorAll('.skill-node.available:not(.completed)');
             if (nodes.length > 0) {
-                const branchId = branch.dataset.branch;
-                toggleBranch(branchId);
+                toggleBranch(branch.dataset.branch);
                 break;
             }
         }
