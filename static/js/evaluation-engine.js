@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!container) return;
 
     const sectionKey = container.dataset.sectionKey;
+    const evalSessionId = container.dataset.sessionId ? parseInt(container.dataset.sessionId, 10) : null;
     const totalQuestions = parseInt(container.dataset.total);
     const timeLimit = parseInt(container.dataset.timeLimit);
     const passingScore = parseInt(container.dataset.passingScore);
@@ -206,14 +207,17 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             body: JSON.stringify({
                 section_key: sectionKey,
+                session_id: evalSessionId,
                 answers: answers,
-                time_taken: timeTaken,
             }),
         })
             .then(res => res.json())
             .then(data => {
                 if (data.ok) {
                     showResults(data);
+                    if (data.xp_gained > 0 && typeof window.onProgressXpUpdate === 'function') {
+                        window.onProgressXpUpdate(data, '¡Evaluación aprobada!');
+                    }
                 } else {
                     alert('Error: ' + (data.error || 'No se pudo procesar la evaluación'));
                     btnSubmit.disabled = false;
@@ -234,14 +238,15 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsScreen.hidden = false;
 
         const { score, total, percentage, passed, xp_gained, attempt_number, details } = data;
+        const effectivePassing = Number.isFinite(data.passing_score) ? data.passing_score : passingScore;
 
         // Status badge
         const statusEl = document.getElementById('eval-results-status');
-        if (passed) {
-            statusEl.innerHTML = '<span class="eval-status-passed">APROBADO</span>';
-        } else {
-            statusEl.innerHTML = '<span class="eval-status-failed">NO APROBADO</span>';
-        }
+        statusEl.textContent = '';
+        const statusSpan = document.createElement('span');
+        statusSpan.className = passed ? 'eval-status-passed' : 'eval-status-failed';
+        statusSpan.textContent = passed ? 'APROBADO' : 'NO APROBADO';
+        statusEl.appendChild(statusSpan);
 
         // Title
         const titleEl = document.getElementById('eval-results-title');
@@ -274,9 +279,9 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('eval-xp-text').textContent = `+${xp_gained} XP`;
         }
 
-        // Breakdown table
+        // Breakdown table (construcción segura con createElement/textContent)
         const breakdownTable = document.getElementById('breakdown-table');
-        breakdownTable.innerHTML = '';
+        breakdownTable.textContent = '';
 
         if (details) {
             const sortedDetails = Object.entries(details).sort((a, b) => {
@@ -287,23 +292,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
             for (const [lessonId, info] of sortedDetails) {
                 const pct = info.total > 0 ? Math.round((info.correct / info.total) * 100) : 0;
-                const colorClass = pct >= 70 ? 'good' : pct >= 40 ? 'okay' : 'bad';
+                const colorClass = pct >= effectivePassing ? 'good' : pct >= 40 ? 'okay' : 'bad';
 
                 const row = document.createElement('div');
                 row.className = 'breakdown-row';
-                row.innerHTML = `
-                    <span class="breakdown-lesson">${info.lesson_title || lessonId}</span>
-                    <span class="breakdown-score ${colorClass}">${info.correct}/${info.total}</span>
-                    <div class="breakdown-bar-wrap">
-                        <div class="breakdown-bar-fill ${colorClass}" style="width: 0%"></div>
-                    </div>
-                    <a href="/leccion/${lessonId}" class="breakdown-link">Repasar →</a>
-                `;
+
+                const lessonSpan = document.createElement('span');
+                lessonSpan.className = 'breakdown-lesson';
+                lessonSpan.textContent = info.lesson_title || lessonId;
+
+                const scoreSpan = document.createElement('span');
+                scoreSpan.className = `breakdown-score ${colorClass}`;
+                scoreSpan.textContent = `${info.correct}/${info.total}`;
+
+                const barWrap = document.createElement('div');
+                barWrap.className = 'breakdown-bar-wrap';
+                const barFill = document.createElement('div');
+                barFill.className = `breakdown-bar-fill ${colorClass}`;
+                barFill.style.width = '0%';
+                barWrap.appendChild(barFill);
+
+                const reviewLink = document.createElement('a');
+                reviewLink.href = `/leccion/${encodeURIComponent(lessonId)}`;
+                reviewLink.className = 'breakdown-link';
+                reviewLink.textContent = 'Repasar →';
+
+                row.appendChild(lessonSpan);
+                row.appendChild(scoreSpan);
+                row.appendChild(barWrap);
+                row.appendChild(reviewLink);
                 breakdownTable.appendChild(row);
 
                 // Animate bar
                 setTimeout(() => {
-                    row.querySelector('.breakdown-bar-fill').style.width = `${pct}%`;
+                    barFill.style.width = `${pct}%`;
                 }, 300);
             }
         }

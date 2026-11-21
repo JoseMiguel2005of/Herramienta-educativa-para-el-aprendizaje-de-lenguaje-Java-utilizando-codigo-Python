@@ -236,28 +236,19 @@ function _getCsrfToken() {
     return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 }
 
-// Función global para que los ejercicios puedan registrar progreso
-window.trackProgress = function(lessonId, exerciseId) {
-    fetch('/api/progreso/ejercicio', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': _getCsrfToken()
-        },
-        body: JSON.stringify({ lesson_id: lessonId, exercise_id: exerciseId, passed: true })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.xp_gained > 0) {
-            showXPNotification(`+${data.xp_gained} XP`, '¡Ejercicio completado!');
+// Sincroniza notificaciones y sidebar a partir de respuestas verificadas por el servidor
+window.onProgressXpUpdate = function(data, titleText) {
+    if (!data) return;
+    if (data.xp_gained > 0) {
+        showXPNotification(`+${data.xp_gained} XP`, titleText || '¡Ejercicio completado!');
+        if (data.summary) {
             updateSidebarProgress(data.summary);
             checkForNewAchievements(data.summary, true);
         }
-        if (data.badge_unlocked) {
-            showBadgeNotification(data.badge);
-        }
-    })
-    .catch(err => console.error("Error al registrar ejercicio:", err));
+    }
+    if (data.badge_unlocked) {
+        showBadgeNotification(data.badge);
+    }
 };
 
 function markLessonCompleted(lessonId) {

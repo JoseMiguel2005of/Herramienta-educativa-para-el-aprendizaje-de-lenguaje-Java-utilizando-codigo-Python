@@ -72,6 +72,9 @@ class User(UserMixin, db.Model):
     evaluations = db.relationship(
         "SectionEvaluation", backref="user", lazy=True, cascade="all, delete-orphan"
     )
+    evaluation_sessions = db.relationship(
+        "EvaluationSession", backref="user", lazy=True, cascade="all, delete-orphan"
+    )
     reset_codes = db.relationship(
         "PasswordResetCode", backref="user", lazy=True, cascade="all, delete-orphan"
     )
@@ -172,6 +175,18 @@ class SectionEvaluation(db.Model):
     attempt_number = db.Column(db.Integer, default=1)
     details_json = db.Column(db.Text, nullable=True)
     completed_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+
+class EvaluationSession(db.Model):
+    __tablename__ = "evaluation_sessions"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
+    section_key = db.Column(db.String(100), nullable=False, index=True)
+    question_ids_json = db.Column(db.Text, nullable=False)
+    started_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    expires_at = db.Column(db.DateTime, nullable=False)
+    submitted = db.Column(db.Boolean, default=False, nullable=False)
 
 
 class PasswordResetCode(db.Model):

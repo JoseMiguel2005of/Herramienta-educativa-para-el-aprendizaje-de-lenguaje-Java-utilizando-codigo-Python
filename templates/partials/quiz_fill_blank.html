@@ -19,7 +19,7 @@
         {% else %}
         <span class="lang-badge python-badge" style="font-size:0.75rem;">Python</span>
         {% endif %}
-        <div class="exercise-template">{{ ex.template_html | safe }}</div>
+        <div class="exercise-template">{{ ex.template_html | strip_exercise_answers | safe }}</div>
     </div>
 </div>
 
@@ -27,7 +27,7 @@
 <div class="exercise-lang-view exercise-lang-java" style="display: none;">
     <div class="exercise-code-area">
         <span class="lang-badge java-badge" style="font-size:0.75rem;">Java</span>
-        <div class="exercise-template">{{ ex.template_html_java | safe }}</div>
+        <div class="exercise-template">{{ ex.template_html_java | strip_exercise_answers | safe }}</div>
     </div>
 </div>
 {% endif %}

@@ -273,7 +273,7 @@
 
 <div class="cert-container">
     {% if not is_complete %}
-    <!-- Locked Overlay -->
+    <!-- Locked State (no se emite el certificado ni el ID en el HTML hasta completar el módulo) -->
     <div class="cert-locked-overlay">
         <div class="neu-icon-box" style="width: 52px; height: 52px; margin: 0 auto 1rem;">
             <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" fill="none" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
@@ -282,8 +282,7 @@
         <div class="cert-locked-progress">{{ completed_lessons }} / {{ total_lessons }} lecciones completadas</div>
         <a href="{{ url_for('dashboard') }}" class="cert-locked-back">← Volver al Dashboard</a>
     </div>
-    {% endif %}
-
+    {% else %}
     <div class="cert-header">
         <div class="cert-logo">PY2JAVA EDU</div>
         <div class="cert-type">Certificado de Finalización</div>
@@ -314,6 +313,7 @@
     </div>
 
     <div class="cert-id">CERT-{{ category_id | upper }}-{{ user.id }}-{{ completion_year }}</div>
+    {% endif %}
 </div>
 
 {% if is_complete %}

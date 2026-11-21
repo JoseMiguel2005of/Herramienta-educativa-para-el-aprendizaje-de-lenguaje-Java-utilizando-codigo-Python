@@ -4,6 +4,7 @@
 
 {% block content %}
 <article class="eval-page" id="eval-container" data-section-key="{{ section_key }}"
+    data-session-id="{{ eval_session_id }}"
     data-total="{{ questions | length }}" data-time-limit="{{ time_limit }}" data-passing-score="{{ passing_score }}">
 
     {# ===== START SCREEN ===== #}

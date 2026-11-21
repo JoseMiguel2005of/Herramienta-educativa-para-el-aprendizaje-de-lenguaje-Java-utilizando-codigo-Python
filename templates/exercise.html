@@ -56,12 +56,11 @@
                         </label>
                         {% endfor %}
                     </div>
-                    <div class="quiz-answer-data" data-correct="{{ current_exercise.correct }}" hidden></div>
                 </div>
                 {% elif current_exercise.template_html %}
                 <div class="exercise-code-block">
                     <div class="exercise-template-area" id="exercise-template-py">
-                        {{ current_exercise.template_html | safe }}
+                        {{ current_exercise.template_html | strip_exercise_answers | safe }}
                     </div>
                 </div>
                 {% elif current_exercise.expected_output %}
@@ -87,12 +86,11 @@
                         </label>
                         {% endfor %}
                     </div>
-                    <div class="quiz-answer-data" data-correct="{{ current_exercise.correct_java | default(current_exercise.correct, true) }}" hidden></div>
                 </div>
                 {% elif current_exercise.template_html_java %}
                 <div class="exercise-code-block">
                     <div class="exercise-template-area" id="exercise-template-java">
-                        {{ current_exercise.template_html_java | safe }}
+                        {{ current_exercise.template_html_java | strip_exercise_answers | safe }}
                     </div>
                 </div>
                 {% endif %}
@@ -106,7 +104,7 @@
                 <button class="btn-exercise-hint" id="btn-hint" title="Obtener una pista">
                     Pista
                 </button>
-                <button class="btn-exercise-show" id="btn-show-answer">
+                <button class="btn-exercise-show" id="btn-show-answer" data-exercise-id="{{ current_exercise.id or (topic ~ '-' ~ exercise_num) }}" data-lesson="{{ topic }}">
                     Ver Solución
                 </button>
             </div>

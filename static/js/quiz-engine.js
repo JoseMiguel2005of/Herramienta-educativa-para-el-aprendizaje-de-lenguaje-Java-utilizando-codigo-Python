@@ -21,75 +21,38 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressFill = document.getElementById('quiz-progress-fill');
 
     let currentQuestion = 0;
-    let score = 0;
-    let answers = [];
-    let answered = false;
+    let userAnswers = {};
 
     // Start quiz
     btnStart.addEventListener('click', () => {
         startScreen.hidden = true;
         activeScreen.hidden = false;
         currentQuestion = 0;
-        score = 0;
-        answers = [];
+        userAnswers = {};
         showQuestion(0);
     });
 
-    // Next question
-    btnNext.addEventListener('click', () => {
-        if (!answered) {
-            // Check if user selected an option
-            const slide = getSlide(currentQuestion);
-            const selected = slide.querySelector('input[type="radio"]:checked');
-            if (!selected) return; // No selection
+    // Next / Finish question (envía respuestas al servidor al finalizar para calificación anti-trampa)
+    btnNext.addEventListener('click', async () => {
+        const slide = getSlide(currentQuestion);
+        const selected = slide.querySelector('input[type="radio"]:checked');
+        if (!selected) return; // No selection
 
-            // Check answer
-            const correctIndex = parseInt(slide.dataset.correct);
-            const selectedIndex = parseInt(selected.value);
-            answered = true;
+        const qid = slide.dataset.qid || String(currentQuestion);
+        userAnswers[qid] = parseInt(selected.value, 10);
 
-            const options = slide.querySelectorAll('.quiz-option');
-            options.forEach((opt, i) => {
-                const radio = opt.querySelector('input[type="radio"]');
-                radio.disabled = true;
-                if (i === correctIndex) {
-                    opt.classList.add('correct');
-                } else if (i === selectedIndex && selectedIndex !== correctIndex) {
-                    opt.classList.add('incorrect');
-                }
-            });
-
-            if (selectedIndex === correctIndex) {
-                score++;
-            }
-            if (window.QuizSounds) window.QuizSounds.play(selectedIndex === correctIndex);
-            answers.push({ question: currentQuestion, selected: selectedIndex, correct: correctIndex });
-
-            // Change button text
-            if (currentQuestion < totalQuestions - 1) {
-                btnNext.textContent = 'Siguiente Pregunta ❯';
-            } else {
-                btnNext.textContent = 'Ver Resultados ❯';
-            }
-            return;
-        }
-
-        // Move to next question
-        answered = false;
         currentQuestion++;
-
         if (currentQuestion >= totalQuestions) {
-            showResults();
+            await submitQuiz();
         } else {
             showQuestion(currentQuestion);
-            btnNext.textContent = 'Enviar Respuesta';
         }
     });
 
     // Retry
     btnRetry.addEventListener('click', () => {
         resultsScreen.hidden = true;
-        // Reset all questions
+        userAnswers = {};
         document.querySelectorAll('.quiz-question-slide').forEach(slide => {
             slide.querySelectorAll('input[type="radio"]').forEach(r => {
                 r.checked = false;
@@ -105,9 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Option click handler - select the radio when clicking the label
     document.querySelectorAll('.quiz-option').forEach(option => {
         option.addEventListener('click', () => {
-            if (answered) return;
             const radio = option.querySelector('input[type="radio"]');
-            radio.checked = true;
+            if (radio && !radio.disabled) radio.checked = true;
         });
     });
 
@@ -116,31 +78,64 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showQuestion(index) {
-        // Hide all slides
         document.querySelectorAll('.quiz-question-slide').forEach(s => s.hidden = true);
-        // Show current
         const slide = getSlide(index);
         if (slide) slide.hidden = false;
 
-        // Update counter
         counterEl.textContent = `Pregunta ${index + 1} de ${totalQuestions}`;
-        // Update progress
         const pct = ((index + 1) / totalQuestions * 100);
         progressFill.style.width = pct + '%';
-        // Reset button
-        btnNext.textContent = 'Enviar Respuesta';
+        btnNext.disabled = false;
+        btnNext.textContent = index < totalQuestions - 1 ? 'Siguiente Pregunta ❯' : 'Ver Resultados ❯';
     }
 
-    function showResults() {
+    async function submitQuiz() {
+        btnNext.disabled = true;
+        btnNext.textContent = 'Calificando...';
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+        try {
+            const resp = await fetch('/api/quiz/resultado', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({
+                    quiz_id: quizId,
+                    answers: userAnswers
+                })
+            });
+            const data = await resp.json().catch(() => ({ ok: false }));
+            if (!resp.ok || !data.ok) {
+                alert(data.error || 'No se pudo calificar el quiz. Intenta de nuevo.');
+                currentQuestion = totalQuestions - 1;
+                showQuestion(currentQuestion);
+                return;
+            }
+            showResults(data);
+        } catch (err) {
+            console.error('Error al calificar quiz:', err);
+            alert('Error de conexión al enviar el quiz.');
+            currentQuestion = totalQuestions - 1;
+            showQuestion(currentQuestion);
+        }
+    }
+
+    function showResults(data) {
         activeScreen.hidden = true;
         resultsScreen.hidden = false;
 
-        const pct = Math.round((score / totalQuestions) * 100);
+        const score = data.score || 0;
+        const total = data.total || totalQuestions;
+        const pct = Number.isFinite(data.percentage) ? data.percentage : Math.round((score / total) * 100);
+
+        if (window.QuizSounds) window.QuizSounds.play(pct >= 70);
+
         document.getElementById('score-text').textContent = pct + '%';
         document.getElementById('quiz-results-detail').textContent =
-            `¡Obtuviste ${score} de ${totalQuestions} correctas!`;
+            `¡Obtuviste ${score} de ${total} correctas!`;
 
-        // Animate circle
         const circle = document.getElementById('score-circle-fill');
         const circumference = 2 * Math.PI * 54; // r=54
         const offset = circumference - (pct / 100) * circumference;
@@ -148,7 +143,6 @@ document.addEventListener('DOMContentLoaded', () => {
             circle.style.strokeDashoffset = offset;
         }, 100);
 
-        // Change color based on score
         if (pct >= 80) {
             circle.style.stroke = '#66bb6a';
             document.getElementById('score-text').style.color = '#66bb6a';
@@ -159,20 +153,5 @@ document.addEventListener('DOMContentLoaded', () => {
             circle.style.stroke = '#ef5350';
             document.getElementById('score-text').style.color = '#ef5350';
         }
-
-        // Save result
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-        fetch('/api/quiz/resultado', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken
-            },
-            body: JSON.stringify({
-                quiz_id: quizId,
-                score: score,
-                total: totalQuestions
-            })
-        }).catch(() => {});
     }
 });

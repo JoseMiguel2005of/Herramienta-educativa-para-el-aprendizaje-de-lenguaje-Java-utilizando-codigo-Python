@@ -8,7 +8,6 @@
             </label>
             {% endfor %}
         </div>
-        <div class="quiz-answer-data" data-correct="{{ ex.correct }}" data-explanation="{{ ex.explanation | default('', true) }}" hidden></div>
     </div>
 </div>
 
@@ -23,7 +22,6 @@
             </label>
             {% endfor %}
         </div>
-        <div class="quiz-answer-data" data-correct="{{ ex.correct_java | default(ex.correct, true) }}" data-explanation="{{ ex.explanation_java | default(ex.explanation, true) }}" hidden></div>
     </div>
 </div>
 {% endif %}

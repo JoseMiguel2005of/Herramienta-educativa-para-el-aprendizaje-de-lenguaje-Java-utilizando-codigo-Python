@@ -172,11 +172,56 @@ def load_practice_problems():
 
 def get_practice_problem(problem_id):
     """Obtiene un problema de práctica por su ID."""
+    if not isinstance(problem_id, str) or not SAFE_CONTENT_ID_RE.fullmatch(problem_id):
+        return None
     data = load_practice_problems()
     for p in data.get("problems", []):
         if p["id"] == problem_id:
             return p
     return None
+
+
+@lru_cache(maxsize=1)
+def get_valid_practice_ids():
+    """Devuelve el conjunto inmutable de IDs válidos de problemas de práctica."""
+    data = load_practice_problems()
+    return frozenset(p["id"] for p in data.get("problems", []) if isinstance(p.get("id"), str))
+
+
+@lru_cache(maxsize=1)
+def get_valid_exercise_ids():
+    """Devuelve el conjunto inmutable de todos los exercise_id válidos del currículo."""
+    valid_ids = set()
+    if os.path.isdir(LESSONS_DIR):
+        for fname in sorted(os.listdir(LESSONS_DIR)):
+            if not fname.endswith(".json"):
+                continue
+            lid = fname[:-5]
+            data = load_lesson(lid)
+            if not data:
+                continue
+            for idx, ex in enumerate(data.get("exercises", []), start=1):
+                ex_id = ex.get("id")
+                if isinstance(ex_id, str) and ex_id.strip():
+                    valid_ids.add(ex_id.strip())
+                else:
+                    valid_ids.add(f"{lid}-{idx}")
+    return frozenset(valid_ids)
+
+
+def get_lesson_exercise(lesson_id, exercise_id):
+    """Valida que lesson_id y exercise_id existan juntos en el currículo y devuelve (lesson_data, exercise)."""
+    if not isinstance(lesson_id, str) or not isinstance(exercise_id, str):
+        return None, None
+    lesson_data = load_lesson(lesson_id)
+    if not lesson_data:
+        return None, None
+    canonical_lesson_id = LESSON_ALIASES.get(lesson_id, lesson_id)
+    for idx, ex in enumerate(lesson_data.get("exercises", []), start=1):
+        ex_id = ex.get("id")
+        if (ex_id and ex_id == exercise_id) or f"{canonical_lesson_id}-{idx}" == exercise_id:
+            return lesson_data, ex
+    return lesson_data, None
 
 
 # ===== EVALUATION LOADERS =====
@@ -224,6 +269,8 @@ def invalidate_cache():
     load_all_quizzes.cache_clear()
     load_examples_catalog.cache_clear()
     load_practice_problems.cache_clear()
+    get_valid_practice_ids.cache_clear()
+    get_valid_exercise_ids.cache_clear()
     load_evaluation.cache_clear()
     load_all_evaluations.cache_clear()
 

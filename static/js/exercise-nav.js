@@ -59,14 +59,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const saved = localStorage.getItem('py2java_quiz_lang') || 'python';
     switchStandaloneExerciseLang(saved);
 
-    // Enviar / Comprobar respuesta
+    // Enviar / Comprobar respuesta (calificación estricta en servidor)
     if (submitBtn) {
-        submitBtn.addEventListener('click', () => {
+        submitBtn.addEventListener('click', async () => {
             const card = document.getElementById('exercise-card-main');
             if (!card) return;
 
             const isJavaActive = standaloneQuizLang === 'java' && card.dataset.hasJava === 'true';
-            const activeView = isJavaActive 
+            const lang = isJavaActive ? 'java' : 'python';
+            const activeView = isJavaActive
                 ? (card.querySelector('.exercise-lang-java') || card)
                 : (card.querySelector('.exercise-lang-python') || card);
 
@@ -74,68 +75,95 @@ document.addEventListener('DOMContentLoaded', () => {
             const templateArea = activeView.querySelector('.exercise-template-area');
             const freeformInput = activeView.querySelector('.exercise-freeform-editor');
 
-            if (mcBlock) {
-                // Opción Múltiple
-                const answerData = mcBlock.querySelector('.quiz-answer-data');
-                const correctIndex = answerData ? parseInt(answerData.getAttribute('data-correct')) : -1;
+            const payload = {
+                lesson_id: submitBtn.dataset.lesson || '',
+                exercise_id: submitBtn.dataset.exerciseId || '',
+                lang: lang,
+            };
 
+            let selectedIndex = -1;
+            let inputs = [];
+
+            if (mcBlock) {
                 const selected = mcBlock.querySelector('input[type="radio"]:checked');
                 if (!selected) {
                     showFeedback(false, 'Por favor selecciona una opción antes de comprobar.');
                     return;
                 }
-
-                const selectedIndex = parseInt(selected.value);
-                const isCorrect = (selectedIndex === correctIndex);
-
-                mcBlock.querySelectorAll('.quiz-option-label').forEach((label, i) => {
-                    label.classList.remove('option-correct', 'option-incorrect');
-                    if (i === correctIndex) {
-                        label.classList.add('option-correct');
-                    } else if (i === selectedIndex && !isCorrect) {
-                        label.classList.add('option-incorrect');
-                    }
-                });
-
-                showFeedback(isCorrect,
-                    isCorrect ? '¡Correcto! Excelente trabajo.' : 'Opción incorrecta. La respuesta correcta está resaltada en verde.');
-
-                if (isCorrect) {
-                    trackExerciseProgress(submitBtn.dataset.lesson, submitBtn.dataset.exerciseId);
-                }
-
+                selectedIndex = parseInt(selected.value, 10);
+                payload.answer = selectedIndex;
             } else if (templateArea) {
-                // Espacios en blanco (Fill-in-the-blank)
-                const inputs = templateArea.querySelectorAll('.exercise-input');
-                let allCorrect = true;
-
-                inputs.forEach(input => {
-                    const answer = (input.dataset.answer || '').trim().toLowerCase();
-                    const userVal = input.value.trim().toLowerCase();
-                    if (userVal === answer) {
-                        input.classList.remove('input-incorrect');
-                        input.classList.add('input-correct');
-                    } else {
-                        input.classList.remove('input-correct');
-                        input.classList.add('input-incorrect');
-                        allCorrect = false;
-                    }
-                });
-
-                showFeedback(allCorrect,
-                    allCorrect ? '¡Correcto! Completaste el código adecuadamente.' : 'Revisa los campos resaltados con borde negro e intenta de nuevo.');
-
-                if (allCorrect) {
-                    trackExerciseProgress(submitBtn.dataset.lesson, submitBtn.dataset.exerciseId);
-                }
+                inputs = Array.from(templateArea.querySelectorAll('.exercise-input'));
+                payload.answers = inputs.map(inp => inp.value);
             } else if (freeformInput) {
                 const userCode = freeformInput.value.trim();
                 if (userCode.length === 0) {
                     showFeedback(false, 'Por favor escribe tu código antes de comprobar.');
                     return;
                 }
-                showFeedback(true, '¡Respuesta enviada! Puedes usar el botón de Pista o consultar al Tutor IA si necesitas retroalimentación.');
-                trackExerciseProgress(submitBtn.dataset.lesson, submitBtn.dataset.exerciseId);
+                payload.answer = userCode;
+            }
+
+            submitBtn.disabled = true;
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            try {
+                const resp = await fetch('/api/progreso/ejercicio', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const data = await resp.json().catch(() => ({ ok: false }));
+                if (!resp.ok || !data.ok) {
+                    showFeedback(false, data.error || 'No se pudo validar tu respuesta.');
+                    submitBtn.disabled = false;
+                    return;
+                }
+
+                const isCorrect = Boolean(data.passed);
+                if (mcBlock) {
+                    mcBlock.querySelectorAll('.quiz-option-label').forEach((label, i) => {
+                        label.classList.remove('option-correct', 'option-incorrect');
+                        if (i === selectedIndex) {
+                            label.classList.add(isCorrect ? 'option-correct' : 'option-incorrect');
+                        }
+                    });
+                    showFeedback(
+                        isCorrect,
+                        isCorrect ? '¡Correcto! Excelente trabajo.' : 'Opción incorrecta. Intenta de nuevo o consulta una pista.'
+                    );
+                } else if (templateArea) {
+                    const results = Array.isArray(data.input_results) ? data.input_results : [];
+                    inputs.forEach((input, idx) => {
+                        if (results[idx]) {
+                            input.classList.remove('input-incorrect');
+                            input.classList.add('input-correct');
+                        } else {
+                            input.classList.remove('input-correct');
+                            input.classList.add('input-incorrect');
+                        }
+                    });
+                    showFeedback(
+                        isCorrect,
+                        isCorrect ? '¡Correcto! Completaste el código adecuadamente.' : 'Revisa los campos resaltados e intenta de nuevo.'
+                    );
+                } else if (freeformInput) {
+                    showFeedback(
+                        isCorrect,
+                        isCorrect ? '¡Correcto! Tu respuesta coincide con la solución esperada.' : 'Tu respuesta no coincide aún. Usa la pista o el Tutor IA para revisar.'
+                    );
+                }
+
+                if (isCorrect && typeof window.onProgressXpUpdate === 'function') {
+                    window.onProgressXpUpdate(data, '¡Ejercicio completado!');
+                }
+                submitBtn.disabled = isCorrect;
+            } catch (err) {
+                console.error('Error al validar ejercicio:', err);
+                showFeedback(false, 'Error de conexión al validar tu respuesta.');
+                submitBtn.disabled = false;
             }
         });
     }
@@ -149,41 +177,64 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Ver solución
+    // Ver solución (consulta pedagógica sin otorgar XP)
     if (showBtn) {
-        showBtn.addEventListener('click', () => {
+        showBtn.addEventListener('click', async () => {
             const card = document.getElementById('exercise-card-main');
             if (!card) return;
 
             const isJavaActive = standaloneQuizLang === 'java' && card.dataset.hasJava === 'true';
-            const activeView = isJavaActive 
+            const lang = isJavaActive ? 'java' : 'python';
+            const activeView = isJavaActive
                 ? (card.querySelector('.exercise-lang-java') || card)
                 : (card.querySelector('.exercise-lang-python') || card);
 
-            const mcBlock = activeView.querySelector('.exercise-options-block');
-            const templateArea = activeView.querySelector('.exercise-template-area');
-
-            if (mcBlock) {
-                const answerData = mcBlock.querySelector('.quiz-answer-data');
-                const correctIndex = answerData ? parseInt(answerData.getAttribute('data-correct')) : -1;
-
-                mcBlock.querySelectorAll('.quiz-option-label').forEach((label, i) => {
-                    label.classList.remove('option-correct', 'option-incorrect');
-                    if (i === correctIndex) {
-                        label.classList.add('option-correct');
-                    }
-                    const radio = label.querySelector('input[type="radio"]');
-                    if (radio && i === correctIndex) radio.checked = true;
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            try {
+                const resp = await fetch('/api/ejercicio/solucion', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify({
+                        lesson_id: showBtn.dataset.lesson || '',
+                        exercise_id: showBtn.dataset.exerciseId || '',
+                        lang: lang
+                    })
                 });
-                showFeedback(true, 'Respuesta mostrada.', true);
-            } else if (templateArea) {
-                const inputs = templateArea.querySelectorAll('.exercise-input');
-                inputs.forEach(input => {
-                    input.value = input.dataset.answer || '';
-                    input.classList.remove('input-incorrect');
-                    input.classList.add('input-correct');
-                });
-                showFeedback(true, 'Solución completada.', true);
+                const data = await resp.json().catch(() => ({ ok: false }));
+                if (!resp.ok || !data.ok) return;
+
+                const mcBlock = activeView.querySelector('.exercise-options-block');
+                const templateArea = activeView.querySelector('.exercise-template-area');
+                const freeformInput = activeView.querySelector('.exercise-freeform-editor');
+
+                if (mcBlock && data.type === 'multiple-choice') {
+                    const correctIndex = data.correct_index;
+                    mcBlock.querySelectorAll('.quiz-option-label').forEach((label, i) => {
+                        label.classList.remove('option-correct', 'option-incorrect');
+                        if (i === correctIndex) {
+                            label.classList.add('option-correct');
+                        }
+                        const radio = label.querySelector('input[type="radio"]');
+                        if (radio && i === correctIndex) radio.checked = true;
+                    });
+                    showFeedback(true, 'Respuesta mostrada.', true);
+                } else if (templateArea && Array.isArray(data.answers)) {
+                    const inputs = templateArea.querySelectorAll('.exercise-input');
+                    inputs.forEach((input, idx) => {
+                        input.value = data.answers[idx] !== undefined ? data.answers[idx] : '';
+                        input.classList.remove('input-incorrect');
+                        input.classList.add('input-correct');
+                    });
+                    showFeedback(true, 'Solución completada.', true);
+                } else if (freeformInput && Array.isArray(data.answers) && data.answers.length > 0) {
+                    freeformInput.value = data.answers[0];
+                    showFeedback(true, 'Solución mostrada.', true);
+                }
+            } catch (err) {
+                console.error('Error al cargar solución:', err);
             }
         });
     }
@@ -208,21 +259,5 @@ document.addEventListener('DOMContentLoaded', () => {
         feedback.hidden = false;
         feedback.classList.remove('feedback-correct', 'feedback-incorrect');
         feedback.classList.add(isCorrect ? 'feedback-correct' : 'feedback-incorrect');
-    }
-
-    function trackExerciseProgress(lessonId, exerciseId) {
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-        fetch('/api/progreso/ejercicio', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken
-            },
-            body: JSON.stringify({
-                lesson_id: lessonId,
-                exercise_id: exerciseId,
-                passed: true
-            })
-        }).catch(() => {});
     }
 });

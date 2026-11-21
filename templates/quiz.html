@@ -40,7 +40,7 @@
         <div class="quiz-questions-wrapper" id="quiz-questions">
             {% for q in quiz_data.questions %}
             {% set outer_loop_index = loop.index0 %}
-            <div class="quiz-question-slide" data-question="{{ outer_loop_index }}" data-correct="{{ q.correct }}" data-explanation="{{ q.explanation }}" {% if not loop.first %}hidden{% endif %}>
+            <div class="quiz-question-slide" data-question="{{ outer_loop_index }}" data-qid="{{ q.id | default(outer_loop_index) }}" {% if not loop.first %}hidden{% endif %}>
                 <p class="quiz-question-text">{{ q.question }}</p>
                 <div class="quiz-options-list">
                     {% for opt in q.options %}
