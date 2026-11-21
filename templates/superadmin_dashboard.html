@@ -23,11 +23,13 @@
         </div>
     </header>
 
-    {% if superadmin_msg %}
-    <div style="margin-bottom: 1.5rem; padding: 0.85rem 1rem; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; border: 1px solid {{ '#a6e22e' if superadmin_msg.type == 'success' else '#ef5350' }}; background: {{ 'rgba(166,226,46,0.08)' if superadmin_msg.type == 'success' else 'rgba(239,83,80,0.08)' }}; color: {{ '#a6e22e' if superadmin_msg.type == 'success' else '#ef5350' }};">
-        {{ superadmin_msg.text }}
+    {% with flashed_messages = get_flashed_messages(with_categories=true, category_filter=['success', 'error']) %}
+    {% for category, msg in flashed_messages %}
+    <div role="{{ 'alert' if category == 'error' else 'status' }}" style="margin-bottom: 1.5rem; padding: 0.85rem 1rem; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; border: 1px solid {{ '#a6e22e' if category == 'success' else '#ef5350' }}; background: {{ 'rgba(166,226,46,0.08)' if category == 'success' else 'rgba(239,83,80,0.08)' }}; color: {{ '#a6e22e' if category == 'success' else '#ef5350' }};">
+        {{ msg }}
     </div>
-    {% endif %}
+    {% endfor %}
+    {% endwith %}
 
     <!-- MÉTRICAS GLOBALES -->
     <div class="telemetry-grid" style="grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); margin-bottom: 1.75rem;">

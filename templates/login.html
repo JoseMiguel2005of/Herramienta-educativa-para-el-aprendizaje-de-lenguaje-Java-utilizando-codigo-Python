@@ -7,6 +7,15 @@
     <div class="login-container" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 2rem; width: 100%; max-width: 400px; box-shadow: var(--shadow-lg);">
         <h2 style="text-align: center; margin-bottom: 1.5rem; color: var(--green);">Iniciar Sesión</h2>
         
+        {% with flashed = get_flashed_messages(with_categories=true) %}
+        {% for category, msg in flashed %}
+        <div role="{{ 'alert' if category == 'error' else 'status' }}" class="alert-inclusive {{ 'alert-inclusive--danger' if category == 'error' else ('alert-inclusive--success' if category == 'success' else 'alert-inclusive--info') }}">
+            <span aria-hidden="true">{{ '⚠' if category == 'error' else ('✓' if category == 'success' else 'ℹ') }}</span>
+            <span>{{ msg }}</span>
+        </div>
+        {% endfor %}
+        {% endwith %}
+
         {% if error %}
         <div role="alert" class="alert-inclusive alert-inclusive--danger">
             <span aria-hidden="true">⚠</span>
@@ -22,9 +31,12 @@
         {% endif %}
         
         <form method="POST" action="{{ url_for('login') }}" style="display: flex; flex-direction: column; gap: 1rem;">
+            {% if next_url %}
+            <input type="hidden" name="next" value="{{ next_url }}">
+            {% endif %}
             <div>
                 <label for="username" style="display: block; margin-bottom: 0.45rem; color: var(--text); font-weight: 600;">Usuario</label>
-                <input type="text" id="username" name="username" required autocomplete="username" placeholder="Tu usuario..." style="width: 100%; min-height: 44px; padding: 0.75rem 0.9rem; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: inherit;">
+                <input type="text" id="username" name="username" required autocomplete="username" value="{{ username or '' }}" placeholder="Tu usuario..." style="width: 100%; min-height: 44px; padding: 0.75rem 0.9rem; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: inherit;">
             </div>
             
             <div>

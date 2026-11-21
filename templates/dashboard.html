@@ -121,11 +121,13 @@
                 <p class="dash-class-title">Aún no perteneces a ninguna sección de clase.</p>
                 <p class="dash-class-sub">Ingresa el código compartido por tu docente para vincular tu progreso.</p>
                 {% endif %}
-                {% if section_msg %}
-                <div role="status" class="alert-inclusive {{ 'alert-inclusive--success' if section_msg.type == 'success' else 'alert-inclusive--danger' }}" style="margin-top: 0.75rem; margin-bottom: 0;">
-                    <span>{{ '✓' if section_msg.type == 'success' else '⚠' }} {{ section_msg.text }}</span>
+                {% with flashed_messages = get_flashed_messages(with_categories=true, category_filter=['success', 'error']) %}
+                {% for category, msg in flashed_messages %}
+                <div role="{{ 'alert' if category == 'error' else 'status' }}" class="alert-inclusive {{ 'alert-inclusive--success' if category == 'success' else 'alert-inclusive--danger' }}" style="margin-top: 0.75rem; margin-bottom: 0;">
+                    <span>{{ '✓' if category == 'success' else '⚠' }} {{ msg }}</span>
                 </div>
-                {% endif %}
+                {% endfor %}
+                {% endwith %}
             </div>
             <form method="POST" action="{{ url_for('student_join_section') }}" class="dash-class-form">
                 <input type="hidden" name="next" value="{{ url_for('dashboard') }}">

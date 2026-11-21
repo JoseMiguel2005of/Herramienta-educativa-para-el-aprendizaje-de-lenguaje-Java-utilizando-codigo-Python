@@ -15,12 +15,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+import click
 import requests as http_requests
-from flask import (Flask, Response, jsonify, redirect, render_template, request, session,
+from flask import (Flask, Response, flash, jsonify, redirect, render_template, request, session,
                    url_for)
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from flask_login import (LoginManager, current_user, login_required,
                          login_user, logout_user)
-from sqlalchemy import or_
+from sqlalchemy import func, or_
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from email.mime.multipart import MIMEMultipart
@@ -42,28 +45,94 @@ from translator import translate
 
 app = Flask(__name__)
 is_vercel = bool(os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"))
-_secret = os.environ.get("SECRET_KEY")
-if not _secret:
-    if is_vercel:
-        # En serverless (Vercel), derivar clave determinista si SECRET_KEY no fue definida
-        # para evitar que las sesiones se invaliden entre distintas instancias lambda
-        _seed = (
-            os.environ.get("DATABASE_URL")
-            or os.environ.get("TEACHER_SECRET_CODE")
-            or os.environ.get("GEMINI_API_KEY")
-            or "py2java-edu-vercel-fallback-seed"
+is_production = (
+    is_vercel
+    or os.environ.get("FLASK_ENV", "").strip().lower() == "production"
+    or os.environ.get("APP_ENV", "").strip().lower() == "production"
+    or os.environ.get("ENV", "").strip().lower() == "production"
+)
+
+_secret = (os.environ.get("SECRET_KEY") or "").strip()
+if is_production:
+    if not _secret or len(_secret) < 32:
+        raise RuntimeError(
+            "Configuración insegura: la variable de entorno SECRET_KEY es obligatoria en producción "
+            "y debe tener al menos 32 caracteres."
         )
-        _secret = hashlib.sha256(f"py2java-session-{_seed}".encode("utf-8")).hexdigest()
-        print("[AVISO] SECRET_KEY no configurada en Vercel. Se recomienda definir SECRET_KEY en las variables de entorno.", flush=True)
-    else:
-        _secret = os.urandom(32).hex()
-        print("[AVISO] SECRET_KEY no configurada. Usando clave temporal.", flush=True)
+elif not _secret:
+    _secret = os.urandom(32).hex()
+    print("[AVISO] SECRET_KEY no configurada en desarrollo local. Usando clave temporal aleatoria.", flush=True)
+elif len(_secret) < 32:
+    print("[AVISO] SECRET_KEY tiene menos de 32 caracteres. Usa una clave de al menos 32 caracteres en producción.", flush=True)
+
 app.secret_key = _secret
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
-app.config["SESSION_COOKIE_SECURE"] = is_vercel
+app.config["SESSION_COOKIE_SECURE"] = is_production
 
 TEACHER_SECRET_CODE = os.environ.get("TEACHER_SECRET_CODE", "")
+
+USERNAME_RE = re.compile(r"^[A-Za-z0-9_-]{3,30}$")
+EMAIL_RE = re.compile(r"^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+$")
+MIN_PASSWORD_LENGTH = 8
+MAX_RESET_FAILED_ATTEMPTS = 5
+_DUMMY_PASSWORD_HASH = generate_password_hash("py2java-dummy-timing-guard")
+
+
+def _is_valid_username(username):
+    return bool(username and USERNAME_RE.fullmatch(username))
+
+
+def _is_valid_email(email):
+    return bool(email and len(email) <= 120 and EMAIL_RE.fullmatch(email))
+
+
+def _is_safe_redirect_url(target):
+    """Permite únicamente rutas internas relativas o del mismo host HTTP(S), bloqueando open redirects."""
+    if not target or not isinstance(target, str):
+        return False
+    cleaned = target.strip()
+    if not cleaned or "\\" in cleaned or any(ord(c) < 32 for c in cleaned):
+        return False
+    parsed = urlparse(cleaned)
+    if parsed.scheme or parsed.netloc:
+        return parsed.scheme in ("http", "https") and parsed.netloc == request.host
+    return cleaned.startswith("/") and not cleaned.startswith("//")
+
+
+def _get_safe_next_url(raw_target, default=None, exclude_paths=()):
+    if not _is_safe_redirect_url(raw_target):
+        return default
+    cleaned = raw_target.strip()
+    if exclude_paths and urlparse(cleaned).path in exclude_paths:
+        return default
+    return cleaned
+
+
+def _get_client_ip():
+    """Obtiene la IP del cliente para rate-limiting."""
+    if is_vercel:
+        vercel_ip = (request.headers.get("X-Vercel-Forwarded-For") or "").strip()
+        if vercel_ip:
+            return vercel_ip.split(",")[0].strip()
+        forwarded_for = (request.headers.get("X-Forwarded-For") or "").strip()
+        if forwarded_for:
+            return forwarded_for.split(",")[0].strip()
+    return get_remote_address() or "unknown"
+
+
+def _login_rate_limit_key():
+    """Clave de rate-limiting por (IP, username) para frenar fuerza bruta sin bloquear cuentas globalmente."""
+    username = (request.form.get("username") or "").strip().lower()[:80]
+    return f"{_get_client_ip()}:{username}"
+
+
+limiter = Limiter(
+    key_func=_get_client_ip,
+    app=app,
+    storage_uri=os.environ.get("RATELIMIT_STORAGE_URI", "memory://"),
+    default_limits=[],
+)
 
 # Database Configuration
 database_url = os.environ.get("DATABASE_URL")
@@ -81,7 +150,7 @@ if database_url:
 
     if is_vercel:
         # Serverless: use NullPool so each invocation opens/closes its own connection
-        # This prevents accumulating idle connections that exhaust Supabase's pool_size limit
+        # This prevents accumulating idle connections that exhaust Postgres pool limits
         from sqlalchemy.pool import NullPool
         engine_options = {
             "pool_pre_ping": True,
@@ -89,15 +158,16 @@ if database_url:
         }
         if is_postgres:
             engine_options["connect_args"] = {"connect_timeout": 10}
-    else:
+    elif is_postgres:
         engine_options = {
             "pool_pre_ping": True,
             "pool_size": 2,
             "max_overflow": 3,
             "pool_recycle": 280,
+            "connect_args": {"connect_timeout": 10},
         }
-        if is_postgres:
-            engine_options["connect_args"] = {"connect_timeout": 10}
+    else:
+        engine_options = {"pool_pre_ping": True}
 else:
     # On Vercel serverless, working directory is read-only (/var/task), write SQLite to /tmp
     if is_vercel:
@@ -115,6 +185,8 @@ db.init_app(app)
 
 login_manager = LoginManager()
 login_manager.login_view = "login"
+login_manager.login_message = "Inicia sesión para acceder a esta página."
+login_manager.login_message_category = "info"
 login_manager.init_app(app)
 
 
@@ -131,12 +203,75 @@ def load_user(user_id):
 _db_initialized = False
 
 
+def _bootstrap_initial_superadmin():
+    """Crea un Super Admin inicial desde variables de entorno SOLO si aún no existe ninguno."""
+    existing_sa = User.query.filter_by(role="superadmin").first()
+    if existing_sa:
+        return
+
+    sa_username = (os.environ.get("SUPERADMIN_USERNAME") or "").strip()
+    sa_email = (os.environ.get("SUPERADMIN_EMAIL") or "").strip().lower()
+    sa_password = os.environ.get("SUPERADMIN_PASSWORD") or ""
+
+    if not (sa_username or sa_email or sa_password):
+        print(
+            "[INFO] No existe ninguna cuenta Super Admin. Ejecuta 'flask create-superadmin' "
+            "o define SUPERADMIN_USERNAME, SUPERADMIN_EMAIL y SUPERADMIN_PASSWORD.",
+            flush=True,
+        )
+        return
+
+    if not (sa_username and sa_email and sa_password):
+        print(
+            "[WARNING] Variables de bootstrap de Super Admin incompletas. "
+            "Se requieren SUPERADMIN_USERNAME, SUPERADMIN_EMAIL y SUPERADMIN_PASSWORD.",
+            flush=True,
+        )
+        return
+
+    if not _is_valid_username(sa_username):
+        print("[WARNING] SUPERADMIN_USERNAME inválido (debe tener 3-30 caracteres: letras, números, _ o -).", flush=True)
+        return
+
+    if not _is_valid_email(sa_email):
+        print("[WARNING] SUPERADMIN_EMAIL no tiene un formato de correo válido.", flush=True)
+        return
+
+    if len(sa_password) < MIN_PASSWORD_LENGTH:
+        print(f"[WARNING] SUPERADMIN_PASSWORD debe tener al menos {MIN_PASSWORD_LENGTH} caracteres.", flush=True)
+        return
+
+    collision = User.query.filter(
+        or_(
+            func.lower(User.username) == sa_username.lower(),
+            func.lower(User.email) == sa_email.lower(),
+        )
+    ).first()
+    if collision:
+        print(
+            "[WARNING] No se creó Super Admin desde variables de entorno porque el usuario o correo ya existe.",
+            flush=True,
+        )
+        return
+
+    superadmin_user = User(
+        username=sa_username,
+        email=sa_email,
+        password_hash=generate_password_hash(sa_password),
+        role="superadmin",
+        is_suspended=False,
+    )
+    db.session.add(superadmin_user)
+    db.session.commit()
+    print(f"[INFO] Cuenta Super Admin inicial '{sa_username}' creada desde variables de entorno.", flush=True)
+
+
 def init_db():
     global _db_initialized
     with app.app_context():
         try:
             db.create_all()
-            # Migración automática idempotente: asegura columnas nuevas en users sin perder datos
+            # Migración automática idempotente: asegura columnas nuevas sin perder datos
             if is_postgres:
                 try:
                     with db.engine.begin() as conn:
@@ -153,6 +288,14 @@ def init_db():
                         ))
                 except Exception as mig_err:
                     print(f"[WARNING] Migración Postgres users: {mig_err}", flush=True)
+                try:
+                    with db.engine.begin() as conn:
+                        conn.execute(db.text(
+                            "ALTER TABLE password_reset_codes "
+                            "ADD COLUMN IF NOT EXISTS failed_attempts INTEGER DEFAULT 0 NOT NULL"
+                        ))
+                except Exception as mig_err:
+                    print(f"[WARNING] Migración Postgres password_reset_codes: {mig_err}", flush=True)
             else:
                 for col_def in [
                     "email VARCHAR(120)",
@@ -174,27 +317,21 @@ def init_db():
                         conn.execute(db.text("UPDATE users SET is_suspended = 0 WHERE is_suspended IS NULL"))
                 except Exception:
                     pass
-            # Garantizar cuenta Super Admin por defecto (Admin / Admin1)
+                try:
+                    with db.engine.begin() as conn:
+                        conn.execute(db.text("ALTER TABLE password_reset_codes ADD COLUMN failed_attempts INTEGER DEFAULT 0"))
+                except Exception:
+                    pass
+                try:
+                    with db.engine.begin() as conn:
+                        conn.execute(db.text("UPDATE password_reset_codes SET failed_attempts = 0 WHERE failed_attempts IS NULL"))
+                except Exception:
+                    pass
+
             try:
-                superadmin_user = User.query.filter_by(username="Admin").first()
-                if not superadmin_user:
-                    superadmin_user = User(
-                        username="Admin",
-                        email="admin@py2java.edu",
-                        password_hash=generate_password_hash("Admin1"),
-                        role="superadmin",
-                        is_suspended=False,
-                    )
-                    db.session.add(superadmin_user)
-                    db.session.commit()
-                elif superadmin_user.role != "superadmin" or superadmin_user.is_suspended:
-                    superadmin_user.role = "superadmin"
-                    superadmin_user.is_suspended = False
-                    superadmin_user.suspended_reason = None
-                    superadmin_user.suspended_at = None
-                    db.session.commit()
+                _bootstrap_initial_superadmin()
             except Exception as sa_err:
-                print(f"[WARNING] No se pudo inicializar Super Admin: {sa_err}", flush=True)
+                print(f"[WARNING] No se pudo verificar Super Admin inicial: {sa_err}", flush=True)
                 try:
                     db.session.rollback()
                 except Exception:
@@ -203,6 +340,50 @@ def init_db():
             print("[INFO] db.create_all() y migraciones ejecutadas con éxito.", flush=True)
         except Exception as e:
             print(f"[WARNING] db.create_all falló durante el inicio: {e}", flush=True)
+
+
+@app.cli.command("create-superadmin")
+@click.option("--username", prompt="Usuario Super Admin", help="Usuario (3-30 caracteres: letras, números, _ o -).")
+@click.option("--email", prompt="Correo electrónico", help="Correo electrónico válido.")
+@click.option(
+    "--password",
+    prompt="Contraseña",
+    hide_input=True,
+    confirmation_prompt="Confirmar contraseña",
+    help="Contraseña (mínimo 8 caracteres).",
+)
+def create_superadmin_command(username, email, password):
+    """Crea una cuenta Super Admin de forma segura desde la CLI."""
+    if not _db_initialized:
+        init_db()
+
+    clean_username = (username or "").strip()
+    clean_email = (email or "").strip().lower()
+
+    if not _is_valid_username(clean_username):
+        raise click.ClickException(
+            "El nombre de usuario debe tener entre 3 y 30 caracteres (solo letras, números, '-' o '_')."
+        )
+    if not _is_valid_email(clean_email):
+        raise click.ClickException("Debes proporcionar un correo electrónico válido.")
+    if not password or len(password) < MIN_PASSWORD_LENGTH:
+        raise click.ClickException(f"La contraseña debe tener al menos {MIN_PASSWORD_LENGTH} caracteres.")
+
+    if User.query.filter(func.lower(User.username) == clean_username.lower()).first():
+        raise click.ClickException(f"El nombre de usuario '{clean_username}' ya existe.")
+    if User.query.filter(func.lower(User.email) == clean_email.lower()).first():
+        raise click.ClickException(f"El correo '{clean_email}' ya está registrado.")
+
+    new_sa = User(
+        username=clean_username,
+        email=clean_email,
+        password_hash=generate_password_hash(password),
+        role="superadmin",
+        is_suspended=False,
+    )
+    db.session.add(new_sa)
+    db.session.commit()
+    click.echo(f"Super Admin '{clean_username}' creado correctamente.")
 
 
 if not is_vercel:
@@ -1096,12 +1277,10 @@ def dashboard():
             "pct": round(done_cnt / total_cnt * 100) if total_cnt > 0 else 0,
         })
 
-    section_msg = session.pop("section_msg", None)
     return render_template(
         "dashboard.html",
         user=current_user,
         classroom=current_user.classroom,
-        section_msg=section_msg,
         summary=summary,
         categories=LESSON_CATEGORIES,
         lessons=LESSONS,
@@ -1114,18 +1293,18 @@ def dashboard():
 
 @app.route("/estudiante/unirse-seccion", methods=["POST"])
 @login_required
+@limiter.limit("10 per minute; 30 per hour", methods=["POST"])
 def student_join_section():
     """Permite a un estudiante unirse (o cambiarse) a una sección mediante código de clase."""
     wants_json = request.is_json or "application/json" in (request.headers.get("Accept") or "")
-    raw_next = request.form.get("next") or request.referrer or url_for("dashboard")
-    parsed_next = urlparse(raw_next)
-    safe_next = raw_next if (not parsed_next.netloc or parsed_next.netloc == request.host) else url_for("dashboard")
+    raw_next = request.form.get("next") or request.referrer
+    safe_next = _get_safe_next_url(raw_next, default=url_for("dashboard"))
 
     if current_user.role != "student":
         msg = "Solo los estudiantes pueden inscribirse en una sección."
         if wants_json:
             return jsonify({"ok": False, "error": msg}), 403
-        session["section_msg"] = {"type": "error", "text": msg}
+        flash(msg, "error")
         return redirect(safe_next)
 
     raw_code = (_get_json_dict().get("class_code") if request.is_json else request.form.get("class_code")) or ""
@@ -1134,7 +1313,7 @@ def student_join_section():
         msg = "Debes ingresar un código de clase válido."
         if wants_json:
             return jsonify({"ok": False, "error": msg}), 400
-        session["section_msg"] = {"type": "error", "text": msg}
+        flash(msg, "error")
         return redirect(safe_next)
 
     classroom = Classroom.query.filter_by(code=code).first()
@@ -1142,13 +1321,20 @@ def student_join_section():
         msg = f"El código de clase '{code}' no existe. Verifica el código con tu docente."
         if wants_json:
             return jsonify({"ok": False, "error": msg}), 404
-        session["section_msg"] = {"type": "error", "text": msg}
+        flash(msg, "error")
+        return redirect(safe_next)
+
+    teacher = db.session.get(User, classroom.teacher_id)
+    if not teacher or getattr(teacher, "is_suspended", False):
+        msg = "No puedes unirte a esta sección porque la cuenta del docente se encuentra suspendida o inactiva."
+        if wants_json:
+            return jsonify({"ok": False, "error": msg}), 403
+        flash(msg, "error")
         return redirect(safe_next)
 
     current_user.section_id = classroom.id
-    teacher = db.session.get(User, classroom.teacher_id)
     _log_audit(
-        teacher,
+        current_user,
         action="STUDENT_JOIN_SECTION",
         target_username=current_user.username,
         section_id=classroom.id,
@@ -1164,7 +1350,7 @@ def student_join_section():
             "message": ok_msg,
             "section": {"id": classroom.id, "name": classroom.name, "code": classroom.code},
         })
-    session["section_msg"] = {"type": "success", "text": ok_msg}
+    flash(ok_msg, "success")
     return redirect(safe_next)
 
 
@@ -1175,6 +1361,77 @@ def roadmap():
     return render_template(
         "roadmap.html", categories=LESSON_CATEGORIES, summary=summary, page="roadmap"
     )
+
+
+@app.errorhandler(429)
+def handle_rate_limit_exceeded(_err):
+    msg = "Demasiados intentos en poco tiempo. Espera unos minutos antes de volver a intentarlo."
+    wants_json = (
+        request.is_json
+        or request.path.startswith("/api/")
+        or "application/json" in (request.headers.get("Accept") or "")
+    )
+    if wants_json:
+        return jsonify({"ok": False, "error": msg}), 429
+
+    endpoint = request.endpoint or ""
+    if endpoint == "login":
+        next_url = _get_safe_next_url(
+            request.form.get("next") or request.args.get("next"),
+            exclude_paths=("/login", "/logout", "/register"),
+        )
+        return (
+            render_template(
+                "login.html",
+                error=msg,
+                username=(request.form.get("username") or "").strip(),
+                next_url=next_url,
+                categories=LESSON_CATEGORIES,
+            ),
+            429,
+        )
+    if endpoint == "register":
+        role = (request.form.get("role") or "student").strip()
+        if role not in ("student", "teacher"):
+            role = "student"
+        form_data = {
+            "username": (request.form.get("username") or "").strip(),
+            "email": (request.form.get("email") or "").strip().lower(),
+            "role": role,
+            "class_code": _normalize_class_code(request.form.get("class_code", "")) if role == "student" else "",
+        }
+        return (
+            render_template(
+                "register.html",
+                error=msg,
+                form_data=form_data,
+                categories=LESSON_CATEGORIES,
+            ),
+            429,
+        )
+    if endpoint == "forgot_password":
+        return (
+            render_template(
+                "forgot_password.html",
+                error=msg,
+                email=(request.form.get("email") or "").strip().lower(),
+                categories=LESSON_CATEGORIES,
+            ),
+            429,
+        )
+    if endpoint == "reset_password":
+        return (
+            render_template(
+                "reset_password.html",
+                error=msg,
+                email=(request.form.get("email") or session.get("recovery_email", "")).strip().lower(),
+                demo_code=session.get("demo_reset_code") if _is_demo_reset_allowed() else None,
+                recovery_notice=session.get("recovery_notice"),
+                categories=LESSON_CATEGORIES,
+            ),
+            429,
+        )
+    return Response(msg, status=429, mimetype="text/plain")
 
 
 # --- Autenticación ---
@@ -1191,136 +1448,113 @@ def _home_endpoint_for_role(role):
 @app.route("/api/db-status")
 @login_required
 def api_db_status():
-    """Diagnóstico de la base de datos (profesores y Super Admin)."""
-    if current_user.role not in ("teacher", "superadmin"):
+    """Diagnóstico operativo de la base de datos (exclusivo para Super Admin, solo lectura)."""
+    if current_user.role != "superadmin":
         return jsonify({"ok": False, "error": "No autorizado"}), 403
-    db_type = "postgresql" if is_postgres else "sqlite"
-    uri_masked = app.config.get("SQLALCHEMY_DATABASE_URI", "")
-    if "@" in uri_masked:
-        prefix, rest = uri_masked.split("@", 1)
-        scheme = prefix.split("://")[0]
-        uri_masked = f"{scheme}://****:****@{rest}"
 
     status = {
         "ok": False,
-        "db_type": db_type,
-        "uri": uri_masked,
-        "is_vercel": bool(os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME")),
-        "tables": [],
+        "db_type": "postgresql" if is_postgres else "sqlite",
+        "table_count": 0,
         "user_count": 0,
         "error": None,
     }
 
     try:
-        init_db()
-        status["tables"] = list(db.metadata.tables.keys())
+        db.session.execute(db.text("SELECT 1"))
+        status["table_count"] = len(db.metadata.tables)
         status["user_count"] = User.query.count()
         status["ok"] = True
+        return jsonify(status), 200
     except Exception as e:
         print(f"[ERROR in api_db_status]: {e}", flush=True)
-        status["error"] = "Error de conexión o consulta a la base de datos. Revisa los logs del servidor." 
-
-    return jsonify(status)
+        try:
+            db.session.rollback()
+        except Exception:
+            pass
+        status["error"] = "Error de conexión con la base de datos. Revisa los registros del servidor."
+        return jsonify(status), 503
 
 
 @app.route("/login", methods=["GET", "POST"])
+@limiter.limit("5 per minute; 15 per 15 minutes", methods=["POST"], key_func=_login_rate_limit_key)
+@limiter.limit("30 per minute", methods=["POST"])
 def login():
+    raw_next = request.form.get("next") if request.method == "POST" else request.args.get("next")
+    next_url = _get_safe_next_url(raw_next, exclude_paths=("/login", "/logout", "/register"))
+
     if current_user.is_authenticated:
         if getattr(current_user, "is_suspended", False):
             logout_user()
         else:
-            return redirect(url_for(_home_endpoint_for_role(current_user.role)))
+            return redirect(next_url or url_for(_home_endpoint_for_role(current_user.role)))
 
     suspended_notice = session.pop("suspended_notice", None)
 
     if request.method == "POST":
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "")
+        generic_auth_error = "Usuario o contraseña incorrectos."
 
         try:
-            user = User.query.filter_by(username=username).first()
+            user = (
+                User.query.filter_by(username=username).first()
+                or User.query.filter(func.lower(User.username) == username.lower()).first()
+            )
         except Exception as e:
             print(f"[ERROR in login]: {e}", flush=True)
             db.session.rollback()
-            try:
-                init_db()
-                user = User.query.filter_by(username=username).first()
-            except Exception as e2:
-                print(f"[CRITICAL in login retry]: {e2}", flush=True)
-                db.session.rollback()
-                return render_template(
-                    "login.html",
-                    error="Error de conexión con la base de datos. Si estás en Vercel, verifica que tu DATABASE_URL esté configurada o revisa /api/db-status.",
-                    categories=LESSON_CATEGORIES,
-                )
-
-        if not user:
             return render_template(
                 "login.html",
-                error="Usuario o contraseña incorrectos.",
+                error="Servicio temporalmente no disponible. Intenta de nuevo en unos momentos.",
+                username=username,
+                next_url=next_url,
                 categories=LESSON_CATEGORIES,
             )
 
-        now_utc = datetime.now(timezone.utc)
+        if not user:
+            # Ejecuta verificación ficticia para igualar el tiempo de respuesta y evitar enumeración
+            check_password_hash(_DUMMY_PASSWORD_HASH, password)
+            return render_template(
+                "login.html",
+                error=generic_auth_error,
+                username=username,
+                next_url=next_url,
+                categories=LESSON_CATEGORIES,
+            )
 
-        # 1. Verificar si la cuenta está bloqueada temporalmente
-        if user.locked_until:
-            user_lock = user.locked_until
-            if user_lock.tzinfo is None:
-                user_lock = user_lock.replace(tzinfo=timezone.utc)
-
-            if user_lock > now_utc:
-                remaining_seconds = int((user_lock - now_utc).total_seconds())
-                remaining_mins = max(1, (remaining_seconds + 59) // 60)
-                return render_template(
-                    "login.html",
-                    error=f"Cuenta bloqueada temporalmente por seguridad tras 3 intentos fallidos. Intenta de nuevo en {remaining_mins} minuto(s) o usa la opción de recuperar contraseña.",
-                    categories=LESSON_CATEGORIES,
-                )
-            else:
-                user.failed_login_attempts = 0
-                user.locked_until = None
-                db.session.commit()
-
-        # 2. Contraseña correcta -> verificar suspensión lógica antes de iniciar sesión
         if check_password_hash(user.password_hash, password):
             if getattr(user, "is_suspended", False):
                 reason = user.suspended_reason or "Cuenta suspendida por el administrador."
                 return render_template(
                     "login.html",
                     error=f"Tu cuenta se encuentra suspendida. Motivo: {reason}. Contacta a tu docente o administrador.",
+                    username=username,
+                    next_url=next_url,
                     categories=LESSON_CATEGORIES,
                 )
-            user.failed_login_attempts = 0
-            user.locked_until = None
-            db.session.commit()
             login_user(user)
-            return redirect(url_for(_home_endpoint_for_role(user.role)))
+            return redirect(next_url or url_for(_home_endpoint_for_role(user.role)))
 
-        # 3. Contraseña incorrecta -> Incrementar contador de intentos fallidos
-        user.failed_login_attempts = (user.failed_login_attempts or 0) + 1
-        if user.failed_login_attempts >= 3:
-            user.locked_until = now_utc + timedelta(minutes=10)
-            db.session.commit()
-            return render_template(
-                "login.html",
-                error="Has alcanzado el límite de 3 intentos fallidos. Tu cuenta ha sido bloqueada temporalmente por 10 minutos por seguridad. Puedes usar '¿Olvidaste tu contraseña o usuario?' para restablecerla de inmediato.",
-                categories=LESSON_CATEGORIES,
-            )
-        else:
-            remaining = 3 - user.failed_login_attempts
-            db.session.commit()
-            return render_template(
-                "login.html",
-                error=f"Usuario o contraseña incorrectos. Te quedan {remaining} intento(s) antes del bloqueo de cuenta.",
-                categories=LESSON_CATEGORIES,
-            )
+        return render_template(
+            "login.html",
+            error=generic_auth_error,
+            username=username,
+            next_url=next_url,
+            categories=LESSON_CATEGORIES,
+        )
 
-    return render_template("login.html", error=suspended_notice, categories=LESSON_CATEGORIES)
+    return render_template(
+        "login.html",
+        error=suspended_notice,
+        username="",
+        next_url=next_url,
+        categories=LESSON_CATEGORIES,
+    )
 
 
 def _connect_ipv4_socket(host, port, timeout):
-    """Abre conexión TCP priorizando IPv4 para evitar cuelgues por IPv6 sin ruta en Vercel/AWS Lambda."""
+    """Abre conexión TCP priorizando IPv4 para evitar cuelgues por IPv6 sin ruta."""
     last_err = None
     try:
         infos = socket.getaddrinfo(host, port, socket.AF_INET, socket.SOCK_STREAM)
@@ -1353,13 +1587,30 @@ class _IPv4SMTP_SSL(smtplib.SMTP_SSL):
         return self.context.wrap_socket(sock, server_hostname=self._host)
 
 
+def _is_mail_configured():
+    """Indica si existe un proveedor de correo configurado (Resend API o SMTP)."""
+    resend_api_key = (os.environ.get("RESEND_API_KEY") or "").strip().strip('"').strip("'")
+    if resend_api_key:
+        return True
+    mail_username = (os.environ.get("MAIL_USERNAME") or os.environ.get("SMTP_EMAIL") or "").strip().strip('"').strip("'")
+    raw_password = (os.environ.get("MAIL_PASSWORD") or os.environ.get("SMTP_PASSWORD") or "").strip().strip('"').strip("'")
+    mail_server = (os.environ.get("MAIL_SERVER") or "").strip().strip('"').strip("'")
+    if not mail_server and mail_username and mail_username.lower().endswith("@gmail.com"):
+        mail_server = "smtp.gmail.com"
+    return bool(mail_server and mail_username and raw_password)
+
+
+def _is_demo_reset_allowed():
+    """El modo demo está desactivado por defecto y estrictamente prohibido en producción."""
+    if is_production:
+        return False
+    return os.environ.get("ALLOW_DEMO_RESET", "false").strip().lower() in ("true", "1", "yes")
+
+
 def send_recovery_email(to_email, username, code):
     """
     Envía correo real con el nombre de usuario y el código de 6 dígitos.
-    Soporta:
-      1) Resend API por HTTPS (RESEND_API_KEY) — recomendado en Vercel (< 1s)
-      2) SMTP estándar sobre IPv4 (MAIL_SERVER / MAIL_PORT / MAIL_USERNAME / MAIL_PASSWORD,
-         con soporte TLS puerto 587 y SSL puerto 465; también acepta SMTP_EMAIL / SMTP_PASSWORD).
+    Soporta Resend API por HTTPS o SMTP estándar sobre IPv4.
     Si no hay proveedor configurado, retorna (False, 'SMTP no configurado').
     """
     resend_api_key = (os.environ.get("RESEND_API_KEY") or "").strip().strip('"').strip("'")
@@ -1404,7 +1655,7 @@ def send_recovery_email(to_email, username, code):
     </div>
     """
 
-    # Opción 1: Resend API (HTTPS, ideal para Vercel/serverless)
+    # Opción 1: Resend API (HTTPS)
     if resend_api_key:
         try:
             resp = http_requests.post(
@@ -1426,14 +1677,14 @@ def send_recovery_email(to_email, username, code):
                 return True, None
             err_txt = resp.text[:300]
             print(f"[ERROR EMAIL RESEND] HTTP {resp.status_code}: {err_txt}", flush=True)
-            return False, f"Error proveedor de correo (HTTP {resp.status_code})"
+            return False, "No se pudo enviar el correo de recuperación en este momento. Intenta de nuevo más tarde."
         except Exception as e:
             print(f"[ERROR EMAIL RESEND] {type(e).__name__}: {e}", flush=True)
-            return False, "El proveedor de correo tardó demasiado en responder."
+            return False, "El servicio de correo tardó demasiado en responder. Intenta de nuevo más tarde."
 
     # Opción 2: SMTP sobre IPv4 (Gmail, Outlook, Brevo SMTP, etc.)
     if not mail_server or not mail_username or not mail_password:
-        print(f"[MODO DEMO RECUPERACIÓN] Solicitud de recuperación en modo sin SMTP para usuario '{username}'.", flush=True)
+        print(f"[AVISO RECUPERACIÓN] Proveedor de correo no configurado para recuperación de '{username}'.", flush=True)
         return False, "SMTP no configurado"
 
     try:
@@ -1444,7 +1695,6 @@ def send_recovery_email(to_email, username, code):
         msg.attach(MIMEText(text_content, "plain", "utf-8"))
         msg.attach(MIMEText(html_content, "html", "utf-8"))
 
-        # Timeout acotado (7s) para nunca agotar el límite de 10s en Vercel Serverless
         smtp_timeout = 7
         tls_ctx = ssl.create_default_context()
         if mail_use_ssl:
@@ -1462,19 +1712,20 @@ def send_recovery_email(to_email, username, code):
         return True, None
     except smtplib.SMTPAuthenticationError as e:
         print(f"[ERROR EMAIL SMTP AUTH] {e}", flush=True)
-        return False, "Error de autenticación SMTP: verifica MAIL_USERNAME y que MAIL_PASSWORD sea una Contraseña de Aplicación de 16 caracteres."
+        return False, "No se pudo enviar el correo de recuperación en este momento. Contacta al administrador."
     except (socket.timeout, TimeoutError) as e:
         print(f"[ERROR EMAIL SMTP TIMEOUT] {e}", flush=True)
-        return False, "El servidor SMTP tardó demasiado en responder. En Vercel se recomienda usar MAIL_PORT=465 con MAIL_USE_SSL=true o RESEND_API_KEY."
+        return False, "El servicio de correo tardó demasiado en responder. Intenta de nuevo más tarde."
     except Exception as e:
         print(f"[ERROR EMAIL SMTP] Error al enviar correo a {to_email}: {type(e).__name__}: {e}", flush=True)
-        return False, "No se pudo conectar con el servidor de correo. Verifica las variables SMTP en Vercel."
+        return False, "No se pudo enviar el correo de recuperación en este momento. Intenta de nuevo más tarde."
 
 
 @app.route("/register", methods=["GET", "POST"])
+@limiter.limit("5 per minute; 20 per hour", methods=["POST"])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for("dashboard"))
+        return redirect(url_for(_home_endpoint_for_role(current_user.role)))
 
     if request.method == "POST":
         username = request.form.get("username", "").strip()
@@ -1485,11 +1736,42 @@ def register():
             role = "student"
         teacher_code = request.form.get("teacher_code", "").strip()
         class_code = _normalize_class_code(request.form.get("class_code", "")) if role == "student" else ""
+        form_data = {
+            "username": username,
+            "email": email,
+            "role": role,
+            "class_code": class_code,
+        }
 
         if not username or not email or not password:
             return render_template(
                 "register.html",
                 error="Todos los campos son requeridos (usuario, correo y contraseña).",
+                form_data=form_data,
+                categories=LESSON_CATEGORIES,
+            )
+
+        if not _is_valid_username(username):
+            return render_template(
+                "register.html",
+                error="El nombre de usuario debe tener entre 3 y 30 caracteres y solo puede contener letras, números, guiones (-) o guiones bajos (_).",
+                form_data=form_data,
+                categories=LESSON_CATEGORIES,
+            )
+
+        if not _is_valid_email(email):
+            return render_template(
+                "register.html",
+                error="Ingresa un correo electrónico válido.",
+                form_data=form_data,
+                categories=LESSON_CATEGORIES,
+            )
+
+        if len(password) < MIN_PASSWORD_LENGTH:
+            return render_template(
+                "register.html",
+                error=f"La contraseña debe tener al menos {MIN_PASSWORD_LENGTH} caracteres.",
+                form_data=form_data,
                 categories=LESSON_CATEGORIES,
             )
 
@@ -1497,44 +1779,48 @@ def register():
             return render_template(
                 "register.html",
                 error="Código de profesor incorrecto. Verifica tu clave de acceso.",
+                form_data=form_data,
                 categories=LESSON_CATEGORIES,
             )
 
         target_classroom = None
         try:
-            existing_user = User.query.filter_by(username=username).first()
-            existing_email = User.query.filter_by(email=email).first() if email else None
+            existing_user = User.query.filter(func.lower(User.username) == username.lower()).first()
+            existing_email = User.query.filter(func.lower(User.email) == email.lower()).first() if email else None
             if role == "student" and class_code:
                 target_classroom = Classroom.query.filter_by(code=class_code).first()
         except Exception as e:
             print(f"[ERROR in register query]: {e}", flush=True)
             db.session.rollback()
-            try:
-                init_db()
-                existing_user = User.query.filter_by(username=username).first()
-                existing_email = User.query.filter_by(email=email).first() if email else None
-                if role == "student" and class_code:
-                    target_classroom = Classroom.query.filter_by(code=class_code).first()
-            except Exception as e2:
-                print(f"[CRITICAL in register retry]: {e2}", flush=True)
-                db.session.rollback()
-                return render_template(
-                    "register.html",
-                    error="Error de conexión con la base de datos. Si estás en Vercel, verifica que tu DATABASE_URL esté configurada o revisa /api/db-status.",
-                    categories=LESSON_CATEGORIES,
-                )
-
-        if role == "student" and class_code and not target_classroom:
             return render_template(
                 "register.html",
-                error=f"El código de clase '{class_code}' no existe. Verifica el código con tu docente o déjalo vacío para unirte después.",
+                error="Servicio temporalmente no disponible. Intenta de nuevo en unos momentos.",
+                form_data=form_data,
                 categories=LESSON_CATEGORIES,
             )
+
+        if role == "student" and class_code:
+            if not target_classroom:
+                return render_template(
+                    "register.html",
+                    error=f"El código de clase '{class_code}' no existe. Verifica el código con tu docente o déjalo vacío para unirte después.",
+                    form_data=form_data,
+                    categories=LESSON_CATEGORIES,
+                )
+            classroom_teacher = db.session.get(User, target_classroom.teacher_id)
+            if not classroom_teacher or getattr(classroom_teacher, "is_suspended", False):
+                return render_template(
+                    "register.html",
+                    error="No puedes unirte a esta sección porque la cuenta del docente se encuentra suspendida o inactiva.",
+                    form_data=form_data,
+                    categories=LESSON_CATEGORIES,
+                )
 
         if existing_user:
             return render_template(
                 "register.html",
                 error="El nombre de usuario ya está en uso. Elige otro.",
+                form_data=form_data,
                 categories=LESSON_CATEGORIES,
             )
 
@@ -1542,6 +1828,7 @@ def register():
             return render_template(
                 "register.html",
                 error="Este correo electrónico ya está registrado. Si olvidaste tu clave, usa la opción de recuperar cuenta.",
+                form_data=form_data,
                 categories=LESSON_CATEGORIES,
             )
 
@@ -1557,9 +1844,8 @@ def register():
             db.session.add(new_user)
             db.session.flush()
             if target_classroom:
-                teacher = db.session.get(User, target_classroom.teacher_id)
                 _log_audit(
-                    teacher,
+                    new_user,
                     action="STUDENT_JOIN_SECTION",
                     target_username=new_user.username,
                     section_id=target_classroom.id,
@@ -1578,83 +1864,103 @@ def register():
             return render_template(
                 "register.html",
                 error="Error al guardar el usuario en la base de datos. Intenta de nuevo.",
+                form_data=form_data,
                 categories=LESSON_CATEGORIES,
             )
 
-    return render_template("register.html", categories=LESSON_CATEGORIES)
+    return render_template("register.html", form_data={}, categories=LESSON_CATEGORIES)
 
 
 @app.route("/recuperar", methods=["GET", "POST"])
+@limiter.limit("5 per 15 minutes; 15 per hour", methods=["POST"])
 def forgot_password():
     if current_user.is_authenticated:
-        return redirect(url_for("dashboard"))
+        return redirect(url_for(_home_endpoint_for_role(current_user.role)))
 
     if request.method == "POST":
         email = request.form.get("email", "").strip().lower()
-        if not email:
-            return render_template("forgot_password.html", error="Debes ingresar un correo electrónico.", categories=LESSON_CATEGORIES)
-
-        user = User.query.filter_by(email=email).first()
-        if not user:
+        if not email or not _is_valid_email(email):
             return render_template(
                 "forgot_password.html",
-                error="No encontramos ninguna cuenta registrada con este correo electrónico.",
+                error="Debes ingresar un correo electrónico válido.",
                 email=email,
-                categories=LESSON_CATEGORIES
+                categories=LESSON_CATEGORIES,
             )
+
+        mail_configured = _is_mail_configured()
+        allow_demo = _is_demo_reset_allowed()
+        if not mail_configured and not allow_demo:
+            session.pop("demo_reset_code", None)
+            session.pop("recovery_notice", None)
+            return render_template(
+                "forgot_password.html",
+                error="El servicio de recuperación de contraseña por correo no está disponible en este momento. Contacta al administrador.",
+                email=email,
+                categories=LESSON_CATEGORIES,
+            )
+
+        generic_notice = (
+            "Si el correo ingresado está registrado, recibirás un código de verificación de 6 dígitos "
+            "en unos minutos. Revisa tu bandeja de entrada o la carpeta de spam."
+        )
+
+        user = User.query.filter(func.lower(User.email) == email).first()
+        if not user:
+            session["recovery_email"] = email
+            session.pop("demo_reset_code", None)
+            session["recovery_notice"] = generic_notice
+            return redirect(url_for("reset_password"))
 
         # Generar código criptográficamente seguro de 6 dígitos numéricos
         code = f"{secrets.randbelow(900000) + 100000}"
         expires_at = datetime.now(timezone.utc) + timedelta(minutes=15)
 
-        # Marcar códigos anteriores no usados como usados
+        # Invalidar códigos anteriores no usados
         PasswordResetCode.query.filter_by(user_id=user.id, used=False).update({"used": True})
 
         reset_record = PasswordResetCode(
             user_id=user.id,
             code=code,
             expires_at=expires_at,
-            used=False
+            used=False,
+            failed_attempts=0,
         )
         db.session.add(reset_record)
         db.session.commit()
 
-        # Enviar correo real (o modo demo solo si no hay SMTP/Resend configurado)
-        sent, reason = send_recovery_email(user.email, user.username, code)
-        session["recovery_email"] = user.email
-        allow_demo = os.environ.get("ALLOW_DEMO_RESET", "true").lower() in ("true", "1", "yes")
-        if sent:
+        session["recovery_email"] = email
+        if mail_configured:
+            sent, reason = send_recovery_email(user.email, user.username, code)
+            if sent:
+                session.pop("demo_reset_code", None)
+                session["recovery_notice"] = generic_notice
+                return redirect(url_for("reset_password"))
+
             session.pop("demo_reset_code", None)
-            session["recovery_notice"] = (
-                f"Hemos enviado un código de verificación de 6 dígitos a {user.email}. "
-                "Revisa tu bandeja de entrada o la carpeta de spam."
-            )
-            return redirect(url_for("reset_password", email=user.email))
-
-        if reason == "SMTP no configurado" and allow_demo:
-            session["demo_reset_code"] = code
             session.pop("recovery_notice", None)
-            return redirect(url_for("reset_password", email=user.email))
+            return render_template(
+                "forgot_password.html",
+                error=reason or "No se pudo enviar el correo de recuperación en este momento. Intenta de nuevo más tarde.",
+                email=email,
+                categories=LESSON_CATEGORIES,
+            )
 
-        session.pop("demo_reset_code", None)
-        session.pop("recovery_notice", None)
-        return render_template(
-            "forgot_password.html",
-            error=reason or "No se pudo enviar el correo de recuperación en este momento. Verifica la configuración de correo (SMTP/Resend) e intenta de nuevo.",
-            email=email,
-            categories=LESSON_CATEGORIES,
-        )
+        # Solo alcanzable en desarrollo local cuando ALLOW_DEMO_RESET=true explícitamente
+        session["demo_reset_code"] = code
+        session["recovery_notice"] = generic_notice
+        return redirect(url_for("reset_password"))
 
     return render_template("forgot_password.html", categories=LESSON_CATEGORIES)
 
 
 @app.route("/recuperar/verificar", methods=["GET", "POST"])
+@limiter.limit("10 per 15 minutes", methods=["POST"])
 def reset_password():
     if current_user.is_authenticated:
-        return redirect(url_for("dashboard"))
+        return redirect(url_for(_home_endpoint_for_role(current_user.role)))
 
-    email = request.args.get("email") or session.get("recovery_email", "")
-    demo_code = session.get("demo_reset_code")
+    email = (request.args.get("email") or session.get("recovery_email", "")).strip().lower()
+    demo_code = session.get("demo_reset_code") if _is_demo_reset_allowed() else None
     recovery_notice = session.get("recovery_notice")
 
     if request.method == "POST":
@@ -1662,6 +1968,7 @@ def reset_password():
         code = request.form.get("code", "").strip()
         new_password = request.form.get("new_password", "")
         confirm_password = request.form.get("confirm_password", "")
+        generic_invalid_msg = "El código de verificación es inválido, ha expirado o el correo es incorrecto."
 
         if not email or not code or not new_password:
             return render_template(
@@ -1669,16 +1976,18 @@ def reset_password():
                 error="Todos los campos son obligatorios.",
                 email=email,
                 demo_code=demo_code,
-                categories=LESSON_CATEGORIES
+                recovery_notice=recovery_notice,
+                categories=LESSON_CATEGORIES,
             )
 
-        if len(new_password) < 4:
+        if len(new_password) < MIN_PASSWORD_LENGTH:
             return render_template(
                 "reset_password.html",
-                error="La contraseña debe tener al menos 4 caracteres.",
+                error=f"La contraseña debe tener al menos {MIN_PASSWORD_LENGTH} caracteres.",
                 email=email,
                 demo_code=demo_code,
-                categories=LESSON_CATEGORIES
+                recovery_notice=recovery_notice,
+                categories=LESSON_CATEGORIES,
             )
 
         if new_password != confirm_password:
@@ -1687,52 +1996,87 @@ def reset_password():
                 error="Las contraseñas no coinciden.",
                 email=email,
                 demo_code=demo_code,
-                categories=LESSON_CATEGORIES
+                recovery_notice=recovery_notice,
+                categories=LESSON_CATEGORIES,
             )
 
-        user = User.query.filter_by(email=email).first()
+        user = User.query.filter(func.lower(User.email) == email).first()
         if not user:
             return render_template(
                 "reset_password.html",
-                error="No se encontró usuario con ese correo electrónico.",
+                error=generic_invalid_msg,
                 email=email,
-                categories=LESSON_CATEGORIES
+                categories=LESSON_CATEGORIES,
             )
 
-        reset_record = PasswordResetCode.query.filter_by(
-            user_id=user.id,
-            code=code,
-            used=False
-        ).order_by(PasswordResetCode.created_at.desc()).first()
-
-        if not reset_record:
+        active_record = (
+            PasswordResetCode.query.filter_by(user_id=user.id, used=False)
+            .order_by(PasswordResetCode.created_at.desc())
+            .first()
+        )
+        if not active_record:
             return render_template(
                 "reset_password.html",
-                error="El código de verificación es inválido o ya fue utilizado.",
+                error=generic_invalid_msg,
                 email=email,
-                demo_code=demo_code,
-                categories=LESSON_CATEGORIES
+                categories=LESSON_CATEGORIES,
             )
 
         # Verificar expiración (con soporte timezone)
-        record_expiry = reset_record.expires_at
+        record_expiry = active_record.expires_at
         if record_expiry.tzinfo is None:
             record_expiry = record_expiry.replace(tzinfo=timezone.utc)
 
         now_utc = datetime.now(timezone.utc)
         if record_expiry < now_utc:
+            active_record.used = True
+            db.session.commit()
+            session.pop("demo_reset_code", None)
             return render_template(
                 "reset_password.html",
                 error="El código de verificación ha expirado (válido 15 minutos). Solicita uno nuevo.",
                 email=email,
-                categories=LESSON_CATEGORIES
+                categories=LESSON_CATEGORIES,
             )
 
-        # Actualizar contraseña, desbloquear cuenta y marcar código como usado
+        if (active_record.failed_attempts or 0) >= MAX_RESET_FAILED_ATTEMPTS:
+            active_record.used = True
+            db.session.commit()
+            session.pop("demo_reset_code", None)
+            return render_template(
+                "reset_password.html",
+                error="El código fue invalidado por demasiados intentos fallidos. Solicita uno nuevo.",
+                email=email,
+                categories=LESSON_CATEGORIES,
+            )
+
+        if not hmac.compare_digest(str(active_record.code or ""), code):
+            active_record.failed_attempts = (active_record.failed_attempts or 0) + 1
+            if active_record.failed_attempts >= MAX_RESET_FAILED_ATTEMPTS:
+                active_record.used = True
+                db.session.commit()
+                session.pop("demo_reset_code", None)
+                return render_template(
+                    "reset_password.html",
+                    error="El código fue invalidado por demasiados intentos fallidos. Solicita uno nuevo.",
+                    email=email,
+                    categories=LESSON_CATEGORIES,
+                )
+            db.session.commit()
+            return render_template(
+                "reset_password.html",
+                error=generic_invalid_msg,
+                email=email,
+                demo_code=demo_code,
+                recovery_notice=recovery_notice,
+                categories=LESSON_CATEGORIES,
+            )
+
+        # Actualizar contraseña y marcar código como usado
         user.password_hash = generate_password_hash(new_password)
         user.failed_login_attempts = 0
         user.locked_until = None
-        reset_record.used = True
+        active_record.used = True
         db.session.commit()
 
         # Limpiar datos de sesión
@@ -1743,7 +2087,9 @@ def reset_password():
         return render_template(
             "login.html",
             success="¡Contraseña actualizada con éxito! Ya puedes iniciar sesión con tu usuario y nueva clave.",
-            categories=LESSON_CATEGORIES
+            username="",
+            next_url=None,
+            categories=LESSON_CATEGORIES,
         )
 
     return render_template(
@@ -1751,7 +2097,7 @@ def reset_password():
         email=email,
         demo_code=demo_code,
         recovery_notice=recovery_notice,
-        categories=LESSON_CATEGORIES
+        categories=LESSON_CATEGORIES,
     )
 
 
@@ -1967,7 +2313,6 @@ def teacher_dashboard():
         "per_page": ADMIN_STUDENTS_PER_PAGE,
     }
 
-    admin_msg = session.pop("admin_msg", None)
     return render_template(
         "teacher_dashboard.html",
         students=paginated_students,
@@ -1976,7 +2321,6 @@ def teacher_dashboard():
         metrics=metrics,
         filters=filters,
         level_titles=LEVEL_TITLES,
-        admin_msg=admin_msg,
         categories=LESSON_CATEGORIES,
     )
 
@@ -1999,7 +2343,7 @@ def admin_create_section():
         msg = "El nombre de la sección debe tener al menos 2 caracteres (ej. PROG1-A)."
         if wants_json:
             return jsonify({"ok": False, "error": msg}), 400
-        session["admin_msg"] = {"type": "error", "text": msg}
+        flash(msg, "error")
         return redirect(url_for("teacher_dashboard"))
 
     if raw_code:
@@ -2008,13 +2352,13 @@ def admin_create_section():
             msg = "El código personalizado debe tener entre 4 y 20 caracteres alfanuméricos."
             if wants_json:
                 return jsonify({"ok": False, "error": msg}), 400
-            session["admin_msg"] = {"type": "error", "text": msg}
+            flash(msg, "error")
             return redirect(url_for("teacher_dashboard"))
         if Classroom.query.filter_by(code=code).first():
             msg = f"El código de clase '{code}' ya está en uso. Elige otro o déjalo vacío para generarlo automáticamente."
             if wants_json:
                 return jsonify({"ok": False, "error": msg}), 409
-            session["admin_msg"] = {"type": "error", "text": msg}
+            flash(msg, "error")
             return redirect(url_for("teacher_dashboard"))
     else:
         code = _generate_class_code(name)
@@ -2038,7 +2382,7 @@ def admin_create_section():
         msg = "No se pudo crear la sección. Intenta nuevamente."
         if wants_json:
             return jsonify({"ok": False, "error": msg}), 500
-        session["admin_msg"] = {"type": "error", "text": msg}
+        flash(msg, "error")
         return redirect(url_for("teacher_dashboard"))
 
     ok_msg = f"Sección '{classroom.name}' creada correctamente. Código para compartir: {classroom.code}"
@@ -2048,7 +2392,7 @@ def admin_create_section():
             "message": ok_msg,
             "section": {"id": classroom.id, "name": classroom.name, "code": classroom.code},
         }), 201
-    session["admin_msg"] = {"type": "success", "text": ok_msg}
+    flash(ok_msg, "success")
     return redirect(url_for("teacher_dashboard"))
 
 
@@ -2068,7 +2412,7 @@ def admin_delete_section(section_id):
         msg = "Sección no encontrada."
         if wants_json:
             return jsonify({"ok": False, "error": msg}), 404
-        session["admin_msg"] = {"type": "error", "text": msg}
+        flash(msg, "error")
         return redirect(url_for(_home_endpoint_for_role(current_user.role)))
 
     if current_user.role == "teacher" and classroom.teacher_id != current_user.id:
@@ -2083,7 +2427,7 @@ def admin_delete_section(section_id):
         msg = "Acceso denegado: solo puedes eliminar tus propias secciones."
         if wants_json:
             return jsonify({"ok": False, "error": msg}), 403
-        session["admin_msg"] = {"type": "error", "text": msg}
+        flash(msg, "error")
         return redirect(url_for("teacher_dashboard"))
 
     sec_name = classroom.name
@@ -2112,17 +2456,14 @@ def admin_delete_section(section_id):
         msg = "No se pudo eliminar la sección. Intenta nuevamente."
         if wants_json:
             return jsonify({"ok": False, "error": msg}), 500
-        session["admin_msg"] = {"type": "error", "text": msg}
+        flash(msg, "error")
         return redirect(url_for(_home_endpoint_for_role(current_user.role)))
 
     ok_msg = f"Sección '{sec_name}' ({sec_code}) eliminada. {detached_students} estudiante(s) fueron desvinculados sin perder su progreso."
     if wants_json:
         return jsonify({"ok": True, "message": ok_msg, "detached_students": detached_students})
-    if current_user.role == "superadmin":
-        session["superadmin_msg"] = {"type": "success", "text": ok_msg}
-        return redirect(url_for("superadmin_dashboard"))
-    session["admin_msg"] = {"type": "success", "text": ok_msg}
-    return redirect(url_for("teacher_dashboard"))
+    flash(ok_msg, "success")
+    return redirect(url_for(_home_endpoint_for_role(current_user.role)))
 
 
 @app.route("/profesor/estudiante/<int:student_id>/suspender", methods=["POST"])
@@ -2527,7 +2868,6 @@ def superadmin_dashboard():
         "audit_page": audit_page,
         "audit_total_pages": audit_total_pages,
     }
-    superadmin_msg = session.pop("superadmin_msg", None)
     return render_template(
         "superadmin_dashboard.html",
         metrics=metrics,
@@ -2538,7 +2878,6 @@ def superadmin_dashboard():
         students=paginated_students,
         audit_logs=audit_logs,
         filters=filters,
-        superadmin_msg=superadmin_msg,
         categories=LESSON_CATEGORIES,
     )
 
@@ -2764,12 +3103,23 @@ def superadmin_export_pdf():
 def leaderboard():
     board = []
     db_error = False
+    teacher_section_ids = set()
     try:
+        if current_user.is_authenticated and current_user.role == "teacher":
+            teacher_section_ids = _get_teacher_section_ids(current_user.id)
         students = User.query.filter_by(role="student", is_suspended=False).all()
         bulk_stats = get_bulk_progress_summaries(students)
         for s in students:
             summary = bulk_stats.get(s.id, {"completed_lessons": [], "total_xp": 0, "streak": 0})
             lvl_info = get_level_info(summary["total_xp"])
+            can_view_profile = bool(
+                current_user.is_authenticated
+                and (
+                    s.id == current_user.id
+                    or current_user.role == "superadmin"
+                    or (current_user.role == "teacher" and s.section_id in teacher_section_ids)
+                )
+            )
             board.append({
                 "id": s.id,
                 "username": s.username or "Anónimo",
@@ -2777,6 +3127,7 @@ def leaderboard():
                 "level": lvl_info["level"],
                 "completed": len(summary["completed_lessons"]),
                 "streak": summary["streak"],
+                "can_view_profile": can_view_profile,
             })
         board.sort(key=lambda x: x["total_xp"], reverse=True)
 
@@ -2805,30 +3156,39 @@ def leaderboard():
 # --- Perfil de usuario ---
 @app.route("/perfil")
 @app.route("/perfil/<username>")
+@login_required
 def profile(username=None):
     if username:
-        user = User.query.filter_by(username=username).first_or_404()
-    elif current_user.is_authenticated:
-        user = current_user
+        user = (
+            User.query.filter_by(username=username).first()
+            or User.query.filter(func.lower(User.username) == username.lower()).first_or_404()
+        )
     else:
-        return redirect(url_for("login"))
+        user = current_user
 
-    # Aislamiento estricto para profesores al consultar perfiles ajenos (Super Admin puede ver todos)
-    if current_user.is_authenticated and current_user.role == "superadmin":
-        pass
-    elif current_user.is_authenticated and current_user.role == "teacher" and user.id != current_user.id:
-        if not _teacher_owns_student(current_user.id, user):
-            _log_audit(
-                current_user,
-                action="UNAUTHORIZED_PROFILE_VIEW",
-                target_username=user.username,
-                section_id=user.section_id,
-                reason="Intento de ver perfil de usuario fuera de sus secciones",
-            )
-            db.session.commit()
-            return Response("Acceso denegado: este usuario no pertenece a tus secciones.", status=403, mimetype="text/plain")
-    elif getattr(user, "is_suspended", False) and (not current_user.is_authenticated or current_user.id != user.id):
-        return Response("Perfil no disponible.", status=404, mimetype="text/plain")
+    is_own_profile = current_user.id == user.id
+    is_superadmin = current_user.role == "superadmin"
+    is_owning_teacher = (
+        current_user.role == "teacher"
+        and _teacher_owns_student(current_user.id, user)
+    )
+
+    if not (is_own_profile or is_superadmin or is_owning_teacher):
+        _log_audit(
+            current_user,
+            action="UNAUTHORIZED_PROFILE_VIEW",
+            target_username=user.username,
+            section_id=user.section_id,
+            reason="Intento de acceso a perfil sin autorización",
+        )
+        db.session.commit()
+        return Response(
+            "Acceso denegado: no tienes permisos para ver este perfil.",
+            status=403,
+            mimetype="text/plain",
+        )
+
+    can_view_class_code = is_own_profile or is_superadmin or is_owning_teacher
 
     summary = get_progress_summary(user)
     level = get_level_info(summary["total_xp"])["level"]
@@ -2875,14 +3235,12 @@ def profile(username=None):
             "is_complete": done_cnt >= len(cat_lessons) and len(cat_lessons) > 0,
         })
 
-    is_own_profile = bool(current_user.is_authenticated and current_user.id == user.id)
-    section_msg = session.pop("section_msg", None) if is_own_profile else None
     return render_template(
         "profile.html",
         profile_user=user,
         classroom=user.classroom,
         is_own_profile=is_own_profile,
-        section_msg=section_msg,
+        can_view_class_code=can_view_class_code,
         summary=summary,
         level=level,
         recent=recent,
@@ -3016,11 +3374,8 @@ def settings():
     if request.method == "POST":
         theme = request.form.get("theme", "light")
         session["theme"] = theme if theme in ("light", "dark") else "light"
-        ref = request.referrer or ""
-        parsed_ref = urlparse(ref)
-        if ref and (not parsed_ref.netloc or parsed_ref.netloc == request.host):
-            return redirect(ref)
-        return redirect(url_for("index"))
+        safe_ref = _get_safe_next_url(request.referrer, default=url_for("index"))
+        return redirect(safe_ref)
 
     return redirect(url_for("index"))
 
@@ -3651,5 +4006,6 @@ def shutdown_session(exception=None):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    debug_mode = os.environ.get("FLASK_DEBUG", "false").strip().lower() == "true"
+    app.run(debug=debug_mode, port=5000)
 

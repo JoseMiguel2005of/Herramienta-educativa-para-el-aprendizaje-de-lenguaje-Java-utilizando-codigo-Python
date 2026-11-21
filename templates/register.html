@@ -17,24 +17,25 @@
         <form method="POST" action="{{ url_for('register') }}" style="display: flex; flex-direction: column; gap: 1rem;">
             <div>
                 <label for="username" style="display: block; margin-bottom: 0.45rem; color: var(--text); font-weight: 600;">Usuario</label>
-                <input type="text" id="username" name="username" required autocomplete="username" placeholder="Tu nombre de usuario..." style="width: 100%; min-height: 44px; padding: 0.75rem 0.9rem; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: inherit;">
+                <input type="text" id="username" name="username" required minlength="3" maxlength="30" pattern="[A-Za-z0-9_-]{3,30}" title="Entre 3 y 30 caracteres: solo letras, números, guion (-) o guion bajo (_)" autocomplete="username" value="{{ form_data.username if form_data else '' }}" placeholder="Ej. ana_dev (3-30 caracteres)" style="width: 100%; min-height: 44px; padding: 0.75rem 0.9rem; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: inherit;">
             </div>
 
             <div>
                 <label for="email" style="display: block; margin-bottom: 0.45rem; color: var(--text); font-weight: 600;">Correo Electrónico</label>
-                <input type="email" id="email" name="email" required autocomplete="email" placeholder="tu@correo.com" style="width: 100%; min-height: 44px; padding: 0.75rem 0.9rem; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: inherit;">
+                <input type="email" id="email" name="email" required maxlength="120" autocomplete="email" value="{{ form_data.email if form_data else '' }}" placeholder="tu@correo.com" style="width: 100%; min-height: 44px; padding: 0.75rem 0.9rem; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: inherit;">
             </div>
             
             <div>
                 <label for="password" style="display: block; margin-bottom: 0.45rem; color: var(--text); font-weight: 600;">Contraseña</label>
-                <input type="password" id="password" name="password" required autocomplete="new-password" placeholder="Tu contraseña..." style="width: 100%; min-height: 44px; padding: 0.75rem 0.9rem; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: inherit;">
+                <input type="password" id="password" name="password" required minlength="8" autocomplete="new-password" placeholder="Mínimo 8 caracteres..." style="width: 100%; min-height: 44px; padding: 0.75rem 0.9rem; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: inherit;">
             </div>
             
             <div>
                 <label for="role" style="display: block; margin-bottom: 0.45rem; color: var(--text); font-weight: 600;">Soy...</label>
+                {% set selected_role = (form_data.role if form_data and form_data.role else 'student') %}
                 <select id="role" name="role" onchange="toggleTeacherCode(this.value)" style="width: 100%; min-height: 44px; padding: 0.75rem 0.9rem; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: inherit;">
-                    <option value="student">Estudiante</option>
-                    <option value="teacher">Profesor</option>
+                    <option value="student" {% if selected_role == 'student' %}selected{% endif %}>Estudiante</option>
+                    <option value="teacher" {% if selected_role == 'teacher' %}selected{% endif %}>Profesor</option>
                 </select>
             </div>
 
@@ -43,7 +44,7 @@
                     Código de Clase / Sección <span style="font-size: 0.82rem; font-weight: 400; color: var(--text-muted);">(opcional)</span>
                     <span style="font-size: 0.82rem; font-weight: 400; color: var(--text-muted); display: block;">Si tu profesor te dio un código (ej. PROG-7K2M), ingrésalo aquí</span>
                 </label>
-                <input type="text" id="class_code" name="class_code" maxlength="20" placeholder="Ej. PROG-7K2M" style="width: 100%; min-height: 44px; padding: 0.75rem 0.9rem; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: var(--font-mono); text-transform: uppercase;">
+                <input type="text" id="class_code" name="class_code" maxlength="20" value="{{ form_data.class_code if form_data else '' }}" placeholder="Ej. PROG-7K2M" style="width: 100%; min-height: 44px; padding: 0.75rem 0.9rem; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: var(--font-mono); text-transform: uppercase;">
             </div>
 
             <div id="teacher-code-field" style="display: none;">
@@ -78,5 +79,9 @@ function toggleTeacherCode(value) {
         if (studentField) studentField.style.display = 'block';
     }
 }
+document.addEventListener('DOMContentLoaded', function () {
+    const roleSelect = document.getElementById('role');
+    if (roleSelect) toggleTeacherCode(roleSelect.value);
+});
 </script>
 {% endblock %}
