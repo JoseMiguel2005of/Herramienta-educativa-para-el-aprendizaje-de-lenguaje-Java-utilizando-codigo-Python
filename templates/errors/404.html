@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Página no encontrada (404) — {{ t.site_title }}{% endblock %}
+
+{% block content %}
+<section class="error-page" aria-labelledby="error-404-title">
+    <div class="error-card">
+        <span class="error-code-badge error-code-badge--info">Error 404</span>
+        <h1 id="error-404-title" class="error-title">Página no encontrada</h1>
+        <p class="error-message">
+            La lección o página que buscas no existe o fue movida. Puedes continuar explorando el curso desde el inicio o usar el buscador.
+        </p>
+        <div class="error-actions">
+            <a href="{{ url_for('lesson', lesson_id='py-home') }}" class="btn-primary-inclusive">
+                Ir al inicio del curso
+            </a>
+            <a href="{{ url_for('roadmap') }}" class="btn-secondary-inclusive">
+                Ver ruta de aprendizaje
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

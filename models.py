@@ -100,7 +100,6 @@ class User(UserMixin, db.Model):
     )
     progress = db.relationship("LessonProgress", backref="user", lazy=True, cascade="all, delete-orphan")
     attempts = db.relationship("ExerciseAttempt", backref="user", lazy=True, cascade="all, delete-orphan")
-    achievements = db.relationship("Achievement", backref="user", lazy=True, cascade="all, delete-orphan")
     streaks = db.relationship("DailyStreak", backref="user", lazy=True, cascade="all, delete-orphan")
     quiz_results = db.relationship("QuizResult", backref="user", lazy=True, cascade="all, delete-orphan")
     practice_submissions = db.relationship(
@@ -156,18 +155,6 @@ class ExerciseAttempt(db.Model):
     passed = db.Column(db.Boolean, default=False, index=True)
     answer = db.Column(db.Text, nullable=True)
     attempted_at = db.Column(UTCDateTime, default=utcnow)
-
-
-class Achievement(db.Model):
-    __tablename__ = "achievements"
-    __table_args__ = (
-        db.UniqueConstraint("user_id", "badge_id", name="uq_achievements_user_badge"),
-    )
-
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
-    badge_id = db.Column(db.String(100), nullable=False, index=True)
-    unlocked_at = db.Column(UTCDateTime, default=utcnow)
 
 
 class DailyStreak(db.Model):

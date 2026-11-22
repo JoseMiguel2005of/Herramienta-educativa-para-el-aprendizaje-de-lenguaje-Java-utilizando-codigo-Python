@@ -1,0 +1,227 @@
+/* ==========================================================================
+   LABORATORIO DE PRÁCTICA (Editor interactivo WCAG 2.1 AA)
+   ========================================================================== */
+
+.practice-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.15rem;
+    height: calc(100vh - 120px);
+    min-height: 600px;
+}
+
+.practice-pane {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.practice-pane-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.85rem 1.2rem;
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border);
+}
+
+.practice-back-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.practice-back-link:hover {
+    color: var(--green);
+}
+
+.practice-file-label {
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.practice-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.practice-left-body {
+    overflow-y: auto;
+    padding: 1.5rem;
+    flex-grow: 1;
+}
+
+.practice-meta-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.practice-title {
+    font-family: var(--font-display);
+    margin: 0 0 1rem;
+    font-size: 1.7rem;
+    color: var(--text);
+}
+
+.problem-description {
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--text);
+    margin-bottom: 2rem;
+}
+
+.problem-description code {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    color: var(--green);
+    padding: 0.1rem 0.38rem;
+    border-radius: 5px;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+}
+
+.practice-section-heading {
+    font-family: var(--font-display);
+    font-size: 0.96rem;
+    font-weight: 700;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.5rem;
+    margin: 0 0 1rem;
+}
+
+.practice-test-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    margin-bottom: 2rem;
+}
+
+.test-case-item {
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    padding: 0.85rem 1rem;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 0.86rem;
+}
+
+.test-case-label {
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 0.2rem;
+}
+
+.test-case-input {
+    color: var(--green);
+    font-weight: 600;
+    margin-bottom: 0.55rem;
+}
+
+.test-case-expected {
+    color: var(--status-success);
+    font-weight: 600;
+}
+
+.practice-hints-list {
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    padding-left: 1.35rem;
+    margin: 0;
+}
+
+.practice-hints-list li {
+    margin-bottom: 0.5rem;
+    line-height: 1.55;
+}
+
+.practice-editor-wrap {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid var(--border);
+}
+
+.practice-textarea {
+    width: 100%;
+    flex-grow: 1;
+    background: var(--editor-bg);
+    color: var(--editor-text);
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    padding: 1rem 1.15rem;
+    border: none;
+    resize: none;
+    line-height: 1.6;
+}
+
+.console-panel {
+    height: 250px;
+    background: var(--editor-bg);
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+}
+
+.console-header {
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border);
+    padding: 0.5rem 1rem;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.console-title {
+    font-weight: 700;
+    color: var(--text);
+}
+
+.console-output {
+    padding: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.86rem;
+    color: var(--editor-text);
+    overflow-y: auto;
+    flex-grow: 1;
+    line-height: 1.55;
+}
+
+/* Colores de consola de alto contraste sobre --editor-bg en todos los temas */
+.console-line--success { color: #4ADE80; }
+.console-line--error   { color: #FDA4AF; }
+.console-line--warning { color: #FCD34D; }
+.console-line--muted   { color: #CBD5E1; }
+
+@media (max-width: 900px) {
+    .practice-layout {
+        grid-template-columns: 1fr;
+        height: auto;
+        min-height: 0;
+    }
+
+    .practice-left {
+        max-height: 460px;
+    }
+
+    .practice-right {
+        min-height: 520px;
+    }
+}

@@ -1,65 +1,74 @@
 {% extends "base.html" %}
 
-{% block title %}Perfil de {{ profile_user.username }} — Py2Java Edu{% endblock %}
+{% block title %}Perfil de {{ profile_user.username }} — {{ t.site_title }}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+{% endblock %}
 
 {% block content %}
-<article class="telemetry-dashboard">
-    <header class="telemetry-header">
-        <h1 style="display:flex; align-items:center; gap:0.75rem;">
-            <div class="neu-icon-box">
-                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            </div>
-            PERFIL
-        </h1>
-        <div class="system-status">
-            <span class="status-indicator"></span>
-            USER_DATA
+<article class="profile-page">
+    <header class="profile-header">
+        <div>
+            <h1 class="profile-header-title">
+                <span class="neu-icon-box" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                </span>
+                Perfil de usuario
+            </h1>
+            <p class="profile-header-sub">Resumen de progreso, actividad y certificaciones</p>
         </div>
+        <span class="status-pill status-pill--available">
+            {{ 'Super Admin' if profile_user.role == 'superadmin' else ('Profesor' if profile_user.role == 'teacher' else 'Estudiante') }}
+        </span>
     </header>
 
     {% set current_title = get_level_title(level) %}
 
     <div class="profile-layout">
 
-        <!-- Profile Card -->
-        <div class="profile-card neu-card">
-            <div class="profile-avatar-large">
+        <!-- Tarjeta lateral del usuario -->
+        <aside class="profile-card" aria-label="Resumen del usuario">
+            <div class="profile-avatar-large" aria-hidden="true">
                 {{ profile_user.username[0] | upper }}
             </div>
             <h2 class="profile-username">{{ profile_user.username }}</h2>
-            <div class="profile-title" style="color: var(--green);">{{ current_title }}</div>
+            <div class="profile-title">{{ current_title }}</div>
             <div class="profile-joined">
-                Miembro desde {{ profile_user.created_at.strftime('%d/%m/%Y') if profile_user.created_at else 'N/A' }}
+                Miembro desde {{ profile_user.created_at.strftime('%d/%m/%Y') if profile_user.created_at else 'N/D' }}
             </div>
+
             {% if profile_user.role == 'student' %}
-            <div style="margin-top: 0.6rem; font-size: 0.78rem; color: var(--text-muted);">
+            <div class="profile-section-meta">
                 {% if classroom %}
-                Sección: <strong style="color: var(--green);">{{ classroom.name }}</strong>
+                Sección: <strong>{{ classroom.name }}</strong>
                 {% if can_view_class_code %}
-                <span style="opacity: 0.8;">({{ classroom.code }})</span>
+                <span>({{ classroom.code }})</span>
                 {% endif %}
                 {% else %}
-                Sección: <span style="opacity: 0.7;">Sin asignar</span>
+                Sección: <span>Sin asignar</span>
                 {% endif %}
             </div>
+
             {% if profile_user.is_suspended %}
-            <div style="margin-top: 0.6rem; padding: 0.4rem 0.6rem; border-radius: 4px; border: 1px solid #ef5350; background: rgba(239,83,80,0.1); color: #ef5350; font-size: 0.75rem;">
-                CUENTA SUSPENDIDA{% if profile_user.suspended_reason %}: {{ profile_user.suspended_reason }}{% endif %}
+            <div class="profile-suspended-alert" role="alert">
+                Cuenta suspendida{% if profile_user.suspended_reason %}: {{ profile_user.suspended_reason }}{% endif %}
             </div>
             {% endif %}
+
             {% if is_own_profile %}
-            <form method="POST" action="{{ url_for('student_join_section') }}" style="margin-top: 0.9rem; display: flex; gap: 0.4rem;">
+            <form method="POST" action="{{ url_for('student_join_section') }}" class="profile-join-form">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="next" value="{{ url_for('profile') }}">
-                <input type="text" name="class_code" required maxlength="20" placeholder="Código clase..."
-                    style="flex: 1; min-width: 0; padding: 0.4rem 0.6rem; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-code); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; text-transform: uppercase;">
-                <button type="submit" class="term-btn" style="padding: 0.4rem 0.65rem; font-size: 0.72rem; cursor: pointer;">
+                <label for="profile-class-code" class="sr-only">Código de sección de clase</label>
+                <input id="profile-class-code" type="text" name="class_code" required maxlength="20" placeholder="Código de clase..." class="profile-join-input">
+                <button type="submit" class="btn-secondary-inclusive" style="min-height: 40px; padding: 0.4rem 0.75rem; font-size: 0.84rem;">
                     {{ 'Cambiar' if classroom else 'Unirme' }}
                 </button>
             </form>
             {% with flashed_messages = get_flashed_messages(with_categories=true, category_filter=['success', 'error']) %}
             {% for category, msg in flashed_messages %}
-            <div role="{{ 'alert' if category == 'error' else 'status' }}" style="margin-top: 0.45rem; font-size: 0.75rem; color: {{ '#a6e22e' if category == 'success' else '#ef5350' }};">
+            <div role="{{ 'alert' if category == 'error' else 'status' }}" class="alert-inclusive {{ 'alert-inclusive--success' if category == 'success' else 'alert-inclusive--danger' }}" style="margin-top: 0.5rem; margin-bottom: 0.75rem; padding: 0.6rem 0.75rem; font-size: 0.82rem;">
                 {{ msg }}
             </div>
             {% endfor %}
@@ -69,110 +78,107 @@
 
             <div class="profile-stats-grid">
                 <div class="profile-stat">
-                    <span class="profile-stat-num" style="color: var(--green);">{{ level }}</span>
-                    <span class="profile-stat-label">NIVEL</span>
+                    <span class="profile-stat-num profile-stat-num--accent">{{ level }}</span>
+                    <span class="profile-stat-label">Nivel</span>
                 </div>
                 <div class="profile-stat">
                     <span class="profile-stat-num">{{ summary.total_xp }}</span>
-                    <span class="profile-stat-label">XP TOTAL</span>
+                    <span class="profile-stat-label">XP total</span>
                 </div>
                 <div class="profile-stat">
-                    <span class="profile-stat-num" style="color: #ff9800;">{{ summary.streak }}</span>
-                    <span class="profile-stat-label">RACHA (DÍAS)</span>
+                    <span class="profile-stat-num profile-stat-num--streak">{{ summary.streak }}</span>
+                    <span class="profile-stat-label">Racha (días)</span>
                 </div>
                 <div class="profile-stat">
                     <span class="profile-stat-num">{{ summary.completed_lessons | length }}</span>
-                    <span class="profile-stat-label">LECCIONES</span>
+                    <span class="profile-stat-label">Lecciones</span>
                 </div>
             </div>
 
-            <!-- XP Progress to next level -->
             <div class="profile-xp-progress">
                 <div class="profile-xp-labels">
-                    <span>LVL {{ level }}</span>
+                    <span>Nivel {{ level }}</span>
                     <span>{{ summary.total_xp % 100 }}/100 XP</span>
-                    <span>LVL {{ level + 1 }}</span>
+                    <span>Nivel {{ level + 1 }}</span>
                 </div>
-                <div class="terminal-progress-container" style="border-top: none; border: 1px solid var(--border); border-radius: 4px;">
-                    <div class="terminal-progress-bar" style="width: {{ summary.total_xp % 100 }}%;"></div>
+                <div class="profile-xp-track">
+                    <div class="profile-xp-fill" style="width: {{ summary.total_xp % 100 }}%;"></div>
                 </div>
             </div>
-        </div>
+        </aside>
 
-        <!-- Right column -->
+        <!-- Columna de estadísticas e historial -->
         <div class="profile-details">
 
-            <!-- Exercise Stats -->
-            <div class="data-module">
+            <!-- Estadísticas de ejercicios -->
+            <section class="data-module">
                 <div class="module-header">
-                    <span>// EXERCISE_STATS</span>
+                    <span>Estadísticas de ejercicios</span>
                 </div>
-                <div class="module-body" style="padding: 1rem;">
-                    <div class="profile-exercise-stats">
-                        <div class="profile-stat-row">
-                            <span class="data-key">INTENTOS_TOTALES:</span>
-                            <span class="data-val">{{ total_exercises }}</span>
-                        </div>
-                        <div class="profile-stat-row">
-                            <span class="data-key">APROBADOS:</span>
-                            <span class="data-val" style="color: var(--green);">{{ passed_exercises }}</span>
-                        </div>
-                        <div class="profile-stat-row">
-                            <span class="data-key">TASA_EXITO:</span>
-                            <span class="data-val">
-                                {% if total_exercises > 0 %}
-                                    {{ ((passed_exercises / total_exercises) * 100) | round(1) }}%
-                                {% else %}
-                                    N/A
-                                {% endif %}
-                            </span>
-                        </div>
+                <div class="module-body" style="padding: 1rem 1.25rem;">
+                    <div class="profile-stat-row">
+                        <span class="profile-stat-key">Intentos totales</span>
+                        <span class="profile-stat-val">{{ total_exercises }}</span>
+                    </div>
+                    <div class="profile-stat-row">
+                        <span class="profile-stat-key">Ejercicios aprobados</span>
+                        <span class="profile-stat-val profile-stat-val--success">{{ passed_exercises }}</span>
+                    </div>
+                    <div class="profile-stat-row">
+                        <span class="profile-stat-key">Tasa de éxito</span>
+                        <span class="profile-stat-val">
+                            {% if total_exercises > 0 %}
+                                {{ ((passed_exercises / total_exercises) * 100) | round(1) }}%
+                            {% else %}
+                                Sin intentos
+                            {% endif %}
+                        </span>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <!-- Quiz Results -->
+            <!-- Resultados de cuestionarios -->
             {% if quiz_results %}
-            <div class="data-module">
+            <section class="data-module">
                 <div class="module-header">
-                    <span>// QUIZ_RESULTS</span>
-                    <span>{{ quiz_results | length }} REGISTROS</span>
+                    <span>Resultados de cuestionarios</span>
+                    <span class="module-header-meta">{{ quiz_results | length }} registro(s)</span>
                 </div>
-                <div class="module-body" style="padding: 0; overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                <div class="module-body profile-table-wrap" style="padding: 0;">
                     <table class="profile-table">
                         <thead>
-                            <tr><th>Quiz</th><th>Puntuación</th><th>Fecha</th></tr>
+                            <tr><th>Cuestionario</th><th>Puntuación</th><th>Fecha</th></tr>
                         </thead>
                         <tbody>
                             {% for qr in quiz_results %}
                             <tr>
                                 <td>{{ qr.quiz_id }}</td>
                                 <td>
-                                    <span style="color: {% if qr.score >= qr.total %}var(--green){% elif qr.score >= qr.total // 2 %}#ff9800{% else %}#ff5555{% endif %};">
+                                    <span class="{% if qr.score >= qr.total %}profile-score--good{% elif qr.score >= qr.total // 2 %}profile-score--mid{% else %}profile-score--low{% endif %}">
                                         {{ qr.score }}/{{ qr.total }}
                                     </span>
                                 </td>
-                                <td style="color: var(--text-muted);">{{ qr.completed_at.strftime('%d/%m/%Y') if qr.completed_at else '-' }}</td>
+                                <td style="color: var(--text-muted);">{{ qr.completed_at.strftime('%d/%m/%Y') if qr.completed_at else '—' }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
-            </div>
+            </section>
             {% endif %}
 
-            <!-- Recent Activity -->
-            <div class="data-module">
+            <!-- Actividad reciente -->
+            <section class="data-module">
                 <div class="module-header">
-                    <span>// RECENT_ACTIVITY</span>
-                    <span>ÚLTIMAS {{ recent | length }} LECCIONES</span>
+                    <span>Actividad reciente</span>
+                    <span class="module-header-meta">Últimas {{ recent | length }} lecciones</span>
                 </div>
                 <div class="module-body" style="padding: 0;">
                     {% if recent %}
                     <div class="profile-activity-list">
                         {% for lp in recent %}
                         <div class="profile-activity-item">
-                            <span class="activity-check">✓</span>
+                            <span class="activity-check" aria-hidden="true">✓</span>
                             <span class="activity-lesson">{{ get_lesson_title(lp.lesson_id) or lp.lesson_id }}</span>
                             <span class="activity-xp">+{{ lp.score }} XP</span>
                             <span class="activity-date">{{ lp.completed_at.strftime('%d/%m') if lp.completed_at else '' }}</span>
@@ -180,17 +186,17 @@
                         {% endfor %}
                     </div>
                     {% else %}
-                    <p style="padding: 1.5rem; text-align: center; color: var(--text-muted);">Sin actividad reciente</p>
+                    <p style="padding: 1.5rem; text-align: center; color: var(--text-muted); margin: 0;">Sin actividad reciente</p>
                     {% endif %}
                 </div>
-            </div>
+            </section>
 
-            <!-- Certificates Section -->
-            <div class="data-module">
+            <!-- Certificados -->
+            <section class="data-module">
                 <div class="module-header">
-                    <span>// CERTIFICATES</span>
+                    <span>Certificados</span>
                 </div>
-                <div class="module-body" style="padding: 1rem;">
+                <div class="module-body" style="padding: 1rem 1.25rem;">
                     <div class="profile-certs-grid">
                         {% for cert in cert_cards %}
                         <div class="profile-cert-card {{ 'cert-available' if cert.is_complete else 'cert-locked' }}">
@@ -198,8 +204,10 @@
                             {% if cert.is_complete %}
                             <span class="status-pill status-pill--completed">✓ Disponible ({{ cert.completed }}/{{ cert.total }})</span>
                             {% if is_own_profile %}
-                            <a href="{{ url_for('certificate', section_id=cert.id) }}" class="cert-download">Ver certificado →</a>
-                            <a href="{{ url_for('certificate_pdf', section_id=cert.id) }}" class="cert-download" style="margin-left: 0.5rem;">PDF ↓</a>
+                            <div class="cert-links">
+                                <a href="{{ url_for('certificate', section_id=cert.id) }}" class="cert-download">Ver certificado →</a>
+                                <a href="{{ url_for('certificate_pdf', section_id=cert.id) }}" class="cert-download">PDF ↓</a>
+                            </div>
                             {% endif %}
                             {% else %}
                             <span class="status-pill status-pill--locked">🔒 {{ cert.completed }}/{{ cert.total }} lecciones</span>
@@ -208,258 +216,9 @@
                         {% endfor %}
                     </div>
                 </div>
-            </div>
+            </section>
 
         </div>
     </div>
 </article>
-
-<style>
-/* ===== PROFILE PAGE ===== */
-.profile-layout {
-    display: grid;
-    grid-template-columns: 320px 1fr;
-    gap: 1.5rem;
-    font-family: "JetBrains Mono", monospace;
-}
-
-@media (max-width: 900px) {
-    .profile-layout {
-        grid-template-columns: 1fr;
-    }
-    .profile-card {
-        position: static;
-    }
-}
-
-@media (max-width: 600px) {
-    .profile-cert-card {
-        flex-wrap: wrap;
-    }
-    .cert-download {
-        width: 100%;
-        text-align: right;
-        margin-top: 0.25rem;
-    }
-}
-
-/* Profile Card */
-.profile-card {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 2rem 1.5rem;
-    text-align: center;
-    height: fit-content;
-    position: sticky;
-    top: 5rem;
-}
-
-.profile-avatar-large {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    margin: 0 auto 1rem;
-    background: linear-gradient(135deg, var(--green), #0088aa);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #0D1117;
-    font-family: "Space Grotesk", sans-serif;
-    box-shadow: 0 0 25px rgba(0, 229, 255, 0.3);
-}
-
-.profile-username {
-    color: var(--text);
-    font-size: 1.3rem;
-    margin: 0 0 0.25rem;
-    font-family: "Space Grotesk", sans-serif;
-}
-
-.profile-title {
-    font-size: 0.85rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-}
-
-.profile-joined {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    margin-bottom: 1.5rem;
-}
-
-.profile-stats-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.profile-stat {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.profile-stat-num {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--text);
-    line-height: 1.2;
-}
-
-.profile-stat-label {
-    font-size: 0.65rem;
-    color: var(--text-muted);
-    letter-spacing: 0.05em;
-}
-
-.profile-xp-progress {
-    margin-top: 1rem;
-}
-
-.profile-xp-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    margin-bottom: 0.3rem;
-}
-
-/* Details Column */
-.profile-details {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.profile-stat-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 0.85rem;
-}
-.profile-stat-row:last-child {
-    border-bottom: none;
-}
-
-.profile-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.85rem;
-}
-
-.profile-table th {
-    padding: 0.6rem 1rem;
-    text-align: left;
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    border-bottom: 1px solid var(--border);
-    background: rgba(255,255,255,0.02);
-}
-
-.profile-table td {
-    padding: 0.6rem 1rem;
-    border-bottom: 1px solid var(--border);
-    color: var(--text);
-}
-
-/* Activity */
-.profile-activity-list {
-    display: flex;
-    flex-direction: column;
-}
-
-.profile-activity-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.6rem 1rem;
-    border-bottom: 1px solid var(--border);
-    font-size: 0.85rem;
-}
-.profile-activity-item:last-child {
-    border-bottom: none;
-}
-
-.activity-check {
-    color: var(--green);
-    font-weight: 700;
-}
-
-.activity-lesson {
-    color: var(--text);
-    flex-grow: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.activity-xp {
-    color: var(--green);
-    font-weight: 700;
-    font-size: 0.8rem;
-}
-
-.activity-date {
-    color: var(--text-muted);
-    font-size: 0.75rem;
-    min-width: 50px;
-    text-align: right;
-}
-
-/* Certificates */
-.profile-certs-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.profile-cert-card {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    background: var(--bg);
-}
-
-.cert-available {
-    border-color: var(--status-success-border);
-    background: var(--status-success-bg);
-}
-
-.cert-locked {
-    border-color: var(--border);
-    opacity: 1;
-}
-
-.cert-icon { font-size: 1.2rem; }
-.cert-name {
-    flex-grow: 1;
-    color: var(--text);
-    font-size: 0.85rem;
-}
-
-.cert-progress {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-}
-
-.cert-download {
-    color: var(--green);
-    text-decoration: none;
-    font-size: 0.8rem;
-    font-weight: 700;
-}
-.cert-download:hover {
-    text-decoration: underline;
-}
-</style>
 {% endblock %}

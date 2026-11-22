@@ -1,0 +1,337 @@
+/* ==========================================================================
+   RANKING GLOBAL / TABLA DE POSICIONES (Diseño Moderno WCAG 2.1 AA)
+   ========================================================================== */
+
+.leaderboard-page {
+    max-width: 1040px;
+    margin: 0 auto;
+    font-family: var(--font-body);
+}
+
+.leaderboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding-bottom: 1.25rem;
+    margin-bottom: 1.75rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.leaderboard-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.55rem, 2.5vw, 2rem);
+    color: var(--text);
+}
+
+.leaderboard-subtitle {
+    margin: 0.3rem 0 0;
+    font-size: 0.94rem;
+    color: var(--text-muted);
+}
+
+.leaderboard-icon-trophy {
+    color: var(--status-warning);
+}
+
+.leaderboard-container {
+    font-family: var(--font-body);
+}
+
+.lb-empty-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.lb-warning-card {
+    background: var(--status-warning-bg);
+    border: 1px solid var(--status-warning-border);
+    border-radius: var(--radius);
+    padding: 1.75rem 1.5rem;
+    text-align: center;
+    max-width: 600px;
+    margin: 1rem auto;
+}
+
+.lb-warning-title {
+    color: var(--status-warning);
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    margin: 0.5rem 0;
+}
+
+/* Podio Top 3 */
+.lb-podium {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 1rem;
+    padding: 1.75rem 1rem 2rem;
+    margin-bottom: 1.75rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.podium-entry {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1 1 0;
+    max-width: 160px;
+    min-width: 0;
+}
+
+.podium-rank {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text-muted);
+}
+
+.podium-avatar {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    font-weight: 800;
+    font-family: var(--font-display);
+}
+
+.podium-gold .podium-avatar {
+    background: #F59E0B;
+    color: #0F172A;
+}
+
+.podium-silver .podium-avatar {
+    background: #94A3B8;
+    color: #0F172A;
+}
+
+.podium-bronze .podium-avatar {
+    background: #C2410C;
+    color: #FFFFFF;
+}
+
+.podium-name {
+    color: var(--text);
+    font-weight: 700;
+    font-size: 0.94rem;
+    text-align: center;
+    word-break: break-word;
+}
+
+.podium-xp {
+    color: var(--green);
+    font-size: 0.86rem;
+    font-weight: 700;
+}
+
+.podium-bar {
+    width: 100%;
+    border-radius: 8px 8px 0 0;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-bottom: 4px solid var(--green);
+}
+
+.podium-gold .podium-bar { border-bottom-color: #F59E0B; height: 120px; }
+.podium-silver .podium-bar { border-bottom-color: #94A3B8; height: 88px; }
+.podium-bronze .podium-bar { border-bottom-color: #C2410C; height: 64px; }
+
+.podium-current .podium-name {
+    color: var(--green);
+}
+
+/* Tabla completa */
+.lb-table-wrapper {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    box-shadow: var(--shadow);
+}
+
+.lb-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+}
+
+.lb-table thead {
+    background: var(--bg-elevated);
+}
+
+.lb-table th {
+    padding: 0.85rem 1rem;
+    text-align: left;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+}
+
+.lb-table td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+}
+
+.lb-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.lb-table tbody tr:hover {
+    background: var(--accent-glow);
+}
+
+.lb-table tbody tr.lb-row-current {
+    background: var(--green-light);
+    border-left: 4px solid var(--green);
+}
+
+.lb-row-top td {
+    font-weight: 600;
+}
+
+.lb-rank {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    min-width: 48px;
+    text-align: center;
+}
+
+.lb-user {
+    white-space: nowrap;
+}
+
+.lb-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    margin-right: 0.55rem;
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: var(--green);
+    font-family: var(--font-display);
+}
+
+.lb-username {
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.lb-username:hover {
+    color: var(--green);
+    text-decoration: underline;
+}
+
+.lb-you-badge {
+    display: inline-block;
+    margin-left: 0.4rem;
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.14rem 0.45rem;
+    border-radius: 999px;
+}
+
+.lb-level {
+    white-space: nowrap;
+}
+
+.lb-lvl-num {
+    font-weight: 700;
+    color: var(--green);
+    display: block;
+    line-height: 1.25;
+}
+
+.lb-lvl-title {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    display: block;
+}
+
+.lb-xp {
+    font-weight: 700;
+    color: var(--green);
+}
+
+.lb-streak {
+    font-weight: 700;
+    color: var(--status-warning);
+}
+
+.lb-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+    flex-wrap: wrap;
+    font-size: 0.86rem;
+    color: var(--text-muted);
+}
+
+.lb-pagination-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .lb-podium {
+        gap: 0.5rem;
+        padding: 1.25rem 0.5rem;
+    }
+
+    .lb-table th,
+    .lb-table td {
+        padding: 0.65rem 0.65rem;
+    }
+
+    .lb-table th:nth-child(5),
+    .lb-table td:nth-child(5) {
+        display: none;
+    }
+}
+
+@media (max-width: 600px) {
+    .lb-table th:nth-child(6),
+    .lb-table td:nth-child(6) {
+        display: none;
+    }
+
+    .lb-avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 0.78rem;
+        margin-right: 0.4rem;
+    }
+}

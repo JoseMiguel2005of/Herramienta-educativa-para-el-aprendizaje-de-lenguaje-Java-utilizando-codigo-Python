@@ -1,25 +1,29 @@
 {% extends "base.html" %}
 
-{% block title %}Panel de Super Admin - {{ t.site_title }}{% endblock %}
+{% block title %}Panel de Super Admin — {{ t.site_title }}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin-dashboard.css') }}">
+{% endblock %}
 
 {% block content %}
-<article class="telemetry-dashboard">
-    <header class="telemetry-header" style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
+<article class="admin-dashboard">
+    <header class="admin-header">
         <div>
-            <h1 style="color: var(--status-danger);">PANEL DE SUPER ADMIN</h1>
-            <div class="system-status">
-                <span class="status-indicator" aria-hidden="true" style="background: var(--status-danger);"></span>
-                SUPERADMIN_ROOT_ACCESS · USUARIO: {{ current_user.username | upper }}
-            </div>
+            <h1 class="admin-header-title admin-header-title--danger">Panel de Super Admin</h1>
+            <p class="admin-subtitle">
+                <span class="admin-role-badge admin-role-badge--danger">Super Admin</span>
+                <span>{{ current_user.username }} · Administración global de cuentas, secciones y auditoría</span>
+            </p>
         </div>
-        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
-            <a href="{{ url_for('superadmin_export_csv') }}" class="term-btn btn-login" style="font-weight: bold; padding: 0.5rem 1rem;">
-                DESCARGAR CSV GLOBAL
+        <div class="admin-header-actions">
+            <a href="{{ url_for('superadmin_export_csv') }}" class="btn-secondary-inclusive">
+                Descargar CSV global
             </a>
-            <button type="button" id="btn-sa-pdf" class="term-btn btn-login" data-url="{{ url_for('superadmin_export_pdf') }}" style="font-weight: bold; padding: 0.5rem 1rem; cursor: pointer;">
-                <span id="btn-sa-pdf-label">GENERAR PDF GLOBAL</span>
+            <button type="button" id="btn-sa-pdf" class="btn-primary-inclusive" data-url="{{ url_for('superadmin_export_pdf') }}">
+                <span id="btn-sa-pdf-label">Generar PDF global</span>
             </button>
-            <span id="sa-pdf-status" role="status" aria-live="polite" style="font-size: 0.78rem; font-family: var(--font-mono);"></span>
+            <span id="sa-pdf-status" role="status" aria-live="polite" class="admin-export-status"></span>
         </div>
     </header>
 
@@ -31,141 +35,147 @@
     {% endfor %}
     {% endwith %}
 
-    <!-- MÉTRICAS GLOBALES -->
-    <div class="telemetry-grid" style="grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); margin-bottom: 1.75rem;">
-        <div class="data-module module-metric">
-            <div class="module-header"><span>// ESTUDIANTES_GLOBAL</span></div>
-            <div class="module-body center-data">
-                <span class="metric-value highlight-cyan">{{ metrics.total_students }}</span>
-                <span class="metric-total">{{ metrics.active_students }} ACT · {{ metrics.suspended_students }} SUSP · {{ metrics.unassigned_students }} SIN GRUPO</span>
-            </div>
+    <!-- Métricas globales -->
+    <section class="admin-kpi-grid" aria-label="Métricas globales de la plataforma">
+        <div class="admin-kpi-card">
+            <span class="admin-kpi-label">Estudiantes registrados</span>
+            <span class="admin-kpi-value admin-kpi-value--info">{{ metrics.total_students }}</span>
+            <span class="admin-kpi-meta">{{ metrics.active_students }} activos · {{ metrics.suspended_students }} suspendidos · {{ metrics.unassigned_students }} sin grupo</span>
         </div>
-        <div class="data-module module-metric">
-            <div class="module-header"><span>// PROFESORES</span></div>
-            <div class="module-body center-data">
-                <span class="metric-value highlight-orange">{{ metrics.total_teachers }}</span>
-                <span class="metric-total">{{ metrics.suspended_teachers }} SUSPENDIDOS</span>
-            </div>
+        <div class="admin-kpi-card">
+            <span class="admin-kpi-label">Profesores</span>
+            <span class="admin-kpi-value admin-kpi-value--warning">{{ metrics.total_teachers }}</span>
+            <span class="admin-kpi-meta">{{ metrics.suspended_teachers }} suspendidos</span>
         </div>
-        <div class="data-module module-metric">
-            <div class="module-header"><span>// SECCIONES_ACTIVAS</span></div>
-            <div class="module-body center-data">
-                <span class="metric-value" style="color: var(--status-success);">{{ metrics.total_classrooms }}</span>
-                <span class="metric-total">GRUPOS_EN_PLATAFORMA</span>
-            </div>
+        <div class="admin-kpi-card">
+            <span class="admin-kpi-label">Secciones activas</span>
+            <span class="admin-kpi-value admin-kpi-value--success">{{ metrics.total_classrooms }}</span>
+            <span class="admin-kpi-meta">Grupos activos en la plataforma</span>
         </div>
-        <div class="data-module module-metric">
-            <div class="module-header"><span>// AUDITORÍA_GLOBAL</span></div>
-            <div class="module-body center-data">
-                <span class="metric-value" style="color: var(--status-danger);">{{ metrics.audit_total }}</span>
-                <span class="metric-total">EVENTOS_REGISTRADOS</span>
-            </div>
+        <div class="admin-kpi-card">
+            <span class="admin-kpi-label">Bitácora de auditoría</span>
+            <span class="admin-kpi-value admin-kpi-value--danger">{{ metrics.audit_total }}</span>
+            <span class="admin-kpi-meta">Eventos registrados</span>
         </div>
-    </div>
+    </section>
 
-    <div class="telemetry-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-bottom: 2rem;">
-
-        <!-- GESTIÓN DE PROFESORES -->
-        <div class="data-module module-log" style="grid-column: 1 / -1;">
-            <div class="module-header">
-                <span>// GESTIÓN_DE_PROFESORES ({{ teachers | length }})</span>
-                <span style="font-size: 0.76rem; color: var(--text-muted);">Control centralizado de cuentas docentes</span>
+    <div class="admin-stack">
+        <!-- Gestión de profesores -->
+        <section class="admin-panel" aria-labelledby="sa-teachers-title">
+            <div class="admin-panel-header">
+                <h2 class="admin-panel-title" id="sa-teachers-title">Gestión de profesores ({{ teachers | length }})</h2>
+                <span class="admin-panel-desc">Control centralizado de cuentas docentes</span>
             </div>
-            <div class="module-body" style="padding: 0; overflow-x: auto;">
-                <table class="leaderboard-table" style="width: 100%; min-width: 640px; border-collapse: collapse; text-align: left; font-family: var(--font-mono); font-size: 0.82rem;">
+            <div class="admin-panel-body admin-panel-body--flush admin-table-wrap">
+                <table class="admin-table">
                     <thead>
-                        <tr style="border-bottom: 1px dashed var(--border); background: var(--bg-elevated); color: var(--text);">
-                            <th style="padding: 0.8rem 1rem;">PROFESOR</th>
-                            <th style="padding: 0.8rem;">ESTADO</th>
-                            <th style="padding: 0.8rem;">SECCIONES</th>
-                            <th style="padding: 0.8rem;">ESTUDIANTES</th>
-                            <th style="padding: 0.8rem;">REGISTRO</th>
-                            <th style="padding: 0.8rem 1rem; text-align: center;">ACCIONES</th>
+                        <tr>
+                            <th>Profesor</th>
+                            <th>Estado</th>
+                            <th>Secciones</th>
+                            <th>Estudiantes</th>
+                            <th>Registro</th>
+                            <th class="admin-col-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for t_user in teachers %}
-                        <tr style="border-bottom: 1px solid var(--border); {{ 'background: var(--status-danger-bg);' if t_user.is_suspended else '' }}">
-                            <td style="padding: 0.8rem 1rem;">
-                                <strong style="color: var(--text);">{{ t_user.username }}</strong>
-                                {% if t_user.email %}<div style="font-size: 0.74rem; color: var(--text-muted);">{{ t_user.email }}</div>{% endif %}
+                        <tr class="{{ 'admin-row--suspended' if t_user.is_suspended else '' }}">
+                            <td>
+                                <strong>{{ t_user.username }}</strong>
+                                {% if t_user.email %}<div class="admin-cell-sub">{{ t_user.email }}</div>{% endif %}
                             </td>
-                            <td style="padding: 0.8rem;">
+                            <td>
                                 {% if t_user.is_suspended %}
                                 <span title="{{ t_user.suspended_reason }}" class="status-pill status-pill--danger">⛔ Suspendido</span>
                                 {% else %}
                                 <span class="status-pill status-pill--completed">✓ Activo</span>
                                 {% endif %}
                             </td>
-                            <td style="padding: 0.8rem;">{{ t_user.sections_count }}</td>
-                            <td style="padding: 0.8rem; color: var(--green); font-weight: 600;">{{ t_user.students_count }}</td>
-                            <td style="padding: 0.8rem; color: var(--text-muted);">{{ t_user.created_at_str }}</td>
-                            <td style="padding: 0.8rem 1rem; text-align: center;">
+                            <td>{{ t_user.sections_count }}</td>
+                            <td style="color: var(--green); font-weight: 700;">{{ t_user.students_count }}</td>
+                            <td class="admin-cell-sub">{{ t_user.created_at_str }}</td>
+                            <td class="admin-col-center">
                                 {% if t_user.is_suspended %}
-                                <button type="button" data-user-id="{{ t_user.id }}" data-username="{{ t_user.username }}" onclick="saRestoreUser(this)" style="background: var(--status-success-bg); border: 1px solid var(--status-success-border); color: var(--status-success); padding: 0.28rem 0.65rem; border-radius: 5px; cursor: pointer; font-family: inherit; font-size: 0.74rem; font-weight: 600;">Restaurar</button>
+                                <button type="button" data-user-id="{{ t_user.id }}" data-username="{{ t_user.username }}"
+                                    onclick="saRestoreUser(this)" class="admin-action-btn admin-action-btn--success">
+                                    Restaurar
+                                </button>
                                 {% else %}
-                                <button type="button" data-user-id="{{ t_user.id }}" data-username="{{ t_user.username }}" data-role-label="profesor" onclick="openSaSuspendModal(this)" style="background: var(--status-danger-bg); border: 1px solid var(--status-danger-border); color: var(--status-danger); padding: 0.28rem 0.65rem; border-radius: 5px; cursor: pointer; font-family: inherit; font-size: 0.74rem; font-weight: 600;">Suspender</button>
+                                <button type="button" data-user-id="{{ t_user.id }}" data-username="{{ t_user.username }}"
+                                    data-role-label="profesor" onclick="openSaSuspendModal(this)"
+                                    class="admin-action-btn admin-action-btn--danger">
+                                    Suspender
+                                </button>
                                 {% endif %}
                             </td>
                         </tr>
                         {% else %}
-                        <tr><td colspan="6" style="padding: 1.5rem; text-align: center; color: var(--text-muted);">No hay profesores registrados todavía.</td></tr>
+                        <tr>
+                            <td colspan="6" class="admin-empty-cell">No hay profesores registrados todavía.</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-        </div>
+        </section>
 
-        <!-- TODAS LAS SECCIONES -->
-        <div class="data-module module-log" style="grid-column: 1 / -1;">
-            <div class="module-header">
-                <span>// TODAS_LAS_SECCIONES ({{ classrooms | length }})</span>
-                <span style="font-size: 0.76rem; color: var(--text-muted);">Supervisión global de secciones y códigos de clase</span>
+        <!-- Todas las secciones -->
+        <section class="admin-panel" aria-labelledby="sa-sections-title">
+            <div class="admin-panel-header">
+                <h2 class="admin-panel-title" id="sa-sections-title">Todas las secciones ({{ classrooms | length }})</h2>
+                <span class="admin-panel-desc">Supervisión global de secciones y códigos de clase</span>
             </div>
-            <div class="module-body" style="padding: 0; overflow-x: auto;">
-                <table class="leaderboard-table" style="width: 100%; min-width: 600px; border-collapse: collapse; text-align: left; font-family: var(--font-mono); font-size: 0.82rem;">
+            <div class="admin-panel-body admin-panel-body--flush admin-table-wrap">
+                <table class="admin-table">
                     <thead>
-                        <tr style="border-bottom: 1px dashed var(--border); background: var(--bg-elevated); color: var(--text);">
-                            <th style="padding: 0.75rem 1rem;">SECCIÓN</th>
-                            <th style="padding: 0.75rem;">CÓDIGO</th>
-                            <th style="padding: 0.75rem;">PROFESOR</th>
-                            <th style="padding: 0.75rem;">ESTUDIANTES</th>
-                            <th style="padding: 0.75rem 1rem; text-align: center;">ACCIONES</th>
+                        <tr>
+                            <th>Sección</th>
+                            <th>Código</th>
+                            <th>Profesor</th>
+                            <th>Estudiantes</th>
+                            <th class="admin-col-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for cls in classrooms %}
                         {% set owner = teacher_map.get(cls.teacher_id) %}
-                        <tr style="border-bottom: 1px solid var(--border);">
-                            <td style="padding: 0.75rem 1rem; font-weight: bold;">{{ cls.name }}</td>
-                            <td style="padding: 0.75rem;"><code style="color: var(--green); font-weight: 700;">{{ cls.code }}</code></td>
-                            <td style="padding: 0.75rem; color: var(--text-muted);">{{ owner.username if owner else 'ID ' ~ cls.teacher_id }}</td>
-                            <td style="padding: 0.75rem;">{{ classroom_counts.get(cls.id, 0) }}</td>
-                            <td style="padding: 0.75rem 1rem; text-align: center;">
-                                <button type="button" data-section-id="{{ cls.id }}" data-section-name="{{ cls.name }}" data-students-count="{{ classroom_counts.get(cls.id, 0) }}" onclick="saDeleteSection(this)" style="background: var(--status-danger-bg); border: 1px solid var(--status-danger-border); color: var(--status-danger); padding: 0.25rem 0.6rem; border-radius: 5px; cursor: pointer; font-family: inherit; font-size: 0.74rem; font-weight: 600;">Eliminar sección</button>
+                        <tr>
+                            <td><strong>{{ cls.name }}</strong></td>
+                            <td><code class="admin-code-value">{{ cls.code }}</code></td>
+                            <td>{{ owner.username if owner else 'ID ' ~ cls.teacher_id }}</td>
+                            <td>{{ classroom_counts.get(cls.id, 0) }}</td>
+                            <td class="admin-col-center">
+                                <button type="button" data-section-id="{{ cls.id }}" data-section-name="{{ cls.name }}"
+                                    data-students-count="{{ classroom_counts.get(cls.id, 0) }}" onclick="saDeleteSection(this)"
+                                    class="admin-action-btn admin-action-btn--danger">
+                                    Eliminar sección
+                                </button>
                             </td>
                         </tr>
                         {% else %}
-                        <tr><td colspan="5" style="padding: 1.5rem; text-align: center; color: var(--text-muted);">No hay secciones creadas en el sistema.</td></tr>
+                        <tr>
+                            <td colspan="5" class="admin-empty-cell">No hay secciones creadas en el sistema.</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-        </div>
+        </section>
 
-        <!-- DIRECTORIO GLOBAL DE ESTUDIANTES -->
-        <div class="data-module module-log" style="grid-column: 1 / -1;">
-            <div class="module-header" style="flex-wrap: wrap; gap: 0.5rem;">
-                <span>// DIRECTORIO_GLOBAL_ESTUDIANTES ({{ filters.total_filtered }})</span>
-                <span style="font-size: 0.76rem; color: var(--text-muted);">Vista completa de todos los estudiantes (con o sin sección)</span>
+        <!-- Directorio global de estudiantes -->
+        <section class="admin-panel" aria-labelledby="sa-students-title">
+            <div class="admin-panel-header">
+                <h2 class="admin-panel-title" id="sa-students-title">Directorio global de estudiantes ({{ filters.total_filtered }})</h2>
+                <span class="admin-panel-desc">Vista completa de todos los estudiantes (con o sin sección)</span>
             </div>
 
-            <form method="GET" action="{{ url_for('superadmin_dashboard') }}" style="padding: 0.9rem 1rem; border-bottom: 1px dashed var(--border); background: var(--bg-elevated); display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center;">
+            <form method="GET" action="{{ url_for('superadmin_dashboard') }}" class="admin-filter-bar">
                 <label for="sa-filter-q" class="sr-only">Buscar estudiante o correo</label>
-                <input id="sa-filter-q" type="text" name="q" value="{{ filters.q }}" placeholder="Buscar estudiante o correo..."
-                    style="flex: 1 1 200px; padding: 0.48rem 0.75rem; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--bg-secondary); color: var(--text); font-family: var(--font-mono); font-size: 0.82rem;">
+                <input id="sa-filter-q" type="text" name="q" value="{{ filters.q }}"
+                    placeholder="Buscar estudiante o correo..." class="admin-input admin-input--grow">
                 <label for="sa-filter-section" class="sr-only">Filtrar por sección</label>
-                <select id="sa-filter-section" name="section_id" style="padding: 0.48rem 0.65rem; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--bg-secondary); color: var(--text); font-family: var(--font-mono); font-size: 0.8rem;">
+                <select id="sa-filter-section" name="section_id" class="admin-select">
                     <option value="">Todas las secciones</option>
                     <option value="unassigned" {% if filters.section_id == 'unassigned' %}selected{% endif %}>Sin sección asignada</option>
                     {% for cls in classrooms %}
@@ -173,166 +183,179 @@
                     {% endfor %}
                 </select>
                 <label for="sa-filter-status" class="sr-only">Filtrar por estado</label>
-                <select id="sa-filter-status" name="status" style="padding: 0.48rem 0.65rem; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--bg-secondary); color: var(--text); font-family: var(--font-mono); font-size: 0.8rem;">
+                <select id="sa-filter-status" name="status" class="admin-select">
                     <option value="all" {% if filters.status == 'all' %}selected{% endif %}>Estado: Todos</option>
                     <option value="active" {% if filters.status == 'active' %}selected{% endif %}>Activos</option>
                     <option value="suspended" {% if filters.status == 'suspended' %}selected{% endif %}>Suspendidos</option>
                 </select>
                 <label for="sa-filter-sort" class="sr-only">Ordenar estudiantes</label>
-                <select id="sa-filter-sort" name="sort" style="padding: 0.48rem 0.65rem; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--bg-secondary); color: var(--text); font-family: var(--font-mono); font-size: 0.8rem;">
+                <select id="sa-filter-sort" name="sort" class="admin-select">
                     <option value="xp_desc" {% if filters.sort == 'xp_desc' %}selected{% endif %}>Mayor XP</option>
                     <option value="xp_asc" {% if filters.sort == 'xp_asc' %}selected{% endif %}>Menor XP</option>
                     <option value="progress_desc" {% if filters.sort == 'progress_desc' %}selected{% endif %}>Mayor progreso</option>
                     <option value="name_asc" {% if filters.sort == 'name_asc' %}selected{% endif %}>Nombre (A–Z)</option>
                     <option value="date_desc" {% if filters.sort == 'date_desc' %}selected{% endif %}>Más recientes</option>
                 </select>
-                <button type="submit" class="term-btn" style="padding: 0.48rem 0.9rem; border-color: var(--green); color: var(--green); cursor: pointer;">FILTRAR</button>
-                <a href="{{ url_for('superadmin_dashboard') }}" class="term-btn" style="padding: 0.48rem 0.75rem; color: var(--text-muted); text-decoration: none;">LIMPIAR</a>
+                <button type="submit" class="btn-primary-inclusive">Filtrar</button>
+                <a href="{{ url_for('superadmin_dashboard') }}" class="btn-secondary-inclusive">Limpiar</a>
             </form>
 
-            <div class="module-body" style="padding: 0; overflow-x: auto;">
-                <table class="leaderboard-table" style="width: 100%; min-width: 840px; border-collapse: collapse; text-align: left; font-family: var(--font-mono); font-size: 0.8rem;">
+            <div class="admin-panel-body admin-panel-body--flush admin-table-wrap">
+                <table class="admin-table admin-table--wide">
                     <thead>
-                        <tr style="border-bottom: 1px dashed var(--border); background: var(--bg-elevated); color: var(--text);">
-                            <th style="padding: 0.8rem 1rem;">ESTUDIANTE</th>
-                            <th style="padding: 0.8rem;">SECCIÓN / PROFESOR</th>
-                            <th style="padding: 0.8rem;">ESTADO</th>
-                            <th style="padding: 0.8rem;">XP / PROGRESO</th>
-                            <th style="padding: 0.8rem;">ASIGNAR SECCIÓN</th>
-                            <th style="padding: 0.8rem 1rem; text-align: center;">ACCIONES</th>
+                        <tr>
+                            <th>Estudiante</th>
+                            <th>Sección / Profesor</th>
+                            <th>Estado</th>
+                            <th>XP / Progreso</th>
+                            <th>Asignar sección</th>
+                            <th class="admin-col-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for s in students %}
-                        <tr style="border-bottom: 1px solid var(--border); {{ 'background: var(--status-danger-bg);' if s.is_suspended else '' }}">
-                            <td style="padding: 0.8rem 1rem;">
-                                <a href="{{ url_for('profile', username=s.username) }}" style="color: var(--green); text-decoration: none; font-weight: bold;">{{ s.username }} ↗</a>
-                                {% if s.email %}<div style="font-size: 0.72rem; color: var(--text-muted);">{{ s.email }}</div>{% endif %}
+                        <tr class="{{ 'admin-row--suspended' if s.is_suspended else '' }}">
+                            <td>
+                                <a href="{{ url_for('profile', username=s.username) }}" class="admin-user-link">{{ s.username }} ↗</a>
+                                {% if s.email %}<div class="admin-cell-sub">{{ s.email }}</div>{% endif %}
                             </td>
-                            <td style="padding: 0.8rem;">
-                                <div>{{ s.section_name }}</div>
-                                <div style="font-size: 0.72rem; color: var(--text-muted);">Prof: {{ s.teacher_name }}</div>
+                            <td>
+                                <span class="admin-section-pill">{{ s.section_name }}</span>
+                                <div class="admin-cell-sub">Prof.: {{ s.teacher_name }}</div>
                             </td>
-                            <td style="padding: 0.8rem;">
+                            <td>
                                 {% if s.is_suspended %}
                                 <span title="{{ s.suspended_reason }}" class="status-pill status-pill--danger">⛔ Suspendido</span>
                                 {% else %}
                                 <span class="status-pill status-pill--completed">✓ Activo</span>
                                 {% endif %}
                             </td>
-                            <td style="padding: 0.8rem;">
-                                <span style="color: var(--status-warning); font-weight: 700;">{{ s.total_xp }} XP</span>
-                                <div style="font-size: 0.74rem; color: var(--text-muted);">{{ s.completed }}/{{ metrics.total_course_lessons }} ({{ s.progress_pct }}%)</div>
+                            <td>
+                                <span class="admin-xp-value">{{ s.total_xp }} XP</span>
+                                <div class="admin-cell-sub">{{ s.completed }}/{{ metrics.total_course_lessons }} ({{ s.progress_pct }}%)</div>
                             </td>
-                            <td style="padding: 0.8rem;">
-                                <div style="display: flex; gap: 0.35rem; align-items: center;">
+                            <td>
+                                <div class="admin-assign-group">
                                     <label for="assign-sec-{{ s.id }}" class="sr-only">Sección para {{ s.username }}</label>
-                                    <select id="assign-sec-{{ s.id }}" style="padding: 0.28rem 0.45rem; border-radius: 4px; border: 1px solid var(--border-strong); background: var(--bg-secondary); color: var(--text); font-family: inherit; font-size: 0.74rem; max-width: 150px;">
+                                    <select id="assign-sec-{{ s.id }}" class="admin-select admin-select--compact">
                                         <option value="">Sin sección</option>
                                         {% for cls in classrooms %}
                                         <option value="{{ cls.id }}" {% if s.section_id == cls.id %}selected{% endif %}>{{ cls.name }}</option>
                                         {% endfor %}
                                     </select>
-                                    <button type="button" data-student-id="{{ s.id }}" onclick="saAssignSection(this)" style="background: var(--status-info-bg); border: 1px solid var(--status-info-border); color: var(--status-info); padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.72rem; font-weight: 700;">OK</button>
+                                    <button type="button" data-student-id="{{ s.id }}" onclick="saAssignSection(this)"
+                                        class="admin-action-btn admin-action-btn--info">
+                                        Guardar
+                                    </button>
                                 </div>
                             </td>
-                            <td style="padding: 0.8rem 1rem; text-align: center;">
+                            <td class="admin-col-center">
                                 {% if s.is_suspended %}
-                                <button type="button" data-user-id="{{ s.id }}" data-username="{{ s.username }}" onclick="saRestoreUser(this)" style="background: var(--status-success-bg); border: 1px solid var(--status-success-border); color: var(--status-success); padding: 0.26rem 0.6rem; border-radius: 5px; cursor: pointer; font-family: inherit; font-size: 0.74rem; font-weight: 600;">Restaurar</button>
+                                <button type="button" data-user-id="{{ s.id }}" data-username="{{ s.username }}"
+                                    onclick="saRestoreUser(this)" class="admin-action-btn admin-action-btn--success">
+                                    Restaurar
+                                </button>
                                 {% else %}
-                                <button type="button" data-user-id="{{ s.id }}" data-username="{{ s.username }}" data-role-label="estudiante" onclick="openSaSuspendModal(this)" style="background: var(--status-danger-bg); border: 1px solid var(--status-danger-border); color: var(--status-danger); padding: 0.26rem 0.6rem; border-radius: 5px; cursor: pointer; font-family: inherit; font-size: 0.74rem; font-weight: 600;">Suspender</button>
+                                <button type="button" data-user-id="{{ s.id }}" data-username="{{ s.username }}"
+                                    data-role-label="estudiante" onclick="openSaSuspendModal(this)"
+                                    class="admin-action-btn admin-action-btn--danger">
+                                    Suspender
+                                </button>
                                 {% endif %}
                             </td>
                         </tr>
                         {% else %}
-                        <tr><td colspan="6" style="padding: 1.75rem; text-align: center; color: var(--text-muted);">No se encontraron estudiantes con esos filtros.</td></tr>
+                        <tr>
+                            <td colspan="6" class="admin-empty-cell">No se encontraron estudiantes con esos filtros.</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
 
-            <div style="padding: 0.8rem 1rem; border-top: 1px dashed var(--border); display: flex; justify-content: space-between; align-items: center; font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted);">
-                <span>Página {{ filters.page }} de {{ filters.total_pages }} · {{ filters.total_filtered }} estudiante(s)</span>
-                <div style="display: flex; gap: 0.5rem;">
+            <div class="admin-pagination">
+                <span>Página <strong>{{ filters.page }}</strong> de <strong>{{ filters.total_pages }}</strong> · {{ filters.total_filtered }} estudiante(s)</span>
+                <div class="admin-pagination-links">
                     {% if filters.page > 1 %}
-                    <a href="{{ url_for('superadmin_dashboard', q=filters.q, section_id=filters.section_id, status=filters.status, sort=filters.sort, page=filters.page - 1, audit_page=filters.audit_page) }}" class="term-btn" style="padding: 0.3rem 0.65rem; text-decoration: none;">← Anterior</a>
+                    <a href="{{ url_for('superadmin_dashboard', q=filters.q, section_id=filters.section_id, status=filters.status, sort=filters.sort, page=filters.page - 1, audit_page=filters.audit_page) }}" class="btn-secondary-inclusive">← Anterior</a>
                     {% endif %}
                     {% if filters.page < filters.total_pages %}
-                    <a href="{{ url_for('superadmin_dashboard', q=filters.q, section_id=filters.section_id, status=filters.status, sort=filters.sort, page=filters.page + 1, audit_page=filters.audit_page) }}" class="term-btn" style="padding: 0.3rem 0.65rem; text-decoration: none;">Siguiente →</a>
+                    <a href="{{ url_for('superadmin_dashboard', q=filters.q, section_id=filters.section_id, status=filters.status, sort=filters.sort, page=filters.page + 1, audit_page=filters.audit_page) }}" class="btn-secondary-inclusive">Siguiente →</a>
                     {% endif %}
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- BITÁCORA GLOBAL DE AUDITORÍA -->
-        <div class="data-module module-log" style="grid-column: 1 / -1;">
-            <div class="module-header">
-                <span>// BITÁCORA_GLOBAL_DE_AUDITORÍA ({{ metrics.audit_total }})</span>
-                <span style="font-size: 0.76rem; color: var(--text-muted);">Historial completo de todos los profesores y Super Admin</span>
+        <!-- Bitácora global de auditoría -->
+        <section class="admin-panel" aria-labelledby="sa-audit-title">
+            <div class="admin-panel-header">
+                <h2 class="admin-panel-title" id="sa-audit-title">Bitácora global de auditoría ({{ metrics.audit_total }})</h2>
+                <span class="admin-panel-desc">Historial completo de acciones de profesores y Super Admin</span>
             </div>
-            <div class="module-body" style="padding: 0; overflow-x: auto;">
-                <table class="leaderboard-table" style="width: 100%; min-width: 680px; border-collapse: collapse; text-align: left; font-family: var(--font-mono); font-size: 0.78rem;">
+            <div class="admin-panel-body admin-panel-body--flush admin-table-wrap">
+                <table class="admin-table">
                     <thead>
-                        <tr style="border-bottom: 1px dashed var(--border); background: var(--bg-elevated); color: var(--text);">
-                            <th style="padding: 0.7rem 1rem;">FECHA / HORA</th>
-                            <th style="padding: 0.7rem;">ACTOR</th>
-                            <th style="padding: 0.7rem;">ACCIÓN</th>
-                            <th style="padding: 0.7rem;">AFECTADO</th>
-                            <th style="padding: 0.7rem 1rem;">MOTIVO / DETALLE</th>
+                        <tr>
+                            <th>Fecha / Hora</th>
+                            <th>Actor</th>
+                            <th>Acción</th>
+                            <th>Afectado</th>
+                            <th>Motivo / Detalle</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for log in audit_logs %}
-                        <tr style="border-bottom: 1px solid var(--border);">
-                            <td style="padding: 0.65rem 1rem; color: var(--text-muted); white-space: nowrap;">{{ log.created_at.strftime('%d/%m/%Y %H:%M') if log.created_at else '' }}</td>
-                            <td style="padding: 0.65rem;">{{ log.admin_username }}</td>
-                            <td style="padding: 0.65rem;">
+                        <tr>
+                            <td class="admin-cell-sub" style="white-space: nowrap;">{{ log.created_at.strftime('%d/%m/%Y %H:%M') if log.created_at else '' }}</td>
+                            <td>{{ log.admin_username }}</td>
+                            <td>
                                 {% set pill_cls = 'status-pill--danger' if ('SUSPEND' in log.action or 'UNAUTHORIZED' in log.action or 'DELETE' in log.action) else ('status-pill--completed' if ('RESTORE' in log.action or 'JOIN' in log.action) else 'status-pill--available') %}
-                                <span class="status-pill {{ pill_cls }}" style="font-size: 0.72rem;">{{ log.action }}</span>
+                                <span class="status-pill {{ pill_cls }}">{{ log.action }}</span>
                             </td>
-                            <td style="padding: 0.65rem; color: var(--green); font-weight: 600;">{{ log.target_username or '—' }}</td>
-                            <td style="padding: 0.65rem 1rem; color: var(--text-muted);">
-                                {% if log.reason %}<span style="color: var(--text);">{{ log.reason }}</span>{% endif %}
-                                {% if log.details %}<div style="font-size: 0.72rem; color: var(--text-muted);">{{ log.details }}</div>{% endif %}
+                            <td style="color: var(--green); font-weight: 600;">{{ log.target_username or '—' }}</td>
+                            <td>
+                                {% if log.reason %}<span>{{ log.reason }}</span>{% endif %}
+                                {% if log.details %}<div class="admin-cell-sub">{{ log.details }}</div>{% endif %}
                             </td>
                         </tr>
                         {% else %}
-                        <tr><td colspan="5" style="padding: 1.5rem; text-align: center; color: var(--text-muted);">Sin eventos de auditoría todavía.</td></tr>
+                        <tr>
+                            <td colspan="5" class="admin-empty-cell">Sin eventos de auditoría todavía.</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
             {% if filters.audit_total_pages > 1 %}
-            <div style="padding: 0.75rem 1rem; border-top: 1px dashed var(--border); display: flex; justify-content: space-between; align-items: center; font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted);">
-                <span>Auditoría: Página {{ filters.audit_page }} de {{ filters.audit_total_pages }}</span>
-                <div style="display: flex; gap: 0.5rem;">
+            <div class="admin-pagination">
+                <span>Auditoría: Página <strong>{{ filters.audit_page }}</strong> de <strong>{{ filters.audit_total_pages }}</strong></span>
+                <div class="admin-pagination-links">
                     {% if filters.audit_page > 1 %}
-                    <a href="{{ url_for('superadmin_dashboard', q=filters.q, section_id=filters.section_id, status=filters.status, sort=filters.sort, page=filters.page, audit_page=filters.audit_page - 1) }}" class="term-btn" style="padding: 0.3rem 0.65rem; text-decoration: none;">← Anterior</a>
+                    <a href="{{ url_for('superadmin_dashboard', q=filters.q, section_id=filters.section_id, status=filters.status, sort=filters.sort, page=filters.page, audit_page=filters.audit_page - 1) }}" class="btn-secondary-inclusive">← Anterior</a>
                     {% endif %}
                     {% if filters.audit_page < filters.audit_total_pages %}
-                    <a href="{{ url_for('superadmin_dashboard', q=filters.q, section_id=filters.section_id, status=filters.status, sort=filters.sort, page=filters.page, audit_page=filters.audit_page + 1) }}" class="term-btn" style="padding: 0.3rem 0.65rem; text-decoration: none;">Siguiente →</a>
+                    <a href="{{ url_for('superadmin_dashboard', q=filters.q, section_id=filters.section_id, status=filters.status, sort=filters.sort, page=filters.page, audit_page=filters.audit_page + 1) }}" class="btn-secondary-inclusive">Siguiente →</a>
                     {% endif %}
                 </div>
             </div>
             {% endif %}
-        </div>
+        </section>
     </div>
 </article>
 
-<!-- MODAL SUSPENDER USUARIO (SUPER ADMIN — WCAG 2.1 AA) -->
-<div id="sa-suspend-modal" role="dialog" aria-modal="true" aria-labelledby="sa-suspend-modal-title" hidden style="display: none; position: fixed; inset: 0; background: rgba(2, 6, 23, 0.78); z-index: 9999; align-items: center; justify-content: center; padding: 1rem;">
-    <div class="modal-dialog-card" style="background: var(--bg-secondary); border: 2px solid var(--status-danger-border); border-radius: 12px; max-width: 460px; width: 100%; padding: 1.5rem; font-family: var(--font-body); box-shadow: var(--shadow-lg); color: var(--text);">
-        <h3 id="sa-suspend-modal-title" style="margin: 0 0 0.5rem; color: var(--status-danger); font-size: 1.05rem;">SUSPENDER CUENTA</h3>
-        <p style="margin: 0 0 1rem; font-size: 0.88rem; color: var(--text-muted); line-height: 1.55;">
-            Suspenderás la cuenta de <span id="sa-target-role"></span> <strong id="sa-target-name" style="color: var(--text);"></strong>.
+<!-- Modal suspender usuario (Super Admin — WCAG 2.1 AA) -->
+<div id="sa-suspend-modal" class="admin-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="sa-suspend-modal-title" hidden>
+    <div class="admin-modal-card modal-dialog-card">
+        <h3 id="sa-suspend-modal-title" class="admin-modal-title">Suspender cuenta</h3>
+        <p class="admin-modal-desc">
+            Suspenderás la cuenta de <span id="sa-target-role"></span> <strong id="sa-target-name"></strong>.
         </p>
-        <label for="sa-suspend-reason" style="display: block; font-size: 0.84rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem;">Motivo obligatorio (mínimo 5 caracteres):</label>
-        <textarea id="sa-suspend-reason" rows="3" maxlength="500" placeholder="Motivo de la suspensión..."
-            style="width: 100%; box-sizing: border-box; padding: 0.65rem; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: inherit; font-size: 0.88rem; resize: vertical;"></textarea>
-        <div id="sa-suspend-error" role="alert" style="display: none; margin-top: 0.5rem; color: var(--status-danger); font-size: 0.82rem; font-weight: 600;"></div>
-        <div style="display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 1.15rem;">
-            <button type="button" id="btn-sa-cancel-suspend" onclick="closeSaSuspendModal()" class="btn-secondary-inclusive" style="padding: 0.48rem 0.95rem; font-size: 0.85rem;">Cancelar</button>
-            <button type="button" id="btn-sa-confirm-suspend" onclick="confirmSaSuspend()" style="background: var(--status-danger); color: var(--bg); border: 1px solid var(--status-danger); padding: 0.48rem 1.05rem; border-radius: 8px; font-family: inherit; font-size: 0.85rem; font-weight: 700; cursor: pointer;">Confirmar</button>
+        <label for="sa-suspend-reason" class="admin-modal-label">Motivo obligatorio (mínimo 5 caracteres):</label>
+        <textarea id="sa-suspend-reason" rows="3" maxlength="500" placeholder="Motivo de la suspensión..." class="admin-modal-textarea"></textarea>
+        <div id="sa-suspend-error" role="alert" class="admin-modal-error"></div>
+        <div class="admin-modal-actions">
+            <button type="button" id="btn-sa-cancel-suspend" onclick="closeSaSuspendModal()" class="btn-secondary-inclusive">Cancelar</button>
+            <button type="button" id="btn-sa-confirm-suspend" onclick="confirmSaSuspend()" class="admin-btn-danger-solid">Confirmar</button>
         </div>
     </div>
 </div>
@@ -385,7 +408,7 @@
         err.textContent = '';
         const modal = document.getElementById('sa-suspend-modal');
         modal.hidden = false;
-        modal.style.display = 'flex';
+        modal.classList.add('is-open');
         document.addEventListener('keydown', _handleSaModalKeydown);
         setTimeout(() => inp.focus(), 30);
     }
@@ -394,7 +417,7 @@
         _saTargetId = null;
         const modal = document.getElementById('sa-suspend-modal');
         if (modal) {
-            modal.style.display = 'none';
+            modal.classList.remove('is-open');
             modal.hidden = true;
         }
         document.removeEventListener('keydown', _handleSaModalKeydown);
@@ -404,7 +427,6 @@
         _saTriggerEl = null;
     }
 
-    // Cerrar al hacer clic en el fondo oscuro del modal
     (function () {
         const modal = document.getElementById('sa-suspend-modal');
         if (modal) {
@@ -522,7 +544,7 @@
         const status = document.getElementById('sa-pdf-status');
         btn.addEventListener('click', async () => {
             btn.disabled = true;
-            label.textContent = 'GENERANDO...';
+            label.textContent = 'Generando...';
             status.textContent = '';
             try {
                 const resp = await fetch(btn.dataset.url, { credentials: 'same-origin' });
@@ -545,7 +567,7 @@
                 status.textContent = err.message;
             } finally {
                 btn.disabled = false;
-                label.textContent = 'GENERAR PDF GLOBAL';
+                label.textContent = 'Generar PDF global';
             }
         });
     })();

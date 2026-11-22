@@ -4,6 +4,14 @@
 
 {% block title %}{{ lesson.title }} — {{ t.site_title }}{% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/lesson.css') }}">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+      integrity="sha384-wFjoQjtV1y5jVHbt0p35Ui8aV8GVpEZkyF99OXWqP/eNJDU93D3Ugxkoyh6Y2I4A"
+      crossorigin="anonymous" />
+{% endblock %}
+
 {% block content %}
 <article class="lesson">
     <header class="lesson-hero">
@@ -14,7 +22,7 @@
         </div>
     </header>
 
-    {# ===== PREREQUISITE WARNING (Sprint 3 — 2.10) ===== #}
+    {# ===== PREREQUISITE WARNING ===== #}
     {% if prereq_warning %}
     <div class="prereq-banner" role="note">
         <span class="prereq-icon" aria-hidden="true">⚠</span>
@@ -72,15 +80,12 @@
         {% for mapping in section_mappings %}
         <div class="w3-example section-example">
             {% if section_mappings | length > 1 %}
-            <h3>{{ t.get('example_label', 'Example') }} {{ loop.index }}</h3>
+            <h3>{{ t.get('example_label', 'Ejemplo') }} {{ loop.index }}</h3>
             {% else %}
-            <h3>{{ t.get('example_label', 'Example') }}</h3>
+            <h3>{{ t.get('example_label', 'Ejemplo') }}</h3>
             {% endif %}
-            <button class="btn-diff-toggle"
-                style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 0.25rem 0.7rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; cursor: pointer; margin-bottom: 0.5rem; transition: all 0.2s;">
-                Ver diferencias</button>
-            <section class="code-comparison" {% if current_category=='java2py' %}style="flex-direction: row-reverse;" {%
-                endif %}>
+            <button type="button" class="btn-diff-toggle">Ver diferencias</button>
+            <section class="code-comparison">
                 <div class="code-panel code-panel-python">
                     <div class="code-panel-header">
                         <span class="lang-badge python-badge">{{ t.python_label }}</span>
@@ -118,11 +123,11 @@
             </div>
             {% endif %}
 
-            {# ===== RUN BUTTON (Sprint 3 — 2.1) ===== #}
+            {# ===== RUN BUTTON ===== #}
             {% if mapping.python %}
             <div class="example-run-container" style="margin-bottom: 1rem;">
                 {% if is_external_db_lesson %}
-                <div class="external-db-notice" role="note" style="font-size: 0.82rem; color: var(--status-warning); background: var(--status-warning-bg); border: 1px solid var(--status-warning-border); border-radius: 8px; padding: 0.55rem 0.85rem; font-family: var(--font-body);">
+                <div class="external-db-notice" role="note">
                     ℹ Ejemplo de consola / solo lectura: requiere un servidor {{ 'MySQL' if current_lesson.startswith('sql-') else 'MongoDB' }} local o remoto (no ejecutable en navegador).
                 </div>
                 {% else %}
@@ -131,8 +136,7 @@
                     onclick="runExampleCode(this, this.dataset.code)">
                     ▶ Ejecutar ejemplo
                 </button>
-                <pre class="example-output"
-                    style="display:none; background: var(--editor-bg); color: var(--editor-text); border: 1px solid var(--border); padding: 0.6rem 0.85rem; margin-top: 0.5rem; border-left: 3px solid var(--python-color); font-size: 0.85rem; border-radius: var(--radius-sm); max-height: 140px; overflow-y: auto;"><code></code></pre>
+                <pre class="example-output example-output-pre"><code></code></pre>
                 {% endif %}
             </div>
             {% endif %}
@@ -147,11 +151,9 @@
     {% for mapping in lesson.code_mappings %}
     {% if mapping.section not in section_titles %}
     <div class="w3-example section-example" style="margin-top: 1.5rem;">
-        <h3>{{ mapping.section or t.get('example_label', 'Example') }}</h3>
-        <button class="btn-diff-toggle"
-            style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 0.25rem 0.7rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; cursor: pointer; margin-bottom: 0.5rem; transition: all 0.2s;">
-            Ver diferencias</button>
-        <section class="code-comparison" {% if current_category=='java2py' %}style="flex-direction: row-reverse;" {% endif %}>
+        <h3>{{ mapping.section or t.get('example_label', 'Ejemplo') }}</h3>
+        <button type="button" class="btn-diff-toggle">Ver diferencias</button>
+        <section class="code-comparison">
             <div class="code-panel code-panel-python">
                 <div class="code-panel-header">
                     <span class="lang-badge python-badge">{{ t.python_label }}</span>
@@ -192,7 +194,7 @@
         {% if mapping.python %}
         <div class="example-run-container" style="margin-bottom: 1rem;">
             {% if is_external_db_lesson %}
-            <div class="external-db-notice" role="note" style="font-size: 0.82rem; color: var(--status-warning); background: var(--status-warning-bg); border: 1px solid var(--status-warning-border); border-radius: 8px; padding: 0.55rem 0.85rem; font-family: var(--font-body);">
+            <div class="external-db-notice" role="note">
                 ℹ Ejemplo de consola / solo lectura: requiere un servidor {{ 'MySQL' if current_lesson.startswith('sql-') else 'MongoDB' }} local o remoto (no ejecutable en navegador).
             </div>
             {% else %}
@@ -201,8 +203,7 @@
                 onclick="runExampleCode(this, this.dataset.code)">
                 ▶ Ejecutar ejemplo
             </button>
-            <pre class="example-output"
-                style="display:none; background: var(--editor-bg); color: var(--editor-text); border: 1px solid var(--border); padding: 0.6rem 0.85rem; margin-top: 0.5rem; border-left: 3px solid var(--python-color); font-size: 0.85rem; border-radius: var(--radius-sm); max-height: 140px; overflow-y: auto;"><code></code></pre>
+            <pre class="example-output example-output-pre"><code></code></pre>
             {% endif %}
         </div>
         {% endif %}
@@ -220,12 +221,10 @@
     {% else %}
     {# ============================================================
     LEGACY FORMAT: Lessons without "sections" (flat layout)
-    Kept for backwards compatibility
     ============================================================ #}
     <div class="w3-example">
-        <h3>Example</h3>
-        <section class="code-comparison" {% if current_category=='java2py' %}style="flex-direction: row-reverse;" {%
-            endif %}>
+        <h3>{{ t.get('example_label', 'Ejemplo') }}</h3>
+        <section class="code-comparison">
             <div class="code-panel code-panel-python">
                 <div class="code-panel-header">
                     <span class="lang-badge python-badge">{{ t.python_label }}</span>
@@ -362,7 +361,7 @@
                 </p>
             </div>
             <div class="quiz-lang-selector-bar">
-                <span class="quiz-lang-label" style="font-size: 0.75rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; margin-right: 0.4rem;">MODO:</span>
+                <span class="quiz-lang-label" style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600; margin-right: 0.4rem;">Modo:</span>
                 <div class="quiz-lang-switch-group">
                     <button type="button" class="quiz-lang-btn active" data-lang="python" title="Evaluar con preguntas de Python">
                         Python
@@ -375,12 +374,12 @@
         </div>
 
         {% for ex in lesson_data.exercises %}
-        <div class="exercise-card" id="exercise-{{ ex.id }}" 
-             data-explanation="{{ ex.explanation | default('', true) }}" 
+        <div class="exercise-card" id="exercise-{{ ex.id }}"
+             data-explanation="{{ ex.explanation | default('', true) }}"
              data-explanation-java="{{ ex.explanation_java | default(ex.explanation, true) }}"
              data-hint="{{ ex.hint | default('', true) }}"
              data-has-java="{% if ex.question_java or ex.template_html_java or ex.options_java %}true{% else %}false{% endif %}">
-            
+
             <div class="exercise-header">
                 <span class="exercise-badge">Ejercicio {{ loop.index }}</span>
                 {% if ex.question_java or ex.template_html_java or ex.options_java %}
@@ -467,274 +466,9 @@
     </nav>
 
 </article>
-
-<style>
-    /* ========== ENRICHED LESSON SECTIONS (WCAG AA) ========== */
-    .lesson {
-        max-width: 1020px;
-        margin: 0 auto;
-    }
-
-    .lesson-hero {
-        border-bottom: 1px solid var(--border);
-        padding-bottom: 1.5rem;
-        margin-bottom: 2.25rem;
-    }
-
-    .lesson-eyebrow {
-        font-family: var(--font-body);
-        font-size: 0.84rem;
-        font-weight: 700;
-        color: var(--green);
-        letter-spacing: 0.03em;
-        text-transform: uppercase;
-        margin-bottom: 0.4rem;
-    }
-
-    .lesson-main-title {
-        font-family: var(--font-display);
-        font-size: clamp(1.7rem, 2.8vw, 2.25rem);
-        margin: 0 0 1rem;
-        color: var(--text);
-        line-height: 1.2;
-    }
-
-    .lesson-intro-card {
-        background: var(--bg-secondary);
-        border: 1px solid var(--border);
-        border-left: 4px solid var(--green);
-        border-radius: 10px;
-        padding: 1.1rem 1.35rem;
-        font-family: var(--font-body);
-        font-size: 1.02rem;
-        line-height: 1.65;
-        color: var(--text);
-        max-width: var(--measure-prose);
-        text-align: left;
-    }
-
-    .lesson-section {
-        margin-bottom: 2.75rem;
-        padding-bottom: 2rem;
-        border-bottom: 1px solid var(--border);
-    }
-
-    .lesson-section:last-of-type {
-        border-bottom: none;
-    }
-
-    .section-title {
-        font-family: var(--font-display);
-        font-size: 1.42rem;
-        color: var(--text);
-        margin: 0 0 1rem 0;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-
-    .section-index {
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        font-weight: 700;
-        color: var(--green);
-        background: var(--green-light);
-        border: 1px solid var(--status-info-border);
-        padding: 0.2rem 0.6rem;
-        border-radius: 8px;
-    }
-
-    .section-text {
-        font-size: 1rem;
-        color: var(--text);
-        line-height: 1.68;
-        margin-bottom: 1.35rem;
-        max-width: var(--measure-prose);
-        text-align: left;
-    }
-
-    .section-text code,
-    .note-body code,
-    .lesson-intro-card code {
-        background: var(--bg-elevated);
-        border: 1px solid var(--border);
-        padding: 0.12rem 0.42rem;
-        border-radius: 5px;
-        font-family: var(--font-mono);
-        font-size: 0.88em;
-        color: var(--green);
-    }
-
-    /* ========== NOTE BOXES (Icon + Label + High Contrast) ========== */
-    .lesson-note {
-        border: 1px solid var(--border);
-        border-left: 4px solid var(--status-info);
-        background: var(--bg-secondary);
-        margin: 1.15rem 0 1.4rem;
-        padding: 1rem 1.25rem;
-        border-radius: 10px;
-        font-size: 0.96rem;
-        line-height: 1.65;
-        max-width: var(--measure-prose);
-    }
-
-    .note-header {
-        display: flex;
-        align-items: center;
-        gap: 0.45rem;
-        margin-bottom: 0.4rem;
-        font-family: var(--font-display);
-        font-size: 0.86rem;
-        font-weight: 700;
-        letter-spacing: 0.03em;
-        text-transform: uppercase;
-    }
-
-    .note-body {
-        color: var(--text);
-    }
-
-    .note-tip {
-        border-left-color: var(--status-success);
-        background: var(--status-success-bg);
-    }
-
-    .note-tip .note-header {
-        color: var(--status-success);
-    }
-
-    .note-warning {
-        border-left-color: var(--status-warning);
-        background: var(--status-warning-bg);
-    }
-
-    .note-warning .note-header {
-        color: var(--status-warning);
-    }
-
-    .note-note {
-        border-left-color: var(--status-info);
-        background: var(--status-info-bg);
-    }
-
-    .note-note .note-header {
-        color: var(--status-info);
-    }
-
-    .section-example {
-        margin-bottom: 1.5rem;
-    }
-
-    .section-example h3 {
-        font-family: var(--font-display);
-        font-size: 1rem;
-        color: var(--text);
-        margin: 0 0 0.75rem;
-    }
-
-    .btn-diff-toggle,
-    .btn-run-example {
-        min-height: 44px;
-        padding: 0.5rem 1rem !important;
-        border-radius: 9px !important;
-        font-family: var(--font-body) !important;
-        font-size: 0.88rem !important;
-        font-weight: 600 !important;
-    }
-
-    .btn-diff-toggle {
-        background: var(--bg-elevated) !important;
-        border: 1px solid var(--border-strong) !important;
-        color: var(--text) !important;
-        margin-bottom: 0.75rem !important;
-    }
-
-    .btn-diff-toggle:hover,
-    .btn-diff-toggle.diff-active {
-        border-color: var(--green) !important;
-        color: var(--green) !important;
-        background: var(--green-light) !important;
-    }
-
-    .btn-run-example {
-        background: var(--btn-primary-bg) !important;
-        border: 1px solid var(--btn-primary-bg) !important;
-        color: var(--btn-primary-text) !important;
-    }
-
-    .btn-run-example:hover {
-        background: var(--btn-primary-hover) !important;
-    }
-
-    .btn-run-example:disabled {
-        opacity: 0.65;
-        cursor: wait;
-    }
-
-    /* ========== PREREQUISITE BANNER ========== */
-    .prereq-banner {
-        display: flex;
-        align-items: flex-start;
-        gap: 0.8rem;
-        background: var(--status-warning-bg);
-        border: 1px solid var(--status-warning-border);
-        border-left: 4px solid var(--status-warning);
-        padding: 0.9rem 1.15rem;
-        border-radius: 10px;
-        margin-bottom: 1.75rem;
-        font-family: var(--font-body);
-        font-size: 0.94rem;
-        max-width: var(--measure-prose);
-    }
-
-    .prereq-icon {
-        font-size: 1.15rem;
-        color: var(--status-warning);
-        flex-shrink: 0;
-    }
-
-    .prereq-text {
-        display: flex;
-        flex-direction: column;
-        gap: 0.2rem;
-    }
-
-    .prereq-text strong {
-        color: var(--status-warning);
-        font-size: 0.9rem;
-    }
-
-    .prereq-text span {
-        color: var(--text);
-        font-size: 0.9rem;
-    }
-
-    /* ========== DIFF HIGHLIGHTING (Python Blue vs Java Orange) ========== */
-    .diff-same {
-        opacity: 0.6;
-    }
-
-    .diff-changed {
-        background: rgba(56, 189, 248, 0.16);
-        border-left: 3px solid var(--python-color);
-        padding-left: 6px;
-        display: inline-block;
-        width: 100%;
-    }
-
-    .diff-changed.diff-java {
-        background: rgba(251, 146, 60, 0.18);
-        border-left-color: var(--java-color);
-    }
-</style>
-
 {% endblock %}
 
 {% block scripts %}
-<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
-      rel="stylesheet"
-      integrity="sha384-wFjoQjtV1y5jVHbt0p35Ui8aV8GVpEZkyF99OXWqP/eNJDU93D3Ugxkoyh6Y2I4A"
-      crossorigin="anonymous" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"
         integrity="sha384-06z5D//U/xpvxZHuUz92xBvq3DqBBFi7Up53HRrbV7Jlv7Yvh/MZ7oenfUe9iCEt"
         crossorigin="anonymous"></script>
@@ -755,7 +489,7 @@
     };
     window.currentLessonId = "{{ current_lesson }}";
 
-    // ===== RUN EXAMPLE CODE (reutiliza pyodide-runner.js con paquetes, stderr y bloqueo BD externa) =====
+    // Ejecutar ejemplo en navegador (reutiliza pyodide-runner.js)
     async function runExampleCode(btn, code) {
         const container = btn.closest('.example-run-container');
         const outputEl = container.querySelector('.example-output');
@@ -777,7 +511,7 @@
         }
     }
 
-    // ===== RESTORE EDITOR (Sprint 3 — 2.2) =====
+    // Restaurar editor
     const restoreBtn = document.getElementById('btn-restore-editor');
     const editorEl = document.getElementById('practice-editor');
     if (restoreBtn && editorEl) {
@@ -787,7 +521,7 @@
         });
     }
 
-    // ===== DIFF HIGHLIGHTING (Sprint 3 — 2.5) =====
+    // Resaltado de diferencias Python vs Java
     document.querySelectorAll('.btn-diff-toggle').forEach(btn => {
         btn.setAttribute('aria-pressed', 'false');
         btn.addEventListener('click', () => {

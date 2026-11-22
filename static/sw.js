@@ -1,14 +1,20 @@
-const CACHE_NAME = 'py2java-cache-v3';
+const CACHE_NAME = 'py2java-cache-v4';
 const urlsToCache = [
   '/static/css/style.css',
   '/static/css/quizzes.css',
+  '/static/css/ai-tutor.css',
+  '/static/css/study-timer.css',
   '/static/images/logo-dark.png',
   '/static/images/logo-light.png',
+  '/static/js/accessibility.js',
   '/static/js/main.js',
-  '/static/js/quizzes.js',
+  '/static/js/quiz-sounds.js',
   '/static/js/progress.js',
+  '/static/js/quizzes.js',
+  '/static/js/ai-tutor.js',
   '/static/js/search.js',
-  '/static/js/roadmap.js'
+  '/static/js/study-timer.js',
+  '/static/js/glossary-tooltips.js'
 ];
 
 self.addEventListener('install', event => {

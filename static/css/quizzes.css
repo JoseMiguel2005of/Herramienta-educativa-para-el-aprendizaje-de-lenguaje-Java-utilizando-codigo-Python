@@ -378,8 +378,8 @@
 }
 
 .error-line:focus-visible {
-    outline: 3px solid var(--focus-ring) !important;
-    outline-offset: -3px !important;
+    outline: 3px solid var(--focus-ring);
+    outline-offset: -3px;
     background: rgba(56, 189, 248, 0.18);
 }
 
@@ -471,8 +471,8 @@
 }
 
 .java-badge {
-    background: linear-gradient(135deg, #FF4B6E, #D92B50);
-    color: #FFFFFF !important;
+    background: var(--java-badge-bg);
+    color: #FFFFFF;
 }
 
 .exercise-mode-indicator {

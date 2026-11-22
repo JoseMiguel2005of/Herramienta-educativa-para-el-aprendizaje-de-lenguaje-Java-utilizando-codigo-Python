@@ -6,7 +6,7 @@
     <title>Certificado — {{ category_name }} — Py2Java Edu</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" crossorigin="anonymous">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -62,7 +62,7 @@
         }
 
         .cert-logo {
-            font-family: "Space Grotesk", sans-serif;
+            font-family: "Plus Jakarta Sans", "Inter", sans-serif;
             font-size: 1.5rem;
             font-weight: 700;
             color: #00E5FF;
@@ -87,7 +87,7 @@
         }
 
         .cert-body h2 {
-            font-family: "Space Grotesk", sans-serif;
+            font-family: "Plus Jakarta Sans", "Inter", sans-serif;
             font-size: 1.2rem;
             color: #A8B8CC;
             font-weight: 400;
@@ -95,7 +95,7 @@
         }
 
         .cert-name {
-            font-family: "Space Grotesk", sans-serif;
+            font-family: "Plus Jakarta Sans", "Inter", sans-serif;
             font-size: 2.5rem;
             font-weight: 700;
             color: #F8FAFC;
@@ -110,7 +110,7 @@
         }
 
         .cert-course-name {
-            font-family: "Space Grotesk", sans-serif;
+            font-family: "Plus Jakarta Sans", "Inter", sans-serif;
             font-size: 1.6rem;
             font-weight: 700;
             color: #38BDF8;
@@ -327,7 +327,7 @@
         </div>
         <div class="cert-locked-text">Certificado no disponible aún</div>
         <div class="cert-locked-progress">{{ completed_lessons }} / {{ total_lessons }} lecciones completadas</div>
-        <a href="{{ url_for('dashboard') }}" class="cert-locked-back">← Volver al Dashboard</a>
+        <a href="{{ url_for('dashboard') }}" class="cert-locked-back">← Volver a Mi Progreso</a>
     </div>
     {% else %}
     <div class="cert-header">
@@ -373,7 +373,7 @@
         <svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" style="vertical-align:-2px; margin-right:4px;"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
         Imprimir
     </button>
-    <a href="{{ url_for('dashboard') }}" class="cert-btn">← Dashboard</a>
+    <a href="{{ url_for('dashboard') }}" class="cert-btn">← Mi Progreso</a>
 </div>
 {% endif %}
 

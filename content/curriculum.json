@@ -1,0 +1,763 @@
+{
+  "categories": [
+    {
+      "id": "py2java",
+      "label_key": "cat_py2java",
+      "icon": "",
+      "color_class": "cat-python",
+      "sections": [
+        {
+          "label_key": "cat_python_tutorial",
+          "lessons": [
+            {
+              "id": "py-home",
+              "icon": ""
+            },
+            {
+              "id": "py-intro",
+              "icon": ""
+            },
+            {
+              "id": "py-getstarted",
+              "icon": ""
+            },
+            {
+              "id": "py-syntax",
+              "icon": ""
+            },
+            {
+              "id": "py-comments",
+              "icon": ""
+            },
+            {
+              "id": "py-variables",
+              "icon": ""
+            },
+            {
+              "id": "py-datatypes",
+              "icon": ""
+            },
+            {
+              "id": "py-numbers",
+              "icon": ""
+            },
+            {
+              "id": "py-casting",
+              "icon": ""
+            },
+            {
+              "id": "py-strings",
+              "icon": ""
+            },
+            {
+              "id": "py-booleans",
+              "icon": ""
+            },
+            {
+              "id": "py-operators",
+              "icon": ""
+            },
+            {
+              "id": "py-lists",
+              "icon": ""
+            },
+            {
+              "id": "py-tuples",
+              "icon": ""
+            },
+            {
+              "id": "py-sets",
+              "icon": ""
+            },
+            {
+              "id": "py-dicts",
+              "icon": ""
+            },
+            {
+              "id": "py-ifelse",
+              "icon": ""
+            },
+            {
+              "id": "py-while",
+              "icon": ""
+            },
+            {
+              "id": "py-for",
+              "icon": ""
+            }
+          ]
+        },
+        {
+          "label_key": "cat_python_functions",
+          "lessons": [
+            {
+              "id": "py-functions",
+              "icon": ""
+            },
+            {
+              "id": "py-lambda",
+              "icon": ""
+            }
+          ]
+        },
+        {
+          "label_key": "cat_python_classes",
+          "lessons": [
+            {
+              "id": "py-classes",
+              "icon": ""
+            },
+            {
+              "id": "py-init",
+              "icon": ""
+            },
+            {
+              "id": "py-self",
+              "icon": ""
+            },
+            {
+              "id": "py-inheritance",
+              "icon": ""
+            },
+            {
+              "id": "py-iterators",
+              "icon": ""
+            },
+            {
+              "id": "py-polymorphism",
+              "icon": ""
+            },
+            {
+              "id": "py-scope",
+              "icon": ""
+            }
+          ]
+        },
+        {
+          "label_key": "cat_python_modules",
+          "lessons": [
+            {
+              "id": "py-modules",
+              "icon": ""
+            },
+            {
+              "id": "py-dates",
+              "icon": ""
+            },
+            {
+              "id": "py-math",
+              "icon": ""
+            },
+            {
+              "id": "py-json",
+              "icon": ""
+            },
+            {
+              "id": "py-regex",
+              "icon": ""
+            },
+            {
+              "id": "py-pip",
+              "icon": ""
+            },
+            {
+              "id": "py-tryexcept",
+              "icon": ""
+            },
+            {
+              "id": "py-userinput",
+              "icon": ""
+            },
+            {
+              "id": "py-stringformat",
+              "icon": ""
+            }
+          ]
+        },
+        {
+          "label_key": "cat_file_handling",
+          "lessons": [
+            {
+              "id": "py-filehandling",
+              "icon": ""
+            },
+            {
+              "id": "py-readfiles",
+              "icon": ""
+            },
+            {
+              "id": "py-writefiles",
+              "icon": ""
+            },
+            {
+              "id": "py-deletefiles",
+              "icon": ""
+            }
+          ]
+        },
+        {
+          "label_key": "cat_numpy",
+          "lessons": [
+            {
+              "id": "np-intro",
+              "icon": ""
+            },
+            {
+              "id": "np-getstarted",
+              "icon": ""
+            },
+            {
+              "id": "np-create",
+              "icon": ""
+            },
+            {
+              "id": "np-indexing",
+              "icon": ""
+            },
+            {
+              "id": "np-slicing",
+              "icon": ""
+            },
+            {
+              "id": "np-datatypes",
+              "icon": ""
+            },
+            {
+              "id": "np-copyview",
+              "icon": ""
+            },
+            {
+              "id": "np-shape",
+              "icon": ""
+            },
+            {
+              "id": "np-reshape",
+              "icon": ""
+            },
+            {
+              "id": "np-iterating",
+              "icon": ""
+            },
+            {
+              "id": "np-join",
+              "icon": ""
+            },
+            {
+              "id": "np-split",
+              "icon": ""
+            },
+            {
+              "id": "np-search",
+              "icon": ""
+            },
+            {
+              "id": "np-sort",
+              "icon": ""
+            },
+            {
+              "id": "np-filter",
+              "icon": ""
+            },
+            {
+              "id": "np-random-intro",
+              "icon": ""
+            },
+            {
+              "id": "np-datadist",
+              "icon": ""
+            },
+            {
+              "id": "np-normal",
+              "icon": ""
+            },
+            {
+              "id": "np-binomial",
+              "icon": ""
+            },
+            {
+              "id": "np-poisson",
+              "icon": ""
+            },
+            {
+              "id": "np-uniform",
+              "icon": ""
+            },
+            {
+              "id": "np-logistic",
+              "icon": ""
+            },
+            {
+              "id": "np-multinomial",
+              "icon": ""
+            },
+            {
+              "id": "np-exponential",
+              "icon": ""
+            },
+            {
+              "id": "np-chisquare",
+              "icon": ""
+            },
+            {
+              "id": "np-rayleigh",
+              "icon": ""
+            },
+            {
+              "id": "np-pareto",
+              "icon": ""
+            },
+            {
+              "id": "np-zipf",
+              "icon": ""
+            },
+            {
+              "id": "np-ufunc-intro",
+              "icon": ""
+            },
+            {
+              "id": "np-create-ufunc",
+              "icon": ""
+            },
+            {
+              "id": "np-arithmetic",
+              "icon": ""
+            },
+            {
+              "id": "np-rounding",
+              "icon": ""
+            },
+            {
+              "id": "np-logs",
+              "icon": ""
+            },
+            {
+              "id": "np-summations",
+              "icon": ""
+            },
+            {
+              "id": "np-products",
+              "icon": ""
+            },
+            {
+              "id": "np-differences",
+              "icon": ""
+            },
+            {
+              "id": "np-lcm",
+              "icon": ""
+            },
+            {
+              "id": "np-gcd",
+              "icon": ""
+            },
+            {
+              "id": "np-trig",
+              "icon": ""
+            },
+            {
+              "id": "np-hyperbolic",
+              "icon": ""
+            },
+            {
+              "id": "np-setops",
+              "icon": ""
+            }
+          ]
+        },
+        {
+          "label_key": "cat_pandas",
+          "lessons": [
+            {
+              "id": "pd-intro",
+              "icon": ""
+            },
+            {
+              "id": "pd-getstarted",
+              "icon": ""
+            },
+            {
+              "id": "pd-series",
+              "icon": ""
+            },
+            {
+              "id": "pd-dataframes",
+              "icon": ""
+            },
+            {
+              "id": "pd-readcsv",
+              "icon": ""
+            },
+            {
+              "id": "pd-readjson",
+              "icon": ""
+            },
+            {
+              "id": "pd-analyze",
+              "icon": ""
+            },
+            {
+              "id": "pd-cleandata",
+              "icon": ""
+            },
+            {
+              "id": "pd-emptycells",
+              "icon": ""
+            },
+            {
+              "id": "pd-wrongformat",
+              "icon": ""
+            },
+            {
+              "id": "pd-wrongdata",
+              "icon": ""
+            },
+            {
+              "id": "pd-removedup",
+              "icon": ""
+            },
+            {
+              "id": "pd-correlations",
+              "icon": ""
+            },
+            {
+              "id": "pd-plotting",
+              "icon": ""
+            }
+          ]
+        },
+        {
+          "label_key": "cat_scipy",
+          "lessons": [
+            {
+              "id": "sc-intro",
+              "icon": ""
+            },
+            {
+              "id": "sc-getstarted",
+              "icon": ""
+            },
+            {
+              "id": "sc-constants",
+              "icon": ""
+            },
+            {
+              "id": "sc-optimizers",
+              "icon": ""
+            },
+            {
+              "id": "sc-sparsedata",
+              "icon": ""
+            },
+            {
+              "id": "sc-graphs",
+              "icon": ""
+            },
+            {
+              "id": "sc-spatialdata",
+              "icon": ""
+            },
+            {
+              "id": "sc-matlab",
+              "icon": ""
+            },
+            {
+              "id": "sc-interpolation",
+              "icon": ""
+            },
+            {
+              "id": "sc-sigtests",
+              "icon": ""
+            }
+          ]
+        },
+        {
+          "label_key": "cat_mysql",
+          "lessons": [
+            {
+              "id": "sql-getstarted",
+              "icon": ""
+            },
+            {
+              "id": "sql-createdb",
+              "icon": ""
+            },
+            {
+              "id": "sql-createtable",
+              "icon": ""
+            },
+            {
+              "id": "sql-insert",
+              "icon": ""
+            },
+            {
+              "id": "sql-select",
+              "icon": ""
+            },
+            {
+              "id": "sql-where",
+              "icon": ""
+            },
+            {
+              "id": "sql-orderby",
+              "icon": ""
+            },
+            {
+              "id": "sql-delete",
+              "icon": ""
+            },
+            {
+              "id": "sql-droptable",
+              "icon": ""
+            },
+            {
+              "id": "sql-update",
+              "icon": ""
+            },
+            {
+              "id": "sql-limit",
+              "icon": ""
+            },
+            {
+              "id": "sql-join",
+              "icon": ""
+            }
+          ]
+        },
+        {
+          "label_key": "cat_mongodb",
+          "lessons": [
+            {
+              "id": "mongo-getstarted",
+              "icon": ""
+            },
+            {
+              "id": "mongo-createdb",
+              "icon": ""
+            },
+            {
+              "id": "mongo-collection",
+              "icon": ""
+            },
+            {
+              "id": "mongo-insert",
+              "icon": ""
+            },
+            {
+              "id": "mongo-find",
+              "icon": ""
+            },
+            {
+              "id": "mongo-query",
+              "icon": ""
+            },
+            {
+              "id": "mongo-sort",
+              "icon": ""
+            },
+            {
+              "id": "mongo-delete",
+              "icon": ""
+            },
+            {
+              "id": "mongo-drop",
+              "icon": ""
+            },
+            {
+              "id": "mongo-update",
+              "icon": ""
+            },
+            {
+              "id": "mongo-limit",
+              "icon": ""
+            }
+          ]
+        },
+        {
+          "label_key": "cat_reference",
+          "lessons": [
+            {
+              "id": "ref-functions",
+              "icon": ""
+            },
+            {
+              "id": "ref-strings",
+              "icon": ""
+            },
+            {
+              "id": "ref-lists",
+              "icon": ""
+            },
+            {
+              "id": "ref-dicts",
+              "icon": ""
+            },
+            {
+              "id": "ref-tuples",
+              "icon": ""
+            },
+            {
+              "id": "ref-sets",
+              "icon": ""
+            },
+            {
+              "id": "ref-file",
+              "icon": ""
+            },
+            {
+              "id": "ref-keywords",
+              "icon": ""
+            },
+            {
+              "id": "ref-exceptions",
+              "icon": ""
+            },
+            {
+              "id": "ref-glossary",
+              "icon": ""
+            }
+          ]
+        },
+        {
+          "label_key": "cat_section_exercises",
+          "lessons": [
+            {
+              "id": "ex-syntax",
+              "icon": ""
+            },
+            {
+              "id": "ex-comments",
+              "icon": ""
+            },
+            {
+              "id": "ex-variables",
+              "icon": ""
+            },
+            {
+              "id": "ex-datatypes",
+              "icon": ""
+            },
+            {
+              "id": "ex-numbers",
+              "icon": ""
+            },
+            {
+              "id": "ex-strings",
+              "icon": ""
+            },
+            {
+              "id": "ex-booleans",
+              "icon": ""
+            },
+            {
+              "id": "ex-operators",
+              "icon": ""
+            },
+            {
+              "id": "ex-lists",
+              "icon": ""
+            },
+            {
+              "id": "ex-tuples",
+              "icon": ""
+            },
+            {
+              "id": "ex-sets",
+              "icon": ""
+            },
+            {
+              "id": "ex-dicts",
+              "icon": ""
+            },
+            {
+              "id": "ex-ifelse",
+              "icon": ""
+            },
+            {
+              "id": "ex-while",
+              "icon": ""
+            },
+            {
+              "id": "ex-for",
+              "icon": ""
+            },
+            {
+              "id": "ex-functions",
+              "icon": ""
+            },
+            {
+              "id": "ex-lambda",
+              "icon": ""
+            },
+            {
+              "id": "ex-classes",
+              "icon": ""
+            },
+            {
+              "id": "ex-inheritance",
+              "icon": ""
+            },
+            {
+              "id": "ex-modules",
+              "icon": ""
+            }
+          ]
+        },
+        {
+          "label_key": "cat_section_quiz",
+          "lessons": [
+            {
+              "id": "quiz-python-basics",
+              "icon": "",
+              "type": "quiz"
+            },
+            {
+              "id": "quiz-python-strings",
+              "icon": "",
+              "type": "quiz"
+            },
+            {
+              "id": "quiz-python-collections",
+              "icon": "",
+              "type": "quiz"
+            },
+            {
+              "id": "quiz-python-control",
+              "icon": "",
+              "type": "quiz"
+            },
+            {
+              "id": "quiz-python-functions",
+              "icon": "",
+              "type": "quiz"
+            },
+            {
+              "id": "quiz-python-oop",
+              "icon": "",
+              "type": "quiz"
+            }
+          ]
+        },
+        {
+          "label_key": "cat_section_examples",
+          "lessons": [
+            {
+              "id": "examples-hub",
+              "icon": "",
+              "type": "examples"
+            }
+          ]
+        },
+        {
+          "label_key": "cat_section_practice",
+          "lessons": [
+            {
+              "id": "practice-hub",
+              "icon": "",
+              "type": "practice"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

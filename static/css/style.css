@@ -156,17 +156,7 @@ body {
     --card-hover-shadow: var(--neu-flat-hover);
 }
 
-/* --- Topbar --- */
-[data-theme="light"] .topbar {
-    background: #FFFFFF !important;
-    border-bottom-color: #CBD5E1 !important;
-    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.06);
-}
-
-[data-theme="light"] .brand strong {
-    color: var(--green) !important;
-    text-shadow: none !important;
-}
+/* --- Topbar (usa tokens semánticos) --- */
 
 [data-theme="light"] .level-value {
     text-shadow: none;
@@ -502,7 +492,7 @@ body::before {
     font-size: 1.15rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    font-family: "Space Grotesk", sans-serif;
+    font-family: var(--font-display);
     color: var(--green);
     text-shadow: 0 0 12px rgba(0, 229, 255, 0.25);
     white-space: nowrap;
@@ -589,8 +579,8 @@ body::before {
 }
 
 #btn-theme-toggle::before {
-    display: none !important;
-    content: none !important;
+    display: none;
+    content: none;
 }
 
 #theme-icon {
@@ -714,17 +704,10 @@ body::before {
 
 .term-commands .term-btn:hover {
     background: var(--bg-secondary);
-    color: var(--topbar-text) !important;
+    color: var(--topbar-text);
 }
 
-.term-commands .term-btn::before {
-    content: "> ";
-    opacity: 0;
-}
 
-.term-commands .term-btn:hover::before {
-    opacity: 1;
-}
 
 .text-green {
     color: var(--green);
@@ -1593,14 +1576,14 @@ body::before {
 }
 
 .btn-diff-toggle:hover {
-    border-color: var(--text-muted) !important;
-    color: var(--text) !important;
+    border-color: var(--text-muted);
+    color: var(--text);
 }
 
 .btn-diff-toggle.diff-active {
-    background: rgba(0, 229, 255, 0.12) !important;
-    border-color: var(--green, #00e5ff) !important;
-    color: var(--green, #00e5ff) !important;
+    background: rgba(0, 229, 255, 0.12);
+    border-color: var(--green, #00e5ff);
+    color: var(--green, #00e5ff);
 }
 
 .exercise-hint-box {
@@ -1656,7 +1639,7 @@ body::before {
 
 .telemetry-header:not(.term-hero) h1 {
     font-size: 1.5rem;
-    font-family: "Space Grotesk", sans-serif;
+    font-family: var(--font-display);
     text-transform: uppercase;
     letter-spacing: 0.08em;
     margin: 0;
@@ -1847,11 +1830,11 @@ body::before {
 /* Tablet & Smaller Desktop */
 @media (max-width: 1024px) {
     .code-comparison {
-        grid-template-columns: minmax(0, 1fr) !important;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .translator-panels {
-        grid-template-columns: minmax(0, 1fr) !important;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .content {
@@ -1862,7 +1845,7 @@ body::before {
 /* Tablet & Mobile Navigation Drawer */
 @media (max-width: 900px) {
     .hide-desktop {
-        display: inline-flex !important;
+        display: inline-flex;
     }
 
     .sidebar {
@@ -1892,7 +1875,7 @@ body::before {
     }
 
     .telemetry-grid {
-        grid-template-columns: minmax(0, 1fr) !important;
+        grid-template-columns: minmax(0, 1fr);
     }
 }
 
@@ -1982,7 +1965,7 @@ body::before {
 /* Extra Small Mobile */
 @media (max-width: 400px) {
     #study-timer-goal-pill {
-        display: none !important;
+        display: none;
     }
 
     .brand strong {
@@ -2209,7 +2192,7 @@ body::before {
 
 .achievement-modal-header h2 {
     color: var(--text);
-    font-family: "Space Grotesk", sans-serif;
+    font-family: var(--font-display);
     font-size: 1.3rem;
     margin: 0;
     letter-spacing: 0.05em;
@@ -2249,7 +2232,7 @@ body::before {
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--green);
-    font-family: "Space Grotesk", sans-serif;
+    font-family: var(--font-display);
     text-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
     min-width: 2.5rem;
 }
@@ -2386,5 +2369,1538 @@ body::before {
     .glossary-term::after {
         max-width: 220px;
         font-size: 0.72rem;
+    }
+}
+
+/* ==========================================================================
+   PY2JAVA EDU — SISTEMA DE DISEÑO INCLUSIVO & ACCESIBILIDAD (WCAG 2.1 AA/AAA)
+   Paleta segura para daltonismo, tipografía legible, carga visual reducida
+   y modos universales (Alto Contraste, Dislexia, Escala de Texto, Movimiento)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. UTILIDADES DE ACCESIBILIDAD (SKIP LINK, SR-ONLY, FOCUS-VISIBLE)
+   -------------------------------------------------------------------------- */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.skip-link {
+    position: fixed;
+    top: -100px;
+    left: 1rem;
+    z-index: 10050;
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: var(--shadow-lg);
+    border: 2px solid var(--focus-ring);
+    transition: top 0.18s ease;
+}
+
+.skip-link:focus {
+    top: 1rem;
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 2px;
+}
+
+/* Indicador de foco teclado claro e inconfundible en toda la app */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 2px;
+    border-radius: 6px;
+}
+
+.chunk-hidden {
+    display: none;
+}
+
+/* --------------------------------------------------------------------------
+   2. ESCALA TIPOGRÁFICA Y CONFORT DE LECTURA
+   -------------------------------------------------------------------------- */
+body {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.62;
+    font-weight: 400;
+    color: var(--text);
+    background-color: var(--page-bg);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--text);
+    letter-spacing: -0.02em;
+}
+
+h1 { font-size: clamp(1.65rem, 2.5vw, 2.15rem); }
+h2 { font-size: clamp(1.3rem, 2vw, 1.55rem); }
+h3 { font-size: clamp(1.08rem, 1.5vw, 1.22rem); }
+
+/* Reemplazar monoespaciada cansada en interfaces de lectura y paneles */
+.telemetry-dashboard,
+.skill-tree-page,
+.profile-layout,
+.leaderboard-container,
+.sidebar,
+.topbar,
+.term-btn,
+.btn-ghost,
+.glossary-card,
+.glossary-filter-btn,
+.glossary-search-box,
+.glossary-search-input,
+.prereq-banner,
+.xp-toast,
+.achievement-modal-btn,
+.user-next-title,
+.snippet-btn,
+.export-btn,
+.transpiler-metrics {
+    font-family: var(--font-body);
+}
+
+/* Mantener monoespaciada exclusivamente donde pertenece: código fuente */
+code,
+pre,
+kbd,
+samp,
+.code-block code,
+.code-block-interactive code,
+.code-editor,
+.exercise-code-block,
+.exercise-template,
+.exercise-input,
+.exercise-freeform-editor,
+.example-code-block,
+.example-output,
+.tryit-textarea,
+.find-error-code,
+.ast-content,
+#python-input,
+.timer-digits,
+.timer-big-clock {
+    font-family: var(--font-mono);
+}
+
+/* Ancho de lectura cómodo (65ch–75ch) y alineación a la izquierda */
+.lesson-intro,
+.terminal-intro,
+.section-text,
+.note-body,
+.w3-note p,
+.explanation-body p,
+.examples-desc,
+.exercise-hub-desc,
+.exercise-question,
+.exercise-question-text,
+.glossary-card-def,
+.eval-start-desc,
+.quiz-start-desc {
+    max-width: var(--measure-prose);
+    text-align: left;
+    line-height: 1.65;
+    font-weight: 400;
+}
+
+.examples-header .examples-desc,
+.exercise-hub-header .exercise-hub-desc,
+.eval-start-card .eval-start-desc,
+.quiz-start-card .quiz-start-desc {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+/* Bloques de código siempre legibles con Prism en modo oscuro y claro */
+.code-block,
+.code-block-interactive,
+.code-editor,
+.translator-output,
+.example-code-block,
+.exercise-code-block,
+.exercise-freeform-editor,
+.find-error-code,
+.tryit-textarea,
+.ast-side {
+    background: var(--editor-bg);
+    color: var(--editor-text);
+}
+
+.code-block code,
+.code-block-interactive code,
+.translator-output code {
+    color: var(--editor-text);
+}
+
+/* --------------------------------------------------------------------------
+   3. TOPBAR LIMPIA Y PANEL DE ACCESIBILIDAD
+   -------------------------------------------------------------------------- */
+.topbar {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 2px 10px rgba(2, 6, 23, 0.14);
+    font-family: var(--font-body);
+}
+
+.topbar-inner {
+    padding: 0.65rem 1.5rem;
+    min-height: 68px;
+}
+
+.brand strong,
+.brand-title {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    text-transform: none;
+    color: var(--text);
+    text-shadow: none;
+}
+
+.brand-title-accent {
+    color: var(--green);
+}
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+}
+
+/* Objetivos táctiles mínimos >= 44x44px (WCAG 2.5.5 / 2.5.8) */
+.topbar-actions .term-btn,
+#btn-theme-toggle,
+#mobile-menu-toggle,
+#btn-a11y-toggle,
+.btn-check,
+.btn-show-answer,
+.btn-translate,
+.btn-quiz-start,
+.btn-quiz-next,
+.btn-quiz-retry,
+.btn-exercise-submit,
+.btn-exercise-hint,
+.btn-exercise-show,
+.btn-start-exercises,
+.btn-tryit-run,
+.btn-tryit-reset,
+.w3-btn-green,
+.btn-eval-start,
+.section-more-btn,
+.module-filter-tab,
+.glossary-filter-btn,
+.eval-dash-btn,
+.achievement-modal-btn {
+    min-height: var(--touch-min);
+    font-family: var(--font-body);
+    font-weight: 600;
+}
+
+.topbar-actions .term-btn,
+#btn-theme-toggle,
+#mobile-menu-toggle {
+    min-width: var(--touch-min);
+    padding: 0.5rem 0.9rem;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    box-shadow: none;
+}
+
+.topbar-actions .term-btn:hover,
+#btn-theme-toggle:hover,
+#mobile-menu-toggle:hover {
+    border-color: var(--green);
+    color: var(--green);
+    background: var(--green-light);
+    transform: translateY(-1px);
+    box-shadow: none;
+}
+
+#btn-theme-toggle {
+    width: var(--touch-min);
+    height: var(--touch-min);
+    padding: 0;
+}
+
+.topbar-actions .term-btn.btn-login {
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+    border-color: var(--btn-primary-bg);
+}
+
+.topbar-actions .term-btn.btn-login:hover {
+    background: var(--btn-primary-hover);
+    color: var(--btn-primary-text);
+    border-color: var(--btn-primary-hover);
+}
+
+.topbar-actions .term-btn.btn-logout {
+    color: var(--status-danger);
+    border-color: var(--status-danger-border);
+    background: var(--status-danger-bg);
+}
+
+.topbar-actions .term-btn.btn-logout:hover {
+    color: var(--status-danger);
+    border-color: var(--status-danger);
+}
+
+/* Botón y Popover de Accesibilidad */
+.a11y-wrapper {
+    position: relative;
+}
+
+.a11y-toggle-btn[aria-expanded="true"],
+.a11y-toggle-btn.has-active-a11y {
+    border-color: var(--green);
+    background: var(--green-light);
+    color: var(--green);
+}
+
+.a11y-panel {
+    position: fixed;
+    top: 74px;
+    right: 1.25rem;
+    width: min(350px, calc(100vw - 1.5rem));
+    background: var(--bg-secondary);
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+    border-radius: 14px;
+    box-shadow: var(--shadow-lg);
+    padding: 1.15rem 1.25rem;
+    z-index: 10020;
+    font-family: var(--font-body);
+}
+
+.a11y-panel[hidden] {
+    display: none;
+}
+
+.a11y-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-bottom: 0.85rem;
+    margin-bottom: 0.9rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.a11y-panel-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.a11y-close-btn {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.a11y-close-btn:hover {
+    border-color: var(--green);
+    color: var(--green);
+}
+
+.a11y-group {
+    margin-bottom: 1rem;
+}
+
+.a11y-group-label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.02em;
+}
+
+.a11y-segmented {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.45rem;
+}
+
+.a11y-seg-btn {
+    min-height: 44px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.a11y-seg-btn:hover {
+    border-color: var(--green);
+}
+
+.a11y-seg-btn[aria-pressed="true"] {
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+    border-color: var(--btn-primary-bg);
+}
+
+.a11y-toggle-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.a11y-switch-btn {
+    width: 100%;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.65rem 0.85rem;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--text);
+    text-align: left;
+    cursor: pointer;
+    font-family: var(--font-body);
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.a11y-switch-btn:hover {
+    border-color: var(--green);
+}
+
+.a11y-switch-btn[aria-pressed="true"] {
+    border-color: var(--green);
+    background: var(--green-light);
+}
+
+.a11y-switch-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.a11y-switch-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.a11y-switch-desc {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.a11y-switch-state {
+    flex-shrink: 0;
+    font-size: 0.76rem;
+    font-weight: 700;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+}
+
+.a11y-switch-btn[aria-pressed="true"] .a11y-switch-state {
+    background: var(--btn-primary-bg);
+    border-color: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+}
+
+.a11y-panel-footer {
+    margin-top: 0.9rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+}
+
+.a11y-reset-btn {
+    min-height: 40px;
+    padding: 0.45rem 0.9rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    font-size: 0.84rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.a11y-reset-btn:hover {
+    border-color: var(--text);
+    color: var(--text);
+}
+
+/* --------------------------------------------------------------------------
+   4. SIDEBAR CALMADA, MODULAR Y ACCESIBLE
+   -------------------------------------------------------------------------- */
+.sidebar {
+    width: 288px;
+    min-width: 288px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border);
+    top: 68px;
+    height: calc(100vh - 68px);
+    padding: 0.75rem 0 2rem;
+    font-size: 0.92rem;
+}
+
+.tree-root {
+    font-family: var(--font-display);
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    padding: 1rem 1rem 0.4rem;
+}
+
+.term-search {
+    margin: 0.25rem 0.85rem 0.75rem;
+    padding: 0.5rem 0.8rem;
+    border-radius: 10px;
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    box-shadow: none;
+    gap: 0.55rem;
+    min-height: 44px;
+}
+
+.term-search:focus-within {
+    border-color: var(--green);
+    box-shadow: var(--neu-glow);
+}
+
+.term-input {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--text);
+}
+
+.term-input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.85;
+}
+
+.sidebar-user-info {
+    margin: 0 0.85rem 0.75rem;
+    padding: 0.85rem 0.95rem;
+    border-radius: 10px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+}
+
+.user-level-badge {
+    font-family: var(--font-display);
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--green);
+    margin-bottom: 0.2rem;
+}
+
+.user-xp-text {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.sidebar-user-info .xp-bar-container {
+    height: 6px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--bg-elevated);
+}
+
+.sidebar-user-info .xp-bar-fill {
+    border-radius: 999px;
+    background: var(--green);
+}
+
+.user-next-title {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 0.4rem;
+}
+
+.term-commands {
+    padding: 0 0.75rem 0.85rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.term-commands .term-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.55rem 0.75rem;
+    min-height: 42px;
+    border-radius: 9px;
+    border: 1px solid transparent;
+    background: transparent;
+    box-shadow: none;
+    color: var(--sidebar-text);
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0;
+}
+
+.term-commands .term-btn::before {
+    display: none;
+    content: none;
+}
+
+.term-commands .term-btn:hover {
+    background: var(--bg-elevated);
+    border-color: var(--border);
+    color: var(--text);
+    transform: none;
+}
+
+.term-commands .term-btn.nav-active-item {
+    background: var(--green-light);
+    border-color: var(--status-info-border);
+    color: var(--green);
+    font-weight: 700;
+}
+
+.sidebar-categories {
+    padding: 0.25rem 0.65rem 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.dir-name {
+    padding: 0.55rem 0.6rem 0.35rem;
+    font-family: var(--font-display);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+}
+
+.term-section-btn {
+    min-height: 44px;
+    padding: 0.55rem 0.65rem;
+    border-radius: 9px;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.15rem;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.term-section-btn:hover {
+    background: var(--bg-elevated);
+    color: var(--green);
+}
+
+.term-section-btn[aria-expanded="true"] {
+    background: var(--green-light);
+    color: var(--green);
+}
+
+.sec-btn-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.sec-btn-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sec-btn-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-shrink: 0;
+}
+
+.sec-count-pill {
+    font-size: 0.74rem;
+    font-weight: 600;
+    padding: 0.12rem 0.45rem;
+    border-radius: 999px;
+    background: var(--bg-elevated);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+}
+
+.sec-chevron {
+    display: inline-flex;
+    transition: transform 0.2s ease;
+    color: var(--text-muted);
+}
+
+.term-section-btn[aria-expanded="true"] .sec-chevron {
+    transform: rotate(90deg);
+    color: var(--green);
+}
+
+.term-section-content {
+    padding: 0.2rem 0 0.5rem 0.35rem;
+}
+
+.term-nav-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    min-height: 40px;
+    padding: 0.45rem 0.75rem 0.45rem 0.95rem;
+    margin: 0.1rem 0;
+    border-radius: 8px;
+    border-left: 3px solid transparent;
+    color: var(--sidebar-text);
+    font-size: 0.87rem;
+    font-weight: 400;
+    line-height: 1.35;
+}
+
+.term-nav-link:hover {
+    background: var(--bg-elevated);
+    color: var(--text);
+}
+
+.term-nav-link.active {
+    background: var(--green-light);
+    border-left-color: var(--green);
+    color: var(--green);
+    font-weight: 700;
+}
+
+.term-nav-link.active::before {
+    display: none;
+    content: none;
+}
+
+.term-nav-link .file-name {
+    margin-left: 0;
+    flex: 1;
+    min-width: 0;
+}
+
+.nav-link.lesson-completed .file-name {
+    color: var(--text);
+    opacity: 1;
+}
+
+.sidebar-check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 0.3rem;
+    border-radius: 999px;
+    background: var(--status-success-bg);
+    border: 1px solid var(--status-success-border);
+    color: var(--status-success);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-shadow: none;
+    flex-shrink: 0;
+}
+
+.sidebar-more-btn {
+    width: 100%;
+    min-height: 40px;
+    margin-top: 0.35rem;
+    padding: 0.45rem 0.75rem;
+    border-radius: 8px;
+    border: 1px dashed var(--border-strong);
+    background: transparent;
+    color: var(--green);
+    font-family: var(--font-body);
+    font-size: 0.83rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.sidebar-more-btn:hover {
+    background: var(--green-light);
+    border-style: solid;
+    border-color: var(--green);
+}
+
+.sidebar-reference {
+    padding: 0.25rem 0.65rem 1rem;
+}
+
+/* --------------------------------------------------------------------------
+   5. CONTENIDO PRINCIPAL, TARJETAS Y BOTONES CON ALTO CONTRASTE
+   -------------------------------------------------------------------------- */
+.content {
+    padding: clamp(1.25rem, 3vw, 2.5rem);
+    background: var(--bg);
+    box-shadow: none;
+}
+
+.data-module,
+.neu-card,
+.w3-example,
+.exercise-card,
+.exercise-card-main,
+.quiz-start-card,
+.eval-start-card,
+.eval-question-slide {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.module-header {
+    background: var(--bg-elevated);
+    padding: 0.8rem 1.25rem;
+    font-family: var(--font-display);
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+    border-radius: calc(var(--radius) - 1px) calc(var(--radius) - 1px) 0 0;
+}
+
+.module-header-meta {
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+/* Botones primarios con contraste WCAG AA garantizado en dark y light */
+.btn-check,
+.btn-translate,
+.btn-quiz-start,
+.btn-quiz-next,
+.btn-quiz-retry,
+.btn-practice-run,
+.btn-practice-submit,
+.btn-exercise-submit,
+.btn-start-exercises,
+.btn-tryit-run,
+.w3-btn-green,
+.btn-eval-start,
+.achievement-modal-btn,
+.btn-primary-inclusive {
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+    border: 1px solid var(--btn-primary-bg);
+    border-radius: 10px;
+    padding: 0.65rem 1.3rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: none;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    transition: background-color 0.18s ease, transform 0.15s ease;
+}
+
+.btn-check:hover:not(:disabled),
+.btn-translate:hover:not(:disabled),
+.btn-quiz-start:hover,
+.btn-quiz-next:hover,
+.btn-quiz-retry:hover,
+.btn-exercise-submit:hover,
+.btn-start-exercises:hover,
+.btn-tryit-run:hover,
+.w3-btn-green:hover,
+.btn-eval-start:hover,
+.achievement-modal-btn:hover,
+.btn-primary-inclusive:hover {
+    background: var(--btn-primary-hover);
+    color: var(--btn-primary-text);
+    transform: translateY(-1px);
+    filter: none;
+}
+
+.btn-secondary-inclusive {
+    min-height: var(--touch-min);
+    background: var(--bg-elevated);
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    padding: 0.6rem 1.15rem;
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    transition: border-color 0.18s ease, color 0.18s ease, background-color 0.18s ease;
+}
+
+.btn-secondary-inclusive:hover {
+    border-color: var(--green);
+    color: var(--green);
+    background: var(--green-light);
+}
+
+/* Badges de lenguaje Python (Azul) y Java (Naranja Bermellón) */
+.python-badge {
+    background: var(--python-badge-bg);
+    color: #FFFFFF;
+}
+
+.java-badge {
+    background: var(--java-badge-bg);
+    color: #FFFFFF;
+}
+
+.lang-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.28rem 0.75rem;
+    border-radius: 999px;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.exercise-badge {
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   6. ETIQUETAS DE ESTADO INCLUSIVAS (ICONO + TEXTO — NUNCA SOLO COLOR)
+   -------------------------------------------------------------------------- */
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.68rem;
+    border-radius: 999px;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1.25;
+    border: 1px solid transparent;
+    white-space: nowrap;
+}
+
+.status-pill--completed {
+    background: var(--status-success-bg);
+    border-color: var(--status-success-border);
+    color: var(--status-success);
+}
+
+.status-pill--available {
+    background: var(--status-info-bg);
+    border-color: var(--status-info-border);
+    color: var(--status-info);
+}
+
+.status-pill--pending {
+    background: var(--status-warning-bg);
+    border-color: var(--status-warning-border);
+    color: var(--status-warning);
+}
+
+.status-pill--danger {
+    background: var(--status-danger-bg);
+    border-color: var(--status-danger-border);
+    color: var(--status-danger);
+}
+
+.status-pill--locked {
+    background: var(--status-locked-bg);
+    border-color: var(--status-locked-border);
+    color: var(--status-locked);
+}
+
+/* Alertas accesibles en formularios */
+.alert-inclusive {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.9rem 1.05rem;
+    border-radius: 10px;
+    border: 1px solid;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    margin-bottom: 1.25rem;
+    text-align: left;
+}
+
+.alert-inclusive--danger {
+    background: var(--status-danger-bg);
+    border-color: var(--status-danger-border);
+    color: var(--status-danger);
+}
+
+.alert-inclusive--success {
+    background: var(--status-success-bg);
+    border-color: var(--status-success-border);
+    color: var(--status-success);
+}
+
+.alert-inclusive--info {
+    background: var(--status-info-bg);
+    border-color: var(--status-info-border);
+    color: var(--status-info);
+}
+
+.alert-inclusive--warning {
+    background: var(--status-warning-bg);
+    border-color: var(--status-warning-border);
+    color: var(--status-warning);
+}
+
+/* --------------------------------------------------------------------------
+   7. COMPONENTES DE REDUCCIÓN DE CARGA VISUAL (FILTROS, VER MÁS, ACORDEONES)
+   -------------------------------------------------------------------------- */
+.module-filter-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.module-filter-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+    color: var(--text);
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.module-filter-tab:hover {
+    border-color: var(--green);
+    color: var(--green);
+}
+
+.module-filter-tab.active,
+.module-filter-tab[aria-pressed="true"] {
+    background: var(--btn-primary-bg);
+    border-color: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+}
+
+.filter-tab-count {
+    font-size: 0.78rem;
+    opacity: 0.85;
+}
+
+.section-more-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.25rem;
+}
+
+.section-more-btn {
+    padding: 0.6rem 1.35rem;
+    border-radius: 10px;
+    border: 1px solid var(--border-strong);
+    background: var(--bg-elevated);
+    color: var(--text);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.section-more-btn:hover {
+    border-color: var(--green);
+    color: var(--green);
+    background: var(--green-light);
+}
+
+/* Feedback de ejercicios: iconos + contraste AA */
+.exercise-feedback.feedback-correct {
+    background: var(--status-success-bg);
+    color: var(--status-success);
+    border: 1px solid var(--status-success-border);
+    border-left: 4px solid var(--status-success);
+}
+
+.exercise-feedback.feedback-incorrect {
+    background: var(--status-danger-bg);
+    color: var(--status-danger);
+    border: 1px solid var(--status-danger-border);
+    border-left: 4px solid var(--status-danger);
+    box-shadow: none;
+}
+
+/* --------------------------------------------------------------------------
+   8. MODOS DE ACCESIBILIDAD UNIVERSAL
+   -------------------------------------------------------------------------- */
+
+/* 8a. Escala de texto (Baja visión) */
+html[data-a11y-text="lg"] {
+    font-size: 18px;
+}
+
+html[data-a11y-text="xl"] {
+    font-size: 20px;
+}
+
+/* 8b. Modo Amigable para Dislexia / Lectura Fácil */
+html[data-a11y-dyslexia="true"],
+html[data-a11y-dyslexia="true"] body {
+    --font-display: var(--font-dyslexia);
+    --font-body: var(--font-dyslexia);
+    letter-spacing: 0.04em;
+    word-spacing: 0.12em;
+    line-height: 1.8;
+}
+
+html[data-a11y-dyslexia="true"] p,
+html[data-a11y-dyslexia="true"] li,
+html[data-a11y-dyslexia="true"] .section-text,
+html[data-a11y-dyslexia="true"] .note-body,
+html[data-a11y-dyslexia="true"] .lesson-intro,
+html[data-a11y-dyslexia="true"] .terminal-intro {
+    text-align: left;
+    line-height: 1.85;
+    font-style: normal;
+    max-width: 65ch;
+}
+
+html[data-a11y-dyslexia="true"] em,
+html[data-a11y-dyslexia="true"] i {
+    font-style: normal;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+/* 8c. Modo Alto Contraste (WCAG AAA >= 7:1) — Oscuro */
+html[data-a11y-contrast="high"],
+html[data-a11y-contrast="high"] body {
+    --bg: #000000;
+    --page-bg: #000000;
+    --bg-secondary: #0A0A0A;
+    --bg-elevated: #141414;
+    --bg-code: #000000;
+    --editor-bg: #000000;
+    --editor-text: #FFFFFF;
+    --sidebar-bg: #000000;
+    --sidebar-text: #FFFFFF;
+    --text: #FFFFFF;
+    --text-muted: #E2E8F0;
+    --border: #94A3B8;
+    --border-strong: #FFFFFF;
+    --green: #66D9FF;
+    --green-dark: #38BDF8;
+    --green-light: #0A2538;
+    --btn-primary-bg: #66D9FF;
+    --btn-primary-hover: #99E6FF;
+    --btn-primary-text: #000000;
+    --python-color: #66D9FF;
+    --python-badge-bg: #004A77;
+    --java-color: #FFB347;
+    --java-badge-bg: #8A3C00;
+    --status-success: #4DFFDB;
+    --status-success-bg: #002920;
+    --status-success-border: #4DFFDB;
+    --status-info: #66D9FF;
+    --status-info-bg: #002233;
+    --status-info-border: #66D9FF;
+    --status-warning: #FFE600;
+    --status-warning-bg: #2B2400;
+    --status-warning-border: #FFE600;
+    --status-danger: #FF8FA3;
+    --status-danger-bg: #330010;
+    --status-danger-border: #FF8FA3;
+    --status-locked: #E2E8F0;
+    --status-locked-bg: #1F2937;
+    --status-locked-border: #CBD5E1;
+    --focus-ring: #FFE600;
+    --shadow: none;
+    --shadow-lg: none;
+    --neu-flat: none;
+    --neu-flat-hover: none;
+}
+
+/* 8d. Modo Alto Contraste (WCAG AAA >= 7:1) — Claro */
+html[data-theme="light"][data-a11y-contrast="high"],
+html[data-theme="light"][data-a11y-contrast="high"] body {
+    --bg: #FFFFFF;
+    --page-bg: #FFFFFF;
+    --bg-secondary: #FFFFFF;
+    --bg-elevated: #F1F5F9;
+    --bg-code: #FFFFFF;
+    --editor-bg: #000000;
+    --editor-text: #FFFFFF;
+    --sidebar-bg: #FFFFFF;
+    --sidebar-text: #000000;
+    --text: #000000;
+    --text-muted: #1E293B;
+    --border: #000000;
+    --border-strong: #000000;
+    --green: #00449E;
+    --green-dark: #002F6C;
+    --green-light: #DBEAFE;
+    --btn-primary-bg: #00449E;
+    --btn-primary-hover: #002F6C;
+    --btn-primary-text: #FFFFFF;
+    --python-color: #00449E;
+    --python-badge-bg: #00449E;
+    --java-color: #8A3C00;
+    --java-badge-bg: #8A3C00;
+    --status-success: #005A4E;
+    --status-success-bg: #CCFBF1;
+    --status-success-border: #005A4E;
+    --status-info: #00449E;
+    --status-info-bg: #DBEAFE;
+    --status-info-border: #00449E;
+    --status-warning: #7A3200;
+    --status-warning-bg: #FEF3C7;
+    --status-warning-border: #7A3200;
+    --status-danger: #9E002B;
+    --status-danger-bg: #FFE4E6;
+    --status-danger-border: #9E002B;
+    --status-locked: #1E293B;
+    --status-locked-bg: #E2E8F0;
+    --status-locked-border: #000000;
+    --focus-ring: #00449E;
+    --shadow: none;
+    --shadow-lg: none;
+    --neu-flat: none;
+    --neu-flat-hover: none;
+}
+
+html[data-a11y-contrast="high"] .data-module,
+html[data-a11y-contrast="high"] .neu-card,
+html[data-a11y-contrast="high"] .skill-node,
+html[data-a11y-contrast="high"] .skill-branch,
+html[data-a11y-contrast="high"] .achievement-card,
+html[data-a11y-contrast="high"] .example-card,
+html[data-a11y-contrast="high"] .glossary-card,
+html[data-a11y-contrast="high"] .eval-dash-item,
+html[data-a11y-contrast="high"] .term-btn,
+html[data-a11y-contrast="high"] .status-pill,
+html[data-a11y-contrast="high"] .study-timer-modal,
+html[data-a11y-contrast="high"] .modal-dialog-card,
+html[data-a11y-contrast="high"] .reorder-item,
+html[data-a11y-contrast="high"] .btn-reorder-move {
+    border-width: 2px;
+}
+
+html[data-a11y-contrast="high"] a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+/* 8e. Sensibilidad Vestibular / Reducción de Movimiento */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+html[data-a11y-motion="reduce"] *,
+html[data-a11y-motion="reduce"] *::before,
+html[data-a11y-motion="reduce"] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+}
+
+/* --------------------------------------------------------------------------
+   9. RESPONSIVE AJUSTADO
+   -------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+    .sidebar {
+        top: 68px;
+        height: calc(100vh - 68px);
+    }
+}
+
+@media (max-width: 640px) {
+    .topbar-inner {
+        padding: 0.5rem 0.75rem;
+    }
+
+    .topbar-actions .term-btn {
+        padding: 0.45rem 0.65rem;
+    }
+
+    .a11y-panel {
+        top: 66px;
+        right: 0.75rem;
+        left: 0.75rem;
+        width: auto;
+    }
+}
+
+/* ==========================================================================
+   10. COMPONENTES COMPARTIDOS (GLOSARIO, BÚSQUEDA MODAL, ERRORES HTTP)
+   ========================================================================== */
+.glossary-tag {
+    display: inline-flex;
+    align-items: center;
+    background: var(--status-info-bg);
+    border: 1px solid var(--status-info-border);
+    color: var(--status-info);
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.search-result-link {
+    display: block;
+    padding: 1rem 1.25rem;
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    transition: background-color 0.18s ease;
+}
+
+.search-result-link:hover {
+    background: var(--accent-glow);
+}
+
+.search-result-title {
+    margin: 0 0 0.25rem 0;
+    color: var(--green);
+    font-family: var(--font-display);
+}
+
+.search-result-snippet {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Páginas de error HTTP (403, 404, 500) */
+.error-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 65vh;
+    padding: 2rem 1rem;
+}
+
+.error-card {
+    max-width: 560px;
+    width: 100%;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+}
+
+.error-code-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.3rem 0.85rem;
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+}
+
+.error-code-badge--info {
+    background: var(--status-info-bg);
+    border-color: var(--status-info-border);
+    color: var(--status-info);
+}
+
+.error-code-badge--danger {
+    background: var(--status-danger-bg);
+    border-color: var(--status-danger-border);
+    color: var(--status-danger);
+}
+
+.error-code-badge--warning {
+    background: var(--status-warning-bg);
+    border-color: var(--status-warning-border);
+    color: var(--status-warning);
+}
+
+.error-title {
+    margin: 0 0 0.75rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    color: var(--text);
+}
+
+.error-message {
+    margin: 0 auto 1.75rem;
+    max-width: 48ch;
+    color: var(--text-muted);
+    font-size: 0.98rem;
+    line-height: 1.6;
+}
+
+.error-actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+/* Responsive barra superior en móviles y pantallas < 400px */
+@media (max-width: 600px) {
+    .hide-mobile {
+        display: none;
+    }
+}
+
+@media (max-width: 400px) {
+    .topbar-inner {
+        padding: 0.4rem 0.5rem;
+        gap: 0.3rem;
+        min-height: 58px;
+    }
+
+    .brand {
+        gap: 0.3rem;
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+
+    .brand-icon {
+        display: none;
+    }
+
+    .brand strong,
+    .brand-title {
+        font-size: 0.88rem;
+        letter-spacing: -0.01em;
+    }
+
+    .topbar-actions {
+        gap: 0.22rem;
+        flex-shrink: 0;
+    }
+
+    .topbar-actions .term-btn,
+    #btn-theme-toggle,
+    #mobile-menu-toggle {
+        min-width: 38px;
+        min-height: 38px;
+        padding: 0.32rem 0.48rem;
+        font-size: 0.78rem;
+        border-radius: 8px;
+    }
+
+    #btn-theme-toggle {
+        width: 38px;
+        height: 38px;
+        padding: 0;
+    }
+
+    #study-timer-goal-pill,
+    .study-timer-btn .timer-goal-pill {
+        display: none;
+    }
+
+    .study-timer-btn {
+        gap: 0.25rem;
+        padding: 0.32rem 0.45rem;
+    }
+
+    .sidebar {
+        top: 58px;
+        height: calc(100vh - 58px);
+    }
+
+    .a11y-panel {
+        top: 60px;
+        right: 0.5rem;
+        left: 0.5rem;
     }
 }

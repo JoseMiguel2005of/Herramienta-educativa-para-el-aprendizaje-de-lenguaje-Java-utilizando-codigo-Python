@@ -9,6 +9,10 @@ env/
 .env.*
 !.env.example
 
+# Agentes y metadatos de herramientas locales
+.agents/
+skills-lock.json
+
 # Misceláneos
 .DS_Store
 *.log

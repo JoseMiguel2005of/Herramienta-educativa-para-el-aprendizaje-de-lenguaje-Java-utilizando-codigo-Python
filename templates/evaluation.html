@@ -2,6 +2,10 @@
 
 {% block title %}{{ eval_data.title }} — {{ t.site_title }}{% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/evaluation.css') }}">
+{% endblock %}
+
 {% block content %}
 <article class="eval-page" id="eval-container" data-section-key="{{ section_key }}"
     data-session-id="{{ eval_session_id }}"
@@ -198,7 +202,7 @@
 
             <div class="eval-results-actions">
                 <button type="button" class="btn-eval-retry" id="btn-eval-retry">Reintentar</button>
-                <a href="{{ url_for('dashboard') }}" class="btn-eval-dashboard">Dashboard</a>
+                <a href="{{ url_for('dashboard') }}" class="btn-eval-dashboard">Mi Progreso</a>
             </div>
         </div>
     </div>
@@ -209,6 +213,5 @@
 {% endblock %}
 
 {% block scripts %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/evaluation.css') }}">
 <script src="{{ url_for('static', filename='js/evaluation-engine.js') }}"></script>
 {% endblock %}

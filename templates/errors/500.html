@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Error del servidor (500) — {{ t.site_title }}{% endblock %}
+
+{% block content %}
+<section class="error-page" aria-labelledby="error-500-title">
+    <div class="error-card">
+        <span class="error-code-badge error-code-badge--warning">Error 500</span>
+        <h1 id="error-500-title" class="error-title">Algo salió mal en el servidor</h1>
+        <p class="error-message">
+            Ocurrió un error inesperado al procesar tu solicitud. Intenta recargar la página o vuelve al inicio del curso.
+        </p>
+        <div class="error-actions">
+            <a href="{{ url_for('lesson', lesson_id='py-home') }}" class="btn-primary-inclusive">
+                Volver al inicio
+            </a>
+            <a href="{{ url_for('dashboard') }}" class="btn-secondary-inclusive">
+                Ir a Mi Progreso
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

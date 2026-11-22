@@ -222,32 +222,6 @@ function spawnConfetti(container) {
     }
 }
 
-function showBadgeNotification(badge) {
-    if (!badge) return;
-    const notif = document.createElement('div');
-    notif.className = 'badge-notification';
-    const iconDiv = document.createElement('div');
-    iconDiv.className = 'badge-icon';
-    iconDiv.textContent = badge.icon || '★';
-    const textDiv = document.createElement('div');
-    textDiv.className = 'badge-text';
-    const small = document.createElement('small');
-    small.textContent = '¡Insignia Desbloqueada!';
-    const strong = document.createElement('strong');
-    strong.textContent = badge.name || '';
-    textDiv.appendChild(small);
-    textDiv.appendChild(strong);
-    notif.appendChild(iconDiv);
-    notif.appendChild(textDiv);
-    document.body.appendChild(notif);
-
-    setTimeout(() => notif.classList.add('show'), 10);
-    setTimeout(() => {
-        notif.classList.remove('show');
-        setTimeout(() => notif.remove(), 500);
-    }, 5000);
-}
-
 // Inicialización (sin autocompletado por scroll; utiliza botón explícito en lesson.html)
 document.addEventListener('DOMContentLoaded', () => {
     const completeBtn = document.getElementById('btn-complete-lesson');
@@ -279,9 +253,6 @@ window.onProgressXpUpdate = function(data, titleText) {
             updateSidebarProgress(data.summary);
             checkForNewAchievements(data.summary, true);
         }
-    }
-    if (data.badge_unlocked) {
-        showBadgeNotification(data.badge);
     }
 };
 
@@ -326,9 +297,6 @@ function markLessonCompleted(lessonId, triggerBtn) {
             statusEl.textContent = data.xp_gained > 0
                 ? `Progreso guardado (+${data.xp_gained} XP).`
                 : 'Esta lección ya estaba marcada como completada.';
-        }
-        if (data.badge_unlocked) {
-            showBadgeNotification(data.badge);
         }
     })
     .catch(err => {

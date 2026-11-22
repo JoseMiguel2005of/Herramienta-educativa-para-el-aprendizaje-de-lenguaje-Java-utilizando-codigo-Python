@@ -1,111 +1,104 @@
 {% extends "base.html" %}
 
-{% block title %}Leaderboard — Py2Java Edu{% endblock %}
+{% block title %}Ranking Global — {{ t.site_title }}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/leaderboard.css') }}">
+{% endblock %}
 
 {% block content %}
-<article class="telemetry-dashboard">
-    <header class="telemetry-header">
-        <h1 style="display:flex; align-items:center; gap:0.75rem;">
-            <div class="neu-icon-box" style="color: #FFD700;">
-                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
-            </div>
-            LEADERBOARD
-        </h1>
-        <div class="system-status">
-            <span class="status-indicator"></span>
-            RANKING_GLOBAL
+<article class="leaderboard-page">
+    <header class="leaderboard-header">
+        <div>
+            <h1 class="leaderboard-title">
+                <span class="neu-icon-box leaderboard-icon-trophy" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+                </span>
+                Ranking Global
+            </h1>
+            <p class="leaderboard-subtitle">Tabla de posiciones según experiencia acumulada y lecciones completadas</p>
         </div>
+        <span class="status-pill status-pill--available">Clasificación general</span>
     </header>
 
     <div class="leaderboard-container">
         {% if db_error %}
-        <div class="lb-empty" style="padding: 2rem 1rem;">
-            <div style="background: rgba(255, 170, 0, 0.08); border: 1px dashed rgba(255, 170, 0, 0.4); border-radius: 8px; padding: 1.5rem; text-align: center; max-width: 600px; margin: 0 auto;">
-                <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">⚠️</div>
-                <h3 style="color: #ffaa00; font-size: 1.1rem; margin-bottom: 0.5rem; font-family: 'Space Grotesk', sans-serif;">Base de Datos Temporalmente No Disponible</h3>
-                <p style="color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.5; margin: 0;">
-                    // La tabla de posiciones no pudo cargar los puntajes en este momento. Intenta nuevamente más tarde.
-                </p>
-            </div>
+        <div class="lb-warning-card" role="alert">
+            <div style="font-size: 1.6rem;" aria-hidden="true">⚠</div>
+            <h2 class="lb-warning-title">Base de datos temporalmente no disponible</h2>
+            <p style="color: var(--text); font-size: 0.92rem; line-height: 1.55; margin: 0;">
+                La tabla de posiciones no pudo cargar los puntajes en este momento. Intenta nuevamente más tarde.
+            </p>
         </div>
         {% elif board | length == 0 %}
-        <div class="lb-empty">
-            <p style="color: var(--text-muted); font-family: 'JetBrains Mono', monospace; text-align: center; padding: 3rem;">
-                // No hay estudiantes registrados aún
-            </p>
+        <div class="lb-empty-card">
+            <p style="margin: 0;">Aún no hay estudiantes registrados en el ranking.</p>
         </div>
         {% else %}
 
-        <!-- Podium (Top 3) -->
+        <!-- Podio Top 3 -->
         {% set top3 = podium if podium is defined else board[:3] %}
         {% if top3 | length >= 3 %}
-        <div class="lb-podium">
-            <!-- 2nd place -->
+        <section class="lb-podium" aria-label="Podio de los tres primeros lugares">
             <div class="podium-entry podium-silver {% if top3[1].id == current_uid %}podium-current{% endif %}">
-                <div class="podium-rank">2</div>
-                <div class="podium-avatar">{{ (top3[1].username or '?')[0] | upper }}</div>
+                <div class="podium-rank">#2</div>
+                <div class="podium-avatar" aria-hidden="true">{{ (top3[1].username or '?')[0] | upper }}</div>
                 <div class="podium-name">{{ top3[1].username }}</div>
                 <div class="podium-xp">{{ top3[1].total_xp }} XP</div>
-                <div class="podium-bar" style="height: 100px;"></div>
+                <div class="podium-bar" aria-hidden="true"></div>
             </div>
-            <!-- 1st place -->
             <div class="podium-entry podium-gold {% if top3[0].id == current_uid %}podium-current{% endif %}">
-                <div class="podium-rank">1</div>
-                <div class="podium-avatar">{{ (top3[0].username or '?')[0] | upper }}</div>
+                <div class="podium-rank">#1</div>
+                <div class="podium-avatar" aria-hidden="true">{{ (top3[0].username or '?')[0] | upper }}</div>
                 <div class="podium-name">{{ top3[0].username }}</div>
                 <div class="podium-xp">{{ top3[0].total_xp }} XP</div>
-                <div class="podium-bar" style="height: 140px;"></div>
+                <div class="podium-bar" aria-hidden="true"></div>
             </div>
-            <!-- 3rd place -->
             <div class="podium-entry podium-bronze {% if top3[2].id == current_uid %}podium-current{% endif %}">
-                <div class="podium-rank">3</div>
-                <div class="podium-avatar">{{ (top3[2].username or '?')[0] | upper }}</div>
+                <div class="podium-rank">#3</div>
+                <div class="podium-avatar" aria-hidden="true">{{ (top3[2].username or '?')[0] | upper }}</div>
                 <div class="podium-name">{{ top3[2].username }}</div>
                 <div class="podium-xp">{{ top3[2].total_xp }} XP</div>
-                <div class="podium-bar" style="height: 70px;"></div>
+                <div class="podium-bar" aria-hidden="true"></div>
             </div>
-        </div>
+        </section>
         {% endif %}
 
-        <!-- Full table -->
+        <!-- Tabla completa -->
         <div class="lb-table-wrapper">
             <table class="lb-table">
                 <thead>
                     <tr>
-                        <th>#</th>
+                        <th>Posición</th>
                         <th>Estudiante</th>
                         <th>Nivel</th>
-                        <th>XP Total</th>
+                        <th>XP total</th>
                         <th>Lecciones</th>
-                        <th>Racha (Días)</th>
+                        <th>Racha (días)</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for entry in board %}
                     <tr class="{% if entry.id == current_uid %}lb-row-current{% endif %} {% if entry.rank <= 3 %}lb-row-top{% endif %}">
                         <td class="lb-rank">
-                            {% if entry.rank == 1 %}<span class="rank-badge rank-1">#1</span>
-                            {% elif entry.rank == 2 %}<span class="rank-badge rank-2">#2</span>
-                            {% elif entry.rank == 3 %}<span class="rank-badge rank-3">#3</span>
-                            {% else %}{{ entry.rank }}
-                            {% endif %}
+                            {% if entry.rank <= 3 %}#{{ entry.rank }}{% else %}{{ entry.rank }}{% endif %}
                         </td>
                         <td class="lb-user">
-                            <span class="lb-avatar">{{ (entry.username or '?')[0] | upper }}</span>
+                            <span class="lb-avatar" aria-hidden="true">{{ (entry.username or '?')[0] | upper }}</span>
                             {% if entry.can_view_profile %}
                             <a href="{{ url_for('profile', username=entry.username) }}" class="lb-username">{{ entry.username }}</a>
                             {% else %}
                             <span class="lb-username">{{ entry.username }}</span>
                             {% endif %}
-                            {% if entry.id == current_uid %}<span class="lb-you-badge">TÚ</span>{% endif %}
+                            {% if entry.id == current_uid %}<span class="lb-you-badge">Tú</span>{% endif %}
                         </td>
                         <td class="lb-level">
-                            <span class="lb-lvl-num">{{ entry.level }}</span>
+                            <span class="lb-lvl-num">Nivel {{ entry.level }}</span>
                             <span class="lb-lvl-title">{{ get_level_title(entry.level) }}</span>
                         </td>
-                        <td class="lb-xp">{{ entry.total_xp }}</td>
+                        <td class="lb-xp">{{ entry.total_xp }} XP</td>
                         <td class="lb-lessons">{{ entry.completed }}</td>
-                        <td class="lb-streak">{% if entry.streak > 0 %}{{ entry.streak }}d{% else %}-{% endif %}</td>
+                        <td class="lb-streak">{% if entry.streak > 0 %}{{ entry.streak }} d{% else %}—{% endif %}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -113,14 +106,14 @@
         </div>
 
         {% if total_pages is defined and total_pages > 1 %}
-        <nav class="lb-pagination" aria-label="Paginación del ranking" style="display:flex; justify-content:space-between; align-items:center; gap:0.75rem; margin-top:1.25rem; flex-wrap:wrap; font-size:0.82rem; color:var(--text-muted);">
-            <span>Página <strong style="color:var(--text);">{{ page_num }}</strong> de <strong style="color:var(--text);">{{ total_pages }}</strong> · {{ total_students }} estudiante(s)</span>
-            <div style="display:flex; gap:0.5rem;">
+        <nav class="lb-pagination" aria-label="Paginación del ranking">
+            <span>Página <strong style="color: var(--text);">{{ page_num }}</strong> de <strong style="color: var(--text);">{{ total_pages }}</strong> · {{ total_students }} estudiante(s)</span>
+            <div class="lb-pagination-actions">
                 {% if page_num > 1 %}
-                <a href="{{ url_for('leaderboard', page=page_num - 1) }}" class="term-btn" style="padding:0.4rem 0.85rem; font-size:0.8rem; text-decoration:none;">← Anterior</a>
+                <a href="{{ url_for('leaderboard', page=page_num - 1) }}" class="btn-secondary-inclusive" style="min-height: 38px; padding: 0.4rem 0.85rem; font-size: 0.84rem;">← Anterior</a>
                 {% endif %}
                 {% if page_num < total_pages %}
-                <a href="{{ url_for('leaderboard', page=page_num + 1) }}" class="term-btn" style="padding:0.4rem 0.85rem; font-size:0.8rem; text-decoration:none;">Siguiente →</a>
+                <a href="{{ url_for('leaderboard', page=page_num + 1) }}" class="btn-secondary-inclusive" style="min-height: 38px; padding: 0.4rem 0.85rem; font-size: 0.84rem;">Siguiente →</a>
                 {% endif %}
             </div>
         </nav>
@@ -128,254 +121,4 @@
         {% endif %}
     </div>
 </article>
-
-<style>
-/* ===== LEADERBOARD ===== */
-.leaderboard-container {
-    font-family: "JetBrains Mono", monospace;
-}
-
-/* Podium */
-.lb-podium {
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    gap: 1rem;
-    padding: 2rem 1rem;
-    margin-bottom: 2rem;
-}
-
-.podium-entry {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    flex: 1 1 0;
-    max-width: 140px;
-    min-width: 0;
-}
-
-.podium-rank {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--text-muted);
-}
-
-.podium-avatar {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    font-weight: 700;
-    font-family: "Space Grotesk", sans-serif;
-}
-
-.podium-gold .podium-avatar {
-    background: linear-gradient(135deg, #ffd700, #ffaa00);
-    color: #1a1a1a;
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
-}
-
-.podium-silver .podium-avatar {
-    background: linear-gradient(135deg, #c0c0c0, #a0a0a0);
-    color: #1a1a1a;
-    box-shadow: 0 0 15px rgba(192, 192, 192, 0.3);
-}
-
-.podium-bronze .podium-avatar {
-    background: linear-gradient(135deg, #cd7f32, #a0632b);
-    color: #1a1a1a;
-    box-shadow: 0 0 15px rgba(205, 127, 50, 0.3);
-}
-
-.podium-name {
-    color: var(--text);
-    font-weight: 700;
-    font-size: 0.9rem;
-    text-align: center;
-    word-break: break-all;
-}
-
-.podium-xp {
-    color: var(--green);
-    font-size: 0.85rem;
-    font-weight: 700;
-}
-
-.podium-bar {
-    width: 100%;
-    border-radius: 4px 4px 0 0;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-bottom: 3px solid var(--green);
-}
-
-.podium-gold .podium-bar { border-bottom-color: #ffd700; }
-.podium-silver .podium-bar { border-bottom-color: #c0c0c0; }
-.podium-bronze .podium-bar { border-bottom-color: #cd7f32; }
-
-.podium-current {
-    transform: scale(1.05);
-}
-.podium-current .podium-name {
-    color: var(--green);
-}
-
-/* Table */
-.lb-table-wrapper {
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-}
-
-.lb-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.9rem;
-}
-
-.lb-table thead {
-    background: rgba(255,255,255,0.03);
-}
-
-.lb-table th {
-    padding: 0.75rem 1rem;
-    text-align: left;
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    border-bottom: 1px solid var(--border);
-}
-
-.lb-table td {
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--border);
-    color: var(--text);
-}
-
-.lb-table tr:last-child td {
-    border-bottom: none;
-}
-
-.lb-table tr:hover {
-    background: rgba(0, 229, 255, 0.03);
-}
-
-.lb-row-current {
-    background: rgba(0, 229, 255, 0.06) !important;
-    border-left: 3px solid var(--green);
-}
-
-.lb-row-top td {
-    color: var(--text);
-    font-weight: 600;
-}
-
-.lb-rank {
-    font-size: 1.1rem;
-    min-width: 40px;
-    text-align: center;
-}
-
-.lb-user {
-    white-space: nowrap;
-}
-
-.lb-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    vertical-align: middle;
-    margin-right: 0.5rem;
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--green);
-    font-family: "Space Grotesk", sans-serif;
-    flex-shrink: 0;
-}
-
-.lb-username {
-    color: var(--text);
-    text-decoration: none;
-    transition: color 0.2s;
-}
-.lb-username:hover {
-    color: var(--green);
-}
-
-.lb-you-badge {
-    background: var(--green);
-    color: #0D1117;
-    font-size: 0.6rem;
-    font-weight: 700;
-    padding: 0.15rem 0.4rem;
-    border-radius: 3px;
-    letter-spacing: 0.05em;
-}
-
-.lb-level {
-    white-space: nowrap;
-}
-
-.lb-lvl-num {
-    font-weight: 700;
-    color: var(--green);
-    display: block;
-    line-height: 1.2;
-}
-
-.lb-lvl-title {
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    display: block;
-}
-
-.lb-xp {
-    font-weight: 700;
-    color: var(--green);
-}
-
-.lb-streak {
-    font-weight: 700;
-    color: #ff9800;
-}
-
-@media (max-width: 768px) {
-    .lb-podium {
-        gap: 0.5rem;
-        padding: 1.25rem 0.25rem;
-    }
-    .lb-table th,
-    .lb-table td {
-        padding: 0.6rem 0.65rem;
-    }
-    .lb-table th:nth-child(5),
-    .lb-table td:nth-child(5) {
-        display: none;
-    }
-}
-
-@media (max-width: 600px) {
-    .lb-table th:nth-child(6),
-    .lb-table td:nth-child(6) {
-        display: none;
-    }
-    .lb-avatar {
-        width: 26px;
-        height: 26px;
-        font-size: 0.75rem;
-        margin-right: 0.35rem;
-    }
-}
-</style>
 {% endblock %}

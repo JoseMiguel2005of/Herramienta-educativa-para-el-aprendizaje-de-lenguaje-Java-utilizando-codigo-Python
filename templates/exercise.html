@@ -2,6 +2,10 @@
 
 {% block title %}{{ exercise_data.title }} — Ejercicio {{ exercise_num }} de {{ total_exercises }} — {{ t.site_title }}{% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/exercise-page.css') }}">
+{% endblock %}
+
 {% block content %}
 <article class="exercise-page">
     <header class="exercise-page-header">
@@ -12,7 +16,7 @@
             <span class="exercise-topic-badge">{{ exercise_data.title }}</span>
         </h1>
         <div class="exercise-progress-bar-wrapper">
-            <div class="exercise-counter">Exercise {{ exercise_num }} of {{ total_exercises }}</div>
+            <div class="exercise-counter">Ejercicio {{ exercise_num }} de {{ total_exercises }}</div>
             <div class="exercise-progress-track">
                 <div class="exercise-progress-fill" style="width: {{ (exercise_num / total_exercises * 100) | round }}%"></div>
             </div>
@@ -155,5 +159,4 @@
 <script src="{{ url_for('static', filename='js/pyodide-runner.js') }}"></script>
 {% endif %}
 <script src="{{ url_for('static', filename='js/exercise-nav.js') }}"></script>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/exercise-page.css') }}">
 {% endblock %}

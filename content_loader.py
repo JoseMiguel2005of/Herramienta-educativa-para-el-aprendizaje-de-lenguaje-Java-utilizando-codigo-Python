@@ -307,8 +307,19 @@ def get_evaluation_for_section(section_key):
     return None
 
 
+@lru_cache(maxsize=1)
+def load_curriculum():
+    """Carga el currículo de categorías y lecciones desde content/curriculum.json."""
+    path = os.path.join(CONTENT_DIR, "curriculum.json")
+    data = _load_json(path)
+    if isinstance(data, dict) and isinstance(data.get("categories"), list):
+        return data
+    return {"categories": []}
+
+
 def invalidate_cache():
     """Invalida todo el cache (útil si se editan JSONs en caliente)."""
+    load_curriculum.cache_clear()
     load_ui_strings.cache_clear()
     load_reference_data.cache_clear()
     load_lesson.cache_clear()

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Acceso denegado (403) — {{ t.site_title }}{% endblock %}
+
+{% block content %}
+<section class="error-page" aria-labelledby="error-403-title">
+    <div class="error-card">
+        <span class="error-code-badge error-code-badge--danger">Error 403</span>
+        <h1 id="error-403-title" class="error-title">Acceso denegado</h1>
+        <p class="error-message">
+            No tienes permisos suficientes para acceder a esta sección o realizar esta acción.
+        </p>
+        <div class="error-actions">
+            <a href="{{ url_for('dashboard') if current_user.is_authenticated else url_for('lesson', lesson_id='py-home') }}" class="btn-primary-inclusive">
+                Volver al inicio
+            </a>
+            {% if not current_user.is_authenticated %}
+            <a href="{{ url_for('login') }}" class="btn-secondary-inclusive">Iniciar sesión</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

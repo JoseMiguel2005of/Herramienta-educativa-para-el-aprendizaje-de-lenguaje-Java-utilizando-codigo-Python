@@ -2,6 +2,10 @@
 
 {% block title %}{{ quiz_data.title }} — {{ t.site_title }}{% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/quiz-page.css') }}">
+{% endblock %}
+
 {% block content %}
 <article class="quiz-page" id="quiz-container" data-quiz-id="{{ quiz_data.id }}" data-total="{{ quiz_data.questions | length }}" data-time-limit="{{ quiz_data.time_limit or 0 }}">
     {# ===== START SCREEN ===== #}
@@ -82,6 +86,5 @@
 {% endblock %}
 
 {% block scripts %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/quiz-page.css') }}">
 <script src="{{ url_for('static', filename='js/quiz-engine.js') }}"></script>
 {% endblock %}

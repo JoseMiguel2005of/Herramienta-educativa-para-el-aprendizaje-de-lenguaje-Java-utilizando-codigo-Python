@@ -1,27 +1,31 @@
 {% extends "base.html" %}
 
-{% block title %}Panel de Profesor - {{ t.site_title }}{% endblock %}
+{% block title %}Panel de Profesor — {{ t.site_title }}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin-dashboard.css') }}">
+{% endblock %}
 
 {% block content %}
-<article class="telemetry-dashboard">
-    <header class="telemetry-header" style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
+<article class="admin-dashboard">
+    <header class="admin-header">
         <div>
-            <h1>PANEL DE PROFESOR</h1>
-            <div class="system-status">
-                <span class="status-indicator" aria-hidden="true"></span>
-                TEACHER_DASHBOARD_ACTIVE · PROFESOR: {{ current_user.username | upper }}
-            </div>
+            <h1 class="admin-header-title">Panel de Profesor</h1>
+            <p class="admin-subtitle">
+                <span class="admin-role-badge">Docente activo</span>
+                <span>{{ current_user.username }} · Gestión de secciones, progreso y evaluaciones</span>
+            </p>
         </div>
-        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
-            <a href="{{ url_for('teacher_export_csv', section_id=filters.section_id or None) }}" class="term-btn btn-login" style="font-weight: bold; padding: 0.5rem 1rem;">
-                <svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                DESCARGAR CSV
+        <div class="admin-header-actions">
+            <a href="{{ url_for('teacher_export_csv', section_id=filters.section_id or None) }}" class="btn-secondary-inclusive">
+                <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                Descargar CSV
             </a>
-            <button type="button" id="btn-export-pdf" class="term-btn btn-login" data-url="{{ url_for('admin_export_pdf', section_id=filters.section_id or None) }}" style="font-weight: bold; padding: 0.5rem 1rem; cursor: pointer;">
-                <svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="9" y1="15" x2="15" y2="15"></line></svg>
-                <span id="btn-export-pdf-label">GENERAR PDF</span>
+            <button type="button" id="btn-export-pdf" class="btn-primary-inclusive" data-url="{{ url_for('admin_export_pdf', section_id=filters.section_id or None) }}">
+                <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+                <span id="btn-export-pdf-label">Generar PDF</span>
             </button>
-            <span id="pdf-export-status" role="status" aria-live="polite" style="font-size: 0.78rem; font-family: var(--font-mono);"></span>
+            <span id="pdf-export-status" role="status" aria-live="polite" class="admin-export-status"></span>
         </div>
     </header>
 
@@ -33,72 +37,67 @@
     {% endfor %}
     {% endwith %}
 
-    <!-- METRICS CARDS -->
-    <div class="telemetry-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 1.75rem;">
-        <div class="data-module module-metric">
-            <div class="module-header"><span>// MIS_ESTUDIANTES</span></div>
-            <div class="module-body center-data">
-                <span class="metric-value highlight-cyan">{{ metrics.total_students }}</span>
-                <span class="metric-total">{{ metrics.active_students }} ACTIVOS · {{ metrics.suspended_students }} SUSP.</span>
-            </div>
+    <!-- Métricas KPI -->
+    <section class="admin-kpi-grid" aria-label="Resumen de métricas del docente">
+        <div class="admin-kpi-card">
+            <span class="admin-kpi-label">Mis estudiantes</span>
+            <span class="admin-kpi-value admin-kpi-value--info">{{ metrics.total_students }}</span>
+            <span class="admin-kpi-meta">{{ metrics.active_students }} activos · {{ metrics.suspended_students }} suspendidos</span>
         </div>
-        <div class="data-module module-metric">
-            <div class="module-header"><span>// PROMEDIO_XP</span></div>
-            <div class="module-body center-data">
-                <span class="metric-value highlight-orange">{{ metrics.avg_xp }}</span>
-                <span class="metric-total">XP_EN_MIS_GRUPOS</span>
-            </div>
+        <div class="admin-kpi-card">
+            <span class="admin-kpi-label">Promedio de XP</span>
+            <span class="admin-kpi-value admin-kpi-value--warning">{{ metrics.avg_xp }}</span>
+            <span class="admin-kpi-meta">Experiencia promedio en tus grupos</span>
         </div>
-        <div class="data-module module-metric">
-            <div class="module-header"><span>// LECCIONES_COMPLETAS</span></div>
-            <div class="module-body center-data">
-                <span class="metric-value" style="color: var(--status-success);">{{ metrics.total_completed }}</span>
-                <span class="metric-total">CURSO: {{ metrics.total_course_lessons }} LECC.</span>
-            </div>
+        <div class="admin-kpi-card">
+            <span class="admin-kpi-label">Lecciones completadas</span>
+            <span class="admin-kpi-value admin-kpi-value--success">{{ metrics.total_completed }}</span>
+            <span class="admin-kpi-meta">Curso total: {{ metrics.total_course_lessons }} lecciones</span>
         </div>
-    </div>
+    </section>
 
-    <div class="telemetry-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-bottom: 2rem;">
-
-        <!-- SECCIONES / GRUPOS DEL DOCENTE -->
-        <div class="data-module module-log" style="grid-column: 1 / -1;">
-            <div class="module-header">
-                <span>// MIS_SECCIONES_Y_CÓDIGOS</span>
-                <span style="font-size: 0.76rem; color: var(--text-muted);">Comparte el código para que tus estudiantes se inscriban</span>
+    <div class="admin-stack">
+        <!-- Secciones / grupos del docente -->
+        <section class="admin-panel" aria-labelledby="panel-sections-title">
+            <div class="admin-panel-header">
+                <h2 class="admin-panel-title" id="panel-sections-title">Mis secciones y códigos de clase</h2>
+                <span class="admin-panel-desc">Comparte el código para que tus estudiantes se inscriban</span>
             </div>
-            <div class="module-body" style="padding: 1rem;">
-                <form method="POST" action="{{ url_for('admin_create_section') }}" style="display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin-bottom: 1rem;">
+            <div class="admin-panel-body">
+                <form method="POST" action="{{ url_for('admin_create_section') }}" class="admin-form-bar">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <label for="teacher-section-name" class="sr-only">Nombre de sección</label>
-                    <input id="teacher-section-name" type="text" name="name" required minlength="2" maxlength="100" placeholder="Nombre de sección (ej. PROG1-A)"
-                        style="flex: 1 1 220px; padding: 0.55rem 0.8rem; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: var(--font-mono); font-size: 0.82rem;">
+                    <input id="teacher-section-name" type="text" name="name" required minlength="2" maxlength="100"
+                        placeholder="Nombre de sección (ej. PROG1-A)" class="admin-input admin-input--grow">
                     <label for="teacher-section-code" class="sr-only">Código de sección opcional</label>
-                    <input id="teacher-section-code" type="text" name="code" maxlength="20" placeholder="Código opcional (auto si vacío)"
-                        style="flex: 0 1 230px; padding: 0.55rem 0.8rem; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: var(--font-mono); font-size: 0.82rem; text-transform: uppercase;">
-                    <button type="submit" class="btn-primary-inclusive" style="padding: 0.55rem 1.05rem; font-size: 0.84rem;">
-                        + CREAR SECCIÓN
+                    <input id="teacher-section-code" type="text" name="code" maxlength="20"
+                        placeholder="Código opcional (auto si vacío)" class="admin-input admin-input--code">
+                    <button type="submit" class="btn-primary-inclusive">
+                        + Crear sección
                     </button>
                 </form>
 
                 {% if classrooms %}
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.85rem;">
+                <div class="admin-sections-grid">
                     {% for cls in classrooms %}
-                    <div style="background: var(--bg-code); border: 1px solid {{ 'var(--green)' if filters.section_id == cls.id else 'var(--border)' }}; border-radius: 8px; padding: 0.85rem 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;">
-                            <strong style="color: var(--text); font-size: 0.92rem;">{{ cls.name }}</strong>
-                            <span style="font-size: 0.76rem; color: var(--text-muted);">{{ classroom_counts.get(cls.id, 0) }} alum.</span>
+                    <div class="admin-section-card {{ 'admin-section-card--active' if filters.section_id == cls.id else '' }}">
+                        <div class="admin-section-top">
+                            <span class="admin-section-name">{{ cls.name }}</span>
+                            <span class="admin-section-count">{{ classroom_counts.get(cls.id, 0) }} estudiantes</span>
                         </div>
-                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; background: var(--green-light); border: 1px dashed var(--green); border-radius: 6px; padding: 0.35rem 0.6rem;">
-                            <code style="color: var(--green); font-weight: 700; letter-spacing: 0.08em; font-size: 0.88rem;">{{ cls.code }}</code>
-                            <button type="button" data-code="{{ cls.code }}" onclick="copyClassCode(this)" style="background: var(--bg-secondary); border: 1px solid var(--border-strong); color: var(--text); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600;">
-                                COPIAR
+                        <div class="admin-code-box">
+                            <code class="admin-code-value">{{ cls.code }}</code>
+                            <button type="button" data-code="{{ cls.code }}" onclick="copyClassCode(this)" class="admin-action-btn">
+                                Copiar
                             </button>
                         </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; font-size: 0.76rem; margin-top: 0.15rem;">
-                            <a href="{{ url_for('teacher_dashboard', section_id=cls.id) }}" style="color: var(--python-color); font-weight: 600; text-decoration: none;">
-                                {{ '✓ Filtrando' if filters.section_id == cls.id else 'Filtrar grupo →' }}
+                        <div class="admin-section-footer">
+                            <a href="{{ url_for('teacher_dashboard', section_id=cls.id) }}" class="admin-section-link">
+                                {{ '✓ Filtrando grupo' if filters.section_id == cls.id else 'Filtrar grupo →' }}
                             </a>
-                            <button type="button" data-section-id="{{ cls.id }}" data-section-name="{{ cls.name }}" data-students-count="{{ classroom_counts.get(cls.id, 0) }}" onclick="deleteSection(this)" style="background: var(--status-danger-bg); border: 1px solid var(--status-danger-border); color: var(--status-danger); padding: 0.2rem 0.55rem; border-radius: 4px; cursor: pointer; font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600;">
+                            <button type="button" data-section-id="{{ cls.id }}" data-section-name="{{ cls.name }}"
+                                data-students-count="{{ classroom_counts.get(cls.id, 0) }}" onclick="deleteSection(this)"
+                                class="admin-action-btn admin-action-btn--danger">
                                 Eliminar
                             </button>
                         </div>
@@ -106,28 +105,27 @@
                     {% endfor %}
                 </div>
                 {% else %}
-                <div style="padding: 1rem; border: 1px dashed var(--border); border-radius: 6px; color: var(--text-muted); font-size: 0.86rem; text-align: center;">
+                <div class="admin-empty-box" style="margin-top: 1rem;">
                     Aún no has creado ninguna sección. Crea tu primera sección arriba y comparte el código de clase con tus estudiantes para verlos y gestionarlos aquí.
                 </div>
                 {% endif %}
             </div>
-        </div>
+        </section>
 
-        <!-- TABLA ESTUDIANTES CON BUSCADOR, FILTROS, ORDENAMIENTO Y PAGINACIÓN -->
-        <div class="data-module module-log" style="grid-column: 1 / -1; min-height: 360px;">
-            <div class="module-header" style="flex-wrap: wrap; gap: 0.5rem;">
-                <span>// ESTUDIANTES_DETALLE ({{ filters.total_filtered }})</span>
-                <span style="font-size: 0.76rem; color: var(--text-muted);">Solo estudiantes inscritos en tus secciones · Haz clic en un usuario para ver su perfil</span>
+        <!-- Tabla de estudiantes con buscador, filtros, ordenamiento y paginación -->
+        <section class="admin-panel" aria-labelledby="panel-students-title">
+            <div class="admin-panel-header">
+                <h2 class="admin-panel-title" id="panel-students-title">Estudiantes inscritos ({{ filters.total_filtered }})</h2>
+                <span class="admin-panel-desc">Solo estudiantes inscritos en tus secciones · Haz clic en un usuario para ver su perfil</span>
             </div>
 
-            <!-- Barra de búsqueda y filtros (GET) -->
-            <form method="GET" action="{{ url_for('teacher_dashboard') }}" style="padding: 0.9rem 1rem; border-bottom: 1px dashed var(--border); background: var(--bg-elevated); display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center;">
+            <form method="GET" action="{{ url_for('teacher_dashboard') }}" class="admin-filter-bar">
                 <label for="teacher-filter-q" class="sr-only">Buscar estudiante por usuario o correo</label>
-                <input id="teacher-filter-q" type="text" name="q" value="{{ filters.q }}" placeholder="Buscar usuario o correo..."
-                    style="flex: 1 1 200px; padding: 0.48rem 0.75rem; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--bg-secondary); color: var(--text); font-family: var(--font-mono); font-size: 0.82rem;">
+                <input id="teacher-filter-q" type="text" name="q" value="{{ filters.q }}"
+                    placeholder="Buscar usuario o correo..." class="admin-input admin-input--grow">
 
                 <label for="teacher-filter-section" class="sr-only">Filtrar por sección</label>
-                <select id="teacher-filter-section" name="section_id" style="padding: 0.48rem 0.65rem; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--bg-secondary); color: var(--text); font-family: var(--font-mono); font-size: 0.8rem;">
+                <select id="teacher-filter-section" name="section_id" class="admin-select">
                     <option value="">Todos mis grupos</option>
                     {% for cls in classrooms %}
                     <option value="{{ cls.id }}" {% if filters.section_id == cls.id %}selected{% endif %}>{{ cls.name }} ({{ cls.code }})</option>
@@ -135,15 +133,15 @@
                 </select>
 
                 <label for="teacher-filter-level" class="sr-only">Filtrar por nivel</label>
-                <select id="teacher-filter-level" name="level" style="padding: 0.48rem 0.65rem; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--bg-secondary); color: var(--text); font-family: var(--font-mono); font-size: 0.8rem;">
+                <select id="teacher-filter-level" name="level" class="admin-select">
                     <option value="">Todos los niveles</option>
                     {% for lv_num, lv_name in level_titles.items() %}
-                    <option value="{{ lv_num }}" {% if filters.level == lv_num %}selected{% endif %}>Lv.{{ lv_num }} - {{ lv_name }}</option>
+                    <option value="{{ lv_num }}" {% if filters.level == lv_num %}selected{% endif %}>Nivel {{ lv_num }} — {{ lv_name }}</option>
                     {% endfor %}
                 </select>
 
                 <label for="teacher-filter-status" class="sr-only">Filtrar por estado</label>
-                <select id="teacher-filter-status" name="status" style="padding: 0.48rem 0.65rem; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--bg-secondary); color: var(--text); font-family: var(--font-mono); font-size: 0.8rem;">
+                <select id="teacher-filter-status" name="status" class="admin-select">
                     <option value="all" {% if filters.status == 'all' %}selected{% endif %}>Estado: Todos</option>
                     <option value="active" {% if filters.status == 'active' %}selected{% endif %}>Activos</option>
                     <option value="suspended" {% if filters.status == 'suspended' %}selected{% endif %}>Suspendidos</option>
@@ -152,7 +150,7 @@
                 </select>
 
                 <label for="teacher-filter-sort" class="sr-only">Ordenar resultados</label>
-                <select id="teacher-filter-sort" name="sort" style="padding: 0.48rem 0.65rem; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--bg-secondary); color: var(--text); font-family: var(--font-mono); font-size: 0.8rem;">
+                <select id="teacher-filter-sort" name="sort" class="admin-select">
                     <option value="xp_desc" {% if filters.sort == 'xp_desc' %}selected{% endif %}>Orden: Mayor XP</option>
                     <option value="xp_asc" {% if filters.sort == 'xp_asc' %}selected{% endif %}>Orden: Menor XP</option>
                     <option value="progress_desc" {% if filters.sort == 'progress_desc' %}selected{% endif %}>Orden: Mayor progreso</option>
@@ -163,50 +161,44 @@
                     <option value="date_asc" {% if filters.sort == 'date_asc' %}selected{% endif %}>Orden: Registro antiguo</option>
                 </select>
 
-                <button type="submit" class="term-btn" style="padding: 0.48rem 0.9rem; border-color: var(--green); color: var(--green); cursor: pointer;">
-                    FILTRAR
-                </button>
-                <a href="{{ url_for('teacher_dashboard') }}" class="term-btn" style="padding: 0.48rem 0.75rem; color: var(--text-muted); text-decoration: none;">
-                    LIMPIAR
-                </a>
+                <button type="submit" class="btn-primary-inclusive">Filtrar</button>
+                <a href="{{ url_for('teacher_dashboard') }}" class="btn-secondary-inclusive">Limpiar</a>
             </form>
 
-            <div class="module-body" style="padding: 0; overflow-x: auto; -webkit-overflow-scrolling: touch;">
-                <table class="leaderboard-table" style="width: 100%; min-width: 760px; border-collapse: collapse; text-align: left; font-family: var(--font-mono); font-size: 0.82rem;">
+            <div class="admin-panel-body admin-panel-body--flush admin-table-wrap">
+                <table class="admin-table">
                     <thead>
-                        <tr style="border-bottom: 1px dashed var(--border); background: var(--bg-elevated); color: var(--text);">
-                            <th style="padding: 0.85rem 1rem;">USUARIO</th>
-                            <th style="padding: 0.85rem 0.75rem;">SECCIÓN</th>
-                            <th style="padding: 0.85rem 0.75rem;">ESTADO</th>
-                            <th style="padding: 0.85rem 0.75rem;">NIVEL</th>
-                            <th style="padding: 0.85rem 0.75rem;">XP TOTAL</th>
-                            <th style="padding: 0.85rem 0.75rem;">PROGRESO</th>
-                            <th style="padding: 0.85rem 1rem; text-align: center;">ACCIONES</th>
+                        <tr>
+                            <th>Estudiante</th>
+                            <th>Sección</th>
+                            <th>Estado</th>
+                            <th>Nivel</th>
+                            <th>XP total</th>
+                            <th>Progreso</th>
+                            <th class="admin-col-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for s in students %}
-                        <tr style="border-bottom: 1px solid var(--border); {{ 'background: var(--status-danger-bg);' if s.is_suspended else '' }}">
-                            <td style="padding: 0.85rem 1rem;">
-                                <a href="{{ url_for('profile', username=s.username) }}" style="color: var(--green); text-decoration: none; font-weight: bold;">
+                        <tr class="{{ 'admin-row--suspended' if s.is_suspended else '' }}">
+                            <td>
+                                <a href="{{ url_for('profile', username=s.username) }}" class="admin-user-link">
                                     {{ s.username }} ↗
                                 </a>
                                 {% if s.email %}
-                                <div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 0.15rem;">{{ s.email }}</div>
+                                <div class="admin-cell-sub">{{ s.email }}</div>
                                 {% endif %}
                             </td>
-                            <td style="padding: 0.85rem 0.75rem;">
-                                <span style="padding: 0.18rem 0.48rem; border: 1px solid var(--border); border-radius: 4px; background: var(--bg-code); font-size: 0.74rem; color: var(--text);">
-                                    {{ s.section_name }}
-                                </span>
+                            <td>
+                                <span class="admin-section-pill">{{ s.section_name }}</span>
                             </td>
-                            <td style="padding: 0.85rem 0.75rem;">
+                            <td>
                                 {% if s.is_suspended %}
                                 <span title="{{ s.suspended_reason }}" class="status-pill status-pill--danger">
                                     ⛔ Suspendido
                                 </span>
                                 {% if s.suspended_reason %}
-                                <div style="font-size: 0.76rem; color: var(--text-muted); max-width: 190px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 0.25rem;" title="{{ s.suspended_reason }}">
+                                <div class="admin-reason-preview" title="{{ s.suspended_reason }}">
                                     {{ s.suspended_reason }}
                                 </div>
                                 {% endif %}
@@ -216,25 +208,29 @@
                                 </span>
                                 {% endif %}
                             </td>
-                            <td style="padding: 0.85rem 0.75rem; color: var(--text-muted);">
-                                Lv.{{ s.level }} <span style="font-size: 0.74rem;">[{{ s.title }}]</span>
+                            <td>
+                                <strong>Nivel {{ s.level }}</strong>
+                                <div class="admin-cell-sub">{{ s.title }}</div>
                             </td>
-                            <td style="padding: 0.85rem 0.75rem; color: var(--status-warning); font-weight: 700;">{{ s.total_xp }} XP</td>
-                            <td style="padding: 0.85rem 0.75rem;">
-                                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                    <span style="white-space: nowrap; font-size: 0.78rem; color: var(--text);">{{ s.completed }}/{{ metrics.total_course_lessons }}</span>
-                                    <div class="xp-bar-container" style="width: 90px; height: 6px; background: var(--bg-code); border: 1px solid var(--border); border-radius: 3px; overflow: hidden;">
-                                        <div class="xp-bar-fill" style="width: {{ s.progress_pct }}%; height: 100%; background: var(--python-color);"></div>
+                            <td class="admin-xp-value">{{ s.total_xp }} XP</td>
+                            <td>
+                                <div class="admin-progress-inline">
+                                    <span>{{ s.completed }}/{{ metrics.total_course_lessons }}</span>
+                                    <div class="admin-progress-track" role="progressbar" aria-label="Progreso de {{ s.username }}"
+                                        aria-valuenow="{{ s.progress_pct }}" aria-valuemin="0" aria-valuemax="100">
+                                        <div class="admin-progress-fill" style="width: {{ s.progress_pct }}%;"></div>
                                     </div>
                                 </div>
                             </td>
-                            <td style="padding: 0.85rem 1rem; text-align: center;">
+                            <td class="admin-col-center">
                                 {% if s.is_suspended %}
-                                <button type="button" data-student-id="{{ s.id }}" data-username="{{ s.username }}" onclick="restoreStudent(this)" style="background: var(--status-success-bg); border: 1px solid var(--status-success-border); color: var(--status-success); padding: 0.3rem 0.65rem; border-radius: 5px; cursor: pointer; font-family: var(--font-mono); font-size: 0.74rem; font-weight: 600;">
+                                <button type="button" data-student-id="{{ s.id }}" data-username="{{ s.username }}"
+                                    onclick="restoreStudent(this)" class="admin-action-btn admin-action-btn--success">
                                     Restaurar
                                 </button>
                                 {% else %}
-                                <button type="button" data-student-id="{{ s.id }}" data-username="{{ s.username }}" onclick="openSuspendModal(this)" style="background: var(--status-danger-bg); border: 1px solid var(--status-danger-border); color: var(--status-danger); padding: 0.3rem 0.65rem; border-radius: 5px; cursor: pointer; font-family: var(--font-mono); font-size: 0.74rem; font-weight: 600;">
+                                <button type="button" data-student-id="{{ s.id }}" data-username="{{ s.username }}"
+                                    onclick="openSuspendModal(this)" class="admin-action-btn admin-action-btn--danger">
                                     Suspender
                                 </button>
                                 {% endif %}
@@ -242,7 +238,7 @@
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="7" style="padding: 2rem; text-align: center; color: var(--text-muted);">
+                            <td colspan="7" class="admin-empty-cell">
                                 {% if classrooms %}
                                 No se encontraron estudiantes con los filtros aplicados.
                                 {% else %}
@@ -255,60 +251,61 @@
                 </table>
             </div>
 
-            <!-- Paginación de estudiantes (conserva filtros activos) -->
-            <div style="padding: 0.85rem 1rem; border-top: 1px dashed var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted);">
-                <span>Página <strong style="color: var(--text);">{{ filters.page }}</strong> de <strong style="color: var(--text);">{{ filters.total_pages }}</strong> · {{ filters.total_filtered }} estudiante(s)</span>
-                <div style="display: flex; gap: 0.5rem;">
+            <!-- Paginación de estudiantes -->
+            <div class="admin-pagination">
+                <span>Página <strong>{{ filters.page }}</strong> de <strong>{{ filters.total_pages }}</strong> · {{ filters.total_filtered }} estudiante(s)</span>
+                <div class="admin-pagination-links">
                     {% if filters.page > 1 %}
-                    <a href="{{ url_for('teacher_dashboard', q=filters.q, section_id=filters.section_id, level=filters.level, status=filters.status, sort=filters.sort, page=filters.page - 1) }}" class="term-btn" style="padding: 0.35rem 0.75rem; text-decoration: none;">
+                    <a href="{{ url_for('teacher_dashboard', q=filters.q, section_id=filters.section_id, level=filters.level, status=filters.status, sort=filters.sort, page=filters.page - 1) }}" class="btn-secondary-inclusive">
                         ← Anterior
                     </a>
                     {% else %}
-                    <span class="term-btn" aria-disabled="true" style="padding: 0.35rem 0.75rem; opacity: 0.5; pointer-events: none;">← Anterior</span>
+                    <span class="btn-secondary-inclusive admin-page-disabled" aria-disabled="true">← Anterior</span>
                     {% endif %}
 
                     {% if filters.page < filters.total_pages %}
-                    <a href="{{ url_for('teacher_dashboard', q=filters.q, section_id=filters.section_id, level=filters.level, status=filters.status, sort=filters.sort, page=filters.page + 1) }}" class="term-btn" style="padding: 0.35rem 0.75rem; text-decoration: none;">
+                    <a href="{{ url_for('teacher_dashboard', q=filters.q, section_id=filters.section_id, level=filters.level, status=filters.status, sort=filters.sort, page=filters.page + 1) }}" class="btn-secondary-inclusive">
                         Siguiente →
                     </a>
                     {% else %}
-                    <span class="term-btn" aria-disabled="true" style="padding: 0.35rem 0.75rem; opacity: 0.5; pointer-events: none;">Siguiente →</span>
+                    <span class="btn-secondary-inclusive admin-page-disabled" aria-disabled="true">Siguiente →</span>
                     {% endif %}
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- GRÁFICO DISTRIBUCIÓN -->
-        <div class="data-module module-log" style="grid-column: 1 / -1;">
-            <div class="module-header">
-                <span>// DISTRIBUCIÓN_NIVELES</span>
+        <!-- Gráfico de distribución por niveles -->
+        <section class="admin-panel" aria-labelledby="panel-chart-title">
+            <div class="admin-panel-header">
+                <h2 class="admin-panel-title" id="panel-chart-title">Distribución por niveles</h2>
+                <span class="admin-panel-desc">Cantidad de estudiantes por rango alcanzado</span>
             </div>
-            <div class="module-body" style="padding: 1rem; display: flex; justify-content: center;">
-                <div style="width: 100%; max-width: 800px; height: 300px;">
+            <div class="admin-panel-body">
+                <div class="admin-chart-wrap">
                     <canvas id="levelsChart" aria-label="Gráfico de distribución de estudiantes por nivel" role="img"></canvas>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- EVALUACIONES FINALES -->
-        <div class="data-module module-log" style="grid-column: 1 / -1;">
-            <div class="module-header">
-                <span>// EVALUACIONES_FINALES</span>
-                <span style="font-size: 0.76rem; color: var(--text-muted);">Rendimiento real agregado de evaluaciones en tus secciones</span>
+        <!-- Evaluaciones finales -->
+        <section class="admin-panel" aria-labelledby="panel-evals-title">
+            <div class="admin-panel-header">
+                <h2 class="admin-panel-title" id="panel-evals-title">Evaluaciones finales</h2>
+                <span class="admin-panel-desc">Rendimiento agregado de evaluaciones en tus secciones</span>
             </div>
-            <div class="module-body" style="padding: 1rem;">
-                <div id="teacher-eval-summary" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(215px, 1fr)); gap: 0.85rem;">
+            <div class="admin-panel-body">
+                <div id="teacher-eval-summary" class="admin-eval-grid">
                     {% for ev in eval_summary %}
-                    <div style="background: var(--bg-code); border: 1px solid {{ 'var(--status-success-border)' if ev.students_passed > 0 else 'var(--border)' }}; border-radius: 8px; padding: 1rem; font-family: var(--font-mono);">
-                        <div style="font-weight: 700; color: var(--green); margin-bottom: 0.5rem; font-size: 0.88rem;">{{ ev.label }}</div>
+                    <div class="admin-eval-card {{ 'admin-eval-card--passed' if ev.students_passed > 0 else '' }}">
+                        <div class="admin-eval-title">{{ ev.label }}</div>
                         {% if ev.attempts > 0 %}
-                        <div style="font-size: 0.8rem; color: var(--text); line-height: 1.7;">
+                        <div class="admin-eval-stats">
                             <div>Intentos: <strong>{{ ev.attempts }}</strong></div>
                             <div>Aprobados: <strong style="color: var(--status-success);">{{ ev.students_passed }}/{{ ev.students_attempted }}</strong> ({{ ev.pass_rate }}%)</div>
                             <div>Promedio: <strong style="color: var(--status-warning);">{{ ev.avg_score }}%</strong></div>
                         </div>
                         {% else %}
-                        <div style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.6;">
+                        <div class="admin-cell-sub">
                             Sin intentos registrados aún
                         </div>
                         {% endif %}
@@ -316,28 +313,29 @@
                     {% endfor %}
                 </div>
             </div>
-        </div>
+        </section>
     </div>
 </article>
 
-<!-- MODAL SUSPENDER ESTUDIANTE (MOTIVO OBLIGATORIO — WCAG 2.1 AA) -->
-<div id="suspend-modal" role="dialog" aria-modal="true" aria-labelledby="suspend-modal-title" hidden style="display: none; position: fixed; inset: 0; background: rgba(2, 6, 23, 0.78); z-index: 9999; align-items: center; justify-content: center; padding: 1rem;">
-    <div class="modal-dialog-card" style="background: var(--bg-secondary); border: 2px solid var(--status-danger-border); border-radius: 12px; max-width: 460px; width: 100%; padding: 1.5rem; font-family: var(--font-body); box-shadow: var(--shadow-lg); color: var(--text);">
-        <h3 id="suspend-modal-title" style="margin: 0 0 0.5rem; color: var(--status-danger); font-size: 1.05rem;">SUSPENDER ESTUDIANTE</h3>
-        <p style="margin: 0 0 1rem; font-size: 0.88rem; color: var(--text-muted); line-height: 1.55;">
-            Vas a suspender el acceso de <strong id="suspend-target-name" style="color: var(--text);"></strong>.
+<!-- Modal suspender estudiante (motivo obligatorio — WCAG 2.1 AA) -->
+<div id="suspend-modal" class="admin-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="suspend-modal-title" hidden>
+    <div class="admin-modal-card modal-dialog-card">
+        <h3 id="suspend-modal-title" class="admin-modal-title">Suspender estudiante</h3>
+        <p class="admin-modal-desc">
+            Vas a suspender el acceso de <strong id="suspend-target-name"></strong>.
             Su historial, XP y progreso permanecerán intactos y podrás restaurar la cuenta cuando lo necesites.
         </p>
-        <label for="suspend-reason-input" style="display: block; font-size: 0.84rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem;">
+        <label for="suspend-reason-input" class="admin-modal-label">
             Motivo obligatorio (quedará registrado en la bitácora):
         </label>
-        <textarea id="suspend-reason-input" rows="3" maxlength="500" placeholder="Describe el motivo de la suspensión (mínimo 5 caracteres)..."
-            style="width: 100%; box-sizing: border-box; padding: 0.65rem; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: inherit; font-size: 0.88rem; resize: vertical;"></textarea>
-        <div id="suspend-modal-error" role="alert" style="display: none; margin-top: 0.5rem; color: var(--status-danger); font-size: 0.82rem; font-weight: 600;"></div>
-        <div style="display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 1.15rem;">
-            <button type="button" id="btn-cancel-suspend" onclick="closeSuspendModal()" class="btn-secondary-inclusive" style="padding: 0.48rem 0.95rem; font-size: 0.85rem;">Cancelar</button>
-            <button type="button" id="btn-confirm-suspend" onclick="confirmSuspendStudent()" style="background: var(--status-danger); color: var(--bg); border: 1px solid var(--status-danger); padding: 0.48rem 1.05rem; border-radius: 8px; font-family: inherit; font-size: 0.85rem; font-weight: 700; cursor: pointer;">
-                Confirmar Suspensión
+        <textarea id="suspend-reason-input" rows="3" maxlength="500"
+            placeholder="Describe el motivo de la suspensión (mínimo 5 caracteres)..."
+            class="admin-modal-textarea"></textarea>
+        <div id="suspend-modal-error" role="alert" class="admin-modal-error"></div>
+        <div class="admin-modal-actions">
+            <button type="button" id="btn-cancel-suspend" onclick="closeSuspendModal()" class="btn-secondary-inclusive">Cancelar</button>
+            <button type="button" id="btn-confirm-suspend" onclick="confirmSuspendStudent()" class="admin-btn-danger-solid">
+                Confirmar suspensión
             </button>
         </div>
     </div>
@@ -366,7 +364,7 @@
         const data = {{ metrics.level_data | tojson }};
 
         Chart.defaults.color = textMuted;
-        Chart.defaults.font.family = "'JetBrains Mono', monospace";
+        Chart.defaults.font.family = "'Inter', system-ui, sans-serif";
 
         new Chart(ctx, {
             type: 'bar',
@@ -378,7 +376,7 @@
                     backgroundColor: accentFill,
                     borderColor: accentColor,
                     borderWidth: 2,
-                    borderRadius: 4,
+                    borderRadius: 6,
                     hoverBackgroundColor: accentColor
                 }]
             },
@@ -406,7 +404,7 @@
         if (!code) return;
         navigator.clipboard.writeText(code).then(() => {
             const orig = btn.textContent;
-            btn.textContent = '¡COPIADO!';
+            btn.textContent = '¡Copiado!';
             btn.style.color = 'var(--status-success)';
             setTimeout(() => {
                 btn.textContent = orig;
@@ -493,7 +491,7 @@
         errEl.textContent = '';
         const modal = document.getElementById('suspend-modal');
         modal.hidden = false;
-        modal.style.display = 'flex';
+        modal.classList.add('is-open');
         document.addEventListener('keydown', _handleSuspendModalKeydown);
         setTimeout(() => input.focus(), 30);
     }
@@ -502,7 +500,7 @@
         _suspendTargetId = null;
         const modal = document.getElementById('suspend-modal');
         if (modal) {
-            modal.style.display = 'none';
+            modal.classList.remove('is-open');
             modal.hidden = true;
         }
         document.removeEventListener('keydown', _handleSuspendModalKeydown);
@@ -512,7 +510,6 @@
         _suspendTriggerEl = null;
     }
 
-    // Cerrar al hacer clic en el fondo oscuro del modal
     (function () {
         const modal = document.getElementById('suspend-modal');
         if (modal) {
@@ -556,14 +553,14 @@
                 errEl.textContent = data.error || 'No se pudo suspender al estudiante.';
                 errEl.style.display = 'block';
                 confirmBtn.disabled = false;
-                confirmBtn.textContent = 'Confirmar Suspensión';
+                confirmBtn.textContent = 'Confirmar suspensión';
             }
         } catch (err) {
             console.error(err);
             errEl.textContent = 'Error de conexión al intentar suspender.';
             errEl.style.display = 'block';
             confirmBtn.disabled = false;
-            confirmBtn.textContent = 'Confirmar Suspensión';
+            confirmBtn.textContent = 'Confirmar suspensión';
         }
     }
 
@@ -583,7 +580,7 @@
                     'Content-Type': 'application/json',
                     'X-CSRFToken': _getCsrfToken()
                 },
-                body: JSON.stringify({ reason: 'Restauración aprobada desde Panel de Administrador' })
+                body: JSON.stringify({ reason: 'Restauración aprobada desde Panel de Profesor' })
             });
             const data = await resp.json().catch(() => ({}));
             if (resp.ok && data.success) {
@@ -601,7 +598,7 @@
         }
     }
 
-    // ===== Exportar reporte PDF =====
+    // Exportar reporte PDF
     (function () {
         const btn = document.getElementById('btn-export-pdf');
         if (!btn) return;
@@ -611,7 +608,7 @@
         btn.addEventListener('click', async () => {
             btn.disabled = true;
             btn.style.opacity = '0.6';
-            label.textContent = 'GENERANDO...';
+            label.textContent = 'Generando...';
             status.style.color = 'var(--text-muted)';
             status.textContent = 'Preparando reporte...';
 
@@ -652,7 +649,7 @@
             } finally {
                 btn.disabled = false;
                 btn.style.opacity = '';
-                label.textContent = 'GENERAR PDF';
+                label.textContent = 'Generar PDF';
             }
         });
     })();
