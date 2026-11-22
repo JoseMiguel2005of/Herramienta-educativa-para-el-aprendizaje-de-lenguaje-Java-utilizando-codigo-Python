@@ -4,37 +4,62 @@
 
 {% block content %}
 <article class="login-page" style="display: flex; justify-content: center; align-items: center; min-height: 70vh;">
-    <div class="login-container" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 2rem; width: 100%; max-width: 400px; box-shadow: var(--shadow-lg);">
-        <h2 style="text-align: center; margin-bottom: 1.5rem; color: var(--green);">Crear Cuenta</h2>
-        
+    <div class="login-container" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; width: 100%; max-width: 430px; box-shadow: var(--shadow-lg);">
+        <h1 style="text-align: center; margin: 0 0 1.4rem; font-size: 1.65rem; color: var(--green);">Crear Cuenta</h1>
+
         {% if error %}
         <div role="alert" class="alert-inclusive alert-inclusive--danger">
             <span aria-hidden="true">⚠</span>
             <span>{{ error }}</span>
         </div>
         {% endif %}
-        
+
         <form method="POST" action="{{ url_for('register') }}" style="display: flex; flex-direction: column; gap: 1rem;">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div>
                 <label for="username" style="display: block; margin-bottom: 0.45rem; color: var(--text); font-weight: 600;">Usuario</label>
-                <input type="text" id="username" name="username" required minlength="3" maxlength="30" pattern="[A-Za-z0-9_-]{3,30}" title="Entre 3 y 30 caracteres: solo letras, números, guion (-) o guion bajo (_)" autocomplete="username" value="{{ form_data.username if form_data else '' }}" placeholder="Ej. ana_dev (3-30 caracteres)" style="width: 100%; min-height: 44px; padding: 0.75rem 0.9rem; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: inherit;">
+                <input type="text" id="username" name="username" required minlength="3" maxlength="30"
+                    pattern="[A-Za-z0-9_-]{3,30}"
+                    title="Entre 3 y 30 caracteres: solo letras, números, guion (-) o guion bajo (_)"
+                    autocomplete="username" value="{{ form_data.username if form_data else '' }}"
+                    placeholder="Ej. ana_dev (3-30 caracteres)"
+                    style="width: 100%; min-height: 44px; padding: 0.75rem 0.9rem; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: inherit;">
             </div>
 
             <div>
-                <label for="email" style="display: block; margin-bottom: 0.45rem; color: var(--text); font-weight: 600;">Correo Electrónico</label>
-                <input type="email" id="email" name="email" required maxlength="120" autocomplete="email" value="{{ form_data.email if form_data else '' }}" placeholder="tu@correo.com" style="width: 100%; min-height: 44px; padding: 0.75rem 0.9rem; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: inherit;">
+                <label for="email" style="display: block; margin-bottom: 0.45rem; color: var(--text); font-weight: 600;">Correo electrónico</label>
+                <input type="email" id="email" name="email" required maxlength="120" autocomplete="email"
+                    value="{{ form_data.email if form_data else '' }}" placeholder="tu@correo.com"
+                    style="width: 100%; min-height: 44px; padding: 0.75rem 0.9rem; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: inherit;">
             </div>
-            
+
             <div>
                 <label for="password" style="display: block; margin-bottom: 0.45rem; color: var(--text); font-weight: 600;">Contraseña</label>
-                <input type="password" id="password" name="password" required minlength="8" autocomplete="new-password" placeholder="Mínimo 8 caracteres..." style="width: 100%; min-height: 44px; padding: 0.75rem 0.9rem; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: inherit;">
+                <div class="password-field-wrap">
+                    <input type="password" id="password" name="password" required minlength="8"
+                        autocomplete="new-password" placeholder="Mínimo 8 caracteres..."
+                        class="password-field-input">
+                    <button type="button" class="password-toggle-btn" data-toggle-password="password"
+                        aria-label="Mostrar contraseña" aria-pressed="false">Mostrar</button>
+                </div>
             </div>
-            
+
+            <div>
+                <label for="confirm_password" style="display: block; margin-bottom: 0.45rem; color: var(--text); font-weight: 600;">Confirmar contraseña</label>
+                <div class="password-field-wrap">
+                    <input type="password" id="confirm_password" name="confirm_password" required minlength="8"
+                        autocomplete="new-password" placeholder="Repite tu contraseña..."
+                        class="password-field-input">
+                    <button type="button" class="password-toggle-btn" data-toggle-password="confirm_password"
+                        aria-label="Mostrar confirmación de contraseña" aria-pressed="false">Mostrar</button>
+                </div>
+            </div>
+
             <div>
                 <label for="role" style="display: block; margin-bottom: 0.45rem; color: var(--text); font-weight: 600;">Soy...</label>
                 {% set selected_role = (form_data.role if form_data and form_data.role else 'student') %}
-                <select id="role" name="role" onchange="toggleTeacherCode(this.value)" style="width: 100%; min-height: 44px; padding: 0.75rem 0.9rem; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: inherit;">
+                <select id="role" name="role" onchange="toggleTeacherCode(this.value)"
+                    style="width: 100%; min-height: 44px; padding: 0.75rem 0.9rem; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: inherit;">
                     <option value="student" {% if selected_role == 'student' %}selected{% endif %}>Estudiante</option>
                     <option value="teacher" {% if selected_role == 'teacher' %}selected{% endif %}>Profesor</option>
                 </select>
@@ -42,27 +67,34 @@
 
             <div id="student-class-field">
                 <label for="class_code" style="display: block; margin-bottom: 0.45rem; color: var(--text); font-weight: 600;">
-                    Código de Clase / Sección <span style="font-size: 0.82rem; font-weight: 400; color: var(--text-muted);">(opcional)</span>
+                    Código de clase / sección <span style="font-size: 0.82rem; font-weight: 400; color: var(--text-muted);">(opcional)</span>
                     <span style="font-size: 0.82rem; font-weight: 400; color: var(--text-muted); display: block;">Si tu profesor te dio un código (ej. PROG-7K2M), ingrésalo aquí</span>
                 </label>
-                <input type="text" id="class_code" name="class_code" maxlength="20" value="{{ form_data.class_code if form_data else '' }}" placeholder="Ej. PROG-7K2M" style="width: 100%; min-height: 44px; padding: 0.75rem 0.9rem; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: var(--font-mono); text-transform: uppercase;">
+                <input type="text" id="class_code" name="class_code" maxlength="20"
+                    value="{{ form_data.class_code if form_data else '' }}" placeholder="Ej. PROG-7K2M"
+                    style="width: 100%; min-height: 44px; padding: 0.75rem 0.9rem; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: var(--font-mono); text-transform: uppercase;">
             </div>
 
             <div id="teacher-code-field" style="display: none;">
                 <label for="teacher_code" style="display: block; margin-bottom: 0.45rem; color: var(--text); font-weight: 600;">
-                    Código de Profesor
+                    Código de profesor
                     <span style="font-size: 0.82rem; font-weight: 400; color: var(--text-muted); display: block;">Ingresa el código secreto proporcionado por el Super Admin</span>
                 </label>
-                <input type="password" id="teacher_code" name="teacher_code" placeholder="Código secreto..." style="width: 100%; min-height: 44px; padding: 0.75rem 0.9rem; border-radius: 8px; border: 1px solid var(--status-warning-border); background: var(--status-warning-bg); color: var(--text); font-family: inherit;">
+                <div class="password-field-wrap">
+                    <input type="password" id="teacher_code" name="teacher_code" placeholder="Código secreto..."
+                        class="password-field-input" style="border-color: var(--status-warning-border); background: var(--status-warning-bg);">
+                    <button type="button" class="password-toggle-btn" data-toggle-password="teacher_code"
+                        aria-label="Mostrar código de profesor" aria-pressed="false">Mostrar</button>
+                </div>
             </div>
-            
-            <button type="submit" class="btn-primary-inclusive" style="width: 100%; margin-top: 0.5rem; font-size: 1.02rem;">
+
+            <button type="submit" class="btn-primary-inclusive" data-loading-text="Creando cuenta..." style="width: 100%; margin-top: 0.5rem; font-size: 1.02rem;">
                 Registrarme
             </button>
         </form>
-        
+
         <div style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-muted);">
-            ¿Ya tienes cuenta? <a href="{{ url_for('login') }}" style="color: var(--green); text-decoration: none;">Inicia sesión</a>
+            ¿Ya tienes cuenta? <a href="{{ url_for('login') }}" style="color: var(--green); text-decoration: none; font-weight: 600;">Inicia sesión</a>
         </div>
     </div>
 </article>
@@ -73,7 +105,6 @@ function toggleTeacherCode(value) {
     const studentField = document.getElementById('student-class-field');
     if (value === 'teacher') {
         teacherField.style.display = 'block';
-        teacherField.style.animation = 'slideDown 0.3s ease';
         if (studentField) studentField.style.display = 'none';
     } else {
         teacherField.style.display = 'none';

@@ -64,8 +64,26 @@
         <section class="admin-panel" aria-labelledby="sa-teachers-title">
             <div class="admin-panel-header">
                 <h2 class="admin-panel-title" id="sa-teachers-title">Gestión de profesores ({{ teachers | length }})</h2>
-                <span class="admin-panel-desc">Control centralizado de cuentas docentes</span>
+                <span class="admin-panel-desc">Alta directa y control centralizado de cuentas docentes</span>
             </div>
+            <form method="POST" action="{{ url_for('superadmin_create_teacher') }}" class="admin-filter-bar" data-loading-text="Creando docente...">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <label for="sa-new-teacher-username" class="sr-only">Usuario del docente</label>
+                <input id="sa-new-teacher-username" type="text" name="username" required minlength="3" maxlength="30"
+                    pattern="[A-Za-z0-9_-]{3,30}" autocomplete="off"
+                    placeholder="Usuario docente (ej. prof_maria)" class="admin-input admin-input--grow">
+                <label for="sa-new-teacher-email" class="sr-only">Correo del docente</label>
+                <input id="sa-new-teacher-email" type="email" name="email" required autocomplete="off"
+                    placeholder="Correo electrónico del docente" class="admin-input admin-input--grow">
+                <div class="password-field-wrap admin-password-wrap">
+                    <label for="sa-new-teacher-password" class="sr-only">Contraseña inicial del docente</label>
+                    <input id="sa-new-teacher-password" type="password" name="password" required minlength="8"
+                        autocomplete="new-password" placeholder="Contraseña inicial (mín. 8)" class="admin-input">
+                    <button type="button" class="password-toggle-btn" data-toggle-password="sa-new-teacher-password"
+                        aria-label="Mostrar contraseña inicial" aria-pressed="false">Mostrar</button>
+                </div>
+                <button type="submit" class="btn-primary-inclusive">Crear docente</button>
+            </form>
             <div class="admin-panel-body admin-panel-body--flush admin-table-wrap">
                 <table class="admin-table">
                     <thead>
@@ -96,18 +114,29 @@
                             <td style="color: var(--green); font-weight: 700;">{{ t_user.students_count }}</td>
                             <td class="admin-cell-sub">{{ t_user.created_at_str }}</td>
                             <td class="admin-col-center">
-                                {% if t_user.is_suspended %}
-                                <button type="button" data-user-id="{{ t_user.id }}" data-username="{{ t_user.username }}"
-                                    onclick="saRestoreUser(this)" class="admin-action-btn admin-action-btn--success">
-                                    Restaurar
-                                </button>
-                                {% else %}
-                                <button type="button" data-user-id="{{ t_user.id }}" data-username="{{ t_user.username }}"
-                                    data-role-label="profesor" onclick="openSaSuspendModal(this)"
-                                    class="admin-action-btn admin-action-btn--danger">
-                                    Suspender
-                                </button>
-                                {% endif %}
+                                <div class="admin-actions-inline">
+                                    {% if t_user.is_suspended %}
+                                    <button type="button" data-user-id="{{ t_user.id }}" data-username="{{ t_user.username }}"
+                                        onclick="saRestoreUser(this)" class="admin-action-btn admin-action-btn--success">
+                                        Restaurar
+                                    </button>
+                                    {% else %}
+                                    <button type="button" data-user-id="{{ t_user.id }}" data-username="{{ t_user.username }}"
+                                        data-role-label="profesor" onclick="openSaSuspendModal(this)"
+                                        class="admin-action-btn admin-action-btn--danger">
+                                        Suspender
+                                    </button>
+                                    {% endif %}
+                                    <button type="button" data-user-id="{{ t_user.id }}" data-username="{{ t_user.username }}"
+                                        data-target-role="student" onclick="saChangeRole(this)"
+                                        class="admin-action-btn admin-action-btn--info">
+                                        Hacer estudiante
+                                    </button>
+                                    <button type="button" data-user-id="{{ t_user.id }}" data-username="{{ t_user.username }}"
+                                        onclick="saUnlockUser(this)" class="admin-action-btn">
+                                        Desbloquear
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                         {% else %}
@@ -171,6 +200,10 @@
             </div>
 
             <form method="GET" action="{{ url_for('superadmin_dashboard') }}" class="admin-filter-bar">
+                {% if filters.audit_q %}<input type="hidden" name="audit_q" value="{{ filters.audit_q }}">{% endif %}
+                {% if filters.audit_action %}<input type="hidden" name="audit_action" value="{{ filters.audit_action }}">{% endif %}
+                {% if filters.audit_from %}<input type="hidden" name="audit_from" value="{{ filters.audit_from }}">{% endif %}
+                {% if filters.audit_to %}<input type="hidden" name="audit_to" value="{{ filters.audit_to }}">{% endif %}
                 <label for="sa-filter-q" class="sr-only">Buscar estudiante o correo</label>
                 <input id="sa-filter-q" type="text" name="q" value="{{ filters.q }}"
                     placeholder="Buscar estudiante o correo..." class="admin-input admin-input--grow">
@@ -250,18 +283,29 @@
                                 </div>
                             </td>
                             <td class="admin-col-center">
-                                {% if s.is_suspended %}
-                                <button type="button" data-user-id="{{ s.id }}" data-username="{{ s.username }}"
-                                    onclick="saRestoreUser(this)" class="admin-action-btn admin-action-btn--success">
-                                    Restaurar
-                                </button>
-                                {% else %}
-                                <button type="button" data-user-id="{{ s.id }}" data-username="{{ s.username }}"
-                                    data-role-label="estudiante" onclick="openSaSuspendModal(this)"
-                                    class="admin-action-btn admin-action-btn--danger">
-                                    Suspender
-                                </button>
-                                {% endif %}
+                                <div class="admin-actions-inline">
+                                    {% if s.is_suspended %}
+                                    <button type="button" data-user-id="{{ s.id }}" data-username="{{ s.username }}"
+                                        onclick="saRestoreUser(this)" class="admin-action-btn admin-action-btn--success">
+                                        Restaurar
+                                    </button>
+                                    {% else %}
+                                    <button type="button" data-user-id="{{ s.id }}" data-username="{{ s.username }}"
+                                        data-role-label="estudiante" onclick="openSaSuspendModal(this)"
+                                        class="admin-action-btn admin-action-btn--danger">
+                                        Suspender
+                                    </button>
+                                    {% endif %}
+                                    <button type="button" data-user-id="{{ s.id }}" data-username="{{ s.username }}"
+                                        data-target-role="teacher" onclick="saChangeRole(this)"
+                                        class="admin-action-btn admin-action-btn--info">
+                                        Hacer profesor
+                                    </button>
+                                    <button type="button" data-user-id="{{ s.id }}" data-username="{{ s.username }}"
+                                        onclick="saUnlockUser(this)" class="admin-action-btn">
+                                        Desbloquear
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                         {% else %}
@@ -277,21 +321,53 @@
                 <span>Página <strong>{{ filters.page }}</strong> de <strong>{{ filters.total_pages }}</strong> · {{ filters.total_filtered }} estudiante(s)</span>
                 <div class="admin-pagination-links">
                     {% if filters.page > 1 %}
-                    <a href="{{ url_for('superadmin_dashboard', q=filters.q, section_id=filters.section_id, status=filters.status, sort=filters.sort, page=filters.page - 1, audit_page=filters.audit_page) }}" class="btn-secondary-inclusive">← Anterior</a>
+                    <a href="{{ url_for('superadmin_dashboard', q=filters.q, section_id=filters.section_id, status=filters.status, sort=filters.sort, page=filters.page - 1, audit_page=filters.audit_page, audit_q=filters.audit_q, audit_action=filters.audit_action, audit_from=filters.audit_from, audit_to=filters.audit_to) }}" class="btn-secondary-inclusive">← Anterior</a>
                     {% endif %}
                     {% if filters.page < filters.total_pages %}
-                    <a href="{{ url_for('superadmin_dashboard', q=filters.q, section_id=filters.section_id, status=filters.status, sort=filters.sort, page=filters.page + 1, audit_page=filters.audit_page) }}" class="btn-secondary-inclusive">Siguiente →</a>
+                    <a href="{{ url_for('superadmin_dashboard', q=filters.q, section_id=filters.section_id, status=filters.status, sort=filters.sort, page=filters.page + 1, audit_page=filters.audit_page, audit_q=filters.audit_q, audit_action=filters.audit_action, audit_from=filters.audit_from, audit_to=filters.audit_to) }}" class="btn-secondary-inclusive">Siguiente →</a>
                     {% endif %}
                 </div>
             </div>
         </section>
 
         <!-- Bitácora global de auditoría -->
-        <section class="admin-panel" aria-labelledby="sa-audit-title">
+        <section class="admin-panel" id="sa-audit-panel" aria-labelledby="sa-audit-title">
             <div class="admin-panel-header">
-                <h2 class="admin-panel-title" id="sa-audit-title">Bitácora global de auditoría ({{ metrics.audit_total }})</h2>
-                <span class="admin-panel-desc">Historial completo de acciones de profesores y Super Admin</span>
+                <div>
+                    <h2 class="admin-panel-title" id="sa-audit-title">Bitácora global de auditoría ({{ metrics.audit_total }})</h2>
+                    <span class="admin-panel-desc">Historial completo de acciones de profesores y Super Admin</span>
+                </div>
+                <a href="{{ url_for('superadmin_export_audit_csv', audit_q=filters.audit_q, audit_action=filters.audit_action, audit_from=filters.audit_from, audit_to=filters.audit_to) }}"
+                    class="btn-secondary-inclusive">
+                    Exportar bitácora CSV
+                </a>
             </div>
+            <form method="GET" action="{{ url_for('superadmin_dashboard') }}#sa-audit-panel" class="admin-filter-bar">
+                {% if filters.q %}<input type="hidden" name="q" value="{{ filters.q }}">{% endif %}
+                {% if filters.section_id %}<input type="hidden" name="section_id" value="{{ filters.section_id }}">{% endif %}
+                {% if filters.status and filters.status != 'all' %}<input type="hidden" name="status" value="{{ filters.status }}">{% endif %}
+                {% if filters.sort and filters.sort != 'xp_desc' %}<input type="hidden" name="sort" value="{{ filters.sort }}">{% endif %}
+                <label for="sa-audit-q" class="sr-only">Buscar en bitácora</label>
+                <input id="sa-audit-q" type="text" name="audit_q" value="{{ filters.audit_q }}"
+                    placeholder="Buscar actor, afectado, motivo o detalle..." class="admin-input admin-input--grow">
+                <label for="sa-audit-action" class="sr-only">Filtrar por tipo de acción</label>
+                <select id="sa-audit-action" name="audit_action" class="admin-select">
+                    <option value="">Todas las acciones</option>
+                    {% for act in audit_actions %}
+                    <option value="{{ act }}" {% if filters.audit_action == act %}selected{% endif %}>{{ act }}</option>
+                    {% endfor %}
+                </select>
+                <div class="admin-inline-field">
+                    <label for="sa-audit-from" class="admin-inline-label">Desde</label>
+                    <input id="sa-audit-from" type="date" name="audit_from" value="{{ filters.audit_from }}" class="admin-input">
+                </div>
+                <div class="admin-inline-field">
+                    <label for="sa-audit-to" class="admin-inline-label">Hasta</label>
+                    <input id="sa-audit-to" type="date" name="audit_to" value="{{ filters.audit_to }}" class="admin-input">
+                </div>
+                <button type="submit" class="btn-primary-inclusive">Filtrar</button>
+                <a href="{{ url_for('superadmin_dashboard', q=filters.q, section_id=filters.section_id, status=filters.status, sort=filters.sort, page=filters.page) }}#sa-audit-panel" class="btn-secondary-inclusive">Limpiar</a>
+            </form>
             <div class="admin-panel-body admin-panel-body--flush admin-table-wrap">
                 <table class="admin-table">
                     <thead>
@@ -309,7 +385,7 @@
                             <td class="admin-cell-sub" style="white-space: nowrap;">{{ log.created_at.strftime('%d/%m/%Y %H:%M') if log.created_at else '' }}</td>
                             <td>{{ log.admin_username }}</td>
                             <td>
-                                {% set pill_cls = 'status-pill--danger' if ('SUSPEND' in log.action or 'UNAUTHORIZED' in log.action or 'DELETE' in log.action) else ('status-pill--completed' if ('RESTORE' in log.action or 'JOIN' in log.action) else 'status-pill--available') %}
+                                {% set pill_cls = 'status-pill--danger' if ('SUSPEND' in log.action or 'UNAUTHORIZED' in log.action or 'DELETE' in log.action) else ('status-pill--completed' if ('RESTORE' in log.action or 'JOIN' in log.action or 'CREATE_TEACHER' in log.action or 'UNLOCK' in log.action) else 'status-pill--available') %}
                                 <span class="status-pill {{ pill_cls }}">{{ log.action }}</span>
                             </td>
                             <td style="color: var(--green); font-weight: 600;">{{ log.target_username or '—' }}</td>
@@ -320,7 +396,7 @@
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="5" class="admin-empty-cell">Sin eventos de auditoría todavía.</td>
+                            <td colspan="5" class="admin-empty-cell">Sin eventos de auditoría para los filtros seleccionados.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -331,10 +407,10 @@
                 <span>Auditoría: Página <strong>{{ filters.audit_page }}</strong> de <strong>{{ filters.audit_total_pages }}</strong></span>
                 <div class="admin-pagination-links">
                     {% if filters.audit_page > 1 %}
-                    <a href="{{ url_for('superadmin_dashboard', q=filters.q, section_id=filters.section_id, status=filters.status, sort=filters.sort, page=filters.page, audit_page=filters.audit_page - 1) }}" class="btn-secondary-inclusive">← Anterior</a>
+                    <a href="{{ url_for('superadmin_dashboard', q=filters.q, section_id=filters.section_id, status=filters.status, sort=filters.sort, page=filters.page, audit_page=filters.audit_page - 1, audit_q=filters.audit_q, audit_action=filters.audit_action, audit_from=filters.audit_from, audit_to=filters.audit_to) }}#sa-audit-panel" class="btn-secondary-inclusive">← Anterior</a>
                     {% endif %}
                     {% if filters.audit_page < filters.audit_total_pages %}
-                    <a href="{{ url_for('superadmin_dashboard', q=filters.q, section_id=filters.section_id, status=filters.status, sort=filters.sort, page=filters.page, audit_page=filters.audit_page + 1) }}" class="btn-secondary-inclusive">Siguiente →</a>
+                    <a href="{{ url_for('superadmin_dashboard', q=filters.q, section_id=filters.section_id, status=filters.status, sort=filters.sort, page=filters.page, audit_page=filters.audit_page + 1, audit_q=filters.audit_q, audit_action=filters.audit_action, audit_from=filters.audit_from, audit_to=filters.audit_to) }}#sa-audit-panel" class="btn-secondary-inclusive">Siguiente →</a>
                     {% endif %}
                 </div>
             </div>
@@ -534,6 +610,48 @@
             const data = await resp.json().catch(() => ({}));
             if (resp.ok && data.success) window.location.reload();
             else { alert(data.error || 'No se pudo asignar.'); btn.disabled = false; }
+        } catch (e) { alert('Error de conexión.'); btn.disabled = false; }
+    }
+
+    async function saChangeRole(btn) {
+        const uid = btn.dataset.userId;
+        const uname = btn.dataset.username || '';
+        const targetRole = btn.dataset.targetRole || '';
+        const roleLabel = targetRole === 'teacher' ? 'Profesor' : 'Estudiante';
+        if (!confirm('¿Cambiar el rol de ' + uname + ' a ' + roleLabel + '?')) return;
+        btn.disabled = true;
+        try {
+            const resp = await fetch('/superadmin/usuario/' + encodeURIComponent(uid) + '/cambiar-rol', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': _getCsrfToken()
+                },
+                body: JSON.stringify({ role: targetRole })
+            });
+            const data = await resp.json().catch(() => ({}));
+            if (resp.ok && data.success) window.location.reload();
+            else { alert(data.error || 'No se pudo cambiar el rol.'); btn.disabled = false; }
+        } catch (e) { alert('Error de conexión.'); btn.disabled = false; }
+    }
+
+    async function saUnlockUser(btn) {
+        const uid = btn.dataset.userId;
+        const uname = btn.dataset.username || '';
+        if (!confirm('¿Desbloquear la cuenta de ' + uname + ' y reiniciar sus límites de acceso?')) return;
+        btn.disabled = true;
+        try {
+            const resp = await fetch('/superadmin/usuario/' + encodeURIComponent(uid) + '/desbloquear', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': _getCsrfToken()
+                },
+                body: JSON.stringify({})
+            });
+            const data = await resp.json().catch(() => ({}));
+            if (resp.ok && data.success) window.location.reload();
+            else { alert(data.error || 'No se pudo desbloquear la cuenta.'); btn.disabled = false; }
         } catch (e) { alert('Error de conexión.'); btn.disabled = false; }
     }
 

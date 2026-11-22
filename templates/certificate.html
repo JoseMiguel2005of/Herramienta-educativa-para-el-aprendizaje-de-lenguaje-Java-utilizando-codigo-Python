@@ -359,7 +359,14 @@
         </div>
     </div>
 
-    <div class="cert-id">CERT-{{ category_id | upper }}-{{ user.id }}-{{ completion_year }}</div>
+    <div class="cert-id">
+        Código de verificación: <strong>{{ verification_code }}</strong>
+        <div style="margin-top: 0.35rem; font-size: 0.72rem; letter-spacing: 0.04em;">
+            <a href="{{ url_for('verify_certificate', codigo=verification_code) }}" style="color: inherit; text-decoration: underline;">
+                Verificar autenticidad en línea →
+            </a>
+        </div>
+    </div>
     {% endif %}
 </div>
 

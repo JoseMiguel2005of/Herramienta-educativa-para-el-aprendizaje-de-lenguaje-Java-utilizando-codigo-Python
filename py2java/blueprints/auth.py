@@ -4,12 +4,23 @@ import hmac
 import secrets
 from datetime import timedelta
 
-from flask import redirect, render_template, request, session, url_for
+from flask import flash, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 from sqlalchemy import func
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from models import Classroom, PasswordResetCode, User, db, ensure_utc, utcnow
+from content_loader import load_ui_strings
+from models import (
+    AuditLog,
+    Classroom,
+    IssuedCertificate,
+    PasswordResetCode,
+    SectionEvaluation,
+    User,
+    db,
+    ensure_utc,
+    utcnow,
+)
 
 from py2java.blueprints import FlatBlueprint
 
@@ -127,6 +138,7 @@ def register():
         username = request.form.get("username", "").strip()
         email = request.form.get("email", "").strip().lower()
         password = request.form.get("password", "")
+        confirm_password = request.form.get("confirm_password", "")
         role = request.form.get("role", "student").strip()
         if role not in ("student", "teacher"):
             role = "student"
@@ -167,6 +179,14 @@ def register():
             return render_template(
                 "register.html",
                 error=f"La contraseña debe tener al menos {MIN_PASSWORD_LENGTH} caracteres.",
+                form_data=form_data,
+                categories=LESSON_CATEGORIES,
+            )
+
+        if password != confirm_password:
+            return render_template(
+                "register.html",
+                error="Las contraseñas no coinciden.",
                 form_data=form_data,
                 categories=LESSON_CATEGORIES,
             )
@@ -511,3 +531,191 @@ def settings():
         return redirect(safe_ref)
 
     return redirect(url_for("index"))
+
+
+@bp.route("/cuenta", methods=["GET"])
+@login_required
+def account_settings():
+    """Vista de configuración de cuenta: perfil/correo, contraseña, historial de evaluaciones y baja propia."""
+    from py2java.services.timeutils import _get_app_timezone
+
+    ui = load_ui_strings()
+    app_tz = _get_app_timezone()
+
+    eval_rows = (
+        SectionEvaluation.query.filter_by(user_id=current_user.id)
+        .order_by(SectionEvaluation.completed_at.desc(), SectionEvaluation.id.desc())
+        .all()
+    )
+    eval_history = []
+    for ev in eval_rows:
+        dt = ensure_utc(ev.completed_at)
+        eval_history.append({
+            "section_id": ev.section_id,
+            "section_label": ui.get(ev.section_id, ev.section_id),
+            "attempt_number": ev.attempt_number or 1,
+            "score": ev.score or 0,
+            "total": ev.total or 0,
+            "percentage": round(float(ev.percentage or 0.0), 1),
+            "passed": bool(ev.passed),
+            "time_taken": ev.time_taken or 0,
+            "completed_at_str": dt.astimezone(app_tz).strftime("%d/%m/%Y %H:%M") if dt else "—",
+        })
+
+    cert_rows = (
+        IssuedCertificate.query.filter_by(user_id=current_user.id)
+        .order_by(IssuedCertificate.issued_at.desc())
+        .all()
+    )
+    issued_certs = []
+    for cert in cert_rows:
+        dt = ensure_utc(cert.issued_at)
+        issued_certs.append({
+            "section_key": cert.section_key,
+            "course_name": cert.course_name,
+            "verification_code": cert.verification_code,
+            "issued_at_str": dt.astimezone(app_tz).strftime("%d/%m/%Y") if dt else "—",
+        })
+
+    return render_template(
+        "account.html",
+        eval_history=eval_history,
+        issued_certs=issued_certs,
+        categories=LESSON_CATEGORIES,
+        page="account",
+    )
+
+
+@bp.route("/cuenta/perfil", methods=["POST"])
+@login_required
+def account_update_profile():
+    """Permite al usuario autenticado actualizar su correo electrónico."""
+    email = request.form.get("email", "").strip().lower()
+    if not _is_valid_email(email):
+        flash("Ingresa un correo electrónico válido.", "error")
+        return redirect(url_for("account_settings"))
+
+    existing = User.query.filter(
+        func.lower(User.email) == email,
+        User.id != current_user.id,
+    ).first()
+    if existing:
+        flash("Este correo electrónico ya está registrado en otra cuenta.", "error")
+        return redirect(url_for("account_settings"))
+
+    old_email = current_user.email or ""
+    current_user.email = email
+    _log_audit(
+        current_user,
+        action="UPDATE_PROFILE_EMAIL",
+        target_username=current_user.username,
+        section_id=current_user.section_id,
+        reason="Actualización de correo desde configuración de cuenta",
+        details=f"{old_email} -> {email}",
+    )
+    db.session.commit()
+    flash("Correo electrónico actualizado correctamente.", "success")
+    return redirect(url_for("account_settings"))
+
+
+@bp.route("/cuenta/password", methods=["POST"])
+@login_required
+def account_change_password():
+    """Permite al usuario autenticado cambiar su contraseña verificando la clave actual."""
+    current_pw = request.form.get("current_password", "")
+    new_pw = request.form.get("new_password", "")
+    confirm_pw = request.form.get("confirm_password", "")
+
+    if not check_password_hash(current_user.password_hash, current_pw):
+        flash("La contraseña actual es incorrecta.", "error")
+        return redirect(url_for("account_settings"))
+
+    if len(new_pw) < MIN_PASSWORD_LENGTH:
+        flash(f"La nueva contraseña debe tener al menos {MIN_PASSWORD_LENGTH} caracteres.", "error")
+        return redirect(url_for("account_settings"))
+
+    if new_pw != confirm_pw:
+        flash("Las nuevas contraseñas no coinciden.", "error")
+        return redirect(url_for("account_settings"))
+
+    current_user.password_hash = generate_password_hash(new_pw)
+    _log_audit(
+        current_user,
+        action="CHANGE_PASSWORD",
+        target_username=current_user.username,
+        section_id=current_user.section_id,
+        reason="Cambio de contraseña por el propio usuario",
+    )
+    db.session.commit()
+    flash("Contraseña actualizada con éxito.", "success")
+    return redirect(url_for("account_settings"))
+
+
+@bp.route("/cuenta/eliminar", methods=["POST"])
+@login_required
+def account_delete_self():
+    """Elimina la cuenta propia con doble confirmación (usuario + contraseña actual)."""
+    if current_user.role == "superadmin":
+        flash("Las cuentas Super Admin no pueden autoeliminarse desde la interfaz.", "error")
+        return redirect(url_for("account_settings"))
+
+    confirm_username = request.form.get("confirm_username", "").strip()
+    current_pw = request.form.get("current_password", "")
+
+    if confirm_username != current_user.username:
+        flash("El nombre de usuario de confirmación no coincide.", "error")
+        return redirect(url_for("account_settings"))
+
+    if not check_password_hash(current_user.password_hash, current_pw):
+        flash("Contraseña actual incorrecta. No se eliminó la cuenta.", "error")
+        return redirect(url_for("account_settings"))
+
+    user_id = current_user.id
+    username = current_user.username
+    role = current_user.role
+    sec_id = current_user.section_id
+
+    try:
+        # Si es profesor, desvincular estudiantes y eliminar sus secciones antes de borrar la cuenta
+        owned_ids = [c.id for c in Classroom.query.filter_by(teacher_id=user_id).all()]
+        if owned_ids:
+            User.query.filter(User.section_id.in_(owned_ids)).update(
+                {"section_id": None}, synchronize_session=False
+            )
+            AuditLog.query.filter(AuditLog.section_id.in_(owned_ids)).update(
+                {"section_id": None}, synchronize_session=False
+            )
+            Classroom.query.filter(Classroom.id.in_(owned_ids)).delete(synchronize_session=False)
+
+        # Limpiar referencias en AuditLog y User.suspended_by antes de borrar el usuario
+        AuditLog.query.filter_by(admin_id=user_id).update(
+            {"admin_id": None}, synchronize_session=False
+        )
+        User.query.filter_by(suspended_by=user_id).update(
+            {"suspended_by": None}, synchronize_session=False
+        )
+
+        db.session.add(
+            AuditLog(
+                admin_id=None,
+                admin_username=username,
+                action="SELF_DELETE_ACCOUNT",
+                target_username=username,
+                section_id=sec_id if sec_id not in owned_ids else None,
+                reason="Eliminación voluntaria de cuenta por el usuario",
+                details=f"Rol eliminado: {role}",
+            )
+        )
+        user_obj = db.session.get(User, user_id)
+        if user_obj:
+            db.session.delete(user_obj)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        logger.error("Error al eliminar cuenta propia (%s): %s", username, e)
+        flash("No se pudo eliminar la cuenta en este momento. Intenta de nuevo.", "error")
+        return redirect(url_for("account_settings"))
+
+    logout_user()
+    flash("Tu cuenta y todos tus datos fueron eliminados permanentemente.", "info")
+    return redirect(url_for("login"))

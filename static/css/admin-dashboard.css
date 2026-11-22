@@ -414,6 +414,36 @@
     align-items: center;
 }
 
+.admin-actions-inline {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.admin-inline-field {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.admin-inline-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.admin-password-wrap {
+    flex: 1 1 200px;
+}
+
+.admin-password-wrap .admin-input {
+    width: 100%;
+    padding-right: 2.75rem;
+}
+
 .admin-empty-cell {
     padding: 2rem 1rem;
     text-align: center;

@@ -28,14 +28,25 @@ from content_loader import (
     load_quiz,
     load_ui_strings,
 )
-from models import Classroom, ExerciseAttempt, LessonProgress, QuizResult, User, db
+from models import (
+    Classroom,
+    ExerciseAttempt,
+    IssuedCertificate,
+    LessonProgress,
+    QuizResult,
+    SectionEvaluation,
+    User,
+    db,
+    ensure_utc,
+)
 
 from py2java.blueprints import FlatBlueprint
 
 from py2java.config import logger
 from py2java.extensions import limiter
 from py2java.services.accounts import get_current_user
-from py2java.services.certificates import _get_certificate_context
+from py2java.services.certificates import _format_spanish_date, _get_certificate_context
+from py2java.services.timeutils import _get_app_timezone
 from py2java.services.classrooms import (
     LEADERBOARD_PER_PAGE,
     _get_teacher_section_ids,
@@ -555,6 +566,7 @@ def profile(username=None):
     # Últimas lecciones completadas y estadísticas
     recent = []
     quiz_results = []
+    eval_results = []
     total_exercises = 0
     passed_exercises = 0
 
@@ -574,6 +586,12 @@ def profile(username=None):
             QuizResult.query.filter_by(user_id=user.id)
             .order_by(QuizResult.completed_at.desc())
             .limit(10)
+            .all()
+        )
+        eval_results = (
+            SectionEvaluation.query.filter_by(user_id=user.id)
+            .order_by(SectionEvaluation.completed_at.desc())
+            .limit(15)
             .all()
         )
         total_exercises = ExerciseAttempt.query.filter(
@@ -615,6 +633,7 @@ def profile(username=None):
         level=level,
         recent=recent,
         quiz_results=quiz_results,
+        eval_results=eval_results,
         total_exercises=total_exercises,
         passed_exercises=passed_exercises,
         cert_cards=cert_cards,
@@ -651,6 +670,7 @@ def certificate_pdf(section_id):
     try:
         from pdf_report import build_certificate_pdf
 
+        verify_url = url_for("verify_certificate", codigo=ctx["verification_code"], _external=True)
         pdf_bytes = build_certificate_pdf(
             username=current_user.username,
             category_name=ctx["category_name"],
@@ -660,6 +680,8 @@ def certificate_pdf(section_id):
             completion_date=ctx["completion_date"],
             completion_year=ctx["completion_year"],
             site_title=ctx["site_title"],
+            verification_code=ctx["verification_code"],
+            verify_url=verify_url,
         )
     except Exception as e:
         logger.error("Error en certificate_pdf (%s): %s", type(e).__name__, e)
@@ -674,4 +696,39 @@ def certificate_pdf(section_id):
         pdf_bytes,
         mimetype="application/pdf",
         headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )
+
+
+@bp.route("/certificado/verificar/<codigo>")
+def verify_certificate(codigo):
+    """Ruta pública para verificar autenticidad de un certificado emitido (sin exponer PII)."""
+    clean_code = (codigo or "").strip().upper()[:64]
+    cert = (
+        IssuedCertificate.query.filter_by(verification_code=clean_code).first()
+        if clean_code
+        else None
+    )
+    if not cert:
+        return (
+            render_template(
+                "certificate_verify.html",
+                valid=False,
+                searched_code=clean_code,
+                categories=LESSON_CATEGORIES,
+            ),
+            404,
+        )
+
+    owner = db.session.get(User, cert.user_id)
+    recipient_name = owner.username if owner else "Estudiante"
+    issued_local = ensure_utc(cert.issued_at).astimezone(_get_app_timezone())
+    issued_date_str = _format_spanish_date(issued_local)
+
+    return render_template(
+        "certificate_verify.html",
+        valid=True,
+        cert=cert,
+        recipient_name=recipient_name,
+        issued_date_str=issued_date_str,
+        categories=LESSON_CATEGORIES,
     )

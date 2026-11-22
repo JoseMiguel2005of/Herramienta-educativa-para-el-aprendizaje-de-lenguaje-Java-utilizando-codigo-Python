@@ -2,11 +2,13 @@
 
 import csv
 import math
+from datetime import datetime, timedelta, timezone
 from io import StringIO
 
-from flask import Response, jsonify, redirect, render_template, request, url_for
+from flask import Response, flash, jsonify, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 from sqlalchemy import case, func, nullslast, or_
+from werkzeug.security import generate_password_hash
 
 from content_loader import get_level_info, load_ui_strings
 from models import AuditLog, Classroom, User, db, ensure_utc, utcnow
@@ -14,6 +16,7 @@ from models import AuditLog, Classroom, User, db, ensure_utc, utcnow
 from py2java.blueprints import FlatBlueprint
 
 from py2java.config import logger
+from py2java.extensions import limiter
 from py2java.services.accounts import _home_endpoint_for_role
 from py2java.services.classrooms import ADMIN_STUDENTS_PER_PAGE, _log_audit
 from py2java.services.curriculum import LESSON_CATEGORIES, _course_lesson_ids
@@ -24,8 +27,44 @@ from py2java.services.progress import (
 )
 from py2java.services.security import _csv_safe, _get_json_dict, _safe_int
 from py2java.services.timeutils import _app_now, _get_app_timezone
+from py2java.services.validation import (
+    MIN_PASSWORD_LENGTH,
+    _is_valid_email,
+    _is_valid_username,
+)
 
 bp = FlatBlueprint("superadmin", __name__)
+
+
+def _build_filtered_audit_query(audit_q="", audit_action="", audit_from="", audit_to=""):
+    """Construye una consulta SQLAlchemy filtrada sobre AuditLog (compartida por dashboard y export CSV)."""
+    query = AuditLog.query
+    if audit_q:
+        like = f"%{audit_q}%"
+        query = query.filter(
+            or_(
+                AuditLog.admin_username.ilike(like),
+                AuditLog.target_username.ilike(like),
+                AuditLog.action.ilike(like),
+                AuditLog.reason.ilike(like),
+                AuditLog.details.ilike(like),
+            )
+        )
+    if audit_action:
+        query = query.filter(AuditLog.action == audit_action)
+    if audit_from:
+        try:
+            dt_from = datetime.strptime(audit_from, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            query = query.filter(AuditLog.created_at >= dt_from)
+        except ValueError:
+            pass
+    if audit_to:
+        try:
+            dt_to = datetime.strptime(audit_to, "%Y-%m-%d").replace(tzinfo=timezone.utc) + timedelta(days=1)
+            query = query.filter(AuditLog.created_at < dt_to)
+        except ValueError:
+            pass
+    return query.order_by(nullslast(AuditLog.created_at.desc()), AuditLog.id.desc())
 
 
 # --- Panel de Super Admin ---
@@ -52,6 +91,10 @@ def superadmin_dashboard():
         sort_by = "xp_desc"
     page = max(1, _safe_int(request.args.get("page", 1), 1))
     audit_page = max(1, _safe_int(request.args.get("audit_page", 1), 1))
+    audit_q_param = request.args.get("audit_q", "").strip()
+    audit_action_param = request.args.get("audit_action", "").strip()
+    audit_from_param = request.args.get("audit_from", "").strip()
+    audit_to_param = request.args.get("audit_to", "").strip()
 
     course_ids = _course_lesson_ids()
     total_course = len(course_ids) or 1
@@ -71,6 +114,7 @@ def superadmin_dashboard():
     total_filtered = 0
     total_pages = 1
     audit_logs = []
+    audit_actions = []
     audit_total = 0
     audit_total_pages = 1
 
@@ -189,8 +233,18 @@ def superadmin_dashboard():
                 "created_at": ensure_utc(s.created_at),
             })
 
-        # Bitácora global (todos los eventos del sistema)
-        audit_q = AuditLog.query.order_by(nullslast(AuditLog.created_at.desc()), AuditLog.id.desc())
+        # Bitácora global filtrada y lista de acciones disponibles
+        audit_actions = [
+            row[0]
+            for row in db.session.query(AuditLog.action).distinct().order_by(AuditLog.action.asc()).all()
+            if row[0]
+        ]
+        audit_q = _build_filtered_audit_query(
+            audit_q=audit_q_param,
+            audit_action=audit_action_param,
+            audit_from=audit_from_param,
+            audit_to=audit_to_param,
+        )
         audit_total = audit_q.count()
         audit_per = 15
         audit_total_pages = max(1, math.ceil(audit_total / audit_per))
@@ -224,6 +278,10 @@ def superadmin_dashboard():
         "total_filtered": total_filtered,
         "audit_page": audit_page,
         "audit_total_pages": audit_total_pages,
+        "audit_q": audit_q_param,
+        "audit_action": audit_action_param,
+        "audit_from": audit_from_param,
+        "audit_to": audit_to_param,
     }
     return render_template(
         "superadmin_dashboard.html",
@@ -234,6 +292,7 @@ def superadmin_dashboard():
         teacher_map=teacher_map,
         students=paginated_students,
         audit_logs=audit_logs,
+        audit_actions=audit_actions,
         filters=filters,
         categories=LESSON_CATEGORIES,
     )
@@ -450,4 +509,193 @@ def superadmin_export_pdf():
         pdf_bytes,
         mimetype="application/pdf",
         headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )
+
+
+@bp.route("/superadmin/profesores/crear", methods=["POST"])
+@login_required
+def superadmin_create_teacher():
+    """Permite al Super Admin crear directamente cuentas docentes sin depender del código estático compartido."""
+    wants_json = request.is_json or "application/json" in (request.headers.get("Accept") or "")
+    if current_user.role != "superadmin":
+        if wants_json:
+            return jsonify({"ok": False, "error": "No autorizado"}), 403
+        return redirect(url_for(_home_endpoint_for_role(current_user.role)))
+
+    data = _get_json_dict() if request.is_json else request.form
+    username = str(data.get("username") or "").strip()
+    email = str(data.get("email") or "").strip().lower()
+    password = str(data.get("password") or "")
+
+    def _fail(msg, status=400):
+        if wants_json:
+            return jsonify({"ok": False, "error": msg}), status
+        flash(msg, "error")
+        return redirect(url_for("superadmin_dashboard"))
+
+    if not _is_valid_username(username):
+        return _fail("El nombre de usuario debe tener entre 3 y 30 caracteres válidos (letras, números, - o _).")
+    if not _is_valid_email(email):
+        return _fail("Ingresa un correo electrónico válido para el docente.")
+    if len(password) < MIN_PASSWORD_LENGTH:
+        return _fail(f"La contraseña debe tener al menos {MIN_PASSWORD_LENGTH} caracteres.")
+
+    if User.query.filter(func.lower(User.username) == username.lower()).first():
+        return _fail("El nombre de usuario ya existe.", 409)
+    if User.query.filter(func.lower(User.email) == email).first():
+        return _fail("El correo electrónico ya está registrado.", 409)
+
+    teacher = User(
+        username=username,
+        email=email,
+        password_hash=generate_password_hash(password),
+        role="teacher",
+    )
+    db.session.add(teacher)
+    db.session.flush()
+    _log_audit(
+        current_user,
+        action="SUPERADMIN_CREATE_TEACHER",
+        target_username=teacher.username,
+        reason="Alta directa de cuenta docente por Super Admin",
+        details=f"Correo: {teacher.email}",
+    )
+    db.session.commit()
+
+    ok_msg = f"Cuenta docente '{teacher.username}' creada correctamente."
+    if wants_json:
+        return jsonify({
+            "ok": True,
+            "message": ok_msg,
+            "teacher": {"id": teacher.id, "username": teacher.username, "email": teacher.email},
+        }), 201
+    flash(ok_msg, "success")
+    return redirect(url_for("superadmin_dashboard"))
+
+
+@bp.route("/superadmin/usuario/<int:user_id>/cambiar-rol", methods=["POST"])
+@login_required
+def superadmin_change_role(user_id):
+    """Permite al Super Admin cambiar el rol de una cuenta entre 'student' y 'teacher'."""
+    if current_user.role != "superadmin":
+        return jsonify({"success": False, "error": "No autorizado"}), 403
+
+    target = db.session.get(User, user_id)
+    if not target or target.role == "superadmin" or target.id == current_user.id:
+        return jsonify({"success": False, "error": "Usuario no encontrado o protegido."}), 404
+
+    data = _get_json_dict() if request.is_json else request.form
+    new_role = str(data.get("role") or "").strip().lower()
+    if new_role not in ("student", "teacher"):
+        return jsonify({"success": False, "error": "Rol inválido. Solo se permite 'student' o 'teacher'."}), 400
+
+    if target.role == new_role:
+        return jsonify({"success": False, "error": "El usuario ya tiene ese rol."}), 400
+
+    if target.role == "teacher" and new_role == "student":
+        owned_count = Classroom.query.filter_by(teacher_id=target.id).count()
+        if owned_count > 0:
+            return jsonify({
+                "success": False,
+                "error": f"El docente aún tiene {owned_count} sección(es) activa(s). Elimínalas antes de cambiar su rol a estudiante.",
+            }), 400
+
+    old_role = target.role
+    target.role = new_role
+    if new_role == "teacher":
+        target.section_id = None
+
+    _log_audit(
+        current_user,
+        action="SUPERADMIN_CHANGE_ROLE",
+        target_username=target.username,
+        section_id=target.section_id,
+        reason="Cambio de rol por Super Admin",
+        details=f"{old_role} -> {new_role}",
+    )
+    db.session.commit()
+    return jsonify({"success": True, "old_role": old_role, "new_role": new_role})
+
+
+@bp.route("/superadmin/usuario/<int:user_id>/desbloquear", methods=["POST"])
+@login_required
+def superadmin_unlock_user(user_id):
+    """Desbloquea una cuenta por intentos fallidos/rate-limit y/o suspensión administrativa."""
+    if current_user.role != "superadmin":
+        return jsonify({"success": False, "error": "No autorizado"}), 403
+
+    target = db.session.get(User, user_id)
+    if not target or target.role == "superadmin":
+        return jsonify({"success": False, "error": "Usuario no encontrado o protegido."}), 404
+
+    was_suspended = bool(getattr(target, "is_suspended", False))
+    target.failed_login_attempts = 0
+    target.locked_until = None
+    if was_suspended:
+        target.is_suspended = False
+        target.suspended_at = None
+        target.suspended_reason = None
+        target.suspended_by = None
+
+    # Limpiar también contadores en memoria de Flask-Limiter para desbloqueo inmediato
+    try:
+        limiter.reset()
+    except Exception:
+        pass
+
+    _log_audit(
+        current_user,
+        action="SUPERADMIN_UNLOCK_USER",
+        target_username=target.username,
+        section_id=target.section_id,
+        reason="Desbloqueo manual de cuenta y rate-limit por Super Admin",
+        details="Incluyó restauración de suspensión" if was_suspended else "Reinicio de bloqueos y rate-limit",
+    )
+    db.session.commit()
+    return jsonify({"success": True, "status": "unlocked", "was_suspended": was_suspended})
+
+
+@bp.route("/superadmin/export/auditoria/csv")
+@login_required
+def superadmin_export_audit_csv():
+    """Exporta la bitácora AuditLog completa (respetando filtros activos) en CSV seguro anti-fórmulas."""
+    if current_user.role != "superadmin":
+        return redirect(url_for(_home_endpoint_for_role(current_user.role)))
+
+    audit_q_param = request.args.get("audit_q", "").strip()
+    audit_action_param = request.args.get("audit_action", "").strip()
+    audit_from_param = request.args.get("audit_from", "").strip()
+    audit_to_param = request.args.get("audit_to", "").strip()
+
+    logs = _build_filtered_audit_query(
+        audit_q=audit_q_param,
+        audit_action=audit_action_param,
+        audit_from=audit_from_param,
+        audit_to=audit_to_param,
+    ).all()
+
+    app_tz = _get_app_timezone()
+    si = StringIO()
+    si.write("\ufeff")
+    cw = csv.writer(si, delimiter=";")
+    cw.writerow(["Fecha_Hora", "Actor", "Accion", "Afectado", "Seccion_ID", "Motivo", "Detalle"])
+    for log in logs:
+        dt = ensure_utc(log.created_at)
+        dt_str = dt.astimezone(app_tz).strftime("%Y-%m-%d %H:%M:%S") if dt else ""
+        cw.writerow([
+            _csv_safe(dt_str),
+            _csv_safe(log.admin_username or ""),
+            _csv_safe(log.action or ""),
+            _csv_safe(log.target_username or ""),
+            log.section_id if log.section_id is not None else "",
+            _csv_safe(log.reason or ""),
+            _csv_safe(log.details or ""),
+        ])
+
+    output = si.getvalue()
+    si.close()
+    return Response(
+        output,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=bitacora_auditoria.csv"},
     )

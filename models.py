@@ -114,6 +114,9 @@ class User(UserMixin, db.Model):
     reset_codes = db.relationship(
         "PasswordResetCode", backref="user", lazy=True, cascade="all, delete-orphan"
     )
+    issued_certificates = db.relationship(
+        "IssuedCertificate", backref="user", lazy=True, cascade="all, delete-orphan"
+    )
 
 
 class AuditLog(db.Model):
@@ -232,3 +235,18 @@ class PasswordResetCode(db.Model):
     used = db.Column(db.Boolean, default=False, index=True)
     failed_attempts = db.Column(db.Integer, default=0, nullable=False)
     created_at = db.Column(UTCDateTime, default=utcnow)
+
+
+class IssuedCertificate(db.Model):
+    __tablename__ = "issued_certificates"
+    __table_args__ = (
+        db.UniqueConstraint("user_id", "section_key", name="uq_issued_certificates_user_section"),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
+    section_key = db.Column(db.String(100), nullable=False, index=True)
+    course_name = db.Column(db.String(160), nullable=False)
+    total_lessons = db.Column(db.Integer, nullable=False, default=0)
+    verification_code = db.Column(db.String(64), unique=True, nullable=False, index=True)
+    issued_at = db.Column(UTCDateTime, default=utcnow, nullable=False, index=True)

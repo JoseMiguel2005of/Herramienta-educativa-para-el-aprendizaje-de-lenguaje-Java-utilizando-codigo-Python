@@ -95,11 +95,17 @@
                             <a href="{{ url_for('teacher_dashboard', section_id=cls.id) }}" class="admin-section-link">
                                 {{ '✓ Filtrando grupo' if filters.section_id == cls.id else 'Filtrar grupo →' }}
                             </a>
-                            <button type="button" data-section-id="{{ cls.id }}" data-section-name="{{ cls.name }}"
-                                data-students-count="{{ classroom_counts.get(cls.id, 0) }}" onclick="deleteSection(this)"
-                                class="admin-action-btn admin-action-btn--danger">
-                                Eliminar
-                            </button>
+                            <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
+                                <button type="button" data-section-id="{{ cls.id }}" data-section-name="{{ cls.name }}"
+                                    onclick="editSectionName(this)" class="admin-action-btn admin-action-btn--info">
+                                    Editar
+                                </button>
+                                <button type="button" data-section-id="{{ cls.id }}" data-section-name="{{ cls.name }}"
+                                    data-students-count="{{ classroom_counts.get(cls.id, 0) }}" onclick="deleteSection(this)"
+                                    class="admin-action-btn admin-action-btn--danger">
+                                    Eliminar
+                                </button>
+                            </div>
                         </div>
                     </div>
                     {% endfor %}
@@ -223,17 +229,27 @@
                                 </div>
                             </td>
                             <td class="admin-col-center">
-                                {% if s.is_suspended %}
-                                <button type="button" data-student-id="{{ s.id }}" data-username="{{ s.username }}"
-                                    onclick="restoreStudent(this)" class="admin-action-btn admin-action-btn--success">
-                                    Restaurar
-                                </button>
-                                {% else %}
-                                <button type="button" data-student-id="{{ s.id }}" data-username="{{ s.username }}"
-                                    onclick="openSuspendModal(this)" class="admin-action-btn admin-action-btn--danger">
-                                    Suspender
-                                </button>
-                                {% endif %}
+                                <div style="display: inline-flex; gap: 0.35rem; flex-wrap: wrap; justify-content: center;">
+                                    <button type="button" data-student-id="{{ s.id }}" data-username="{{ s.username }}"
+                                        onclick="openStudentResultsModal(this)" class="admin-action-btn admin-action-btn--info">
+                                        Resultados
+                                    </button>
+                                    <button type="button" data-student-id="{{ s.id }}" data-username="{{ s.username }}"
+                                        onclick="removeStudentFromSection(this)" class="admin-action-btn">
+                                        Quitar
+                                    </button>
+                                    {% if s.is_suspended %}
+                                    <button type="button" data-student-id="{{ s.id }}" data-username="{{ s.username }}"
+                                        onclick="restoreStudent(this)" class="admin-action-btn admin-action-btn--success">
+                                        Restaurar
+                                    </button>
+                                    {% else %}
+                                    <button type="button" data-student-id="{{ s.id }}" data-username="{{ s.username }}"
+                                        onclick="openSuspendModal(this)" class="admin-action-btn admin-action-btn--danger">
+                                        Suspender
+                                    </button>
+                                    {% endif %}
+                                </div>
                             </td>
                         </tr>
                         {% else %}
@@ -314,8 +330,75 @@
                 </div>
             </div>
         </section>
+        <!-- Bitácora filtrada del docente -->
+        <section class="admin-panel" aria-labelledby="panel-teacher-audit-title">
+            <div class="admin-panel-header">
+                <h2 class="admin-panel-title" id="panel-teacher-audit-title">Bitácora de actividad de mis secciones ({{ filters.audit_total }})</h2>
+                <span class="admin-panel-desc">Registro auditado de tus acciones y movimientos en tus grupos</span>
+            </div>
+            <div class="admin-panel-body admin-panel-body--flush admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha / Hora</th>
+                            <th>Actor</th>
+                            <th>Acción</th>
+                            <th>Estudiante</th>
+                            <th>Detalle</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in audit_logs %}
+                        <tr>
+                            <td class="admin-cell-sub" style="white-space: nowrap;">{{ log.created_at.strftime('%d/%m/%Y %H:%M') if log.created_at else '' }}</td>
+                            <td>{{ log.admin_username }}</td>
+                            <td>
+                                {% set pill_cls = 'status-pill--danger' if ('SUSPEND' in log.action or 'UNAUTHORIZED' in log.action or 'DELETE' in log.action or 'REMOVE' in log.action) else ('status-pill--completed' if ('RESTORE' in log.action or 'JOIN' in log.action or 'CREATE' in log.action) else 'status-pill--available') %}
+                                <span class="status-pill {{ pill_cls }}">{{ log.action }}</span>
+                            </td>
+                            <td style="color: var(--green); font-weight: 600;">{{ log.target_username or '—' }}</td>
+                            <td>
+                                {% if log.reason %}<span>{{ log.reason }}</span>{% endif %}
+                                {% if log.details %}<div class="admin-cell-sub">{{ log.details }}</div>{% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="admin-empty-cell">Sin eventos de actividad registrados aún.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if filters.audit_total_pages > 1 %}
+            <div class="admin-pagination">
+                <span>Bitácora: Página <strong>{{ filters.audit_page }}</strong> de <strong>{{ filters.audit_total_pages }}</strong></span>
+                <div class="admin-pagination-links">
+                    {% if filters.audit_page > 1 %}
+                    <a href="{{ url_for('teacher_dashboard', q=filters.q, section_id=filters.section_id, level=filters.level, status=filters.status, sort=filters.sort, page=filters.page, audit_page=filters.audit_page - 1) }}" class="btn-secondary-inclusive">← Anterior</a>
+                    {% endif %}
+                    {% if filters.audit_page < filters.audit_total_pages %}
+                    <a href="{{ url_for('teacher_dashboard', q=filters.q, section_id=filters.section_id, level=filters.level, status=filters.status, sort=filters.sort, page=filters.page, audit_page=filters.audit_page + 1) }}" class="btn-secondary-inclusive">Siguiente →</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </section>
     </div>
 </article>
+
+<!-- Modal detalle de resultados de evaluaciones y quizzes del estudiante (WCAG 2.1 AA) -->
+<div id="student-results-modal" class="admin-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="student-results-modal-title" hidden>
+    <div class="admin-modal-card modal-dialog-card" style="max-width: 720px; border-color: var(--border-strong); max-height: 85vh; overflow-y: auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; margin-bottom: 0.85rem;">
+            <h3 id="student-results-modal-title" class="admin-modal-title" style="color: var(--text); margin: 0;">
+                Resultados de <span id="results-student-name" style="color: var(--green);"></span>
+            </h3>
+            <button type="button" id="btn-close-results" onclick="closeStudentResultsModal()" class="btn-secondary-inclusive" style="min-height: 36px; padding: 0.25rem 0.7rem;">Cerrar</button>
+        </div>
+        <div id="student-results-body" style="font-size: 0.9rem; color: var(--text);">Cargando resultados...</div>
+    </div>
+</div>
 
 <!-- Modal suspender estudiante (motivo obligatorio — WCAG 2.1 AA) -->
 <div id="suspend-modal" class="admin-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="suspend-modal-title" hidden>
@@ -652,6 +735,219 @@
                 label.textContent = 'Generar PDF';
             }
         });
+    })();
+
+    async function editSectionName(btn) {
+        const sectionId = btn.dataset.sectionId;
+        const currentName = btn.dataset.sectionName || '';
+        const nextName = prompt('Nuevo nombre para la sección:', currentName);
+        if (nextName === null) return;
+        const trimmed = nextName.trim();
+        if (trimmed.length < 2) {
+            alert('El nombre debe tener al menos 2 caracteres.');
+            return;
+        }
+        btn.disabled = true;
+        try {
+            const resp = await fetch('/profesor/secciones/' + encodeURIComponent(sectionId) + '/editar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRFToken': _getCsrfToken()
+                },
+                body: JSON.stringify({ name: trimmed })
+            });
+            const data = await resp.json().catch(() => ({}));
+            if (resp.ok && data.ok) {
+                window.location.reload();
+            } else {
+                alert(data.error || 'No se pudo actualizar el nombre de la sección.');
+                btn.disabled = false;
+            }
+        } catch (err) {
+            alert('Error de conexión al editar la sección.');
+            btn.disabled = false;
+        }
+    }
+
+    async function removeStudentFromSection(btn) {
+        const studentId = btn.dataset.studentId;
+        const username = btn.dataset.username || '';
+        if (!confirm('¿Quitar a ' + username + ' de tu sección? Su cuenta global y progreso permanecerán intactos.')) {
+            return;
+        }
+        btn.disabled = true;
+        btn.textContent = 'Quitando...';
+        try {
+            const resp = await fetch('/profesor/estudiante/' + encodeURIComponent(studentId) + '/remover-seccion', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRFToken': _getCsrfToken()
+                }
+            });
+            const data = await resp.json().catch(() => ({}));
+            if (resp.ok && data.success) {
+                window.location.reload();
+            } else {
+                alert(data.error || 'No se pudo remover al estudiante de la sección.');
+                btn.disabled = false;
+                btn.textContent = 'Quitar';
+            }
+        } catch (err) {
+            alert('Error de conexión al remover al estudiante.');
+            btn.disabled = false;
+            btn.textContent = 'Quitar';
+        }
+    }
+
+    let _resultsTriggerEl = null;
+
+    function _handleResultsModalKeydown(e) {
+        const modal = document.getElementById('student-results-modal');
+        if (!modal || modal.hidden) return;
+        if (window.Py2JavaA11y && typeof window.Py2JavaA11y.trapFocusKeydown === 'function') {
+            window.Py2JavaA11y.trapFocusKeydown(e, modal, closeStudentResultsModal);
+            return;
+        }
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            closeStudentResultsModal();
+        }
+    }
+
+    function _buildResultsTable(headers, rows) {
+        const wrap = document.createElement('div');
+        wrap.className = 'admin-table-wrap';
+        const table = document.createElement('table');
+        table.className = 'admin-table';
+        table.style.minWidth = '480px';
+        const thead = document.createElement('thead');
+        const trHead = document.createElement('tr');
+        headers.forEach(h => {
+            const th = document.createElement('th');
+            th.textContent = h;
+            trHead.appendChild(th);
+        });
+        thead.appendChild(trHead);
+        table.appendChild(thead);
+        const tbody = document.createElement('tbody');
+        rows.forEach(cols => {
+            const tr = document.createElement('tr');
+            cols.forEach(val => {
+                const td = document.createElement('td');
+                td.textContent = String(val);
+                tr.appendChild(td);
+            });
+            tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        wrap.appendChild(table);
+        return wrap;
+    }
+
+    async function openStudentResultsModal(btn) {
+        const studentId = btn.dataset.studentId;
+        const username = btn.dataset.username || '';
+        _resultsTriggerEl = btn;
+        const modal = document.getElementById('student-results-modal');
+        const nameEl = document.getElementById('results-student-name');
+        const bodyEl = document.getElementById('student-results-body');
+        if (!modal || !bodyEl) return;
+
+        nameEl.textContent = username;
+        bodyEl.textContent = 'Cargando resultados...';
+        modal.hidden = false;
+        modal.classList.add('is-open');
+        document.addEventListener('keydown', _handleResultsModalKeydown);
+        const closeBtn = document.getElementById('btn-close-results');
+        if (closeBtn) setTimeout(() => closeBtn.focus(), 30);
+
+        try {
+            const resp = await fetch('/profesor/estudiante/' + encodeURIComponent(studentId) + '/resultados', {
+                credentials: 'same-origin'
+            });
+            const data = await resp.json().catch(() => ({}));
+            bodyEl.textContent = '';
+            if (!resp.ok || !data.ok) {
+                const p = document.createElement('p');
+                p.style.color = 'var(--status-danger)';
+                p.textContent = data.error || 'No se pudieron cargar los resultados.';
+                bodyEl.appendChild(p);
+                return;
+            }
+
+            const evalH = document.createElement('h4');
+            evalH.style.margin = '0.5rem 0';
+            evalH.textContent = 'Evaluaciones finales (' + (data.evaluations || []).length + ')';
+            bodyEl.appendChild(evalH);
+
+            if (data.evaluations && data.evaluations.length) {
+                bodyEl.appendChild(_buildResultsTable(
+                    ['Sección', 'Intento', 'Nota', 'Estado', 'Fecha'],
+                    data.evaluations.map(ev => [
+                        ev.section_label,
+                        '#' + ev.attempt_number,
+                        ev.score + '/' + ev.total + ' (' + ev.percentage + '%)',
+                        ev.passed ? 'Aprobado' : 'No aprobado',
+                        ev.completed_at
+                    ])
+                ));
+            } else {
+                const emptyEv = document.createElement('p');
+                emptyEv.className = 'admin-cell-sub';
+                emptyEv.textContent = 'Sin evaluaciones finales registradas.';
+                bodyEl.appendChild(emptyEv);
+            }
+
+            const quizH = document.createElement('h4');
+            quizH.style.margin = '1.25rem 0 0.5rem';
+            quizH.textContent = 'Cuestionarios / Quizzes (' + (data.quizzes || []).length + ')';
+            bodyEl.appendChild(quizH);
+
+            if (data.quizzes && data.quizzes.length) {
+                bodyEl.appendChild(_buildResultsTable(
+                    ['Cuestionario', 'Puntuación', 'Porcentaje', 'Fecha'],
+                    data.quizzes.map(q => [
+                        q.quiz_label,
+                        q.score + '/' + q.total,
+                        q.percentage + '%',
+                        q.completed_at
+                    ])
+                ));
+            } else {
+                const emptyQ = document.createElement('p');
+                emptyQ.className = 'admin-cell-sub';
+                emptyQ.textContent = 'Sin cuestionarios registrados.';
+                bodyEl.appendChild(emptyQ);
+            }
+        } catch (err) {
+            bodyEl.textContent = 'Error de conexión al consultar resultados.';
+        }
+    }
+
+    function closeStudentResultsModal() {
+        const modal = document.getElementById('student-results-modal');
+        if (modal) {
+            modal.classList.remove('is-open');
+            modal.hidden = true;
+        }
+        document.removeEventListener('keydown', _handleResultsModalKeydown);
+        if (_resultsTriggerEl && document.body.contains(_resultsTriggerEl)) {
+            _resultsTriggerEl.focus();
+        }
+        _resultsTriggerEl = null;
+    }
+
+    (function () {
+        const modal = document.getElementById('student-results-modal');
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeStudentResultsModal();
+            });
+        }
     })();
 </script>
 {% endblock %}

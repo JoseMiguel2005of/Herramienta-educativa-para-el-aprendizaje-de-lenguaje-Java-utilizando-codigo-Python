@@ -18,9 +18,16 @@
             </h1>
             <p class="profile-header-sub">Resumen de progreso, actividad y certificaciones</p>
         </div>
-        <span class="status-pill status-pill--available">
-            {{ 'Super Admin' if profile_user.role == 'superadmin' else ('Profesor' if profile_user.role == 'teacher' else 'Estudiante') }}
-        </span>
+        <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+            {% if is_own_profile %}
+            <a href="{{ url_for('account_settings') }}" class="btn-secondary-inclusive" style="min-height: 38px; padding: 0.35rem 0.85rem; font-size: 0.84rem;">
+                Configuración de cuenta
+            </a>
+            {% endif %}
+            <span class="status-pill status-pill--available">
+                {{ 'Super Admin' if profile_user.role == 'superadmin' else ('Profesor' if profile_user.role == 'teacher' else 'Estudiante') }}
+            </span>
+        </div>
     </header>
 
     {% set current_title = get_level_title(level) %}
@@ -136,6 +143,38 @@
                     </div>
                 </div>
             </section>
+
+            <!-- Resultados de evaluaciones finales -->
+            {% if eval_results %}
+            <section class="data-module">
+                <div class="module-header">
+                    <span>Historial de evaluaciones finales</span>
+                    <span class="module-header-meta">{{ eval_results | length }} intento(s)</span>
+                </div>
+                <div class="module-body profile-table-wrap" style="padding: 0;">
+                    <table class="profile-table">
+                        <thead>
+                            <tr><th>Sección</th><th>Intento</th><th>Resultado</th><th>Estado</th><th>Fecha</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for ev in eval_results %}
+                            <tr>
+                                <td>{{ t.get(ev.section_id, ev.section_id) }}</td>
+                                <td>#{{ ev.attempt_number }}</td>
+                                <td>{{ ev.score }}/{{ ev.total }} ({{ ev.percentage }}%)</td>
+                                <td>
+                                    <span class="status-pill {{ 'status-pill--completed' if ev.passed else 'status-pill--danger' }}">
+                                        {{ '✓ Aprobado' if ev.passed else '✕ No aprobado' }}
+                                    </span>
+                                </td>
+                                <td style="color: var(--text-muted);">{{ ev.completed_at.strftime('%d/%m/%Y') if ev.completed_at else '—' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            {% endif %}
 
             <!-- Resultados de cuestionarios -->
             {% if quiz_results %}

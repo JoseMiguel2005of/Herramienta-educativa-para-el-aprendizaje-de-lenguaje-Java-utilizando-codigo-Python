@@ -221,6 +221,8 @@ def build_certificate_pdf(
     completion_date,
     completion_year,
     site_title="Py2Java Edu",
+    verification_code=None,
+    verify_url=None,
 ):
     """
     Genera un certificado formal en PDF (A4 horizontal, 297 x 210 mm) para el estudiante.
@@ -372,11 +374,15 @@ def build_certificate_pdf(
     pdf.set_font("Helvetica", "", 8)
     pdf.cell(70, 4.5, _latin1("Instructor / Administrador"), align="C")
 
-    # Código de verificación al pie
-    cert_code = f"CERT-{str(category_id).upper()}-{user_id}-{completion_year}"
-    pdf.set_xy(20, h - 24)
+    # Código de verificación persistente y URL pública al pie
+    cert_code = verification_code or f"CERT-{str(category_id).upper()}-{user_id}-{completion_year}"
+    pdf.set_xy(20, h - 26)
     pdf.set_text_color(*COLOR_MUTED)
-    pdf.set_font("Courier", "", 8)
-    pdf.cell(w - 40, 5, _latin1(f"Código de verificación: {cert_code}"), align="C")
+    pdf.set_font("Courier", "B", 8.5)
+    pdf.cell(w - 40, 4.5, _latin1(f"Código de verificación: {cert_code}"), align="C", new_x="LMARGIN", new_y="NEXT")
+    if verify_url:
+        pdf.set_x(20)
+        pdf.set_font("Helvetica", "", 7.5)
+        pdf.cell(w - 40, 4, _latin1(f"Verifica este certificado en: {verify_url}"), align="C")
 
     return bytes(pdf.output())

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Verificación de Certificado — {{ t.site_title }}{% endblock %}
+
+{% block content %}
+<article class="error-page" style="max-width: 680px; text-align: left;">
+    {% if valid %}
+    <div style="text-align: center; margin-bottom: 1.5rem;">
+        <span class="status-pill status-pill--completed" style="font-size: 0.92rem; padding: 0.4rem 1rem;">
+            ✓ Certificado Auténtico y Verificado
+        </span>
+        <h1 style="margin: 0.85rem 0 0.4rem; font-family: var(--font-display); font-size: 1.75rem; color: var(--text);">
+            Certificado Oficial de Finalización
+        </h1>
+        <p style="margin: 0; color: var(--text-muted); font-size: 0.95rem;">
+            Este certificado fue emitido oficialmente por {{ t.site_title }} y su código coincide con nuestros registros.
+        </p>
+    </div>
+
+    <div class="data-module" style="margin-bottom: 1.5rem;">
+        <div class="module-header">
+            <span>Datos públicos del certificado</span>
+            <code style="font-family: var(--font-mono); color: var(--green); font-weight: 700;">{{ cert.verification_code }}</code>
+        </div>
+        <div class="module-body" style="padding: 1.25rem 1.4rem; display: grid; gap: 0.85rem;">
+            <div style="display: flex; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.65rem; flex-wrap: wrap;">
+                <span style="color: var(--text-muted); font-weight: 600;">Titular</span>
+                <strong style="color: var(--text); font-size: 1.05rem;">{{ recipient_name }}</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.65rem; flex-wrap: wrap;">
+                <span style="color: var(--text-muted); font-weight: 600;">Curso / Módulo acreditado</span>
+                <strong style="color: var(--green);">{{ cert.course_name }}</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.65rem; flex-wrap: wrap;">
+                <span style="color: var(--text-muted); font-weight: 600;">Lecciones completadas</span>
+                <strong style="color: var(--text);">{{ cert.total_lessons }} lecciones (100%)</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                <span style="color: var(--text-muted); font-weight: 600;">Fecha oficial de emisión</span>
+                <strong style="color: var(--text);">{{ issued_date_str }}</strong>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div style="text-align: center;">
+        <span class="status-pill status-pill--danger" style="font-size: 0.92rem; padding: 0.4rem 1rem;">
+            ✕ Certificado No Encontrado
+        </span>
+        <h1 style="margin: 0.9rem 0 0.5rem; font-family: var(--font-display); font-size: 1.65rem; color: var(--text);">
+            Código de verificación inválido
+        </h1>
+        <p style="margin: 0 0 1.25rem; color: var(--text-muted); line-height: 1.6;">
+            No existe ningún certificado emitido con el código <code style="font-family: var(--font-mono); color: var(--status-danger);">{{ searched_code }}</code>.
+            Verifica que el código esté escrito exactamente como aparece al pie del diploma.
+        </p>
+    </div>
+    {% endif %}
+
+    <div style="display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.25rem;">
+        <a href="{{ url_for('index') }}" class="btn-primary-inclusive">Ir al inicio</a>
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('dashboard') }}" class="btn-secondary-inclusive">Mi Progreso</a>
+        {% endif %}
+    </div>
+</article>
+{% endblock %}

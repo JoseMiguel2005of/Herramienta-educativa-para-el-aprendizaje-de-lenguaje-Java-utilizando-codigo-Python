@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
     initTranslator();
     initCodeHover();
     initExercises();
+    initPasswordToggles();
+    initFormSubmitLoading();
 });
 
 function initCopyButtons() {
@@ -216,4 +218,61 @@ function initCodeHover() {
 
 function initExercises() {
     // Handled by quizzes.js for full support of fill-blank, multiple-choice, reorder and find-error
+}
+
+function initPasswordToggles() {
+    document.querySelectorAll("[data-toggle-password]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const targetId = btn.getAttribute("data-toggle-password");
+            const input = targetId ? document.getElementById(targetId) : null;
+            if (!input) return;
+            const isHidden = input.type === "password";
+            input.type = isHidden ? "text" : "password";
+            btn.setAttribute("aria-pressed", isHidden ? "true" : "false");
+            btn.textContent = isHidden ? "Ocultar" : "Mostrar";
+            input.focus();
+        });
+    });
+}
+
+function initFormSubmitLoading() {
+    document.addEventListener("submit", (event) => {
+        const form = event.target;
+        if (!(form instanceof HTMLFormElement)) return;
+        if (event.defaultPrevented) return;
+        if (form.dataset.noLoading === "true") return;
+
+        const method = (form.getAttribute("method") || "GET").toUpperCase();
+        if (method !== "POST") return;
+
+        if (form.dataset.submitting === "true") {
+            event.preventDefault();
+            return;
+        }
+        form.dataset.submitting = "true";
+
+        const submitter =
+            event.submitter || form.querySelector('button[type="submit"], button:not([type]), input[type="submit"]');
+        if (submitter) {
+            if (submitter.name && submitter.value) {
+                const hidden = document.createElement("input");
+                hidden.type = "hidden";
+                hidden.name = submitter.name;
+                hidden.value = submitter.value;
+                form.appendChild(hidden);
+            }
+            submitter.disabled = true;
+            submitter.setAttribute("aria-busy", "true");
+            const loadingText = submitter.dataset.loadingText;
+            if (loadingText) {
+                if (submitter.tagName === "INPUT") {
+                    submitter.value = loadingText;
+                } else {
+                    submitter.textContent = loadingText;
+                }
+            } else if (submitter.tagName === "BUTTON" && !submitter.classList.contains("btn-logout")) {
+                submitter.textContent = "Procesando...";
+            }
+        }
+    });
 }

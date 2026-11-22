@@ -39,13 +39,39 @@
                 {% endfor %}
             </div>
 
-            {% if problem.hints %}
-            <h2 class="practice-section-heading">Pistas</h2>
-            <ul class="practice-hints-list">
-                {% for hint in problem.hints %}
-                <li>{{ hint }}</li>
-                {% endfor %}
-            </ul>
+            {% if problem.hints or problem.solution %}
+            <div class="practice-help-stack">
+                {% if problem.hints %}
+                <details class="practice-collapsible">
+                    <summary class="practice-collapsible-summary">
+                        <span>Pistas ({{ problem.hints | length }})</span>
+                        <span class="practice-collapsible-hint">Mostrar / ocultar</span>
+                    </summary>
+                    <div class="practice-collapsible-body">
+                        <ul class="practice-hints-list">
+                            {% for hint in problem.hints %}
+                            <li>{{ hint }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </details>
+                {% endif %}
+
+                {% if problem.solution %}
+                <details class="practice-collapsible practice-collapsible--solution">
+                    <summary class="practice-collapsible-summary">
+                        <span>Solución de referencia</span>
+                        <span class="practice-collapsible-hint">Mostrar / ocultar</span>
+                    </summary>
+                    <div class="practice-collapsible-body">
+                        <p class="practice-solution-note">
+                            Intenta resolver el problema por tu cuenta antes de revisar la solución de referencia.
+                        </p>
+                        <pre class="practice-solution-code"><code>{{ problem.solution }}</code></pre>
+                    </div>
+                </details>
+                {% endif %}
+            </div>
             {% endif %}
         </div>
     </section>

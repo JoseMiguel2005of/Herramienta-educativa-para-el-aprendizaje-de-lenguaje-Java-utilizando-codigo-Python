@@ -21,36 +21,76 @@ from tests.conftest import extract_csrf_token, login_as
 @pytest.mark.parametrize(
     "payload, expected_msg",
     [
-        ({"username": "", "email": "", "password": ""}, "Todos los campos son requeridos"),
+        ({"username": "", "email": "", "password": "", "confirm_password": ""}, "Todos los campos son requeridos"),
         (
-            {"username": "ab", "email": "ok@test.edu", "password": "Password123!"},
+            {
+                "username": "ab",
+                "email": "ok@test.edu",
+                "password": "Password123!",
+                "confirm_password": "Password123!",
+            },
             "El nombre de usuario debe tener entre 3 y 30 caracteres",
         ),
         (
-            {"username": "user!name", "email": "ok@test.edu", "password": "Password123!"},
+            {
+                "username": "user!name",
+                "email": "ok@test.edu",
+                "password": "Password123!",
+                "confirm_password": "Password123!",
+            },
             "El nombre de usuario debe tener entre 3 y 30 caracteres",
         ),
         (
-            {"username": "con espacios", "email": "ok@test.edu", "password": "Password123!"},
+            {
+                "username": "con espacios",
+                "email": "ok@test.edu",
+                "password": "Password123!",
+                "confirm_password": "Password123!",
+            },
             "El nombre de usuario debe tener entre 3 y 30 caracteres",
         ),
         (
-            {"username": "x" * 31, "email": "ok@test.edu", "password": "Password123!"},
+            {
+                "username": "x" * 31,
+                "email": "ok@test.edu",
+                "password": "Password123!",
+                "confirm_password": "Password123!",
+            },
             "El nombre de usuario debe tener entre 3 y 30 caracteres",
         ),
         (
-            {"username": "valid_user", "email": "correo-invalido", "password": "Password123!"},
+            {
+                "username": "valid_user",
+                "email": "correo-invalido",
+                "password": "Password123!",
+                "confirm_password": "Password123!",
+            },
             "correo electrónico válido",
         ),
         (
-            {"username": "valid_user", "email": "valid@test.edu", "password": "short"},
+            {
+                "username": "valid_user",
+                "email": "valid@test.edu",
+                "password": "short",
+                "confirm_password": "short",
+            },
             "al menos 8 caracteres",
+        ),
+        (
+            {
+                "username": "valid_user",
+                "email": "valid@test.edu",
+                "password": "Password123!",
+                "confirm_password": "DifferentPassword123!",
+            },
+            "Las contraseñas no coinciden",
         ),
         (
             {
                 "username": "prof_fake",
                 "email": "proffake@test.edu",
                 "password": "Password123!",
+                "confirm_password": "Password123!",
                 "role": "teacher",
                 "teacher_code": "WRONG-CODE",
             },
@@ -74,6 +114,7 @@ def test_register_success_and_duplicate_checks(client, app):
             "username": "Ana_Dev",
             "email": "Ana@Test.EDU",
             "password": "StrongPassword99!",
+            "confirm_password": "StrongPassword99!",
             "role": "student",
         },
         follow_redirects=False,
@@ -94,7 +135,12 @@ def test_register_success_and_duplicate_checks(client, app):
     # Duplicado username (case-insensitive)
     resp_dup_u = client.post(
         "/register",
-        data={"username": "ana_dev", "email": "otro@test.edu", "password": "StrongPassword99!"},
+        data={
+            "username": "ana_dev",
+            "email": "otro@test.edu",
+            "password": "StrongPassword99!",
+            "confirm_password": "StrongPassword99!",
+        },
     )
     assert resp_dup_u.status_code == 200
     assert "ya está en uso" in resp_dup_u.get_data(as_text=True)
@@ -102,7 +148,12 @@ def test_register_success_and_duplicate_checks(client, app):
     # Duplicado email (case-insensitive)
     resp_dup_e = client.post(
         "/register",
-        data={"username": "otra_persona", "email": "ANA@test.edu", "password": "StrongPassword99!"},
+        data={
+            "username": "otra_persona",
+            "email": "ANA@test.edu",
+            "password": "StrongPassword99!",
+            "confirm_password": "StrongPassword99!",
+        },
     )
     assert resp_dup_e.status_code == 200
     assert "ya está registrado" in resp_dup_e.get_data(as_text=True)

@@ -9,7 +9,7 @@ from flask_login import current_user, login_required
 from sqlalchemy import case, distinct, func, nullslast, or_
 
 from content_loader import LEVEL_TITLES, get_level_info, load_ui_strings
-from models import AuditLog, Classroom, SectionEvaluation, User, db, ensure_utc, utcnow
+from models import AuditLog, Classroom, QuizResult, SectionEvaluation, User, db, ensure_utc, utcnow
 
 from py2java.blueprints import FlatBlueprint
 
@@ -60,6 +60,7 @@ def teacher_dashboard():
     if sort_by not in ("xp_desc", "xp_asc", "progress_desc", "progress_asc", "name_asc", "name_desc", "date_desc", "date_asc"):
         sort_by = "xp_desc"
     page = max(1, _safe_int(request.args.get("page", 1), 1))
+    audit_page = max(1, _safe_int(request.args.get("audit_page", 1), 1))
 
     classrooms = []
     classroom_map = {}
@@ -74,6 +75,9 @@ def teacher_dashboard():
     suspended_count = 0
     level_counts = {}
     eval_agg_map = {}
+    audit_logs = []
+    audit_total = 0
+    audit_total_pages = 1
     active_section_id = None
     course_ids = _course_lesson_ids()
     total_course_lessons = len(course_ids) or 1
@@ -244,6 +248,21 @@ def teacher_dashboard():
                     "students_passed": int(stu_pass or 0),
                     "avg_score": round(float(avg_pct or 0.0), 1),
                 }
+
+        # 5) Bitácora AuditLog filtrada estrictamente a las acciones y aulas del docente
+        # Excluye alertas UNAUTHORIZED_* (reservadas para Super Admin) para evitar fugas de usernames ajenos
+        audit_conds = [AuditLog.admin_id == current_user.id]
+        if allowed_ids:
+            audit_conds.append(AuditLog.section_id.in_(allowed_ids))
+        audit_q = AuditLog.query.filter(
+            or_(*audit_conds),
+            ~AuditLog.action.like("UNAUTHORIZED_%"),
+        ).order_by(nullslast(AuditLog.created_at.desc()), AuditLog.id.desc())
+        audit_total = audit_q.count()
+        audit_per_page = 12
+        audit_total_pages = max(1, math.ceil(audit_total / audit_per_page))
+        audit_page = min(audit_page, audit_total_pages)
+        audit_logs = audit_q.offset((audit_page - 1) * audit_per_page).limit(audit_per_page).all()
     except Exception as e:
         logger.error("Error en teacher_dashboard: %s", e)
         try:
@@ -294,6 +313,9 @@ def teacher_dashboard():
         "total_pages": total_pages,
         "total_filtered": total_filtered,
         "per_page": ADMIN_STUDENTS_PER_PAGE,
+        "audit_page": audit_page,
+        "audit_total_pages": audit_total_pages,
+        "audit_total": audit_total,
     }
 
     return render_template(
@@ -304,6 +326,7 @@ def teacher_dashboard():
         metrics=metrics,
         filters=filters,
         eval_summary=eval_summary,
+        audit_logs=audit_logs,
         level_titles=LEVEL_TITLES,
         categories=LESSON_CATEGORIES,
     )
@@ -691,3 +714,177 @@ def admin_export_pdf():
         mimetype="application/pdf",
         headers={"Content-Disposition": f"attachment; filename={filename}"},
     )
+
+
+@bp.route("/profesor/secciones/<int:section_id>/editar", methods=["POST"])
+@bp.route("/administrador/secciones/<int:section_id>/editar", methods=["POST"])
+@login_required
+def teacher_edit_section(section_id):
+    """Permite a un profesor editar el nombre de una sección propia."""
+    wants_json = request.is_json or "application/json" in (request.headers.get("Accept") or "")
+    if current_user.role != "teacher":
+        if wants_json:
+            return jsonify({"ok": False, "error": "No autorizado"}), 403
+        return redirect(url_for("dashboard"))
+
+    classroom = db.session.get(Classroom, section_id)
+    if not classroom:
+        msg = "Sección no encontrada."
+        if wants_json:
+            return jsonify({"ok": False, "error": msg}), 404
+        flash(msg, "error")
+        return redirect(url_for("teacher_dashboard"))
+
+    if classroom.teacher_id != current_user.id:
+        _log_audit(
+            current_user,
+            action="UNAUTHORIZED_EDIT_SECTION_ATTEMPT",
+            target_username=None,
+            section_id=classroom.id,
+            reason=f"Intento de editar sección ajena '{classroom.name}' ({classroom.code})",
+        )
+        db.session.commit()
+        msg = "Acceso denegado: solo puedes editar tus propias secciones."
+        if wants_json:
+            return jsonify({"ok": False, "error": msg}), 403
+        flash(msg, "error")
+        return redirect(url_for("teacher_dashboard"))
+
+    data = _get_json_dict() if request.is_json else request.form
+    new_name = str(data.get("name") or "").strip()[:100]
+    if len(new_name) < 2:
+        msg = "El nuevo nombre de la sección debe tener al menos 2 caracteres."
+        if wants_json:
+            return jsonify({"ok": False, "error": msg}), 400
+        flash(msg, "error")
+        return redirect(url_for("teacher_dashboard"))
+
+    old_name = classroom.name
+    classroom.name = new_name
+    _log_audit(
+        current_user,
+        action="EDIT_SECTION",
+        target_username=None,
+        section_id=classroom.id,
+        reason=f"Cambio de nombre de sección ({classroom.code})",
+        details=f"{old_name} -> {new_name}",
+    )
+    db.session.commit()
+
+    ok_msg = f"Sección renombrada a '{new_name}'."
+    if wants_json:
+        return jsonify({"ok": True, "message": ok_msg, "section": {"id": classroom.id, "name": new_name}})
+    flash(ok_msg, "success")
+    return redirect(url_for("teacher_dashboard"))
+
+
+@bp.route("/profesor/estudiante/<int:student_id>/remover-seccion", methods=["POST"])
+@bp.route("/administrador/estudiante/<int:student_id>/remover-seccion", methods=["POST"])
+@login_required
+def teacher_remove_student_section(student_id):
+    """Desvincula a un estudiante de la sección del docente sin suspender su cuenta global ni borrar progreso."""
+    if current_user.role != "teacher":
+        return jsonify({"success": False, "error": "No autorizado"}), 403
+
+    student = db.session.get(User, student_id)
+    if not student or student.role != "student":
+        return jsonify({"success": False, "error": "Estudiante no encontrado."}), 404
+
+    if not _teacher_owns_student(current_user.id, student):
+        _log_audit(
+            current_user,
+            action="UNAUTHORIZED_REMOVE_STUDENT_ATTEMPT",
+            target_username=student.username,
+            section_id=student.section_id,
+            reason="Intento de desvincular estudiante ajeno",
+        )
+        db.session.commit()
+        return jsonify({"success": False, "error": "Acceso denegado: este estudiante no pertenece a tus secciones."}), 403
+
+    old_cls = db.session.get(Classroom, student.section_id) if student.section_id else None
+    old_sec_id = student.section_id
+    student.section_id = None
+    _log_audit(
+        current_user,
+        action="REMOVE_STUDENT_SECTION",
+        target_username=student.username,
+        section_id=old_sec_id,
+        reason="Desvinculación de sección sin suspensión de cuenta",
+        details=f"Removido de: {old_cls.name} ({old_cls.code})" if old_cls else "",
+    )
+    db.session.commit()
+    return jsonify({"success": True, "message": f"{student.username} fue removido de la sección."})
+
+
+@bp.route("/profesor/estudiante/<int:student_id>/resultados", methods=["GET"])
+@bp.route("/administrador/estudiante/<int:student_id>/resultados", methods=["GET"])
+@login_required
+def teacher_student_results(student_id):
+    """Devuelve el detalle real de evaluaciones y quizzes de un estudiante perteneciente al docente."""
+    if current_user.role != "teacher":
+        return jsonify({"ok": False, "error": "No autorizado"}), 403
+
+    student = db.session.get(User, student_id)
+    if not student or student.role != "student":
+        return jsonify({"ok": False, "error": "Estudiante no encontrado."}), 404
+
+    if not _teacher_owns_student(current_user.id, student):
+        _log_audit(
+            current_user,
+            action="UNAUTHORIZED_RESULTS_VIEW",
+            target_username=student.username,
+            section_id=student.section_id,
+            reason="Intento de consulta de resultados de estudiante ajeno",
+        )
+        db.session.commit()
+        return jsonify({"ok": False, "error": "Acceso denegado: este estudiante no pertenece a tus secciones."}), 403
+
+    ui = load_ui_strings()
+    app_tz = _get_app_timezone()
+
+    evals = (
+        SectionEvaluation.query.filter_by(user_id=student.id)
+        .order_by(SectionEvaluation.completed_at.desc(), SectionEvaluation.id.desc())
+        .all()
+    )
+    quizzes = (
+        QuizResult.query.filter_by(user_id=student.id)
+        .order_by(QuizResult.completed_at.desc(), QuizResult.id.desc())
+        .all()
+    )
+
+    eval_items = []
+    for ev in evals:
+        dt = ensure_utc(ev.completed_at)
+        eval_items.append({
+            "section_id": ev.section_id,
+            "section_label": ui.get(ev.section_id, ev.section_id),
+            "attempt_number": ev.attempt_number or 1,
+            "score": ev.score or 0,
+            "total": ev.total or 0,
+            "percentage": round(float(ev.percentage or 0.0), 1),
+            "passed": bool(ev.passed),
+            "time_taken": ev.time_taken or 0,
+            "completed_at": dt.astimezone(app_tz).strftime("%d/%m/%Y %H:%M") if dt else "—",
+        })
+
+    quiz_items = []
+    for qr in quizzes:
+        dt = ensure_utc(qr.completed_at)
+        pct = round((qr.score / qr.total) * 100, 1) if qr.total else 0.0
+        quiz_items.append({
+            "quiz_id": qr.quiz_id,
+            "quiz_label": ui.get(f"lesson_{qr.quiz_id}_title", qr.quiz_id),
+            "score": qr.score or 0,
+            "total": qr.total or 0,
+            "percentage": pct,
+            "time_taken": qr.time_taken or 0,
+            "completed_at": dt.astimezone(app_tz).strftime("%d/%m/%Y %H:%M") if dt else "—",
+        })
+
+    return jsonify({
+        "ok": True,
+        "student": {"id": student.id, "username": student.username},
+        "evaluations": eval_items,
+        "quizzes": quiz_items,
+    })

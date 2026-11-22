@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block title %}Configuración de Cuenta — {{ t.site_title }}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin-dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<article class="admin-dashboard">
+    <header class="admin-header">
+        <div>
+            <h1 class="admin-header-title">Configuración de Cuenta</h1>
+            <p class="admin-subtitle">
+                <span class="admin-role-badge">{{ 'Super Admin' if current_user.role == 'superadmin' else ('Profesor' if current_user.role == 'teacher' else 'Estudiante') }}</span>
+                <span>{{ current_user.username }} · Gestiona tus datos, seguridad e historial de evaluaciones</span>
+            </p>
+        </div>
+        <div class="admin-header-actions">
+            <a href="{{ url_for('profile') }}" class="btn-secondary-inclusive">← Mi Perfil</a>
+            <a href="{{ url_for('dashboard') }}" class="btn-secondary-inclusive">Mi Progreso</a>
+        </div>
+    </header>
+
+    {% with flashed = get_flashed_messages(with_categories=true) %}
+    {% for category, msg in flashed %}
+    <div role="{{ 'alert' if category == 'error' else 'status' }}"
+        class="alert-inclusive {{ 'alert-inclusive--danger' if category == 'error' else ('alert-inclusive--success' if category == 'success' else 'alert-inclusive--info') }}">
+        <span aria-hidden="true">{{ '⚠' if category == 'error' else ('✓' if category == 'success' else 'ℹ') }}</span>
+        <span>{{ msg }}</span>
+    </div>
+    {% endfor %}
+    {% endwith %}
+
+    <div class="admin-stack">
+        <!-- 1. Editar correo / perfil -->
+        <section class="admin-panel" aria-labelledby="acc-profile-title">
+            <div class="admin-panel-header">
+                <h2 class="admin-panel-title" id="acc-profile-title">Datos de perfil y correo electrónico</h2>
+                <span class="admin-panel-desc">Usuario: <strong>{{ current_user.username }}</strong></span>
+            </div>
+            <div class="admin-panel-body">
+                <form method="POST" action="{{ url_for('account_update_profile') }}" class="admin-form-bar">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <label for="account-email" class="sr-only">Correo electrónico</label>
+                    <input id="account-email" type="email" name="email" required maxlength="120"
+                        value="{{ current_user.email or '' }}" placeholder="tu@correo.com"
+                        class="admin-input admin-input--grow">
+                    <button type="submit" class="btn-primary-inclusive" data-loading-text="Guardando...">
+                        Actualizar correo
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 2. Cambiar contraseña -->
+        <section class="admin-panel" aria-labelledby="acc-password-title">
+            <div class="admin-panel-header">
+                <h2 class="admin-panel-title" id="acc-password-title">Cambiar contraseña</h2>
+                <span class="admin-panel-desc">Usa al menos 8 caracteres para mantener tu cuenta protegida</span>
+            </div>
+            <div class="admin-panel-body">
+                <form method="POST" action="{{ url_for('account_change_password') }}" style="display: grid; gap: 0.9rem; max-width: 480px;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div>
+                        <label for="current_password" class="admin-modal-label">Contraseña actual</label>
+                        <div class="password-field-wrap">
+                            <input id="current_password" type="password" name="current_password" required autocomplete="current-password" class="password-field-input">
+                            <button type="button" class="password-toggle-btn" data-toggle-password="current_password" aria-label="Mostrar contraseña actual" aria-pressed="false">Mostrar</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="account_new_password" class="admin-modal-label">Nueva contraseña</label>
+                        <div class="password-field-wrap">
+                            <input id="account_new_password" type="password" name="new_password" required minlength="8" autocomplete="new-password" placeholder="Mínimo 8 caracteres..." class="password-field-input">
+                            <button type="button" class="password-toggle-btn" data-toggle-password="account_new_password" aria-label="Mostrar nueva contraseña" aria-pressed="false">Mostrar</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="account_confirm_password" class="admin-modal-label">Confirmar nueva contraseña</label>
+                        <div class="password-field-wrap">
+                            <input id="account_confirm_password" type="password" name="confirm_password" required minlength="8" autocomplete="new-password" placeholder="Repite la nueva contraseña..." class="password-field-input">
+                            <button type="button" class="password-toggle-btn" data-toggle-password="account_confirm_password" aria-label="Mostrar confirmación de contraseña" aria-pressed="false">Mostrar</button>
+                        </div>
+                    </div>
+                    <div>
+                        <button type="submit" class="btn-primary-inclusive" data-loading-text="Actualizando contraseña...">
+                            Cambiar contraseña
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- 3. Historial de intentos de evaluaciones -->
+        <section class="admin-panel" aria-labelledby="acc-evals-title">
+            <div class="admin-panel-header">
+                <h2 class="admin-panel-title" id="acc-evals-title">Historial de evaluaciones ({{ eval_history | length }})</h2>
+                <span class="admin-panel-desc">Registro completo de tus intentos de evaluación adaptativa</span>
+            </div>
+            <div class="admin-panel-body admin-panel-body--flush admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Sección</th>
+                            <th>Intento</th>
+                            <th>Puntuación</th>
+                            <th>Estado</th>
+                            <th>Duración</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ev in eval_history %}
+                        <tr>
+                            <td><strong>{{ ev.section_label }}</strong></td>
+                            <td>#{{ ev.attempt_number }}</td>
+                            <td>{{ ev.score }}/{{ ev.total }} (<strong>{{ ev.percentage }}%</strong>)</td>
+                            <td>
+                                {% if ev.passed %}
+                                <span class="status-pill status-pill--completed">✓ Aprobado</span>
+                                {% else %}
+                                <span class="status-pill status-pill--danger">✕ No aprobado</span>
+                                {% endif %}
+                            </td>
+                            <td class="admin-cell-sub">{{ ev.time_taken }} s</td>
+                            <td class="admin-cell-sub">{{ ev.completed_at_str }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="admin-empty-cell">Aún no has presentado evaluaciones finales.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 4. Certificados emitidos verificables -->
+        {% if issued_certs %}
+        <section class="admin-panel" aria-labelledby="acc-certs-title">
+            <div class="admin-panel-header">
+                <h2 class="admin-panel-title" id="acc-certs-title">Mis certificados emitidos ({{ issued_certs | length }})</h2>
+                <span class="admin-panel-desc">Enlaces públicos de verificación oficial</span>
+            </div>
+            <div class="admin-panel-body admin-panel-body--flush admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Módulo</th>
+                            <th>Código de verificación</th>
+                            <th>Emitido</th>
+                            <th class="admin-col-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cert in issued_certs %}
+                        <tr>
+                            <td><strong>{{ cert.course_name }}</strong></td>
+                            <td><code class="admin-code-value">{{ cert.verification_code }}</code></td>
+                            <td class="admin-cell-sub">{{ cert.issued_at_str }}</td>
+                            <td class="admin-col-center">
+                                <a href="{{ url_for('verify_certificate', codigo=cert.verification_code) }}" class="admin-action-btn admin-action-btn--info" style="text-decoration: none;">Verificar</a>
+                                <a href="{{ url_for('certificate_pdf', section_id=cert.section_key) }}" class="admin-action-btn" style="text-decoration: none;">PDF</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- 5. Eliminar cuenta propia -->
+        {% if current_user.role != 'superadmin' %}
+        <section class="admin-panel" aria-labelledby="acc-delete-title" style="border-color: var(--status-danger-border);">
+            <div class="admin-panel-header">
+                <h2 class="admin-panel-title" id="acc-delete-title" style="color: var(--status-danger);">Zona de peligro · Eliminar mi cuenta</h2>
+                <span class="admin-panel-desc">Esta acción es permanente y eliminará tu historial, XP y certificados</span>
+            </div>
+            <div class="admin-panel-body">
+                <form method="POST" action="{{ url_for('account_delete_self') }}" style="display: grid; gap: 0.85rem; max-width: 480px;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div>
+                        <label for="delete_confirm_username" class="admin-modal-label">
+                            Escribe tu nombre de usuario (<strong>{{ current_user.username }}</strong>) para confirmar:
+                        </label>
+                        <input id="delete_confirm_username" type="text" name="confirm_username" required
+                            placeholder="{{ current_user.username }}" class="admin-input" style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label for="delete_current_password" class="admin-modal-label">Contraseña actual</label>
+                        <div class="password-field-wrap">
+                            <input id="delete_current_password" type="password" name="current_password" required autocomplete="current-password" class="password-field-input">
+                            <button type="button" class="password-toggle-btn" data-toggle-password="delete_current_password" aria-label="Mostrar contraseña" aria-pressed="false">Mostrar</button>
+                        </div>
+                    </div>
+                    <div>
+                        <button type="submit" class="admin-btn-danger-solid" data-loading-text="Eliminando cuenta...">
+                            Eliminar mi cuenta permanentemente
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+        {% endif %}
+    </div>
+</article>
+{% endblock %}
