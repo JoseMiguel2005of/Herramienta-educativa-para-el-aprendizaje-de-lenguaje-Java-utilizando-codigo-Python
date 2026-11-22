@@ -29,6 +29,7 @@ restore_keys.py
 # Base de datos y temporales
 instance/
 scratch/
+.pytest_cache/
 *.sqlite
 *.sqlite3
 *.db
