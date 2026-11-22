@@ -27,6 +27,7 @@ class Generator:
         self._declared_vars: set = set()
         self._lambda_counter = 0
         self._loop_else_counter = 0
+        self._loop_else_stack: List[Optional[str]] = []
         self._yield_counter = 0
 
     def generate(self, tree: ast.AST) -> str:
@@ -118,6 +119,8 @@ class Generator:
         elif isinstance(node, ast.Try):
             self._visit_try(node)
         elif isinstance(node, ast.Break):
+            if self._loop_else_stack and self._loop_else_stack[-1]:
+                self._line(f"{self._loop_else_stack[-1]} = false;")
             self._line("break;")
         elif isinstance(node, ast.Continue):
             self._line("continue;")
@@ -434,6 +437,15 @@ class Generator:
         else:
             self._line("}")
 
+    def _visit_loop_body(self, body: List[ast.stmt], flag_name: Optional[str]):
+        """Visita el cuerpo de un bucle rastreando la bandera for/while...else para break."""
+        self._loop_else_stack.append(flag_name)
+        try:
+            for stmt in body:
+                self._visit_stmt(stmt)
+        finally:
+            self._loop_else_stack.pop()
+
     # ── BUG-12 FIX: for...else with boolean flag ────────────────────
 
     def _visit_for(self, node: ast.For):
@@ -469,8 +481,7 @@ class Generator:
                 self._line(f"for (int {idx_name} = {start_val}; {idx_name} < {iterable}.size() + {start_val}; {idx_name}++) {{")
                 self._indent += 1
                 self._line(f"var {val_name} = {iterable}.get({idx_name} - {start_val});")
-                for stmt in node.body:
-                    self._visit_stmt(stmt)
+                self._visit_loop_body(node.body, flag_name)
                 self._indent -= 1
                 self._line("}")
                 if has_else:
@@ -498,8 +509,7 @@ class Generator:
                 self._indent += 1
                 self._line(f"var {k_name} = _entry.getKey();")
                 self._line(f"var {v_name} = _entry.getValue();")
-                for stmt in node.body:
-                    self._visit_stmt(stmt)
+                self._visit_loop_body(node.body, flag_name)
                 self._indent -= 1
                 self._line("}")
                 if has_else:
@@ -528,8 +538,7 @@ class Generator:
                 self._indent += 1
                 self._line(f"var {a_name} = {list_a}.get(_i);")
                 self._line(f"var {b_name} = {list_b}.get(_i);")
-                for stmt in node.body:
-                    self._visit_stmt(stmt)
+                self._visit_loop_body(node.body, flag_name)
                 self._indent -= 1
                 self._line("}")
                 if has_else:
@@ -552,8 +561,7 @@ class Generator:
                 for i, elt in enumerate(node.target.elts):
                     if isinstance(elt, ast.Name):
                         self._line(f"var {elt.id} = ((Object[]) _item)[{i}];")
-                for stmt in node.body:
-                    self._visit_stmt(stmt)
+                self._visit_loop_body(node.body, flag_name)
                 self._indent -= 1
                 self._line("}")
                 if has_else:
@@ -581,6 +589,9 @@ class Generator:
                 self._line(f"for (int {var_name} = {args[0]}; {var_name} < {args[1]}; {var_name}++) {{")
             elif len(args) == 3:
                 self._line(f"for (int {var_name} = {args[0]}; {var_name} < {args[1]}; {var_name} += {args[2]}) {{")
+            else:
+                self.env.warn("range() requiere entre 1 y 3 argumentos.")
+                self._line(f"for (int {var_name} = 0; {var_name} < 0; {var_name}++) {{")
             self.env.current_scope.define_var(var_name, Type("int"))
         else:
             # For-each loop
@@ -591,8 +602,7 @@ class Generator:
             self.env.current_scope.define_var(var_name, Type("Object"))
 
         self._indent += 1
-        for stmt in node.body:
-            self._visit_stmt(stmt)
+        self._visit_loop_body(node.body, flag_name)
         self._indent -= 1
         self._line("}")
 
@@ -619,8 +629,7 @@ class Generator:
         cond, _ = self._expr(node.test)
         self._line(f"while ({cond}) {{")
         self._indent += 1
-        for stmt in node.body:
-            self._visit_stmt(stmt)
+        self._visit_loop_body(node.body, flag_name)
         self._indent -= 1
         self._line("}")
 
@@ -644,12 +653,14 @@ class Generator:
         saved_lines = self._current_lines
         saved_indent = self._indent
         saved_declared = self._declared_vars.copy()
+        saved_loop_stack = self._loop_else_stack
 
         body_lines = []
         self._current_lines = body_lines
         self._indent = 0
         self._in_function = True
         self._declared_vars = set()
+        self._loop_else_stack = []
 
         params = []
         for arg in node.args.args:
@@ -723,6 +734,7 @@ class Generator:
         self._indent = saved_indent
         self._in_function = False
         self._declared_vars = saved_declared
+        self._loop_else_stack = saved_loop_stack
         self.env.pop_scope()
 
     def _has_return_value(self, node) -> bool:
@@ -1138,8 +1150,22 @@ class Generator:
 
         # Integer division: int / int should still use /
         if isinstance(node.op, ast.Div):
+            if lt.name == "Object":
+                left = f"((Number) {left}).doubleValue()"
+                lt = Type("double")
+            if rt.name == "Object":
+                right = f"((Number) {right}).doubleValue()"
+                rt = Type("double")
             if lt.name == "int" and rt.name == "int":
                 return f"((double) {left} / {right})", Type("double")
+
+        # Numeric unboxing when an Object (e.g. element from List<Object>) meets numeric operand
+        if lt.name == "Object" and rt.name in ("int", "double"):
+            left = f"((Number) {left}).{'doubleValue' if rt.name == 'double' else 'intValue'}()"
+            lt = rt
+        elif rt.name == "Object" and lt.name in ("int", "double"):
+            right = f"((Number) {right}).{'doubleValue' if lt.name == 'double' else 'intValue'}()"
+            rt = lt
 
         op = self._binop(node.op)
         result_type = lt if lt.name != "Object" else (rt if rt.name != "Object" else Type("int"))
@@ -1162,10 +1188,10 @@ class Generator:
     def _expr_compare(self, node: ast.Compare) -> Tuple[str, Type]:
         """Handle chained comparisons: 0 < x < 10 → (0 < x && x < 10)"""
         parts = []
-        left, _ = self._expr(node.left)
+        left, lt = self._expr(node.left)
 
         for op, comparator in zip(node.ops, node.comparators):
-            right, _ = self._expr(comparator)
+            right, rt = self._expr(comparator)
 
             if isinstance(op, ast.In):
                 parts.append(f"{right}.contains({left})")
@@ -1183,9 +1209,15 @@ class Generator:
                 elif cmp == "!=" and (self._is_string_expr(node.left) or self._is_string_comparator(comparator)):
                     parts.append(f"!{left}.equals({right})")
                 else:
-                    parts.append(f"({left} {cmp} {right})")
+                    l_cmp, r_cmp = left, right
+                    if cmp in ("<", "<=", ">", ">="):
+                        if lt.name == "Object" and rt.name in ("int", "double"):
+                            l_cmp = f"((Number) {left}).{'doubleValue' if rt.name == 'double' else 'intValue'}()"
+                        elif rt.name == "Object" and lt.name in ("int", "double"):
+                            r_cmp = f"((Number) {right}).{'doubleValue' if lt.name == 'double' else 'intValue'}()"
+                    parts.append(f"({l_cmp} {cmp} {r_cmp})")
 
-            left = right  # For chained comparisons
+            left, lt = right, rt  # For chained comparisons
 
         if len(parts) == 1:
             return parts[0], Type("boolean")
@@ -1348,32 +1380,44 @@ class Generator:
                     parts.append(f"String.valueOf({e})")
         return " + ".join(parts) if parts else '""', Type("String")
 
-    def _expr_listcomp(self, node: ast.ListComp) -> Tuple[str, Type]:
-        """
-        [expr for var in iter if cond]
-        → generates a helper method.
-        """
-        self.imports.add("java.util.ArrayList")
-        self.imports.add("java.util.List")
+    def _collect_comp_captures(self, node: ast.AST) -> List[Tuple[str, str]]:
+        """Recolecta variables externas del alcance actual usadas en una comprensión o generador."""
+        bound_names = set()
+        for gen in getattr(node, "generators", []):
+            for target_node in ast.walk(gen.target):
+                if isinstance(target_node, ast.Name):
+                    bound_names.add(target_node.id)
 
-        # Generate a helper method
-        self._lambda_counter += 1
-        method_name = f"_listComp{self._lambda_counter}"
+        ignored = {
+            "True", "False", "None", "self", "range", "len", "int", "float", "str", "bool",
+            "abs", "min", "max", "round", "sum", "sorted", "reversed", "enumerate", "zip",
+            "map", "filter", "any", "all", "list", "dict", "set", "tuple", "frozenset",
+            "chr", "ord", "hex", "oct", "bin", "pow", "divmod", "hash", "id", "type",
+            "isinstance", "print", "input",
+        }
+        known_funcs = set()
+        scope = self.env.current_scope
+        while scope is not None:
+            known_funcs.update(scope.functions.keys())
+            scope = scope.parent
 
-        # Build the method body
-        body_lines = []
-        body_lines.append("    List<Object> _result = new ArrayList<>();")
+        captured: List[Tuple[str, str]] = []
+        seen = set()
+        for sub in ast.walk(node):
+            if isinstance(sub, ast.Name) and isinstance(sub.ctx, ast.Load):
+                name = sub.id
+                if name in bound_names or name in ignored or name in seen:
+                    continue
+                if name in self.env.defined_classes or name in known_funcs:
+                    continue
+                if name in self._declared_vars:
+                    var_type = self.env.current_scope.get_var(name) or Type("Object")
+                    captured.append((str(var_type), name))
+                    seen.add(name)
+        return captured
 
-        # Only handle single generator for now
-        gen = node.generators[0]
-        if isinstance(gen.target, ast.Name):
-            var_name = gen.target.id
-        else:
-            var_name = "_item"
-
-        iter_expr, _ = self._expr(gen.iter)
-
-        # Check if it's a range call
+    def _emit_comp_loop_header(self, gen: ast.comprehension, var_name: str, body_lines: List[str]):
+        """Emite la cabecera del bucle de comprensión y registra el tipo de var_name en el alcance."""
         if (isinstance(gen.iter, ast.Call)
             and isinstance(gen.iter.func, ast.Name)
             and gen.iter.func.id == "range"):
@@ -1382,35 +1426,61 @@ class Generator:
                 body_lines.append(f"    for (int {var_name} = 0; {var_name} < {range_args[0]}; {var_name}++) {{")
             elif len(range_args) == 2:
                 body_lines.append(f"    for (int {var_name} = {range_args[0]}; {var_name} < {range_args[1]}; {var_name}++) {{")
-            else:
+            elif len(range_args) >= 3:
                 body_lines.append(f"    for (int {var_name} = {range_args[0]}; {var_name} < {range_args[1]}; {var_name} += {range_args[2]}) {{")
+            else:
+                body_lines.append(f"    for (int {var_name} = 0; {var_name} < 0; {var_name}++) {{")
+            self.env.current_scope.define_var(var_name, Type("int"))
         else:
+            iter_expr, _ = self._expr(gen.iter)
             body_lines.append(f"    for (var {var_name} : {iter_expr}) {{")
+            self.env.current_scope.define_var(var_name, Type("Object"))
 
-        # Conditions
-        conditions = gen.ifs
-        if conditions:
-            cond_parts = [self._expr(c)[0] for c in conditions]
-            combined = " && ".join(cond_parts)
-            body_lines.append(f"        if ({combined}) {{")
-            elt_expr, _ = self._expr(node.elt)
-            body_lines.append(f"            _result.add({elt_expr});")
-            body_lines.append("        }")
-        else:
-            elt_expr, _ = self._expr(node.elt)
-            body_lines.append(f"        _result.add({elt_expr});")
+    def _expr_listcomp(self, node: ast.ListComp) -> Tuple[str, Type]:
+        """
+        [expr for var in iter if cond]
+        → generates a helper method capturing external variables.
+        """
+        self.imports.add("java.util.ArrayList")
+        self.imports.add("java.util.List")
+
+        self._lambda_counter += 1
+        method_name = f"_listComp{self._lambda_counter}"
+        captured = self._collect_comp_captures(node)
+
+        body_lines = ["    List<Object> _result = new ArrayList<>();"]
+        gen = node.generators[0]
+        var_name = gen.target.id if isinstance(gen.target, ast.Name) else "_item"
+
+        self.env.push_scope(name=method_name)
+        try:
+            self._emit_comp_loop_header(gen, var_name, body_lines)
+            conditions = gen.ifs
+            if conditions:
+                cond_parts = [self._expr(c)[0] for c in conditions]
+                combined = " && ".join(cond_parts)
+                body_lines.append(f"        if ({combined}) {{")
+                elt_expr, _ = self._expr(node.elt)
+                body_lines.append(f"            _result.add({elt_expr});")
+                body_lines.append("        }")
+            else:
+                elt_expr, _ = self._expr(node.elt)
+                body_lines.append(f"        _result.add({elt_expr});")
+        finally:
+            self.env.pop_scope()
 
         body_lines.append("    }")
         body_lines.append("    return _result;")
 
         self.methods.append({
             "name": method_name,
-            "params": [],
+            "params": captured,
             "body": body_lines,
             "return_type": "List<Object>",
         })
 
-        return f"{method_name}()", Type("java.util.List")
+        call_args = ", ".join(pname for _, pname in captured)
+        return f"{method_name}({call_args})", Type("java.util.List")
 
     # ── BUG-15 FIX: Dict comprehension ──────────────────────────────
 
@@ -1421,56 +1491,42 @@ class Generator:
 
         self._lambda_counter += 1
         method_name = f"_dictComp{self._lambda_counter}"
+        captured = self._collect_comp_captures(node)
 
-        body_lines = []
-        body_lines.append("    Map<Object, Object> _result = new HashMap<>();")
-
+        body_lines = ["    Map<Object, Object> _result = new HashMap<>();"]
         gen = node.generators[0]
-        if isinstance(gen.target, ast.Name):
-            var_name = gen.target.id
-        else:
-            var_name = "_item"
+        var_name = gen.target.id if isinstance(gen.target, ast.Name) else "_item"
 
-        # Check if it's a range call
-        if (isinstance(gen.iter, ast.Call)
-            and isinstance(gen.iter.func, ast.Name)
-            and gen.iter.func.id == "range"):
-            range_args = [self._expr(a)[0] for a in gen.iter.args]
-            if len(range_args) == 1:
-                body_lines.append(f"    for (int {var_name} = 0; {var_name} < {range_args[0]}; {var_name}++) {{")
-            elif len(range_args) == 2:
-                body_lines.append(f"    for (int {var_name} = {range_args[0]}; {var_name} < {range_args[1]}; {var_name}++) {{")
+        self.env.push_scope(name=method_name)
+        try:
+            self._emit_comp_loop_header(gen, var_name, body_lines)
+            conditions = gen.ifs
+            key_expr, _ = self._expr(node.key)
+            val_expr, _ = self._expr(node.value)
+
+            if conditions:
+                cond_parts = [self._expr(c)[0] for c in conditions]
+                combined = " && ".join(cond_parts)
+                body_lines.append(f"        if ({combined}) {{")
+                body_lines.append(f"            _result.put({key_expr}, {val_expr});")
+                body_lines.append("        }")
             else:
-                body_lines.append(f"    for (int {var_name} = {range_args[0]}; {var_name} < {range_args[1]}; {var_name} += {range_args[2]}) {{")
-        else:
-            iter_expr, _ = self._expr(gen.iter)
-            body_lines.append(f"    for (var {var_name} : {iter_expr}) {{")
-
-        # Conditions
-        conditions = gen.ifs
-        key_expr, _ = self._expr(node.key)
-        val_expr, _ = self._expr(node.value)
-
-        if conditions:
-            cond_parts = [self._expr(c)[0] for c in conditions]
-            combined = " && ".join(cond_parts)
-            body_lines.append(f"        if ({combined}) {{")
-            body_lines.append(f"            _result.put({key_expr}, {val_expr});")
-            body_lines.append("        }")
-        else:
-            body_lines.append(f"        _result.put({key_expr}, {val_expr});")
+                body_lines.append(f"        _result.put({key_expr}, {val_expr});")
+        finally:
+            self.env.pop_scope()
 
         body_lines.append("    }")
         body_lines.append("    return _result;")
 
         self.methods.append({
             "name": method_name,
-            "params": [],
+            "params": captured,
             "body": body_lines,
             "return_type": "Map<Object, Object>",
         })
 
-        return f"{method_name}()", Type("java.util.Map")
+        call_args = ", ".join(pname for _, pname in captured)
+        return f"{method_name}({call_args})", Type("java.util.Map")
 
     # ── BUG-16 FIX: Set comprehension ───────────────────────────────
 
@@ -1481,110 +1537,86 @@ class Generator:
 
         self._lambda_counter += 1
         method_name = f"_setComp{self._lambda_counter}"
+        captured = self._collect_comp_captures(node)
 
-        body_lines = []
-        body_lines.append("    Set<Object> _result = new HashSet<>();")
-
+        body_lines = ["    Set<Object> _result = new HashSet<>();"]
         gen = node.generators[0]
-        if isinstance(gen.target, ast.Name):
-            var_name = gen.target.id
-        else:
-            var_name = "_item"
+        var_name = gen.target.id if isinstance(gen.target, ast.Name) else "_item"
 
-        if (isinstance(gen.iter, ast.Call)
-            and isinstance(gen.iter.func, ast.Name)
-            and gen.iter.func.id == "range"):
-            range_args = [self._expr(a)[0] for a in gen.iter.args]
-            if len(range_args) == 1:
-                body_lines.append(f"    for (int {var_name} = 0; {var_name} < {range_args[0]}; {var_name}++) {{")
-            elif len(range_args) == 2:
-                body_lines.append(f"    for (int {var_name} = {range_args[0]}; {var_name} < {range_args[1]}; {var_name}++) {{")
+        self.env.push_scope(name=method_name)
+        try:
+            self._emit_comp_loop_header(gen, var_name, body_lines)
+            conditions = gen.ifs
+            elt_expr, _ = self._expr(node.elt)
+
+            if conditions:
+                cond_parts = [self._expr(c)[0] for c in conditions]
+                combined = " && ".join(cond_parts)
+                body_lines.append(f"        if ({combined}) {{")
+                body_lines.append(f"            _result.add({elt_expr});")
+                body_lines.append("        }")
             else:
-                body_lines.append(f"    for (int {var_name} = {range_args[0]}; {var_name} < {range_args[1]}; {var_name} += {range_args[2]}) {{")
-        else:
-            iter_expr, _ = self._expr(gen.iter)
-            body_lines.append(f"    for (var {var_name} : {iter_expr}) {{")
-
-        conditions = gen.ifs
-        elt_expr, _ = self._expr(node.elt)
-
-        if conditions:
-            cond_parts = [self._expr(c)[0] for c in conditions]
-            combined = " && ".join(cond_parts)
-            body_lines.append(f"        if ({combined}) {{")
-            body_lines.append(f"            _result.add({elt_expr});")
-            body_lines.append("        }")
-        else:
-            body_lines.append(f"        _result.add({elt_expr});")
+                body_lines.append(f"        _result.add({elt_expr});")
+        finally:
+            self.env.pop_scope()
 
         body_lines.append("    }")
         body_lines.append("    return _result;")
 
         self.methods.append({
             "name": method_name,
-            "params": [],
+            "params": captured,
             "body": body_lines,
             "return_type": "Set<Object>",
         })
 
-        return f"{method_name}()", Type("java.util.Set")
+        call_args = ", ".join(pname for _, pname in captured)
+        return f"{method_name}({call_args})", Type("java.util.Set")
 
     # ── NEW-6 FIX: Generator expression ─────────────────────────────
 
     def _expr_generatorexp(self, node: ast.GeneratorExp) -> Tuple[str, Type]:
-        """Treat generator expressions like list comprehensions."""
+        """Treat generator expressions like list comprehensions with captured scope."""
         self.imports.add("java.util.ArrayList")
         self.imports.add("java.util.List")
 
         self._lambda_counter += 1
         method_name = f"_genExpr{self._lambda_counter}"
+        captured = self._collect_comp_captures(node)
 
-        body_lines = []
-        body_lines.append("    List<Object> _result = new ArrayList<>();")
-
+        body_lines = ["    List<Object> _result = new ArrayList<>();"]
         gen = node.generators[0]
-        if isinstance(gen.target, ast.Name):
-            var_name = gen.target.id
-        else:
-            var_name = "_item"
+        var_name = gen.target.id if isinstance(gen.target, ast.Name) else "_item"
 
-        if (isinstance(gen.iter, ast.Call)
-            and isinstance(gen.iter.func, ast.Name)
-            and gen.iter.func.id == "range"):
-            range_args = [self._expr(a)[0] for a in gen.iter.args]
-            if len(range_args) == 1:
-                body_lines.append(f"    for (int {var_name} = 0; {var_name} < {range_args[0]}; {var_name}++) {{")
-            elif len(range_args) == 2:
-                body_lines.append(f"    for (int {var_name} = {range_args[0]}; {var_name} < {range_args[1]}; {var_name}++) {{")
+        self.env.push_scope(name=method_name)
+        try:
+            self._emit_comp_loop_header(gen, var_name, body_lines)
+            conditions = gen.ifs
+            elt_expr, _ = self._expr(node.elt)
+
+            if conditions:
+                cond_parts = [self._expr(c)[0] for c in conditions]
+                combined = " && ".join(cond_parts)
+                body_lines.append(f"        if ({combined}) {{")
+                body_lines.append(f"            _result.add({elt_expr});")
+                body_lines.append("        }")
             else:
-                body_lines.append(f"    for (int {var_name} = {range_args[0]}; {var_name} < {range_args[1]}; {var_name} += {range_args[2]}) {{")
-        else:
-            iter_expr, _ = self._expr(gen.iter)
-            body_lines.append(f"    for (var {var_name} : {iter_expr}) {{")
-
-        conditions = gen.ifs
-        elt_expr, _ = self._expr(node.elt)
-
-        if conditions:
-            cond_parts = [self._expr(c)[0] for c in conditions]
-            combined = " && ".join(cond_parts)
-            body_lines.append(f"        if ({combined}) {{")
-            body_lines.append(f"            _result.add({elt_expr});")
-            body_lines.append("        }")
-        else:
-            body_lines.append(f"        _result.add({elt_expr});")
+                body_lines.append(f"        _result.add({elt_expr});")
+        finally:
+            self.env.pop_scope()
 
         body_lines.append("    }")
         body_lines.append("    return _result;")
 
         self.methods.append({
             "name": method_name,
-            "params": [],
+            "params": captured,
             "body": body_lines,
             "return_type": "List<Object>",
         })
 
-        return f"{method_name}()", Type("java.util.List")
+        call_args = ", ".join(pname for _, pname in captured)
+        return f"{method_name}({call_args})", Type("java.util.List")
 
     def _expr_lambda(self, node: ast.Lambda) -> Tuple[str, Type]:
         """
@@ -1664,7 +1696,7 @@ class Generator:
         if name == "input":
             self.env.needs_scanner = True
             if args:
-                return f'(System.out.print({args[0]}), scanner.nextLine()).toString()', Type("String")
+                self._line(f"System.out.print({args[0]});")
             return "scanner.nextLine()", Type("String")
 
         # ── Type casting ──
@@ -1694,25 +1726,44 @@ class Generator:
 
         # ── abs, min, max, round, sum ──
         if name == "abs":
+            if not args:
+                self.env.warn("abs() requiere un argumento numérico.")
+                return "0", Type("int")
             return f"Math.abs({args[0]})", Type("double")
         if name == "min":
+            if not args:
+                self.env.warn("min() requiere al menos un argumento.")
+                return "0", Type("int")
             if len(args) == 2:
                 return f"Math.min({args[0]}, {args[1]})", Type("int")
             self.imports.add("java.util.Collections")
+            if len(args) > 2:
+                self.imports.add("java.util.Arrays")
+                return f"Collections.min(Arrays.asList({', '.join(args)}))", Type("Object")
             return f"Collections.min({args[0]})", Type("Object")
         if name == "max":
+            if not args:
+                self.env.warn("max() requiere al menos un argumento.")
+                return "0", Type("int")
             if len(args) == 2:
                 return f"Math.max({args[0]}, {args[1]})", Type("int")
             self.imports.add("java.util.Collections")
+            if len(args) > 2:
+                self.imports.add("java.util.Arrays")
+                return f"Collections.max(Arrays.asList({', '.join(args)}))", Type("Object")
             return f"Collections.max({args[0]})", Type("Object")
         if name == "round":
+            if not args:
+                self.env.warn("round() requiere un argumento numérico.")
+                return "0L", Type("long")
             return f"Math.round({args[0]})", Type("long")
         if name == "sum":
-            # Check if argument is a generator expression
-            if node.args and isinstance(node.args[0], ast.GeneratorExp):
-                gen_expr, _ = self._expr_generatorexp(node.args[0])
-                return f"{gen_expr}.stream().mapToInt(x -> (int) x).sum()", Type("int")
-            return f"{args[0]}.stream().mapToInt(x -> (int) x).sum()", Type("int")
+            if not args:
+                self.env.warn("sum() requiere un iterable como argumento.")
+                return "0", Type("int")
+            if len(args) >= 2:
+                return f"({args[1]} + {args[0]}.stream().mapToInt(x -> ((Number) x).intValue()).sum())", Type("int")
+            return f"{args[0]}.stream().mapToInt(x -> ((Number) x).intValue()).sum()", Type("int")
 
         # ── BUG-8 FIX: sorted with key ──
         if name == "sorted":
@@ -1756,6 +1807,7 @@ class Generator:
         if name == "reversed":
             self.imports.add("java.util.Collections")
             self.imports.add("java.util.ArrayList")
+            self.imports.add("java.util.List")
             if args:
                 self._lambda_counter += 1
                 method_name = f"_reversed{self._lambda_counter}"
@@ -1764,7 +1816,6 @@ class Generator:
                     "    Collections.reverse(_result);",
                     "    return _result;",
                 ]
-                self.imports.add("java.util.List")
                 self.methods.append({
                     "name": method_name,
                     "params": [],
@@ -1772,6 +1823,7 @@ class Generator:
                     "return_type": "List<Object>",
                 })
                 return f"{method_name}()", Type("java.util.List")
+            return "new ArrayList<>()", Type("java.util.List")
 
         # ── isinstance ──
         if name == "isinstance" and len(args) == 2:
@@ -1779,6 +1831,9 @@ class Generator:
 
         # ── type ──
         if name == "type":
+            if not args:
+                self.env.warn("type() requiere al menos un argumento.")
+                return "Object.class", Type("Class")
             return f"{args[0]}.getClass()", Type("Class")
 
         # ── BUG-5 FIX: map() → stream().map().collect() ──
@@ -1804,20 +1859,18 @@ class Generator:
                         f".filter(x -> (boolean) {func_name}(x))"
                         f".collect(Collectors.toList()))"), Type("java.util.List")
 
-        # ── BUG-7 FIX: any() / all() ──
+        # ── BUG-7 FIX: any() / all() (sin duplicar _expr_generatorexp) ──
         if name == "any":
-            if node.args and isinstance(node.args[0], ast.GeneratorExp):
-                gen_expr, _ = self._expr_generatorexp(node.args[0])
-                return f"{gen_expr}.stream().anyMatch(x -> (boolean) x)", Type("boolean")
-            if args:
-                return f"{args[0]}.stream().anyMatch(x -> (boolean) x)", Type("boolean")
+            if not args:
+                self.env.warn("any() requiere un iterable como argumento.")
+                return "false", Type("boolean")
+            return f"{args[0]}.stream().anyMatch(x -> (boolean) x)", Type("boolean")
 
         if name == "all":
-            if node.args and isinstance(node.args[0], ast.GeneratorExp):
-                gen_expr, _ = self._expr_generatorexp(node.args[0])
-                return f"{gen_expr}.stream().allMatch(x -> (boolean) x)", Type("boolean")
-            if args:
-                return f"{args[0]}.stream().allMatch(x -> (boolean) x)", Type("boolean")
+            if not args:
+                self.env.warn("all() requiere un iterable como argumento.")
+                return "true", Type("boolean")
+            return f"{args[0]}.stream().allMatch(x -> (boolean) x)", Type("boolean")
 
         # ── range ──
         if name == "range":
@@ -1851,16 +1904,31 @@ class Generator:
 
         # ── NEW-2 FIX: chr() / ord() ──
         if name == "chr":
+            if not args:
+                self.env.warn("chr() requiere un código entero.")
+                return '""', Type("String")
             return f"String.valueOf((char) ({args[0]}))", Type("String")
         if name == "ord":
+            if not args:
+                self.env.warn("ord() requiere un carácter.")
+                return "0", Type("int")
             return f"(int) ({args[0]}).charAt(0)", Type("int")
 
         # ── NEW-3 FIX: hex() / oct() / bin() ──
         if name == "hex":
+            if not args:
+                self.env.warn("hex() requiere un argumento entero.")
+                return '"0x0"', Type("String")
             return f'"0x" + Integer.toHexString({args[0]})', Type("String")
         if name == "oct":
+            if not args:
+                self.env.warn("oct() requiere un argumento entero.")
+                return '"0o0"', Type("String")
             return f'"0o" + Integer.toOctalString({args[0]})', Type("String")
         if name == "bin":
+            if not args:
+                self.env.warn("bin() requiere un argumento entero.")
+                return '"0b0"', Type("String")
             return f'"0b" + Integer.toBinaryString({args[0]})', Type("String")
 
         # ── NEW-4 FIX: pow() ──
@@ -1869,6 +1937,8 @@ class Generator:
                 return f"(int) Math.pow({args[0]}, {args[1]})", Type("int")
             elif len(args) == 3:
                 return f"((int) Math.pow({args[0]}, {args[1]}) % {args[2]})", Type("int")
+            self.env.warn("pow() requiere 2 o 3 argumentos.")
+            return "0", Type("int")
 
         # ── NEW-5 FIX: divmod() ──
         if name == "divmod":
@@ -1877,22 +1947,30 @@ class Generator:
                 self.imports.add("java.util.Arrays")
                 self.imports.add("java.util.List")
                 return f"new ArrayList<>(Arrays.asList({args[0]} / {args[1]}, {args[0]} % {args[1]}))", Type("java.util.List")
+            self.env.warn("divmod() requiere 2 argumentos.")
+            self.imports.add("java.util.ArrayList")
+            return "new ArrayList<>()", Type("java.util.List")
 
         # ── hash() ──
         if name == "hash":
             if args:
                 return f"{args[0]}.hashCode()", Type("int")
+            self.env.warn("hash() requiere un argumento.")
+            return "0", Type("int")
 
         # ── id() ──
         if name == "id":
             if args:
                 return f"System.identityHashCode({args[0]})", Type("int")
+            self.env.warn("id() requiere un argumento.")
+            return "0", Type("int")
 
         # ── callable() ──
         if name == "callable":
             self.env.warn("callable() no tiene equivalente exacto en Java.")
             if args:
                 return f"/* callable({args[0]}) */ true", Type("boolean")
+            return "false", Type("boolean")
 
         # ── eval/exec ──
         if name == "eval" or name == "exec":
@@ -1931,76 +2009,55 @@ class Generator:
         method = node.func.attr
         args = [self._expr(arg)[0] for arg in node.args]
 
-        # ── String methods ──
-        string_methods = {
-            "upper": ("toUpperCase", [], Type("String")),
-            "lower": ("toLowerCase", [], Type("String")),
-            "strip": ("trim", [], Type("String")),
-            "lstrip": ("stripLeading", [], Type("String")),
-            "rstrip": ("stripTrailing", [], Type("String")),
-            "replace": ("replace", args, Type("String")),
-            "split": ("split", args if args else ['" "'], Type("String[]")),
-            "join": (None, args, Type("String")),  # Special handling
-            "startswith": ("startsWith", args, Type("boolean")),
-            "endswith": ("endsWith", args, Type("boolean")),
-            "find": ("indexOf", args, Type("int")),
-            "index": ("indexOf", args, Type("int")),
-            "count": (None, args, Type("int")),  # Special handling
-            "capitalize": (None, [], Type("String")),  # Special handling
-            "title": (None, [], Type("String")),  # Special handling
-            "isdigit": ("matches", ['"\\\\d+"'], Type("boolean")),
-            "isalpha": ("matches", ['"[a-zA-Z]+"'], Type("boolean")),
-            "isalnum": ("matches", ['"[a-zA-Z0-9]+"'], Type("boolean")),
-            "isspace": ("matches", ['"\\\\s+"'], Type("boolean")),
-            "format": (None, args, Type("String")),  # Special handling
-            "encode": (None, args, Type("byte[]")),  # Special handling
-            "zfill": (None, args, Type("String")),  # Special handling
-            "center": (None, args, Type("String")),  # Special handling
-            "ljust": (None, args, Type("String")),  # Special handling
-            "rjust": (None, args, Type("String")),  # Special handling
+        type_name = str(obj_type.name)
+        is_string = type_name == "String"
+        is_list = "List" in type_name
+        is_dict = "Map" in type_name
+        is_set = "Set" in type_name
+        is_known_type = is_string or is_list or is_dict or is_set
+
+        # ── Dict methods ──
+        dict_methods = {
+            "get": (None, args, Type("Object")),
+            "keys": ("keySet", [], Type("Set")),
+            "values": ("values", [], Type("Collection")),
+            "items": ("entrySet", [], Type("Set")),
+            "update": ("putAll", args, Type("void")),
+            "pop": (None, args, Type("Object")),
+            "setdefault": (None, args, Type("Object")),
+            "clear": ("clear", [], Type("void")),
+            "copy": (None, [], Type("java.util.Map")),
         }
 
-        if method in string_methods:
-            java_method, java_args, ret_type = string_methods[method]
+        if (is_dict or not is_known_type) and method in dict_methods and (is_dict or method in ("get", "keys", "values", "items", "update", "setdefault")):
+            java_method, java_args, ret_type = dict_methods[method]
 
-            if method == "join":
-                self.imports.add("java.util.stream.Collectors")
-                if args:
-                    return f"String.join({obj}, {args[0]})", ret_type
-                return f"String.join({obj})", ret_type
+            if method == "get":
+                if len(args) >= 2:
+                    return f"{obj}.getOrDefault({args[0]}, {args[1]})", ret_type
+                elif len(args) == 1:
+                    return f"{obj}.get({args[0]})", ret_type
+                return f"{obj}.get(null)", ret_type
 
-            if method == "count":
-                if args:
-                    return f"({obj}.length() - {obj}.replace({args[0]}, \"\").length()) / {args[0]}.length()", ret_type
+            if method == "pop":
+                if len(args) >= 2:
+                    return f"({obj}.containsKey({args[0]}) ? {obj}.remove({args[0]}) : {args[1]})", ret_type
+                if len(args) == 1:
+                    return f"{obj}.remove({args[0]})", ret_type
+                self.env.warn("dict.pop() requiere al menos una clave.")
+                return "null", ret_type
 
-            if method == "capitalize":
-                return f"({obj}.substring(0, 1).toUpperCase() + {obj}.substring(1))", ret_type
+            if method == "setdefault":
+                if len(args) >= 2:
+                    return f"{obj}.putIfAbsent({args[0]}, {args[1]})", ret_type
+                if len(args) == 1:
+                    return f"{obj}.putIfAbsent({args[0]}, null)", ret_type
+                self.env.warn("dict.setdefault() requiere una clave.")
+                return "null", ret_type
 
-            if method == "title":
-                return f"/* title() */ {obj}", ret_type
-
-            if method == "format":
-                return f"String.format({obj}, {', '.join(args)})", ret_type
-
-            if method == "encode":
-                charset = args[0] if args else '"UTF-8"'
-                return f"{obj}.getBytes({charset})", ret_type
-
-            if method == "zfill":
-                if args:
-                    return f"String.format(\"%{args[0]}s\", {obj}).replace(' ', '0')", ret_type
-
-            if method == "center":
-                if args:
-                    return f"String.format(\"%-\" + {args[0]} + \"s\", String.format(\"%\" + ({args[0]} + {obj}.length()) / 2 + \"s\", {obj}))", ret_type
-
-            if method == "ljust":
-                if args:
-                    return f"String.format(\"%-\" + {args[0]} + \"s\", {obj})", ret_type
-
-            if method == "rjust":
-                if args:
-                    return f"String.format(\"%\" + {args[0]} + \"s\", {obj})", ret_type
+            if method == "copy":
+                self.imports.add("java.util.HashMap")
+                return f"new HashMap<>({obj})", ret_type
 
             if java_method:
                 return f"{obj}.{java_method}({', '.join(java_args if java_args != args else args)})", ret_type
@@ -2009,9 +2066,9 @@ class Generator:
         list_methods = {
             "append": ("add", args, Type("void")),
             "extend": ("addAll", args, Type("void")),
-            "insert": ("add", args, Type("void")),  # add(index, element) works in Java
+            "insert": ("add", args, Type("void")),
             "remove": ("remove", args, Type("void")),
-            "pop": (None, args, Type("Object")),  # Special handling
+            "pop": (None, args, Type("Object")),
             "clear": ("clear", [], Type("void")),
             "index": ("indexOf", args, Type("int")),
             "copy": (None, [], Type("java.util.List")),
@@ -2020,7 +2077,7 @@ class Generator:
             "count": (None, args, Type("int")),
         }
 
-        if method in list_methods:
+        if (is_list or not is_known_type) and method in list_methods and (is_list or method not in ("count", "index")):
             java_method, java_args, ret_type = list_methods[method]
 
             if method == "pop":
@@ -2041,38 +2098,11 @@ class Generator:
                 return f"Collections.reverse({obj})", ret_type
 
             if method == "count":
-                self.imports.add("java.util.Collections")
-                return f"Collections.frequency({obj}, {args[0]})" if args else "0", ret_type
-
-            if java_method:
-                return f"{obj}.{java_method}({', '.join(java_args if java_args != args else args)})", ret_type
-
-        # ── Dict methods ──
-        dict_methods = {
-            "get": (None, args, Type("Object")),
-            "keys": ("keySet", [], Type("Set")),
-            "values": ("values", [], Type("Collection")),
-            "items": ("entrySet", [], Type("Set")),
-            "update": ("putAll", args, Type("void")),
-            "pop": ("remove", args, Type("Object")),
-            "setdefault": (None, args, Type("Object")),
-            "clear": ("clear", [], Type("void")),
-        }
-
-        if method in dict_methods:
-            java_method, java_args, ret_type = dict_methods[method]
-
-            if method == "get":
-                if len(args) >= 2:
-                    return f"{obj}.getOrDefault({args[0]}, {args[1]})", ret_type
-                elif len(args) == 1:
-                    return f"{obj}.get({args[0]})", ret_type
-                return f"{obj}.get(null)", ret_type
-
-            if method == "setdefault":
-                if len(args) >= 2:
-                    return f"{obj}.putIfAbsent({args[0]}, {args[1]})", ret_type
-                return f"{obj}.putIfAbsent({args[0]}, null)", ret_type
+                if args:
+                    self.imports.add("java.util.Collections")
+                    return f"Collections.frequency({obj}, {args[0]})", ret_type
+                self.env.warn("list.count() requiere un elemento a buscar.")
+                return "0", ret_type
 
             if java_method:
                 return f"{obj}.{java_method}({', '.join(java_args if java_args != args else args)})", ret_type
@@ -2082,32 +2112,129 @@ class Generator:
             "add": ("add", args, Type("void")),
             "remove": ("remove", args, Type("void")),
             "discard": ("remove", args, Type("void")),
+            "clear": ("clear", [], Type("void")),
+            "copy": (None, [], Type("java.util.Set")),
             "union": (None, args, Type("java.util.Set")),
             "intersection": (None, args, Type("java.util.Set")),
             "difference": (None, args, Type("java.util.Set")),
             "issubset": ("containsAll", args, Type("boolean")),
         }
 
-        if method in set_methods:
+        if (is_set or not is_known_type) and method in set_methods and (is_set or method in ("add", "discard", "union", "intersection", "difference", "issubset")):
             java_method, java_args, ret_type = set_methods[method]
 
-            if method == "union" and args:
+            if method == "copy":
                 self.imports.add("java.util.HashSet")
-                self.imports.add("java.util.Set")
-                return f"new HashSet<>({obj}) {{ {{ addAll({args[0]}); }} }}", ret_type
+                return f"new HashSet<>({obj})", ret_type
 
-            if method == "intersection" and args:
+            if method == "union":
+                if args:
+                    self.imports.add("java.util.HashSet")
+                    self.imports.add("java.util.Set")
+                    return f"new HashSet<>({obj}) {{ {{ addAll({args[0]}); }} }}", ret_type
                 self.imports.add("java.util.HashSet")
-                self.imports.add("java.util.Set")
-                return f"new HashSet<>({obj}) {{ {{ retainAll({args[0]}); }} }}", ret_type
+                return f"new HashSet<>({obj})", ret_type
 
-            if method == "difference" and args:
+            if method == "intersection":
+                if args:
+                    self.imports.add("java.util.HashSet")
+                    self.imports.add("java.util.Set")
+                    return f"new HashSet<>({obj}) {{ {{ retainAll({args[0]}); }} }}", ret_type
                 self.imports.add("java.util.HashSet")
-                self.imports.add("java.util.Set")
-                return f"new HashSet<>({obj}) {{ {{ removeAll({args[0]}); }} }}", ret_type
+                return f"new HashSet<>({obj})", ret_type
+
+            if method == "difference":
+                if args:
+                    self.imports.add("java.util.HashSet")
+                    self.imports.add("java.util.Set")
+                    return f"new HashSet<>({obj}) {{ {{ removeAll({args[0]}); }} }}", ret_type
+                self.imports.add("java.util.HashSet")
+                return f"new HashSet<>({obj})", ret_type
 
             if method == "issubset":
-                return f"{args[0]}.containsAll({obj})", ret_type
+                if args:
+                    return f"{args[0]}.containsAll({obj})", ret_type
+                self.env.warn("set.issubset() requiere un conjunto como argumento.")
+                return "false", ret_type
+
+            if java_method:
+                return f"{obj}.{java_method}({', '.join(java_args if java_args != args else args)})", ret_type
+
+        # ── String methods ──
+        string_methods = {
+            "upper": ("toUpperCase", [], Type("String")),
+            "lower": ("toLowerCase", [], Type("String")),
+            "strip": ("trim", [], Type("String")),
+            "lstrip": ("stripLeading", [], Type("String")),
+            "rstrip": ("stripTrailing", [], Type("String")),
+            "replace": ("replace", args, Type("String")),
+            "split": ("split", args if args else ['" "'], Type("String[]")),
+            "join": (None, args, Type("String")),
+            "startswith": ("startsWith", args, Type("boolean")),
+            "endswith": ("endsWith", args, Type("boolean")),
+            "find": ("indexOf", args, Type("int")),
+            "index": ("indexOf", args, Type("int")),
+            "count": (None, args, Type("int")),
+            "capitalize": (None, [], Type("String")),
+            "title": (None, [], Type("String")),
+            "isdigit": ("matches", ['"\\\\d+"'], Type("boolean")),
+            "isalpha": ("matches", ['"[a-zA-Z]+"'], Type("boolean")),
+            "isalnum": ("matches", ['"[a-zA-Z0-9]+"'], Type("boolean")),
+            "isspace": ("matches", ['"\\\\s+"'], Type("boolean")),
+            "format": (None, args, Type("String")),
+            "encode": (None, args, Type("byte[]")),
+            "zfill": (None, args, Type("String")),
+            "center": (None, args, Type("String")),
+            "ljust": (None, args, Type("String")),
+            "rjust": (None, args, Type("String")),
+        }
+
+        if (is_string or not is_known_type) and method in string_methods:
+            java_method, java_args, ret_type = string_methods[method]
+
+            if method == "join":
+                self.imports.add("java.util.stream.Collectors")
+                if args:
+                    return f"String.join({obj}, {args[0]})", ret_type
+                return f"String.join({obj})", ret_type
+
+            if method == "count":
+                if args:
+                    return f"({obj}.length() - {obj}.replace({args[0]}, \"\").length()) / {args[0]}.length()", ret_type
+                return "0", ret_type
+
+            if method == "capitalize":
+                return f"({obj}.substring(0, 1).toUpperCase() + {obj}.substring(1))", ret_type
+
+            if method == "title":
+                return f"/* title() */ {obj}", ret_type
+
+            if method == "format":
+                return f"String.format({obj}, {', '.join(args)})", ret_type
+
+            if method == "encode":
+                charset = args[0] if args else '"UTF-8"'
+                return f"{obj}.getBytes({charset})", ret_type
+
+            if method == "zfill":
+                if args:
+                    return f"String.format(\"%{args[0]}s\", {obj}).replace(' ', '0')", ret_type
+                return obj, ret_type
+
+            if method == "center":
+                if args:
+                    return f"String.format(\"%-\" + {args[0]} + \"s\", String.format(\"%\" + ({args[0]} + {obj}.length()) / 2 + \"s\", {obj}))", ret_type
+                return obj, ret_type
+
+            if method == "ljust":
+                if args:
+                    return f"String.format(\"%-\" + {args[0]} + \"s\", {obj})", ret_type
+                return obj, ret_type
+
+            if method == "rjust":
+                if args:
+                    return f"String.format(\"%\" + {args[0]} + \"s\", {obj})", ret_type
+                return obj, ret_type
 
             if java_method:
                 return f"{obj}.{java_method}({', '.join(java_args if java_args != args else args)})", ret_type

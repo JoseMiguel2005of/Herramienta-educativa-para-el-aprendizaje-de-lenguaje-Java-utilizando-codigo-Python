@@ -187,6 +187,32 @@ def test_zero_arg_calls_do_not_raise_index_error(snippet):
 # =====================================================================
 
 
+def test_string_count_still_uses_string_logic():
+    code = 'txt = "banana"\nc = txt.count("a")\nprint(c)\n'
+    res = translate(code)
+    assert res["errors"] == []
+    java = res["java"]
+    assert "txt.replace(" in java
+    assert "Collections.frequency" not in java
+
+
+def test_nested_loop_break_does_not_clobber_outer_for_else_flag():
+    code = (
+        "for i in range(3):\n"
+        "    for j in range(3):\n"
+        "        if j == 1:\n"
+        "            break\n"
+        "else:\n"
+        '    print("outer completed")\n'
+    )
+    res = translate(code)
+    assert res["errors"] == []
+    java = res["java"]
+    assert "boolean _loopCompleted1 = true;" in java
+    # El break pertenece al bucle interno (sin else), así que NO debe tocar _loopCompleted1
+    assert "_loopCompleted1 = false;" not in java
+
+
 @requires_javac
 def test_javac_compiles_basic_control_flow_and_functions(tmp_path):
     code = (
@@ -207,7 +233,7 @@ def test_javac_compiles_basic_control_flow_and_functions(tmp_path):
 @pytest.mark.parametrize(
     "class_name, snippet",
     [
-        ("InputPromptCheck", 'nombre = input("Tu nombre: ")\nprint(nombre)\n'),
+        ("InputPromptCheck", 'nombre = input("Tu nombre: ")\nedad = int(input("Edad: "))\nprint(nombre, edad)\n'),
         (
             "ForElseCheck",
             'for i in range(5):\n    if i == 2:\n        break\nelse:\n    print("done")\n',
@@ -217,17 +243,18 @@ def test_javac_compiles_basic_control_flow_and_functions(tmp_path):
             "x = 0\nwhile x < 3:\n    if x == 1:\n        break\n    x += 1\nelse:\n    print(x)\n",
         ),
         ("ListCountCheck", "nums = [1, 2, 1]\nc = nums.count(1)\nprint(c)\n"),
+        ("StrCountCheck", 's = "banana"\nc = s.count("a")\nprint(c)\n'),
         (
             "DictPopClearCheck",
-            'd = {"a": 1, "b": 2}\nv = d.pop("a")\nd.clear()\nprint(v)\n',
+            'd = {"a": 1, "b": 2}\nv = d.pop("a")\nv2 = d.pop("z", 0)\nd.clear()\nprint(v, v2)\n',
         ),
         (
             "ListCompExternalCheck",
-            "factor = 3\nnums = [1, 2, 3]\nres = [x * factor for x in nums]\nprint(res)\n",
+            "factor = 3\nlimit = 1\nnums = [1, 2, 3]\nres = [x * factor for x in nums if x > limit]\nprint(res)\n",
         ),
         (
             "GeneratorBuiltinsCheck",
-            "s = sum(x for x in range(5))\na = any(x > 2 for x in range(5))\nb = all(x >= 0 for x in range(5))\nprint(s)\nprint(a)\nprint(b)\n",
+            "factor = 2\ns = sum(x * factor for x in range(5))\na = any(x > 2 for x in range(5))\nb = all(x >= 0 for x in range(5))\nprint(s)\nprint(a)\nprint(b)\n",
         ),
     ],
 )
