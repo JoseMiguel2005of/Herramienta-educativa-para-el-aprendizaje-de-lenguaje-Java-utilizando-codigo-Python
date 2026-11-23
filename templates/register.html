@@ -2,10 +2,15 @@
 
 {% block title %}Registro — {{ t.site_title }}{% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+{% endblock %}
+
 {% block content %}
-<article class="login-page" style="display: flex; justify-content: center; align-items: center; min-height: 70vh;">
-    <div class="login-container" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; width: 100%; max-width: 430px; box-shadow: var(--shadow-lg);">
-        <h1 style="text-align: center; margin: 0 0 1.4rem; font-size: 1.65rem; color: var(--green);">Crear Cuenta</h1>
+<article class="auth-page login-page">
+    <div class="auth-card login-container">
+        <h1 class="auth-title">Crear Cuenta</h1>
+        <p class="auth-subtitle">Regístrate gratis para seguir tu progreso y obtener certificados.</p>
 
         {% if error %}
         <div role="alert" class="alert-inclusive alert-inclusive--danger">
@@ -14,27 +19,25 @@
         </div>
         {% endif %}
 
-        <form method="POST" action="{{ url_for('register') }}" style="display: flex; flex-direction: column; gap: 1rem;">
+        <form method="POST" action="{{ url_for('register') }}" class="auth-form">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div>
-                <label for="username" style="display: block; margin-bottom: 0.45rem; color: var(--text); font-weight: 600;">Usuario</label>
+                <label for="username" class="auth-label">Usuario</label>
                 <input type="text" id="username" name="username" required minlength="3" maxlength="30"
                     pattern="[A-Za-z0-9_-]{3,30}"
                     title="Entre 3 y 30 caracteres: solo letras, números, guion (-) o guion bajo (_)"
                     autocomplete="username" value="{{ form_data.username if form_data else '' }}"
-                    placeholder="Ej. ana_dev (3-30 caracteres)"
-                    style="width: 100%; min-height: 44px; padding: 0.75rem 0.9rem; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: inherit;">
+                    placeholder="Ej. ana_dev (3-30 caracteres)" class="auth-input">
             </div>
 
             <div>
-                <label for="email" style="display: block; margin-bottom: 0.45rem; color: var(--text); font-weight: 600;">Correo electrónico</label>
+                <label for="email" class="auth-label">Correo electrónico</label>
                 <input type="email" id="email" name="email" required maxlength="120" autocomplete="email"
-                    value="{{ form_data.email if form_data else '' }}" placeholder="tu@correo.com"
-                    style="width: 100%; min-height: 44px; padding: 0.75rem 0.9rem; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: inherit;">
+                    value="{{ form_data.email if form_data else '' }}" placeholder="tu@correo.com" class="auth-input">
             </div>
 
             <div>
-                <label for="password" style="display: block; margin-bottom: 0.45rem; color: var(--text); font-weight: 600;">Contraseña</label>
+                <label for="password" class="auth-label">Contraseña</label>
                 <div class="password-field-wrap">
                     <input type="password" id="password" name="password" required minlength="8"
                         autocomplete="new-password" placeholder="Mínimo 8 caracteres..."
@@ -45,7 +48,7 @@
             </div>
 
             <div>
-                <label for="confirm_password" style="display: block; margin-bottom: 0.45rem; color: var(--text); font-weight: 600;">Confirmar contraseña</label>
+                <label for="confirm_password" class="auth-label">Confirmar contraseña</label>
                 <div class="password-field-wrap">
                     <input type="password" id="confirm_password" name="confirm_password" required minlength="8"
                         autocomplete="new-password" placeholder="Repite tu contraseña..."
@@ -56,45 +59,44 @@
             </div>
 
             <div>
-                <label for="role" style="display: block; margin-bottom: 0.45rem; color: var(--text); font-weight: 600;">Soy...</label>
+                <label for="role" class="auth-label">Soy...</label>
                 {% set selected_role = (form_data.role if form_data and form_data.role else 'student') %}
-                <select id="role" name="role" onchange="toggleTeacherCode(this.value)"
-                    style="width: 100%; min-height: 44px; padding: 0.75rem 0.9rem; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: inherit;">
+                <select id="role" name="role" onchange="toggleTeacherCode(this.value)" class="auth-select">
                     <option value="student" {% if selected_role == 'student' %}selected{% endif %}>Estudiante</option>
                     <option value="teacher" {% if selected_role == 'teacher' %}selected{% endif %}>Profesor</option>
                 </select>
             </div>
 
             <div id="student-class-field">
-                <label for="class_code" style="display: block; margin-bottom: 0.45rem; color: var(--text); font-weight: 600;">
-                    Código de clase / sección <span style="font-size: 0.82rem; font-weight: 400; color: var(--text-muted);">(opcional)</span>
-                    <span style="font-size: 0.82rem; font-weight: 400; color: var(--text-muted); display: block;">Si tu profesor te dio un código (ej. PROG-7K2M), ingrésalo aquí</span>
+                <label for="class_code" class="auth-label">
+                    Código de clase / sección (opcional)
+                    <span class="auth-help">Si tu profesor te dio un código (ej. PROG-7K2M), ingrésalo aquí.</span>
                 </label>
                 <input type="text" id="class_code" name="class_code" maxlength="20"
                     value="{{ form_data.class_code if form_data else '' }}" placeholder="Ej. PROG-7K2M"
-                    style="width: 100%; min-height: 44px; padding: 0.75rem 0.9rem; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--bg-code); color: var(--text); font-family: var(--font-mono); text-transform: uppercase;">
+                    class="auth-input auth-input--code">
             </div>
 
-            <div id="teacher-code-field" style="display: none;">
-                <label for="teacher_code" style="display: block; margin-bottom: 0.45rem; color: var(--text); font-weight: 600;">
+            <div id="teacher-code-field" hidden>
+                <label for="teacher_code" class="auth-label">
                     Código de profesor
-                    <span style="font-size: 0.82rem; font-weight: 400; color: var(--text-muted); display: block;">Ingresa el código secreto proporcionado por el Super Admin</span>
+                    <span class="auth-help">Ingresa el código secreto proporcionado por el Super Admin.</span>
                 </label>
                 <div class="password-field-wrap">
                     <input type="password" id="teacher_code" name="teacher_code" placeholder="Código secreto..."
-                        class="password-field-input" style="border-color: var(--status-warning-border); background: var(--status-warning-bg);">
+                        class="password-field-input auth-input--warning">
                     <button type="button" class="password-toggle-btn" data-toggle-password="teacher_code"
                         aria-label="Mostrar código de profesor" aria-pressed="false">Mostrar</button>
                 </div>
             </div>
 
-            <button type="submit" class="btn-primary-inclusive" data-loading-text="Creando cuenta..." style="width: 100%; margin-top: 0.5rem; font-size: 1.02rem;">
+            <button type="submit" class="btn-primary-inclusive auth-submit" data-loading-text="Creando cuenta...">
                 Registrarme
             </button>
         </form>
 
-        <div style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-muted);">
-            ¿Ya tienes cuenta? <a href="{{ url_for('login') }}" style="color: var(--green); text-decoration: none; font-weight: 600;">Inicia sesión</a>
+        <div class="auth-footer">
+            ¿Ya tienes cuenta? <a href="{{ url_for('login') }}" class="auth-link">Inicia sesión</a>
         </div>
     </div>
 </article>
@@ -104,11 +106,11 @@ function toggleTeacherCode(value) {
     const teacherField = document.getElementById('teacher-code-field');
     const studentField = document.getElementById('student-class-field');
     if (value === 'teacher') {
-        teacherField.style.display = 'block';
-        if (studentField) studentField.style.display = 'none';
+        if (teacherField) teacherField.hidden = false;
+        if (studentField) studentField.hidden = true;
     } else {
-        teacherField.style.display = 'none';
-        if (studentField) studentField.style.display = 'block';
+        if (teacherField) teacherField.hidden = true;
+        if (studentField) studentField.hidden = false;
     }
 }
 document.addEventListener('DOMContentLoaded', function () {

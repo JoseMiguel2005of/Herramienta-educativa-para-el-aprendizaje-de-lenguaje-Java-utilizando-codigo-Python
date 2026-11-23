@@ -1,0 +1,109 @@
+/* ==========================================================================
+   GLOSARIO TÉCNICO (WCAG 2.1 AA)
+   ========================================================================== */
+
+.glossary-page {
+    max-width: 1020px;
+    margin: 0 auto;
+}
+
+.glossary-controls {
+    margin-bottom: 1.5rem;
+}
+
+.glossary-search-box {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-strong);
+    border-radius: 12px;
+    padding: 0.4rem 1rem;
+    margin-bottom: 1rem;
+    min-height: 48px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.glossary-search-box:focus-within {
+    border-color: var(--green);
+    box-shadow: var(--neu-glow);
+}
+
+.glossary-search-input {
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    width: 100%;
+    outline: none;
+    min-height: 40px;
+}
+
+.glossary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.15rem;
+}
+
+.glossary-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.3rem 1.45rem;
+    transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+    font-family: var(--font-body);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.65rem;
+    box-shadow: var(--shadow);
+}
+
+.glossary-card:hover {
+    border-color: var(--green);
+    transform: translateY(-2px);
+    box-shadow: var(--card-hover-shadow);
+}
+
+.glossary-card-term {
+    color: var(--text);
+    font-weight: 700;
+    font-size: 1.12rem;
+    margin: 0 0 0.25rem;
+    font-family: var(--font-display);
+}
+
+.glossary-card-alt {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    margin-bottom: 0.65rem;
+    font-family: var(--font-mono);
+}
+
+.glossary-card-def {
+    color: var(--text);
+    font-size: 0.95rem;
+    line-height: 1.62;
+    font-family: var(--font-body);
+    margin: 0 0 0.75rem;
+    flex-grow: 1;
+}
+
+.glossary-card-tags {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+
+.glossary-empty-box {
+    text-align: center;
+    padding: 2.5rem;
+    color: var(--text-muted);
+}
+
+@media (max-width: 720px) {
+    .glossary-grid {
+        grid-template-columns: 1fr;
+    }
+}

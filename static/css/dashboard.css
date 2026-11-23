@@ -1,0 +1,367 @@
+/* ==========================================================================
+   PANEL DE PROGRESO DEL ESTUDIANTE (Dashboard — WCAG 2.1 AA)
+   ========================================================================== */
+
+.telemetry-dashboard {
+    font-family: var(--font-body);
+    color: var(--text);
+    max-width: 1060px;
+    margin: 0 auto;
+}
+
+.dash-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.dash-section-card {
+    margin-bottom: 1.5rem;
+}
+
+.dash-section-desc {
+    color: var(--text-muted);
+    font-size: 0.94rem;
+    margin: 0 0 1.25rem;
+    max-width: 70ch;
+}
+
+.level-readout {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.level-display {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.level-label {
+    font-size: 0.84rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.level-value {
+    font-family: var(--font-display);
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--green);
+    font-variant-numeric: tabular-nums;
+    text-shadow: none;
+}
+
+.xp-data {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    text-align: right;
+}
+
+.data-row {
+    font-size: 0.88rem;
+}
+
+.data-key {
+    color: var(--text-muted);
+    margin-right: 0.35rem;
+}
+
+.data-val {
+    color: var(--text);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.muted-val {
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.dash-bar-wrap {
+    height: 8px;
+    background: var(--bg-elevated);
+    border-radius: 999px;
+    overflow: hidden;
+    margin: 0 1.25rem 1.15rem;
+    border: 1px solid var(--border);
+}
+
+.dash-bar-fill {
+    height: 100%;
+    background: var(--python-color);
+    border-radius: 999px;
+    transition: width 0.4s ease;
+}
+
+.dash-bar-success {
+    background: var(--status-success);
+}
+
+.metric-value {
+    font-family: var(--font-display);
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+}
+
+.highlight-amber {
+    color: var(--status-warning);
+}
+
+.metric-total {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-top: 0.35rem;
+}
+
+/* Sección de clase */
+.dash-class-body {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.dash-class-title {
+    margin: 0;
+    font-size: 0.98rem;
+    color: var(--text);
+}
+
+.dash-class-sub {
+    margin: 0.3rem 0 0;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+}
+
+.dash-class-form {
+    display: flex;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.dash-input {
+    min-height: 44px;
+    padding: 0.55rem 0.9rem;
+    border-radius: 10px;
+    border: 1px solid var(--border-strong);
+    background: var(--bg-code);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    min-width: 190px;
+}
+
+/* Avance por módulo */
+.sections-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.section-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.95rem 1.15rem;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+}
+
+.section-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    min-width: 0;
+    flex: 1 1 240px;
+}
+
+.sec-name {
+    font-family: var(--font-display);
+    color: var(--text);
+    font-size: 0.98rem;
+    font-weight: 700;
+}
+
+.section-tracker {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    flex: 1 1 260px;
+    max-width: 380px;
+}
+
+.sec-bar-inline {
+    flex: 1;
+    margin: 0;
+}
+
+.sec-ratio {
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+    min-width: 98px;
+    text-align: right;
+}
+
+/* Evaluaciones: 2 columnas amplias */
+.eval-dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.eval-dash-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.9rem;
+    padding: 1.15rem 1.25rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.eval-dash-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.eval-dash-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--text);
+    font-size: 1.02rem;
+}
+
+.eval-dash-status {
+    font-size: 0.86rem;
+    color: var(--text-muted);
+}
+
+.eval-dash-action {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.eval-dash-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.55rem 1.1rem;
+    border-radius: 9px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.eval-dash-btn.available {
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+}
+
+.eval-dash-btn.available:hover {
+    background: var(--btn-primary-hover);
+}
+
+.eval-dash-btn.passed {
+    background: var(--status-success-bg);
+    color: var(--status-success);
+    border-color: var(--status-success-border);
+}
+
+.eval-dash-btn.locked {
+    background: var(--status-locked-bg);
+    color: var(--status-locked);
+    border-color: var(--status-locked-border);
+    cursor: default;
+}
+
+/* Logros: 2 columnas amplias */
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.achievement-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    padding: 1.1rem 1.25rem;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--border-strong);
+    background: var(--bg);
+    border-radius: 12px;
+}
+
+.achievement-card.unlocked {
+    border-left-color: var(--status-success);
+}
+
+.achievement-card .dash-bar-wrap {
+    margin: 0.35rem 0 0;
+}
+
+.ach-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.achievement-name {
+    font-family: var(--font-display);
+    color: var(--text);
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.achievement-desc {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+}
+
+@media (max-width: 960px) {
+    .dash-kpi-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 720px) {
+    .eval-dashboard-grid,
+    .achievements-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .section-tracker {
+        width: 100%;
+        max-width: none;
+    }
+}

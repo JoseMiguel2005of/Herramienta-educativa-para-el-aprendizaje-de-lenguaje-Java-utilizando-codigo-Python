@@ -1,0 +1,147 @@
+/* ==========================================================================
+   AUTENTICACIÓN UNIFICADA (Login, Registro, Recuperación — WCAG 2.1 AA)
+   ========================================================================== */
+
+.auth-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+    padding: 1rem 0;
+}
+
+.auth-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 430px;
+    box-shadow: var(--shadow-lg);
+}
+
+.auth-title {
+    text-align: center;
+    margin: 0 0 0.5rem;
+    font-family: var(--font-display);
+    font-size: 1.65rem;
+    font-weight: 800;
+    color: var(--text);
+}
+
+.auth-subtitle {
+    text-align: center;
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    margin: 0 0 1.5rem;
+    line-height: 1.5;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.05rem;
+}
+
+.auth-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+    margin-bottom: 0.45rem;
+}
+
+.auth-label {
+    display: block;
+    margin-bottom: 0.45rem;
+    color: var(--text);
+    font-weight: 600;
+    font-size: 0.92rem;
+}
+
+.auth-label-row .auth-label {
+    margin-bottom: 0;
+}
+
+.auth-help {
+    font-size: 0.82rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    display: block;
+    margin-top: 0.15rem;
+}
+
+.auth-input,
+.auth-select {
+    width: 100%;
+    min-height: 44px;
+    padding: 0.72rem 0.9rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-strong);
+    background: var(--bg-code);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+}
+
+.auth-input--code {
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+}
+
+.auth-input--otp {
+    font-family: var(--font-mono);
+    font-size: 1.25rem;
+    letter-spacing: 0.28em;
+    text-align: center;
+}
+
+.auth-input--warning {
+    border-color: var(--status-warning-border);
+    background: var(--status-warning-bg);
+}
+
+.auth-submit {
+    width: 100%;
+    margin-top: 0.4rem;
+    font-size: 1rem;
+}
+
+.auth-link {
+    color: var(--green);
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.88rem;
+}
+
+.auth-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.auth-footer--split {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.auth-footer-muted-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.auth-footer-muted-link:hover {
+    color: var(--text);
+    text-decoration: underline;
+}

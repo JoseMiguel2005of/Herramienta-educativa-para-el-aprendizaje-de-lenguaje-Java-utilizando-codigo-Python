@@ -233,7 +233,7 @@
                     </a>
                     {% endif %}
                     {% if current_user.is_authenticated and current_user.role == 'superadmin' %}
-                    <a href="{{ url_for('superadmin_dashboard') }}" class="term-btn" style="color: var(--status-danger); border-color: var(--status-danger-border);">
+                    <a href="{{ url_for('superadmin_dashboard') }}" class="term-btn nav-link-superadmin">
                         <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                         Super Admin
                     </a>
@@ -348,20 +348,17 @@
     </footer>
 
     <!-- Search Modal -->
-    <div id="search-modal" class="search-modal" role="dialog" aria-modal="true" aria-labelledby="search-modal-label"
-        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(2, 6, 23, 0.78); z-index:9999; justify-content:center; padding-top:10vh;">
-        <div class="search-modal-content"
-            style="background:var(--bg-secondary); width:90%; max-width:620px; border-radius:14px; display:flex; flex-direction:column; max-height:80vh; border: 1px solid var(--border-strong); box-shadow: var(--shadow-lg);">
-            <div class="search-modal-header"
-                style="padding:1rem 1.25rem; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:0.75rem;">
+    <div id="search-modal" class="search-modal" role="dialog" aria-modal="true" aria-labelledby="search-modal-label">
+        <div class="search-modal-content">
+            <div class="search-modal-header">
                 <label id="search-modal-label" for="global-search-input" class="sr-only">Buscar lecciones y conceptos</label>
-                <input type="search" id="global-search-input" placeholder="Buscar lecciones, conceptos o código..."
-                    style="flex-grow:1; background:transparent; border:none; color:var(--text); font-size:1.08rem; font-family:var(--font-body); outline:none; min-height:44px;">
-                <button type="button" id="btn-close-search" class="btn-ghost" aria-label="Cerrar búsqueda"
-                    style="font-size:1.4rem; min-width:44px; min-height:44px; padding:0;">&times;</button>
+                <input type="search" id="global-search-input" class="search-modal-input"
+                    placeholder="Buscar lecciones, conceptos o código...">
+                <button type="button" id="btn-close-search" class="btn-ghost search-modal-close"
+                    aria-label="Cerrar búsqueda">&times;</button>
             </div>
-            <div id="search-results" class="search-results" style="overflow-y:auto; flex-grow:1; padding:0;">
-                <p style="color:var(--text-muted); text-align:center; padding:2rem 1rem;">Escribe al menos 2 caracteres para buscar...</p>
+            <div id="search-results" class="search-results">
+                <p class="search-results-empty">Escribe al menos 2 caracteres para buscar...</p>
             </div>
         </div>
     </div>
