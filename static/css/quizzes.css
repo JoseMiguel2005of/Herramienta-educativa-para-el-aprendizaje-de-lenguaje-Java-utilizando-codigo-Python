@@ -230,10 +230,24 @@
     color: var(--status-success);
 }
 
+.quiz-option-label.option-correct::after {
+    content: "✓ Correcta";
+    margin-left: auto;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
 .quiz-option-label.option-incorrect {
     border: 2px solid var(--status-danger);
     background: var(--status-danger-bg);
     color: var(--status-danger);
+}
+
+.quiz-option-label.option-incorrect::after {
+    content: "✕ Incorrecta";
+    margin-left: auto;
+    font-size: 0.82rem;
+    font-weight: 700;
 }
 
 /* Reorder Quiz (Drag & Drop + Botones accesibles Subir/Bajar) */
@@ -395,9 +409,29 @@
     border-left-color: #FBBF24;
 }
 
+.error-line.selected-line::after {
+    content: "● Seleccionada";
+    margin-left: auto;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #FDE68A;
+    flex-shrink: 0;
+}
+
 .error-line.line-correct {
     background: rgba(45, 212, 191, 0.22);
     border-left-color: #2DD4BF;
+}
+
+.error-line.line-correct::after {
+    content: "✓ Error encontrado";
+    margin-left: auto;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #5EEAD4;
+    flex-shrink: 0;
 }
 
 .error-line.line-incorrect {
@@ -405,6 +439,16 @@
     border-left-color: #FB7185;
     outline: 2px solid #FB7185;
     outline-offset: -2px;
+}
+
+.error-line.line-incorrect::after {
+    content: "✕ No es esta línea";
+    margin-left: auto;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #FDA4AF;
+    flex-shrink: 0;
 }
 
 .error-line .line-number {

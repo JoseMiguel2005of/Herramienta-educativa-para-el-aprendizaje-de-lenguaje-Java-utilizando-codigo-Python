@@ -251,35 +251,54 @@
 .eval-question-dots {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 0.45rem;
     justify-content: center;
 }
 
 .dot-btn {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    border: 2px solid var(--border-strong);
+    min-width: 38px;
+    min-height: 38px;
+    padding: 0 0.45rem;
+    border-radius: 10px;
+    border: 2px dashed var(--border-strong);
     background: var(--bg-elevated);
+    color: var(--text);
     cursor: pointer;
-    transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
-    font-size: 0;
-    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    font-family: var(--font-body);
+    font-size: 0.84rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
 }
 
 .dot-btn.active {
+    border-style: solid;
     border-color: var(--green);
-    box-shadow: 0 0 0 3px var(--green-light);
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 2px;
 }
 
 .dot-btn.answered {
+    border-style: solid;
     background: var(--btn-primary-bg);
     border-color: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+}
+
+.dot-btn.answered::after {
+    content: "✓";
+    font-size: 0.72rem;
+    line-height: 1;
 }
 
 .dot-btn:hover {
+    border-style: solid;
     border-color: var(--green);
-    transform: scale(1.08);
+    transform: translateY(-1px);
 }
 
 /* ===== QUESTION SLIDES ===== */

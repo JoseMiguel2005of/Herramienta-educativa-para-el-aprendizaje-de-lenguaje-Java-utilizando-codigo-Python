@@ -1,0 +1,314 @@
+/* ==========================================================================
+   PORTADA DE BIENVENIDA — PY2JAVA EDU (Claridad inmediata + WCAG 2.1 AA)
+   ========================================================================== */
+
+.welcome-page {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0.75rem 0 2.5rem;
+    font-family: var(--font-body);
+    color: var(--text);
+}
+
+/* Hero editorial en 2 columnas */
+.welcome-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 2.25rem;
+    align-items: center;
+    padding: 1.5rem 0 2.75rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2.5rem;
+}
+
+.welcome-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+    background: var(--status-info-bg);
+    border: 1px solid var(--status-info-border);
+    color: var(--status-info);
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.welcome-title {
+    margin: 0 0 1rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.95rem, 3.6vw, 2.75rem);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    color: var(--text);
+}
+
+.welcome-title-accent {
+    color: var(--green);
+}
+
+.welcome-lead {
+    margin: 0 0 1.65rem;
+    font-size: 1.05rem;
+    line-height: 1.68;
+    color: var(--text-muted);
+    max-width: 56ch;
+}
+
+.welcome-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.welcome-cta-primary {
+    min-height: 48px;
+    padding: 0.75rem 1.45rem;
+    font-size: 0.98rem;
+}
+
+.welcome-cta-secondary {
+    min-height: 48px;
+    padding: 0.72rem 1.25rem;
+    font-size: 0.95rem;
+}
+
+.welcome-meta-line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.35rem;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+}
+
+.welcome-meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.welcome-meta-dot {
+    color: var(--status-success);
+    font-weight: 800;
+}
+
+/* Vista previa comparativa Python -> Java */
+.welcome-preview {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+}
+
+.welcome-preview-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.65rem 1rem;
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.welcome-preview-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+.welcome-code-pane {
+    padding: 1rem 1.15rem;
+    background: var(--editor-bg);
+    color: var(--editor-text);
+    color-scheme: dark;
+}
+
+.welcome-code-pane + .welcome-code-pane {
+    border-top: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.welcome-pane-label {
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.welcome-code-pane pre {
+    margin: 0;
+    background: transparent;
+    overflow-x: auto;
+}
+
+.welcome-code-pane code {
+    font-family: var(--font-mono);
+    font-size: 0.86rem;
+    line-height: 1.6;
+    color: var(--editor-text);
+}
+
+.wc-kw { color: #FDA4AF; font-weight: 600; }
+.wc-str { color: #BAE6FD; }
+.wc-num { color: #7DD3FC; }
+.wc-fn { color: #C4B5FD; }
+
+/* Sección de 3 pilares */
+.welcome-section-title {
+    margin: 0 0 0.4rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.35rem, 2.2vw, 1.65rem);
+    color: var(--text);
+}
+
+.welcome-section-sub {
+    margin: 0 0 1.5rem;
+    font-size: 0.96rem;
+    color: var(--text-muted);
+    max-width: 62ch;
+}
+
+.welcome-pillars {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+}
+
+.welcome-pillar-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.45rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    box-shadow: var(--shadow);
+    transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.welcome-pillar-card:hover {
+    border-color: var(--green);
+    transform: translateY(-2px);
+    box-shadow: var(--card-hover-shadow);
+}
+
+.welcome-pillar-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--green-light);
+    color: var(--green);
+    border: 1px solid var(--status-info-border);
+}
+
+.welcome-pillar-card h3 {
+    margin: 0.15rem 0 0;
+    font-size: 1.1rem;
+    color: var(--text);
+}
+
+.welcome-pillar-card p {
+    margin: 0;
+    font-size: 0.93rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    flex: 1;
+}
+
+.welcome-pillar-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--green);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-decoration: none;
+    margin-top: 0.35rem;
+}
+
+.welcome-pillar-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+/* Mapa rápido del temario */
+.welcome-tracks {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+}
+
+.welcome-tracks-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.9rem;
+    margin-top: 1.15rem;
+}
+
+.welcome-track-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 1rem;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    text-decoration: none;
+    color: var(--text);
+    transition: border-color 0.18s ease, background-color 0.18s ease;
+}
+
+.welcome-track-item:hover {
+    border-color: var(--green);
+    background: var(--green-light);
+}
+
+.welcome-track-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.96rem;
+    color: var(--text);
+}
+
+.welcome-track-desc {
+    font-size: 0.84rem;
+    color: var(--text-muted);
+    line-height: 1.45;
+}
+
+@media (max-width: 980px) {
+    .welcome-hero {
+        grid-template-columns: 1fr;
+        gap: 1.75rem;
+    }
+
+    .welcome-pillars {
+        grid-template-columns: 1fr;
+    }
+
+    .welcome-tracks-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 560px) {
+    .welcome-tracks-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .welcome-cta-primary,
+    .welcome-cta-secondary {
+        width: 100%;
+    }
+}

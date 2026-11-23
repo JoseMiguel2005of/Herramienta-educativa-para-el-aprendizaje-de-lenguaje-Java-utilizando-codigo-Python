@@ -1,4 +1,4 @@
-const CACHE_NAME = 'py2java-cache-v4';
+const CACHE_NAME = 'py2java-cache-v5';
 const urlsToCache = [
   '/static/css/style.css',
   '/static/css/quizzes.css',

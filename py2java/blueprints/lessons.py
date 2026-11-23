@@ -97,7 +97,12 @@ def service_worker():
 
 @bp.route("/")
 def index():
-    return redirect(url_for("lesson", lesson_id="py-home"))
+    return render_template(
+        "welcome.html",
+        page="welcome",
+        categories=LESSON_CATEGORIES,
+        total_lessons=len(_course_lesson_ids()),
+    )
 
 
 @bp.route("/leccion/<lesson_id>")

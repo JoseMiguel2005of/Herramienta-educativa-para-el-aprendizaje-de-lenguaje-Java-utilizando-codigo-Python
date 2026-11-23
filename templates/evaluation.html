@@ -102,7 +102,7 @@
                 <button type="button" class="dot-btn {% if loop.first %}active{% endif %}" data-idx="{{ loop.index0 }}"
                     aria-label="Ir a la pregunta {{ loop.index }}"
                     {% if loop.first %}aria-current="step"{% endif %}
-                    title="Pregunta {{ loop.index }}"></button>
+                    title="Pregunta {{ loop.index }}">{{ loop.index }}</button>
                 {% endfor %}
             </div>
         </header>

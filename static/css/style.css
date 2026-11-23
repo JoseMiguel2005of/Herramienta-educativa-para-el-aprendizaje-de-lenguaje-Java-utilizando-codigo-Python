@@ -4155,3 +4155,90 @@ html.theme-switching *::after {
     border-color: var(--green);
     color: var(--green);
 }
+
+/* ==========================================================================
+   MODO IMPRESIÓN GLOBAL (Ahorro de tinta, lectura limpia sin navegación)
+   ========================================================================== */
+@media print {
+    .topbar,
+    .sidebar,
+    .footer,
+    .skip-link,
+    #mobile-overlay,
+    #ai-tutor-panel,
+    #study-timer-modal,
+    .study-timer-modal,
+    .study-celebration-toast,
+    .a11y-panel,
+    #xp-toast-container,
+    .translator-toast,
+    .search-modal,
+    .btn-copy,
+    .btn-run-example,
+    .btn-diff-toggle,
+    .lesson-nav,
+    .admin-tabs,
+    .admin-filter-bar,
+    .admin-header-actions {
+        display: none !important;
+    }
+
+    html,
+    body,
+    .layout,
+    .content {
+        background: #FFFFFF !important;
+        color: #0F172A !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        display: block !important;
+        width: 100% !important;
+        max-width: none !important;
+    }
+
+    h1, h2, h3, h4, p, li, td, th, span, strong {
+        color: #0F172A !important;
+    }
+
+    a {
+        color: #0369A1 !important;
+        text-decoration: underline !important;
+    }
+
+    .code-block,
+    .code-block-interactive,
+    .example-code-block,
+    .exercise-code-block,
+    .ast-content,
+    .data-module,
+    .code-panel,
+    .explanation-box,
+    .w3-note,
+    .admin-panel {
+        background: #FFFFFF !important;
+        color: #0F172A !important;
+        border: 1px solid #94A3B8 !important;
+        box-shadow: none !important;
+        break-inside: avoid;
+    }
+
+    .code-block code,
+    .code-block-interactive code,
+    pre code {
+        color: #0F172A !important;
+        white-space: pre-wrap !important;
+    }
+
+    .ref-table th {
+        background: #F1F5F9 !important;
+        color: #0F172A !important;
+        border-bottom: 2px solid #475569 !important;
+    }
+
+    .ref-table td,
+    .admin-table td,
+    .profile-table td {
+        border-bottom: 1px solid #CBD5E1 !important;
+    }
+}

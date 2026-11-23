@@ -193,9 +193,13 @@
                             <tr>
                                 <td>{{ get_quiz_title(qr.quiz_id) }}</td>
                                 <td>
-                                    <span class="{% if qr.score >= qr.total %}profile-score--good{% elif qr.score >= qr.total // 2 %}profile-score--mid{% else %}profile-score--low{% endif %}">
-                                        {{ qr.score }}/{{ qr.total }}
-                                    </span>
+                                    {% if qr.score >= qr.total %}
+                                    <span class="status-pill status-pill--completed">✓ {{ qr.score }}/{{ qr.total }}</span>
+                                    {% elif qr.score >= qr.total // 2 %}
+                                    <span class="status-pill status-pill--pending">◐ {{ qr.score }}/{{ qr.total }}</span>
+                                    {% else %}
+                                    <span class="status-pill status-pill--danger">✕ {{ qr.score }}/{{ qr.total }}</span>
+                                    {% endif %}
                                 </td>
                                 <td style="color: var(--text-muted);">{{ qr.completed_at.strftime('%d/%m/%Y') if qr.completed_at else '—' }}</td>
                             </tr>

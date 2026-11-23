@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t.site_title }} — Aprende Java desde Python{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/welcome.css') }}">
+{% endblock %}
+
+{% block content %}
+<article class="welcome-page">
+    <!-- Hero principal con propuesta de valor clara -->
+    <section class="welcome-hero" aria-labelledby="welcome-heading">
+        <div>
+            <span class="welcome-eyebrow">Plataforma educativa interactiva · Acceso gratuito</span>
+            <h1 id="welcome-heading" class="welcome-title">
+                Aprende <span class="welcome-title-accent">Java desde Python</span> comparando código en vivo
+            </h1>
+            <p class="welcome-lead">
+                Domina el salto de Python a Java con lecciones lado a lado, ejecución real en tu navegador, retos evaluados con pruebas automáticas, Tutor IA y certificados verificables.
+            </p>
+
+            <div class="welcome-actions">
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('lesson', lesson_id='py-home') }}" class="btn-primary-inclusive welcome-cta-primary">
+                    Continuar aprendiendo →
+                </a>
+                <a href="{{ url_for('dashboard') }}" class="btn-secondary-inclusive welcome-cta-secondary">
+                    Ver mi progreso
+                </a>
+                {% else %}
+                <a href="{{ url_for('lesson', lesson_id='py-home') }}" class="btn-primary-inclusive welcome-cta-primary">
+                    Comenzar curso gratis →
+                </a>
+                <a href="{{ url_for('traductor') }}" class="btn-secondary-inclusive welcome-cta-secondary">
+                    Probar Transpilador
+                </a>
+                <a href="{{ url_for('register') }}" class="breadcrumb-link" style="padding: 0.5rem 0.25rem;">
+                    Crear cuenta
+                </a>
+                {% endif %}
+            </div>
+
+            <div class="welcome-meta-line">
+                <span class="welcome-meta-item"><span class="welcome-meta-dot" aria-hidden="true">✓</span> {{ total_lessons }} lecciones estructuradas</span>
+                <span class="welcome-meta-item"><span class="welcome-meta-dot" aria-hidden="true">✓</span> Sin instalar nada</span>
+                <span class="welcome-meta-item"><span class="welcome-meta-dot" aria-hidden="true">✓</span> Certificados PDF verificables</span>
+            </div>
+        </div>
+
+        <!-- Ejemplo visual inmediato: Python vs Java -->
+        <aside class="welcome-preview" aria-label="Ejemplo comparativo entre Python y Java">
+            <div class="welcome-preview-bar">
+                <span>Comparación directa de sintaxis</span>
+                <span>Mismo resultado</span>
+            </div>
+            <div class="welcome-preview-grid">
+                <div class="welcome-code-pane">
+                    <div class="welcome-pane-label">
+                        <span class="lang-badge python-badge">Python</span>
+                    </div>
+                    <pre><code>nombre = <span class="wc-str">"Ana"</span>
+<span class="wc-kw">for</span> i <span class="wc-kw">in</span> <span class="wc-fn">range</span>(<span class="wc-num">3</span>):
+    <span class="wc-fn">print</span>(<span class="wc-str">"Hola "</span> + nombre)</code></pre>
+                </div>
+                <div class="welcome-code-pane">
+                    <div class="welcome-pane-label">
+                        <span class="lang-badge java-badge">Java</span>
+                    </div>
+                    <pre><code><span class="wc-kw">String</span> nombre = <span class="wc-str">"Ana"</span>;
+<span class="wc-kw">for</span> (<span class="wc-kw">int</span> i = <span class="wc-num">0</span>; i &lt; <span class="wc-num">3</span>; i++) {
+    System.out.<span class="wc-fn">println</span>(<span class="wc-str">"Hola "</span> + nombre);
+}</code></pre>
+                </div>
+            </div>
+        </aside>
+    </section>
+
+    <!-- 3 pilares de aprendizaje -->
+    <section aria-labelledby="welcome-pillars-title">
+        <h2 id="welcome-pillars-title" class="welcome-section-title">Todo lo que necesitas en un solo lugar</h2>
+        <p class="welcome-section-sub">
+            Diseñado para aprender de forma progresiva, sin distracciones y con herramientas interactivas desde la primera lección.
+        </p>
+
+        <div class="welcome-pillars">
+            <div class="welcome-pillar-card">
+                <span class="welcome-pillar-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                </span>
+                <h3>Lecciones paso a paso</h3>
+                <p>Recorre desde variables y bucles hasta programación orientada a objetos, ciencia de datos y bases de datos con explicaciones claras.</p>
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('roadmap') }}" class="welcome-pillar-link">Ver ruta de aprendizaje →</a>
+                {% else %}
+                <a href="{{ url_for('lesson', lesson_id='py-home') }}" class="welcome-pillar-link">Ir a la primera lección →</a>
+                {% endif %}
+            </div>
+
+            <div class="welcome-pillar-card">
+                <span class="welcome-pillar-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                </span>
+                <h3>Laboratorio y Transpilador</h3>
+                <p>Ejecuta código Python directamente en el navegador, supera retos con casos de prueba automáticos y convierte tus scripts a Java al instante.</p>
+                <a href="{{ url_for('practice_list') }}" class="welcome-pillar-link">Explorar laboratorio →</a>
+            </div>
+
+            <div class="welcome-pillar-card">
+                <span class="welcome-pillar-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+                </span>
+                <h3>Evaluaciones y Certificados</h3>
+                <p>Desbloquea evaluaciones adaptativas al completar cada módulo, gana XP y descarga certificados en PDF con código público verificable.</p>
+                <a href="{{ url_for('leaderboard') }}" class="welcome-pillar-link">Ver ranking estudiantil →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mapa rápido de áreas -->
+    <section class="welcome-tracks" aria-labelledby="welcome-tracks-title">
+        <h2 id="welcome-tracks-title" class="welcome-section-title" style="font-size: 1.25rem;">Explora el plan de estudios</h2>
+        <p class="welcome-section-sub" style="margin-bottom: 0;">
+            Accede directamente al área que quieras reforzar hoy.
+        </p>
+        <div class="welcome-tracks-grid">
+            <a href="{{ url_for('lesson', lesson_id='py-home') }}" class="welcome-track-item">
+                <span class="welcome-track-title">1. Fundamentos y POO</span>
+                <span class="welcome-track-desc">Variables, tipos, condicionales, bucles, funciones, clases y archivos.</span>
+            </a>
+            <a href="{{ url_for('lesson', lesson_id='np-intro') }}" class="welcome-track-item">
+                <span class="welcome-track-title">2. Ciencia de Datos</span>
+                <span class="welcome-track-desc">Arreglos con NumPy, análisis tabular con Pandas y cálculo con SciPy.</span>
+            </a>
+            <a href="{{ url_for('lesson', lesson_id='sql-getstarted') }}" class="welcome-track-item">
+                <span class="welcome-track-title">3. Bases de Datos</span>
+                <span class="welcome-track-desc">Consultas relacionales con MySQL y documentos con MongoDB.</span>
+            </a>
+            <a href="{{ url_for('glossary') }}" class="welcome-track-item">
+                <span class="welcome-track-title">4. Referencia y Glosario</span>
+                <span class="welcome-track-desc">Tablas comparativas rápidas y definiciones clave de Python y Java.</span>
+            </a>
+        </div>
+    </section>
+</article>
+{% endblock %}
