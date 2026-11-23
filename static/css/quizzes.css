@@ -433,34 +433,33 @@
 
 .quiz-lang-btn {
     background: transparent;
-    border: none;
-    color: var(--text-muted, #8E9AAF);
-    padding: 0.35rem 0.85rem;
+    border: 1px solid transparent;
+    color: var(--text-muted);
+    padding: 0.38rem 0.9rem;
+    min-height: 36px;
     border-radius: 6px;
-    font-size: 0.82rem;
+    font-size: 0.84rem;
     font-weight: 600;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-body);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .quiz-lang-btn:hover {
-    color: var(--text, #E2E8F0);
-    background: rgba(255, 255, 255, 0.05);
+    color: var(--text);
+    background: var(--bg-elevated);
 }
 
 .quiz-lang-btn.active[data-lang="python"] {
-    background: rgba(0, 229, 255, 0.15);
-    color: var(--python-color, #00E5FF);
-    border: 1px solid rgba(0, 229, 255, 0.3);
-    box-shadow: 0 2px 8px rgba(0, 229, 255, 0.2);
+    background: var(--status-info-bg);
+    color: var(--python-color);
+    border-color: var(--status-info-border);
 }
 
 .quiz-lang-btn.active[data-lang="java"] {
-    background: rgba(255, 75, 110, 0.18);
-    color: var(--java-color, #FF4B6E);
-    border: 1px solid rgba(255, 75, 110, 0.4);
-    box-shadow: 0 2px 8px rgba(255, 75, 110, 0.25);
+    background: rgba(251, 146, 60, 0.16);
+    color: var(--java-color);
+    border-color: var(--java-color);
 }
 
 .exercise-header {

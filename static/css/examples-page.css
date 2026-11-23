@@ -225,20 +225,22 @@
 }
 
 .btn-tryit-run {
-    background: var(--green);
-    color: var(--text);
-    border: none;
-    padding: 0.6rem 1.25rem;
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+    border: 1px solid var(--btn-primary-bg);
+    padding: 0.65rem 1.3rem;
     font-size: 0.95rem;
     font-weight: 600;
-    border-radius: 6px;
+    border-radius: 10px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: background-color 0.2s ease, transform 0.15s ease;
     margin-bottom: 0.75rem;
 }
 
 .btn-tryit-run:hover {
-    filter: brightness(1.15);
+    background: var(--btn-primary-hover);
+    color: var(--btn-primary-text);
+    transform: translateY(-1px);
 }
 
 .example-output-wrapper {
@@ -336,19 +338,24 @@
 }
 
 .btn-related-lesson {
-    display: inline-block;
-    background: rgba(0, 229, 255, 0.06);
-    border: 1px solid rgba(0, 229, 255, 0.2);
-    color: var(--green);
-    padding: 0.75rem 1.25rem;
-    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-min, 44px);
+    background: var(--status-info-bg);
+    border: 1px solid var(--status-info-border);
+    color: var(--status-info);
+    padding: 0.6rem 1.2rem;
+    border-radius: 10px;
     text-decoration: none;
-    font-size: 0.95rem;
-    transition: all 0.2s;
+    font-size: 0.94rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .btn-related-lesson:hover {
-    background: rgba(0, 229, 255, 0.12);
+    background: var(--btn-primary-bg);
+    border-color: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
 }
 
 @keyframes fadeIn {

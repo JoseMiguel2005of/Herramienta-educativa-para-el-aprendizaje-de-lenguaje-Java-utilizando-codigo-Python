@@ -311,6 +311,10 @@ body {
     box-sizing: border-box;
 }
 
+[hidden] {
+    display: none !important;
+}
+
 html {
     font-size: 16px;
     scroll-behavior: smooth;
@@ -1522,27 +1526,27 @@ body::before {
 }
 
 .btn-ask-ai-error {
-    background: rgba(0, 229, 255, 0.12);
-    border: 1px solid rgba(0, 229, 255, 0.4);
-    color: #00e5ff;
-    padding: 0.4rem 0.85rem;
-    border-radius: 6px;
-    font-size: 0.82rem;
+    background: var(--status-info-bg);
+    border: 1px solid var(--status-info-border);
+    color: var(--status-info);
+    padding: 0.45rem 0.9rem;
+    border-radius: 8px;
+    font-size: 0.84rem;
     font-weight: 600;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
     margin-top: 0.4rem;
-    font-family: inherit;
+    font-family: var(--font-body);
 }
 
 .btn-ask-ai-error:hover {
-    background: rgba(0, 229, 255, 0.22);
-    border-color: #00e5ff;
+    background: var(--btn-primary-bg);
+    border-color: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 229, 255, 0.25);
 }
 
 /* =============================================
@@ -3303,7 +3307,7 @@ samp,
     background: var(--green-light);
 }
 
-/* Badges de lenguaje Python (Azul) y Java (Naranja Bermellón) */
+/* Badges de lenguaje y ecosistema (contraste WCAG AA >= 5:1 garantizado con #FFFFFF) */
 .python-badge {
     background: var(--python-badge-bg);
     color: #FFFFFF;
@@ -3312,6 +3316,55 @@ samp,
 .java-badge {
     background: var(--java-badge-bg);
     color: #FFFFFF;
+}
+
+.sql-badge {
+    background: #0F5C73;
+    color: #FFFFFF;
+}
+
+.scipy-badge {
+    background: #1D4ED8;
+    color: #FFFFFF;
+}
+
+.pandas-badge {
+    background: #6D28D9;
+    color: #FFFFFF;
+}
+
+.mongo-badge {
+    background: #0F766E;
+    color: #FFFFFF;
+}
+
+/* Miga de pan / enlace de retorno reutilizable */
+.breadcrumb-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--green);
+    text-decoration: none;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.25rem 0;
+    transition: color 0.15s ease, opacity 0.15s ease;
+}
+
+.breadcrumb-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+/* Verificación pública de certificados */
+.cert-verify-page {
+    max-width: 680px;
+    margin: 1.5rem auto 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: left;
 }
 
 .lang-badge {

@@ -9,15 +9,15 @@
 <div class="exercise-lang-view exercise-lang-python">
     <div class="exercise-code-area">
         {% if is_sql %}
-        <span class="lang-badge" style="font-size:0.75rem; background: linear-gradient(135deg, #00758F, #F29111);">SQL</span>
+        <span class="lang-badge sql-badge">SQL</span>
         {% elif is_scipy %}
-        <span class="lang-badge" style="font-size:0.75rem; background: linear-gradient(135deg, #0054a6, #13b5ea);">SciPy</span>
+        <span class="lang-badge scipy-badge">SciPy</span>
         {% elif is_pandas %}
-        <span class="lang-badge" style="font-size:0.75rem; background: linear-gradient(135deg, #150458, #E70488);">Pandas</span>
+        <span class="lang-badge pandas-badge">Pandas</span>
         {% elif is_mongo %}
-        <span class="lang-badge" style="font-size:0.75rem; background: linear-gradient(135deg, #13AA52, #001E2B);">MongoDB</span>
+        <span class="lang-badge mongo-badge">MongoDB</span>
         {% else %}
-        <span class="lang-badge python-badge" style="font-size:0.75rem;">Python</span>
+        <span class="lang-badge python-badge">Python</span>
         {% endif %}
         <div class="exercise-template">{{ ex.template_html | strip_exercise_answers | safe }}</div>
     </div>
