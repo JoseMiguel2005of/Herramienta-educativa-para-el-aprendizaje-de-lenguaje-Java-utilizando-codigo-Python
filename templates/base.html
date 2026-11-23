@@ -55,7 +55,7 @@
                 </button>
             </div>
 
-            <a href="{{ url_for('lesson', lesson_id='py-home') }}" class="brand">
+            <a href="{{ url_for('index') }}" class="brand" aria-label="Ir a la página de inicio de {{ t.site_title }}">
                 <div class="brand-icon" aria-hidden="true">
                     <img src="{{ url_for('static', filename='images/logo-dark.png') }}" alt="" width="32" height="32" decoding="async" class="brand-logo brand-logo-dark">
                     <img src="{{ url_for('static', filename='images/logo-light.png') }}" alt="" width="32" height="32" decoding="async" class="brand-logo brand-logo-light">
