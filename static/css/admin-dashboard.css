@@ -198,7 +198,8 @@
 }
 
 .admin-input--code {
-    flex: 0 1 230px;
+    flex: 1 1 250px;
+    min-width: 240px;
     font-family: var(--font-mono);
     text-transform: uppercase;
 }
@@ -213,7 +214,7 @@
 /* Tarjetas de secciones */
 .admin-sections-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1rem;
     margin-top: 1.15rem;
 }
