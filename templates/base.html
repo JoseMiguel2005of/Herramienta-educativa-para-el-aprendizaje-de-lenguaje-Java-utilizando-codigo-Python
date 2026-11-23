@@ -50,7 +50,9 @@
         <div class="topbar-inner">
             <div class="mobile-menu-container">
                 <button type="button" id="mobile-menu-toggle" class="btn-ghost hide-desktop"
-                    aria-label="Abrir menú de navegación" aria-expanded="false" aria-controls="main-sidebar">☰</button>
+                    aria-label="Abrir menú de navegación" aria-expanded="false" aria-controls="main-sidebar">
+                    <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                </button>
             </div>
 
             <a href="{{ url_for('lesson', lesson_id='py-home') }}" class="brand">
@@ -69,7 +71,7 @@
                     aria-expanded="false" aria-controls="study-timer-modal">
                     <span class="timer-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></span>
                     <span id="study-timer-display" class="timer-digits">00:00</span>
-                    <span id="study-timer-goal-pill" class="timer-goal-pill" style="display:none;">/ 25m</span>
+                    <span id="study-timer-goal-pill" class="timer-goal-pill">/ 25m</span>
                 </button>
 
                 <div class="a11y-wrapper">
@@ -172,16 +174,23 @@
             <nav class="dir-tree" aria-label="Menú principal y módulos">
                 <div class="sidebar-search term-search neu-inset">
                     <svg aria-hidden="true" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    <label for="sidebar-search-input" class="sr-only">Filtrar lecciones del menú</label>
-                    <input type="search" id="sidebar-search-input" placeholder="Filtrar temas..." class="sidebar-search-input term-input">
+                    <label for="sidebar-search-input" class="sr-only">Filtrar lecciones del temario</label>
+                    <input type="search" id="sidebar-search-input" placeholder="Filtrar temario..." class="sidebar-search-input term-input">
                 </div>
 
                 <div class="sidebar-user-section term-commands">
                     <span class="tree-root">Navegación</span>
+                    {% if current_user.is_authenticated %}
                     <a href="{{ url_for('dashboard') }}" class="term-btn {% if page == 'dashboard' %}nav-active-item{% endif %}">
                         <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                         Mi Progreso
                     </a>
+                    {% endif %}
+                    <button type="button" id="btn-study-timer-mobile" class="term-btn sidebar-timer-mobile-btn"
+                        aria-label="Abrir cronómetro de estudio">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        Cronómetro de estudio
+                    </button>
                     <a href="{{ url_for('roadmap') }}" class="term-btn {% if page == 'roadmap' %}nav-active-item{% endif %}">
                         <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
                         Ruta de Aprendizaje
@@ -502,6 +511,7 @@
             const current = html.getAttribute('data-theme') || 'dark';
             const next = current === 'dark' ? 'light' : 'dark';
 
+            html.classList.add('theme-switching');
             html.setAttribute('data-theme', next);
             const icon = document.getElementById('theme-icon');
             if (icon) icon.innerHTML = THEME_ICONS[next] || THEME_ICONS.dark;
@@ -510,6 +520,12 @@
             if (themeBtn) {
                 themeBtn.setAttribute('aria-label', next === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro');
             }
+
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    html.classList.remove('theme-switching');
+                });
+            });
 
             localStorage.setItem('py2java_theme', next);
 

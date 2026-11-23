@@ -44,8 +44,32 @@
 }
 
 .timer-goal-pill {
-    font-size: 0.74rem;
+    display: none;
+    font-size: 0.78rem;
     color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.timer-goal-pill.is-visible {
+    display: inline;
+}
+
+.timer-digits,
+.timer-big-clock {
+    font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 900px) {
+    .timer-goal-pill,
+    .timer-goal-pill.is-visible {
+        display: none;
+    }
+}
+
+@media (max-width: 560px) {
+    #btn-study-timer.study-timer-btn {
+        display: none;
+    }
 }
 
 .study-timer-btn.running .timer-goal-pill,

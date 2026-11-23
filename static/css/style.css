@@ -3914,22 +3914,39 @@ html[data-a11y-motion="reduce"] *::after {
     gap: 0.75rem;
 }
 
+/* Desactiva transiciones 1 frame durante el cambio de tema para evitar iconos fantasma */
+html.theme-switching *,
+html.theme-switching *::before,
+html.theme-switching *::after {
+    transition: none !important;
+}
+
+.sidebar-timer-mobile-btn {
+    display: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+}
+
 /* Responsive barra superior en móviles y pantallas < 400px */
 @media (max-width: 600px) {
     .hide-mobile {
         display: none;
     }
-}
 
-@media (max-width: 400px) {
-    .topbar-inner {
-        padding: 0.4rem 0.5rem;
-        gap: 0.3rem;
-        min-height: 58px;
+    #mobile-menu-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        min-height: 40px;
+        padding: 0;
     }
 
     .brand {
-        gap: 0.3rem;
+        gap: 0.4rem;
         min-width: 0;
         flex: 1 1 auto;
     }
@@ -3940,12 +3957,50 @@ html[data-a11y-motion="reduce"] *::after {
 
     .brand strong,
     .brand-title {
-        font-size: 0.88rem;
+        font-size: 1rem;
         letter-spacing: -0.01em;
     }
 
     .topbar-actions {
-        gap: 0.22rem;
+        gap: 0.35rem;
+        flex-shrink: 0;
+    }
+
+    .topbar-actions .term-btn,
+    #btn-theme-toggle {
+        min-width: 40px;
+        min-height: 40px;
+        padding: 0.4rem 0.55rem;
+    }
+
+    #btn-theme-toggle {
+        width: 40px;
+        height: 40px;
+        padding: 0;
+    }
+}
+
+@media (max-width: 560px) {
+    .sidebar-timer-mobile-btn {
+        display: flex;
+    }
+}
+
+@media (max-width: 400px) {
+    .topbar-inner {
+        padding: 0.45rem 0.65rem;
+        gap: 0.35rem;
+        min-height: 58px;
+    }
+
+    .brand strong,
+    .brand-title {
+        font-size: 0.96rem;
+        letter-spacing: -0.01em;
+    }
+
+    .topbar-actions {
+        gap: 0.28rem;
         flex-shrink: 0;
     }
 
@@ -3954,25 +4009,12 @@ html[data-a11y-motion="reduce"] *::after {
     #mobile-menu-toggle {
         min-width: 38px;
         min-height: 38px;
-        padding: 0.32rem 0.48rem;
-        font-size: 0.78rem;
-        border-radius: 8px;
-    }
-
-    #btn-theme-toggle {
         width: 38px;
         height: 38px;
         padding: 0;
-    }
-
-    #study-timer-goal-pill,
-    .study-timer-btn .timer-goal-pill {
-        display: none;
-    }
-
-    .study-timer-btn {
-        gap: 0.25rem;
-        padding: 0.32rem 0.45rem;
+        justify-content: center;
+        font-size: 0.8rem;
+        border-radius: 8px;
     }
 
     .sidebar {

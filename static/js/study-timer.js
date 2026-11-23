@@ -34,12 +34,12 @@
         );
     }
 
-    // Default state
+    // Default state (opt-in: no arranca solo al abrir el sitio por primera vez)
     let state = {
         accumulatedSeconds: 0,
         targetMinutes: 25, // default 25 min (Pomodoro)
-        isRunning: !isAuthPage(),
-        runningSinceMs: isAuthPage() ? null : Date.now(),
+        isRunning: false,
+        runningSinceMs: null,
         goalNotified: false,
         soundEnabled: true
     };
@@ -106,9 +106,9 @@
             console.warn('Could not load study timer state:', e);
         }
 
-        // Estado inicial limpio (sin autoinicio en rutas de autenticación)
-        state.isRunning = !authPage;
-        state.runningSinceMs = state.isRunning ? Date.now() : null;
+        // Estado inicial limpio: el usuario activa el cronómetro bajo demanda
+        state.isRunning = false;
+        state.runningSinceMs = null;
     }
 
     function saveState() {
@@ -344,11 +344,10 @@
         }
 
         if (goalPill) {
-            if (state.targetMinutes > 0) {
-                goalPill.style.display = 'inline';
-                goalPill.textContent = isGoalMet ? 'Meta Alcanzada' : `/ ${state.targetMinutes}m`;
-            } else {
-                goalPill.style.display = 'none';
+            const hasGoal = state.targetMinutes > 0;
+            goalPill.classList.toggle('is-visible', hasGoal);
+            if (hasGoal) {
+                goalPill.textContent = isGoalMet ? 'Meta alcanzada' : `/ ${state.targetMinutes}m`;
             }
         }
 
@@ -645,11 +644,26 @@
             });
         }
 
+        const mobileTimerBtn = document.getElementById('btn-study-timer-mobile');
+        if (mobileTimerBtn) {
+            mobileTimerBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const sb = document.getElementById('main-sidebar');
+                const ov = document.getElementById('mobile-overlay');
+                const mt = document.getElementById('mobile-menu-toggle');
+                if (sb) sb.classList.remove('active');
+                if (ov) ov.style.display = 'none';
+                if (mt) mt.setAttribute('aria-expanded', 'false');
+                toggleModal();
+            });
+        }
+
         // Cerrar al hacer clic fuera
         document.addEventListener('click', (e) => {
             const modal = document.getElementById('study-timer-modal');
             const btn = document.getElementById('btn-study-timer');
-            if (isModalOpen() && modal && !modal.contains(e.target) && (!btn || !btn.contains(e.target))) {
+            const mbtn = document.getElementById('btn-study-timer-mobile');
+            if (isModalOpen() && modal && !modal.contains(e.target) && (!btn || !btn.contains(e.target)) && (!mbtn || !mbtn.contains(e.target))) {
                 closeModal(false);
             }
         });
