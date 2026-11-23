@@ -12,8 +12,51 @@ from content_loader import (
     get_lesson_title,
     get_level_title,
     get_reference,
+    load_quiz,
     load_ui_strings,
 )
+
+AUDIT_ACTION_LABELS = {
+    "CREATE_SECTION": "Sección creada",
+    "EDIT_SECTION": "Sección editada",
+    "DELETE_SECTION": "Sección eliminada",
+    "STUDENT_JOIN_SECTION": "Ingreso a sección",
+    "REMOVE_STUDENT_SECTION": "Removido de sección",
+    "SUSPEND_STUDENT": "Cuenta suspendida",
+    "RESTORE_STUDENT": "Cuenta restaurada",
+    "SUPERADMIN_CREATE_TEACHER": "Docente creado",
+    "SUPERADMIN_ASSIGN_SECTION": "Sección asignada",
+    "SUPERADMIN_CHANGE_ROLE": "Rol actualizado",
+    "SUPERADMIN_UNLOCK_USER": "Cuenta desbloqueada",
+    "CHANGE_PASSWORD": "Contraseña cambiada",
+    "UPDATE_PROFILE_EMAIL": "Correo actualizado",
+    "SELF_DELETE_ACCOUNT": "Cuenta eliminada",
+    "UNAUTHORIZED_DELETE_SECTION_ATTEMPT": "Intento no autorizado (eliminar sección)",
+    "UNAUTHORIZED_EDIT_SECTION_ATTEMPT": "Intento no autorizado (editar sección)",
+    "UNAUTHORIZED_PROFILE_VIEW": "Intento no autorizado (ver perfil)",
+    "UNAUTHORIZED_REMOVE_STUDENT_ATTEMPT": "Intento no autorizado (quitar alumno)",
+    "UNAUTHORIZED_RESTORE_ATTEMPT": "Intento no autorizado (restaurar)",
+    "UNAUTHORIZED_RESULTS_VIEW": "Intento no autorizado (ver resultados)",
+    "UNAUTHORIZED_SUPERADMIN_ACCESS": "Intento no autorizado (Super Admin)",
+    "UNAUTHORIZED_SUSPEND_ATTEMPT": "Intento no autorizado (suspender)",
+}
+
+
+def format_audit_action(action):
+    """Traduce códigos técnicos de auditoría a etiquetas claras en español."""
+    if not action:
+        return "—"
+    return AUDIT_ACTION_LABELS.get(action, action)
+
+
+def get_quiz_title(quiz_id):
+    """Devuelve el título legible de un cuestionario o su lección asociada."""
+    if not quiz_id:
+        return ""
+    quiz_data = load_quiz(quiz_id)
+    if quiz_data and quiz_data.get("title"):
+        return quiz_data["title"]
+    return get_lesson_title(quiz_id)
 from models import User, db
 
 from py2java.config import is_production, logger
@@ -117,6 +160,8 @@ def inject_globals():
         "current_user_id": current_user.id if current_user.is_authenticated else None,
         "get_lesson": lambda lid: get_lesson(lid),
         "get_lesson_title": lambda lid: get_lesson_title(lid),
+        "get_quiz_title": lambda qid: get_quiz_title(qid),
+        "format_audit_action": format_audit_action,
         "get_reference": lambda cat: get_reference(cat),
     }
 
@@ -162,5 +207,6 @@ def register_hooks(app):
     app.errorhandler(CSRFError)(handle_csrf_error)
     app.teardown_appcontext(shutdown_session)
     app.add_template_filter(strip_exercise_answers_filter, "strip_exercise_answers")
+    app.add_template_filter(format_audit_action, "audit_action_label")
     login_manager.unauthorized_handler(_handle_unauthorized)
     login_manager.user_loader(load_user)

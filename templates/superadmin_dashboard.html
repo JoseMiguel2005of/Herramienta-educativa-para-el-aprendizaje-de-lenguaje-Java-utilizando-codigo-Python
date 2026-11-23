@@ -59,8 +59,44 @@
         </div>
     </section>
 
+    {% set has_audit_filters = filters.audit_q or filters.audit_action or filters.audit_from or filters.audit_to or (filters.audit_page and filters.audit_page > 1) %}
+    {% set has_student_filters = filters.q or filters.section_id or (filters.status and filters.status != 'all') or (filters.sort and filters.sort != 'xp_desc') or (filters.page and filters.page > 1) %}
+    {% set has_sa_secondary = (filters.status and filters.status != 'all') or (filters.sort and filters.sort != 'xp_desc') %}
+    {% if has_audit_filters %}
+        {% set sa_initial_tab = 'audit' %}
+    {% elif has_student_filters %}
+        {% set sa_initial_tab = 'students' %}
+    {% else %}
+        {% set sa_initial_tab = 'teachers' %}
+    {% endif %}
+
+    <!-- Barra de pestañas accesibles -->
+    <div class="admin-tabs" role="tablist" aria-label="Secciones de Super Admin" data-admin-tabs="superadmin">
+        <button type="button" role="tab" id="sa-tab-btn-teachers" class="admin-tab"
+            aria-controls="sa-tab-teachers" aria-selected="{{ 'true' if sa_initial_tab == 'teachers' else 'false' }}"
+            data-tab-target="teachers">
+            Profesores <span class="admin-tab-count">{{ teachers | length }}</span>
+        </button>
+        <button type="button" role="tab" id="sa-tab-btn-sections" class="admin-tab"
+            aria-controls="sa-tab-sections" aria-selected="{{ 'true' if sa_initial_tab == 'sections' else 'false' }}"
+            data-tab-target="sections">
+            Secciones <span class="admin-tab-count">{{ classrooms | length }}</span>
+        </button>
+        <button type="button" role="tab" id="sa-tab-btn-students" class="admin-tab"
+            aria-controls="sa-tab-students" aria-selected="{{ 'true' if sa_initial_tab == 'students' else 'false' }}"
+            data-tab-target="students">
+            Estudiantes <span class="admin-tab-count">{{ filters.total_filtered }}</span>
+        </button>
+        <button type="button" role="tab" id="sa-tab-btn-audit" class="admin-tab"
+            aria-controls="sa-tab-audit" aria-selected="{{ 'true' if sa_initial_tab == 'audit' else 'false' }}"
+            data-tab-target="audit">
+            Auditoría <span class="admin-tab-count">{{ metrics.audit_total }}</span>
+        </button>
+    </div>
+
     <div class="admin-stack">
-        <!-- Gestión de profesores -->
+        <!-- Pestaña: Gestión de profesores -->
+        <div id="sa-tab-teachers" class="admin-tabpanel" role="tabpanel" aria-labelledby="sa-tab-btn-teachers" {% if sa_initial_tab != 'teachers' %}hidden{% endif %}>
         <section class="admin-panel" aria-labelledby="sa-teachers-title">
             <div class="admin-panel-header">
                 <h2 class="admin-panel-title" id="sa-teachers-title">Gestión de profesores ({{ teachers | length }})</h2>
@@ -148,8 +184,10 @@
                 </table>
             </div>
         </section>
+        </div>
 
-        <!-- Todas las secciones -->
+        <!-- Pestaña: Todas las secciones -->
+        <div id="sa-tab-sections" class="admin-tabpanel" role="tabpanel" aria-labelledby="sa-tab-btn-sections" {% if sa_initial_tab != 'sections' %}hidden{% endif %}>
         <section class="admin-panel" aria-labelledby="sa-sections-title">
             <div class="admin-panel-header">
                 <h2 class="admin-panel-title" id="sa-sections-title">Todas las secciones ({{ classrooms | length }})</h2>
@@ -191,46 +229,56 @@
                 </table>
             </div>
         </section>
+        </div>
 
-        <!-- Directorio global de estudiantes -->
+        <!-- Pestaña: Directorio global de estudiantes -->
+        <div id="sa-tab-students" class="admin-tabpanel" role="tabpanel" aria-labelledby="sa-tab-btn-students" {% if sa_initial_tab != 'students' %}hidden{% endif %}>
         <section class="admin-panel" aria-labelledby="sa-students-title">
             <div class="admin-panel-header">
                 <h2 class="admin-panel-title" id="sa-students-title">Directorio global de estudiantes ({{ filters.total_filtered }})</h2>
                 <span class="admin-panel-desc">Vista completa de todos los estudiantes (con o sin sección)</span>
             </div>
 
-            <form method="GET" action="{{ url_for('superadmin_dashboard') }}" class="admin-filter-bar">
+            <form method="GET" action="{{ url_for('superadmin_dashboard') }}#tab-students" class="admin-filter-bar">
                 {% if filters.audit_q %}<input type="hidden" name="audit_q" value="{{ filters.audit_q }}">{% endif %}
                 {% if filters.audit_action %}<input type="hidden" name="audit_action" value="{{ filters.audit_action }}">{% endif %}
                 {% if filters.audit_from %}<input type="hidden" name="audit_from" value="{{ filters.audit_from }}">{% endif %}
                 {% if filters.audit_to %}<input type="hidden" name="audit_to" value="{{ filters.audit_to }}">{% endif %}
-                <label for="sa-filter-q" class="sr-only">Buscar estudiante o correo</label>
-                <input id="sa-filter-q" type="text" name="q" value="{{ filters.q }}"
-                    placeholder="Buscar estudiante o correo..." class="admin-input admin-input--grow">
-                <label for="sa-filter-section" class="sr-only">Filtrar por sección</label>
-                <select id="sa-filter-section" name="section_id" class="admin-select">
-                    <option value="">Todas las secciones</option>
-                    <option value="unassigned" {% if filters.section_id == 'unassigned' %}selected{% endif %}>Sin sección asignada</option>
-                    {% for cls in classrooms %}
-                    <option value="{{ cls.id }}" {% if filters.section_id == (cls.id | string) %}selected{% endif %}>{{ cls.name }} ({{ cls.code }})</option>
-                    {% endfor %}
-                </select>
-                <label for="sa-filter-status" class="sr-only">Filtrar por estado</label>
-                <select id="sa-filter-status" name="status" class="admin-select">
-                    <option value="all" {% if filters.status == 'all' %}selected{% endif %}>Estado: Todos</option>
-                    <option value="active" {% if filters.status == 'active' %}selected{% endif %}>Activos</option>
-                    <option value="suspended" {% if filters.status == 'suspended' %}selected{% endif %}>Suspendidos</option>
-                </select>
-                <label for="sa-filter-sort" class="sr-only">Ordenar estudiantes</label>
-                <select id="sa-filter-sort" name="sort" class="admin-select">
-                    <option value="xp_desc" {% if filters.sort == 'xp_desc' %}selected{% endif %}>Mayor XP</option>
-                    <option value="xp_asc" {% if filters.sort == 'xp_asc' %}selected{% endif %}>Menor XP</option>
-                    <option value="progress_desc" {% if filters.sort == 'progress_desc' %}selected{% endif %}>Mayor progreso</option>
-                    <option value="name_asc" {% if filters.sort == 'name_asc' %}selected{% endif %}>Nombre (A–Z)</option>
-                    <option value="date_desc" {% if filters.sort == 'date_desc' %}selected{% endif %}>Más recientes</option>
-                </select>
-                <button type="submit" class="btn-primary-inclusive">Filtrar</button>
-                <a href="{{ url_for('superadmin_dashboard') }}" class="btn-secondary-inclusive">Limpiar</a>
+                <div class="admin-filter-primary">
+                    <label for="sa-filter-q" class="sr-only">Buscar estudiante o correo</label>
+                    <input id="sa-filter-q" type="text" name="q" value="{{ filters.q }}"
+                        placeholder="Buscar estudiante o correo..." class="admin-input admin-input--grow">
+                    <label for="sa-filter-section" class="sr-only">Filtrar por sección</label>
+                    <select id="sa-filter-section" name="section_id" class="admin-select">
+                        <option value="">Todas las secciones</option>
+                        <option value="unassigned" {% if filters.section_id == 'unassigned' %}selected{% endif %}>Sin sección asignada</option>
+                        {% for cls in classrooms %}
+                        <option value="{{ cls.id }}" {% if filters.section_id == (cls.id | string) %}selected{% endif %}>{{ cls.name }} ({{ cls.code }})</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn-primary-inclusive">Filtrar</button>
+                    <a href="{{ url_for('superadmin_dashboard') }}#tab-students" class="btn-secondary-inclusive">Limpiar</a>
+                </div>
+
+                <details class="admin-more-filters" {% if has_sa_secondary %}open{% endif %}>
+                    <summary>▾ Más filtros (estado y orden)</summary>
+                    <div class="admin-more-filters-grid">
+                        <label for="sa-filter-status" class="sr-only">Filtrar por estado</label>
+                        <select id="sa-filter-status" name="status" class="admin-select">
+                            <option value="all" {% if filters.status == 'all' %}selected{% endif %}>Estado: Todos</option>
+                            <option value="active" {% if filters.status == 'active' %}selected{% endif %}>Activos</option>
+                            <option value="suspended" {% if filters.status == 'suspended' %}selected{% endif %}>Suspendidos</option>
+                        </select>
+                        <label for="sa-filter-sort" class="sr-only">Ordenar estudiantes</label>
+                        <select id="sa-filter-sort" name="sort" class="admin-select">
+                            <option value="xp_desc" {% if filters.sort == 'xp_desc' %}selected{% endif %}>Orden: Mayor XP</option>
+                            <option value="xp_asc" {% if filters.sort == 'xp_asc' %}selected{% endif %}>Orden: Menor XP</option>
+                            <option value="progress_desc" {% if filters.sort == 'progress_desc' %}selected{% endif %}>Orden: Mayor progreso</option>
+                            <option value="name_asc" {% if filters.sort == 'name_asc' %}selected{% endif %}>Orden: Nombre (A–Z)</option>
+                            <option value="date_desc" {% if filters.sort == 'date_desc' %}selected{% endif %}>Orden: Más recientes</option>
+                        </select>
+                    </div>
+                </details>
             </form>
 
             <div class="admin-panel-body admin-panel-body--flush admin-table-wrap">
@@ -321,16 +369,18 @@
                 <span>Página <strong>{{ filters.page }}</strong> de <strong>{{ filters.total_pages }}</strong> · {{ filters.total_filtered }} estudiante(s)</span>
                 <div class="admin-pagination-links">
                     {% if filters.page > 1 %}
-                    <a href="{{ url_for('superadmin_dashboard', q=filters.q, section_id=filters.section_id, status=filters.status, sort=filters.sort, page=filters.page - 1, audit_page=filters.audit_page, audit_q=filters.audit_q, audit_action=filters.audit_action, audit_from=filters.audit_from, audit_to=filters.audit_to) }}" class="btn-secondary-inclusive">← Anterior</a>
+                    <a href="{{ url_for('superadmin_dashboard', q=filters.q, section_id=filters.section_id, status=filters.status, sort=filters.sort, page=filters.page - 1, audit_page=filters.audit_page, audit_q=filters.audit_q, audit_action=filters.audit_action, audit_from=filters.audit_from, audit_to=filters.audit_to) }}#tab-students" class="btn-secondary-inclusive">← Anterior</a>
                     {% endif %}
                     {% if filters.page < filters.total_pages %}
-                    <a href="{{ url_for('superadmin_dashboard', q=filters.q, section_id=filters.section_id, status=filters.status, sort=filters.sort, page=filters.page + 1, audit_page=filters.audit_page, audit_q=filters.audit_q, audit_action=filters.audit_action, audit_from=filters.audit_from, audit_to=filters.audit_to) }}" class="btn-secondary-inclusive">Siguiente →</a>
+                    <a href="{{ url_for('superadmin_dashboard', q=filters.q, section_id=filters.section_id, status=filters.status, sort=filters.sort, page=filters.page + 1, audit_page=filters.audit_page, audit_q=filters.audit_q, audit_action=filters.audit_action, audit_from=filters.audit_from, audit_to=filters.audit_to) }}#tab-students" class="btn-secondary-inclusive">Siguiente →</a>
                     {% endif %}
                 </div>
             </div>
         </section>
+        </div>
 
-        <!-- Bitácora global de auditoría -->
+        <!-- Pestaña: Bitácora global de auditoría -->
+        <div id="sa-tab-audit" class="admin-tabpanel" role="tabpanel" aria-labelledby="sa-tab-btn-audit" {% if sa_initial_tab != 'audit' %}hidden{% endif %}>
         <section class="admin-panel" id="sa-audit-panel" aria-labelledby="sa-audit-title">
             <div class="admin-panel-header">
                 <div>
@@ -354,7 +404,7 @@
                 <select id="sa-audit-action" name="audit_action" class="admin-select">
                     <option value="">Todas las acciones</option>
                     {% for act in audit_actions %}
-                    <option value="{{ act }}" {% if filters.audit_action == act %}selected{% endif %}>{{ act }}</option>
+                    <option value="{{ act }}" {% if filters.audit_action == act %}selected{% endif %}>{{ act | audit_action_label }}</option>
                     {% endfor %}
                 </select>
                 <div class="admin-inline-field">
@@ -386,7 +436,7 @@
                             <td>{{ log.admin_username }}</td>
                             <td>
                                 {% set pill_cls = 'status-pill--danger' if ('SUSPEND' in log.action or 'UNAUTHORIZED' in log.action or 'DELETE' in log.action) else ('status-pill--completed' if ('RESTORE' in log.action or 'JOIN' in log.action or 'CREATE_TEACHER' in log.action or 'UNLOCK' in log.action) else 'status-pill--available') %}
-                                <span class="status-pill {{ pill_cls }}">{{ log.action }}</span>
+                                <span class="status-pill {{ pill_cls }}" title="{{ log.action }}">{{ log.action | audit_action_label }}</span>
                             </td>
                             <td style="color: var(--green); font-weight: 600;">{{ log.target_username or '—' }}</td>
                             <td>
@@ -416,6 +466,7 @@
             </div>
             {% endif %}
         </section>
+        </div>
     </div>
 </article>
 
@@ -689,5 +740,49 @@
             }
         });
     })();
+
+    // Pestañas accesibles de Super Admin (WAI-ARIA Tabs + teclado + hash)
+    document.addEventListener('DOMContentLoaded', () => {
+        const tablist = document.querySelector('[data-admin-tabs="superadmin"]');
+        if (!tablist) return;
+        const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+        const activateTab = (targetKey, updateHash) => {
+            tabs.forEach(tab => {
+                const isSelected = tab.dataset.tabTarget === targetKey;
+                tab.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+                tab.tabIndex = isSelected ? 0 : -1;
+                const panel = document.getElementById(tab.getAttribute('aria-controls'));
+                if (panel) panel.hidden = !isSelected;
+            });
+            if (updateHash && window.history && window.history.replaceState) {
+                window.history.replaceState(null, '', '#tab-' + targetKey);
+            }
+        };
+
+        tabs.forEach((tab, idx) => {
+            tab.addEventListener('click', () => activateTab(tab.dataset.tabTarget, true));
+            tab.addEventListener('keydown', (e) => {
+                let nextIdx = null;
+                if (e.key === 'ArrowRight') nextIdx = (idx + 1) % tabs.length;
+                else if (e.key === 'ArrowLeft') nextIdx = (idx - 1 + tabs.length) % tabs.length;
+                else if (e.key === 'Home') nextIdx = 0;
+                else if (e.key === 'End') nextIdx = tabs.length - 1;
+                if (nextIdx !== null) {
+                    e.preventDefault();
+                    tabs[nextIdx].focus();
+                    activateTab(tabs[nextIdx].dataset.tabTarget, true);
+                }
+            });
+        });
+
+        const rawHash = window.location.hash || '';
+        const hashKey = rawHash === '#sa-audit-panel' ? 'audit' : rawHash.replace('#tab-', '');
+        if (hashKey && tabs.some(t => t.dataset.tabTarget === hashKey)) {
+            activateTab(hashKey, false);
+        } else {
+            const activeBtn = tabs.find(t => t.getAttribute('aria-selected') === 'true') || tabs[0];
+            if (activeBtn) activateTab(activeBtn.dataset.tabTarget, false);
+        }
+    });
 </script>
 {% endblock %}

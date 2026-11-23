@@ -191,7 +191,7 @@
                         <tbody>
                             {% for qr in quiz_results %}
                             <tr>
-                                <td>{{ qr.quiz_id }}</td>
+                                <td>{{ get_quiz_title(qr.quiz_id) }}</td>
                                 <td>
                                     <span class="{% if qr.score >= qr.total %}profile-score--good{% elif qr.score >= qr.total // 2 %}profile-score--mid{% else %}profile-score--low{% endif %}">
                                         {{ qr.score }}/{{ qr.total }}

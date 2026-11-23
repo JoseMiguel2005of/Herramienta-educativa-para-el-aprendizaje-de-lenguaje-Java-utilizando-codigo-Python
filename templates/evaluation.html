@@ -121,7 +121,8 @@
                         {% elif q.type == 'true_false' %}Verdadero o Falso
                         {% endif %}
                     </span>
-                    <span class="eval-q-difficulty diff-{{ q.difficulty }}">{{ q.difficulty | capitalize }}</span>
+                    {% set diff_labels = {'easy': 'Fácil', 'medium': 'Media', 'hard': 'Difícil'} %}
+                    <span class="eval-q-difficulty diff-{{ q.difficulty }}">{{ diff_labels.get((q.difficulty or '') | lower, q.difficulty | capitalize) }}</span>
                 </div>
 
                 <p class="eval-question-text">{{ q.question }}</p>

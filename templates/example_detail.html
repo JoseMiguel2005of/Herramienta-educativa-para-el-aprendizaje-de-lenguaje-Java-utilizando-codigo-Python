@@ -36,8 +36,9 @@
         </div>
 
         <div class="example-tryit-editor">
-            <h3 class="tryit-title">Pruébalo tú mismo</h3>
+            <h2 class="tryit-title">Pruébalo tú mismo</h2>
             <p class="tryit-hint">Modifica el código abajo y ejecútalo para ver el resultado.</p>
+            <label for="tryit-editor" class="sr-only">Editor interactivo de código Python</label>
             <textarea id="tryit-editor" class="tryit-textarea" spellcheck="false">{{ example.python_code }}</textarea>
             <div class="tryit-actions">
                 <button class="btn-tryit-run" id="btn-run-tryit">Ejecutar Editor</button>
@@ -52,7 +53,7 @@
 
     {% if example.related_lesson %}
     <div class="example-related">
-        <h3 class="example-label">Lección Relacionada</h3>
+        <h2 class="example-label">Lección Relacionada</h2>
         <p>Aprende más en: <a href="{{ url_for('lesson', lesson_id=example.related_lesson) }}" class="btn-related-lesson">{{ example.category }}</a></p>
     </div>
     {% endif %}

@@ -56,8 +56,45 @@
         </div>
     </section>
 
+    {% set has_student_filters = filters.q or filters.section_id or filters.level or (filters.status and filters.status != 'all') or (filters.sort and filters.sort != 'xp_desc') or (filters.page and filters.page > 1) %}
+    {% set has_secondary_filters = filters.level or (filters.status and filters.status != 'all') or (filters.sort and filters.sort != 'xp_desc') %}
+    {% if filters.audit_page and filters.audit_page > 1 %}
+        {% set initial_tab = 'audit' %}
+    {% elif has_student_filters %}
+        {% set initial_tab = 'students' %}
+    {% elif not classrooms %}
+        {% set initial_tab = 'sections' %}
+    {% else %}
+        {% set initial_tab = 'students' %}
+    {% endif %}
+
+    <!-- Barra de pestañas accesibles para descongestionar el panel -->
+    <div class="admin-tabs" role="tablist" aria-label="Secciones del panel docente" data-admin-tabs="teacher">
+        <button type="button" role="tab" id="tab-btn-students" class="admin-tab"
+            aria-controls="tab-students" aria-selected="{{ 'true' if initial_tab == 'students' else 'false' }}"
+            data-tab-target="students">
+            Estudiantes <span class="admin-tab-count">{{ filters.total_filtered }}</span>
+        </button>
+        <button type="button" role="tab" id="tab-btn-sections" class="admin-tab"
+            aria-controls="tab-sections" aria-selected="{{ 'true' if initial_tab == 'sections' else 'false' }}"
+            data-tab-target="sections">
+            Secciones <span class="admin-tab-count">{{ classrooms | length }}</span>
+        </button>
+        <button type="button" role="tab" id="tab-btn-performance" class="admin-tab"
+            aria-controls="tab-performance" aria-selected="{{ 'true' if initial_tab == 'performance' else 'false' }}"
+            data-tab-target="performance">
+            Rendimiento
+        </button>
+        <button type="button" role="tab" id="tab-btn-audit" class="admin-tab"
+            aria-controls="tab-audit" aria-selected="{{ 'true' if initial_tab == 'audit' else 'false' }}"
+            data-tab-target="audit">
+            Bitácora <span class="admin-tab-count">{{ filters.audit_total }}</span>
+        </button>
+    </div>
+
     <div class="admin-stack">
-        <!-- Secciones / grupos del docente -->
+        <!-- Pestaña: Secciones / grupos del docente -->
+        <div id="tab-sections" class="admin-tabpanel" role="tabpanel" aria-labelledby="tab-btn-sections" {% if initial_tab != 'sections' %}hidden{% endif %}>
         <section class="admin-panel" aria-labelledby="panel-sections-title">
             <div class="admin-panel-header">
                 <h2 class="admin-panel-title" id="panel-sections-title">Mis secciones y códigos de clase</h2>
@@ -117,58 +154,67 @@
                 {% endif %}
             </div>
         </section>
+        </div>
 
-        <!-- Tabla de estudiantes con buscador, filtros, ordenamiento y paginación -->
+        <!-- Pestaña: Estudiantes -->
+        <div id="tab-students" class="admin-tabpanel" role="tabpanel" aria-labelledby="tab-btn-students" {% if initial_tab != 'students' %}hidden{% endif %}>
         <section class="admin-panel" aria-labelledby="panel-students-title">
             <div class="admin-panel-header">
                 <h2 class="admin-panel-title" id="panel-students-title">Estudiantes inscritos ({{ filters.total_filtered }})</h2>
                 <span class="admin-panel-desc">Solo estudiantes inscritos en tus secciones · Haz clic en un usuario para ver su perfil</span>
             </div>
 
-            <form method="GET" action="{{ url_for('teacher_dashboard') }}" class="admin-filter-bar">
-                <label for="teacher-filter-q" class="sr-only">Buscar estudiante por usuario o correo</label>
-                <input id="teacher-filter-q" type="text" name="q" value="{{ filters.q }}"
-                    placeholder="Buscar usuario o correo..." class="admin-input admin-input--grow">
+            <form method="GET" action="{{ url_for('teacher_dashboard') }}#tab-students" class="admin-filter-bar">
+                <div class="admin-filter-primary">
+                    <label for="teacher-filter-q" class="sr-only">Buscar estudiante por usuario o correo</label>
+                    <input id="teacher-filter-q" type="text" name="q" value="{{ filters.q }}"
+                        placeholder="Buscar usuario o correo..." class="admin-input admin-input--grow">
 
-                <label for="teacher-filter-section" class="sr-only">Filtrar por sección</label>
-                <select id="teacher-filter-section" name="section_id" class="admin-select">
-                    <option value="">Todos mis grupos</option>
-                    {% for cls in classrooms %}
-                    <option value="{{ cls.id }}" {% if filters.section_id == cls.id %}selected{% endif %}>{{ cls.name }} ({{ cls.code }})</option>
-                    {% endfor %}
-                </select>
+                    <label for="teacher-filter-section" class="sr-only">Filtrar por sección</label>
+                    <select id="teacher-filter-section" name="section_id" class="admin-select">
+                        <option value="">Todos mis grupos</option>
+                        {% for cls in classrooms %}
+                        <option value="{{ cls.id }}" {% if filters.section_id == cls.id %}selected{% endif %}>{{ cls.name }} ({{ cls.code }})</option>
+                        {% endfor %}
+                    </select>
 
-                <label for="teacher-filter-level" class="sr-only">Filtrar por nivel</label>
-                <select id="teacher-filter-level" name="level" class="admin-select">
-                    <option value="">Todos los niveles</option>
-                    {% for lv_num, lv_name in level_titles.items() %}
-                    <option value="{{ lv_num }}" {% if filters.level == lv_num %}selected{% endif %}>Nivel {{ lv_num }} — {{ lv_name }}</option>
-                    {% endfor %}
-                </select>
+                    <button type="submit" class="btn-primary-inclusive">Filtrar</button>
+                    <a href="{{ url_for('teacher_dashboard') }}#tab-students" class="btn-secondary-inclusive">Limpiar</a>
+                </div>
 
-                <label for="teacher-filter-status" class="sr-only">Filtrar por estado</label>
-                <select id="teacher-filter-status" name="status" class="admin-select">
-                    <option value="all" {% if filters.status == 'all' %}selected{% endif %}>Estado: Todos</option>
-                    <option value="active" {% if filters.status == 'active' %}selected{% endif %}>Activos</option>
-                    <option value="suspended" {% if filters.status == 'suspended' %}selected{% endif %}>Suspendidos</option>
-                    <option value="with_progress" {% if filters.status == 'with_progress' %}selected{% endif %}>Con progreso</option>
-                    <option value="no_activity" {% if filters.status == 'no_activity' %}selected{% endif %}>Sin actividad</option>
-                </select>
+                <details class="admin-more-filters" {% if has_secondary_filters %}open{% endif %}>
+                    <summary>▾ Más filtros (nivel, estado y orden)</summary>
+                    <div class="admin-more-filters-grid">
+                        <label for="teacher-filter-level" class="sr-only">Filtrar por nivel</label>
+                        <select id="teacher-filter-level" name="level" class="admin-select">
+                            <option value="">Todos los niveles</option>
+                            {% for lv_num, lv_name in level_titles.items() %}
+                            <option value="{{ lv_num }}" {% if filters.level == lv_num %}selected{% endif %}>Nivel {{ lv_num }} — {{ lv_name }}</option>
+                            {% endfor %}
+                        </select>
 
-                <label for="teacher-filter-sort" class="sr-only">Ordenar resultados</label>
-                <select id="teacher-filter-sort" name="sort" class="admin-select">
-                    <option value="xp_desc" {% if filters.sort == 'xp_desc' %}selected{% endif %}>Orden: Mayor XP</option>
-                    <option value="xp_asc" {% if filters.sort == 'xp_asc' %}selected{% endif %}>Orden: Menor XP</option>
-                    <option value="progress_desc" {% if filters.sort == 'progress_desc' %}selected{% endif %}>Orden: Mayor progreso</option>
-                    <option value="progress_asc" {% if filters.sort == 'progress_asc' %}selected{% endif %}>Orden: Menor progreso</option>
-                    <option value="name_asc" {% if filters.sort == 'name_asc' %}selected{% endif %}>Orden: Nombre (A–Z)</option>
-                    <option value="name_desc" {% if filters.sort == 'name_desc' %}selected{% endif %}>Orden: Nombre (Z–A)</option>
-                    <option value="date_desc" {% if filters.sort == 'date_desc' %}selected{% endif %}>Orden: Registro reciente</option>
-                    <option value="date_asc" {% if filters.sort == 'date_asc' %}selected{% endif %}>Orden: Registro antiguo</option>
-                </select>
+                        <label for="teacher-filter-status" class="sr-only">Filtrar por estado</label>
+                        <select id="teacher-filter-status" name="status" class="admin-select">
+                            <option value="all" {% if filters.status == 'all' %}selected{% endif %}>Estado: Todos</option>
+                            <option value="active" {% if filters.status == 'active' %}selected{% endif %}>Activos</option>
+                            <option value="suspended" {% if filters.status == 'suspended' %}selected{% endif %}>Suspendidos</option>
+                            <option value="with_progress" {% if filters.status == 'with_progress' %}selected{% endif %}>Con progreso</option>
+                            <option value="no_activity" {% if filters.status == 'no_activity' %}selected{% endif %}>Sin actividad</option>
+                        </select>
 
-                <button type="submit" class="btn-primary-inclusive">Filtrar</button>
-                <a href="{{ url_for('teacher_dashboard') }}" class="btn-secondary-inclusive">Limpiar</a>
+                        <label for="teacher-filter-sort" class="sr-only">Ordenar resultados</label>
+                        <select id="teacher-filter-sort" name="sort" class="admin-select">
+                            <option value="xp_desc" {% if filters.sort == 'xp_desc' %}selected{% endif %}>Orden: Mayor XP</option>
+                            <option value="xp_asc" {% if filters.sort == 'xp_asc' %}selected{% endif %}>Orden: Menor XP</option>
+                            <option value="progress_desc" {% if filters.sort == 'progress_desc' %}selected{% endif %}>Orden: Mayor progreso</option>
+                            <option value="progress_asc" {% if filters.sort == 'progress_asc' %}selected{% endif %}>Orden: Menor progreso</option>
+                            <option value="name_asc" {% if filters.sort == 'name_asc' %}selected{% endif %}>Orden: Nombre (A–Z)</option>
+                            <option value="name_desc" {% if filters.sort == 'name_desc' %}selected{% endif %}>Orden: Nombre (Z–A)</option>
+                            <option value="date_desc" {% if filters.sort == 'date_desc' %}selected{% endif %}>Orden: Registro reciente</option>
+                            <option value="date_asc" {% if filters.sort == 'date_asc' %}selected{% endif %}>Orden: Registro antiguo</option>
+                        </select>
+                    </div>
+                </details>
             </form>
 
             <div class="admin-panel-body admin-panel-body--flush admin-table-wrap">
@@ -272,7 +318,7 @@
                 <span>Página <strong>{{ filters.page }}</strong> de <strong>{{ filters.total_pages }}</strong> · {{ filters.total_filtered }} estudiante(s)</span>
                 <div class="admin-pagination-links">
                     {% if filters.page > 1 %}
-                    <a href="{{ url_for('teacher_dashboard', q=filters.q, section_id=filters.section_id, level=filters.level, status=filters.status, sort=filters.sort, page=filters.page - 1) }}" class="btn-secondary-inclusive">
+                    <a href="{{ url_for('teacher_dashboard', q=filters.q, section_id=filters.section_id, level=filters.level, status=filters.status, sort=filters.sort, page=filters.page - 1) }}#tab-students" class="btn-secondary-inclusive">
                         ← Anterior
                     </a>
                     {% else %}
@@ -280,7 +326,7 @@
                     {% endif %}
 
                     {% if filters.page < filters.total_pages %}
-                    <a href="{{ url_for('teacher_dashboard', q=filters.q, section_id=filters.section_id, level=filters.level, status=filters.status, sort=filters.sort, page=filters.page + 1) }}" class="btn-secondary-inclusive">
+                    <a href="{{ url_for('teacher_dashboard', q=filters.q, section_id=filters.section_id, level=filters.level, status=filters.status, sort=filters.sort, page=filters.page + 1) }}#tab-students" class="btn-secondary-inclusive">
                         Siguiente →
                     </a>
                     {% else %}
@@ -289,8 +335,10 @@
                 </div>
             </div>
         </section>
+        </div>
 
-        <!-- Gráfico de distribución por niveles -->
+        <!-- Pestaña: Rendimiento (Gráfico + Evaluaciones) -->
+        <div id="tab-performance" class="admin-tabpanel" role="tabpanel" aria-labelledby="tab-btn-performance" {% if initial_tab != 'performance' %}hidden{% endif %}>
         <section class="admin-panel" aria-labelledby="panel-chart-title">
             <div class="admin-panel-header">
                 <h2 class="admin-panel-title" id="panel-chart-title">Distribución por niveles</h2>
@@ -330,7 +378,10 @@
                 </div>
             </div>
         </section>
-        <!-- Bitácora filtrada del docente -->
+        </div>
+
+        <!-- Pestaña: Bitácora filtrada del docente -->
+        <div id="tab-audit" class="admin-tabpanel" role="tabpanel" aria-labelledby="tab-btn-audit" {% if initial_tab != 'audit' %}hidden{% endif %}>
         <section class="admin-panel" aria-labelledby="panel-teacher-audit-title">
             <div class="admin-panel-header">
                 <h2 class="admin-panel-title" id="panel-teacher-audit-title">Bitácora de actividad de mis secciones ({{ filters.audit_total }})</h2>
@@ -354,7 +405,7 @@
                             <td>{{ log.admin_username }}</td>
                             <td>
                                 {% set pill_cls = 'status-pill--danger' if ('SUSPEND' in log.action or 'UNAUTHORIZED' in log.action or 'DELETE' in log.action or 'REMOVE' in log.action) else ('status-pill--completed' if ('RESTORE' in log.action or 'JOIN' in log.action or 'CREATE' in log.action) else 'status-pill--available') %}
-                                <span class="status-pill {{ pill_cls }}">{{ log.action }}</span>
+                                <span class="status-pill {{ pill_cls }}" title="{{ log.action }}">{{ log.action | audit_action_label }}</span>
                             </td>
                             <td style="color: var(--green); font-weight: 600;">{{ log.target_username or '—' }}</td>
                             <td>
@@ -375,15 +426,16 @@
                 <span>Bitácora: Página <strong>{{ filters.audit_page }}</strong> de <strong>{{ filters.audit_total_pages }}</strong></span>
                 <div class="admin-pagination-links">
                     {% if filters.audit_page > 1 %}
-                    <a href="{{ url_for('teacher_dashboard', q=filters.q, section_id=filters.section_id, level=filters.level, status=filters.status, sort=filters.sort, page=filters.page, audit_page=filters.audit_page - 1) }}" class="btn-secondary-inclusive">← Anterior</a>
+                    <a href="{{ url_for('teacher_dashboard', q=filters.q, section_id=filters.section_id, level=filters.level, status=filters.status, sort=filters.sort, page=filters.page, audit_page=filters.audit_page - 1) }}#tab-audit" class="btn-secondary-inclusive">← Anterior</a>
                     {% endif %}
                     {% if filters.audit_page < filters.audit_total_pages %}
-                    <a href="{{ url_for('teacher_dashboard', q=filters.q, section_id=filters.section_id, level=filters.level, status=filters.status, sort=filters.sort, page=filters.page, audit_page=filters.audit_page + 1) }}" class="btn-secondary-inclusive">Siguiente →</a>
+                    <a href="{{ url_for('teacher_dashboard', q=filters.q, section_id=filters.section_id, level=filters.level, status=filters.status, sort=filters.sort, page=filters.page, audit_page=filters.audit_page + 1) }}#tab-audit" class="btn-secondary-inclusive">Siguiente →</a>
                     {% endif %}
                 </div>
             </div>
             {% endif %}
         </section>
+        </div>
     </div>
 </article>
 
@@ -434,52 +486,105 @@
         return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
     }
     document.addEventListener('DOMContentLoaded', () => {
-        const canvas = document.getElementById('levelsChart');
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        const styles = getComputedStyle(document.documentElement);
-        const textMuted = styles.getPropertyValue('--text-muted').trim() || '#64748B';
-        const accentColor = styles.getPropertyValue('--green').trim() || '#0369A1';
-        const accentFill = styles.getPropertyValue('--green-light').trim() || 'rgba(3, 105, 161, 0.16)';
-        const borderColor = styles.getPropertyValue('--border').trim() || '#CBD5E1';
+        // Inicialización del gráfico solo cuando la pestaña de rendimiento está visible
+        let levelsChartInstance = null;
+        function ensureLevelsChart() {
+            if (levelsChartInstance) {
+                levelsChartInstance.resize();
+                return;
+            }
+            const canvas = document.getElementById('levelsChart');
+            if (!canvas || typeof Chart === 'undefined') return;
+            const ctx = canvas.getContext('2d');
+            const styles = getComputedStyle(document.documentElement);
+            const textMuted = styles.getPropertyValue('--text-muted').trim() || '#64748B';
+            const accentColor = styles.getPropertyValue('--green').trim() || '#0369A1';
+            const accentFill = styles.getPropertyValue('--green-light').trim() || 'rgba(3, 105, 161, 0.16)';
+            const borderColor = styles.getPropertyValue('--border').trim() || '#CBD5E1';
 
-        const labels = {{ metrics.level_labels | tojson }};
-        const data = {{ metrics.level_data | tojson }};
+            const labels = {{ metrics.level_labels | tojson }};
+            const data = {{ metrics.level_data | tojson }};
 
-        Chart.defaults.color = textMuted;
-        Chart.defaults.font.family = "'Inter', system-ui, sans-serif";
+            Chart.defaults.color = textMuted;
+            Chart.defaults.font.family = "'Inter', system-ui, sans-serif";
 
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Estudiantes',
-                    data: data,
-                    backgroundColor: accentFill,
-                    borderColor: accentColor,
-                    borderWidth: 2,
-                    borderRadius: 6,
-                    hoverBackgroundColor: accentColor
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: { stepSize: 1, color: textMuted },
-                        grid: { color: borderColor }
-                    },
-                    x: {
-                        ticks: { color: textMuted },
-                        grid: { display: false }
+            levelsChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Estudiantes',
+                        data: data,
+                        backgroundColor: accentFill,
+                        borderColor: accentColor,
+                        borderWidth: 2,
+                        borderRadius: 6,
+                        hoverBackgroundColor: accentColor
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1, color: textMuted },
+                            grid: { color: borderColor }
+                        },
+                        x: {
+                            ticks: { color: textMuted },
+                            grid: { display: false }
+                        }
                     }
                 }
+            });
+        }
+
+        // Pestañas accesibles (WAI-ARIA Tabs + teclado + hash en URL)
+        const tablist = document.querySelector('[data-admin-tabs="teacher"]');
+        if (tablist) {
+            const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+            const activateTab = (targetKey, updateHash) => {
+                tabs.forEach(tab => {
+                    const isSelected = tab.dataset.tabTarget === targetKey;
+                    tab.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+                    tab.tabIndex = isSelected ? 0 : -1;
+                    const panel = document.getElementById(tab.getAttribute('aria-controls'));
+                    if (panel) panel.hidden = !isSelected;
+                });
+                if (targetKey === 'performance') {
+                    requestAnimationFrame(ensureLevelsChart);
+                }
+                if (updateHash && window.history && window.history.replaceState) {
+                    window.history.replaceState(null, '', '#tab-' + targetKey);
+                }
+            };
+
+            tabs.forEach((tab, idx) => {
+                tab.addEventListener('click', () => activateTab(tab.dataset.tabTarget, true));
+                tab.addEventListener('keydown', (e) => {
+                    let nextIdx = null;
+                    if (e.key === 'ArrowRight') nextIdx = (idx + 1) % tabs.length;
+                    else if (e.key === 'ArrowLeft') nextIdx = (idx - 1 + tabs.length) % tabs.length;
+                    else if (e.key === 'Home') nextIdx = 0;
+                    else if (e.key === 'End') nextIdx = tabs.length - 1;
+                    if (nextIdx !== null) {
+                        e.preventDefault();
+                        tabs[nextIdx].focus();
+                        activateTab(tabs[nextIdx].dataset.tabTarget, true);
+                    }
+                });
+            });
+
+            const hash = (window.location.hash || '').replace('#tab-', '');
+            if (hash && tabs.some(t => t.dataset.tabTarget === hash)) {
+                activateTab(hash, false);
+            } else {
+                const activeBtn = tabs.find(t => t.getAttribute('aria-selected') === 'true') || tabs[0];
+                if (activeBtn) activateTab(activeBtn.dataset.tabTarget, false);
             }
-        });
+        }
     });
 
     function copyClassCode(btn) {
