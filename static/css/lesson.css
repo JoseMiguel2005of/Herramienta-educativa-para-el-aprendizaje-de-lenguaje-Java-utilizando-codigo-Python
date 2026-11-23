@@ -175,7 +175,7 @@
 }
 
 /* Eliminar el fondo gris #2d2d2d y márgenes/padding dobles de Prism Tomorrow */
-.lesson pre[class*="language-"],
+.lesson .code-block-interactive pre[class*="language-"],
 .lesson code[class*="language-"] {
     background: transparent;
     margin: 0;
@@ -186,6 +186,18 @@
     font-family: var(--font-mono);
     font-size: 0.88rem;
     line-height: 1.65;
+}
+
+.lesson pre.translator-output,
+.lesson pre.translator-output[class*="language-"] {
+    background: var(--editor-bg);
+    color: var(--editor-text);
+    color-scheme: dark;
+    margin: 0;
+    padding: 1rem;
+    border: none;
+    box-shadow: none;
+    text-shadow: none;
 }
 
 .lesson .code-block-interactive {
