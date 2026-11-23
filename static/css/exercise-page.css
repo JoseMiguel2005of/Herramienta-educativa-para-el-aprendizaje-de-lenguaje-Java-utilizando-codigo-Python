@@ -94,15 +94,17 @@
 }
 
 .exercise-code-block {
-    background: #000;
-    border-radius: 6px;
-    padding: 1.5rem;
+    background: var(--editor-bg);
+    color: var(--editor-text);
+    color-scheme: dark;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.35rem 1.5rem;
     margin-bottom: 1.5rem;
     border-left: 4px solid var(--green);
     font-family: var(--font-mono);
-    font-size: 1.1rem;
+    font-size: 1.02rem;
     line-height: 1.8;
-    color: #e0e0e0;
 }
 
 .exercise-template-area .exercise-input {

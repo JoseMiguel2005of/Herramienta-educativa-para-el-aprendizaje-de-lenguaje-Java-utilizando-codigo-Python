@@ -210,13 +210,26 @@
     letter-spacing: 0.05em;
 }
 
-.example-code-block {
-    background: #0d1117;
+.example-code-block,
+pre[class*="language-"].example-code-block {
+    background: var(--editor-bg);
+    color: var(--editor-text);
+    color-scheme: dark;
     border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 1.25rem;
+    border-radius: 10px;
+    padding: 1.15rem 1.25rem;
+    margin: 0;
     overflow-x: auto;
-    font-size: 0.95rem;
+    font-size: 0.94rem;
+    box-shadow: none;
+    text-shadow: none;
+}
+
+.example-code-block code[class*="language-"] {
+    background: transparent;
+    color: var(--editor-text);
+    font-family: var(--font-mono);
+    text-shadow: none;
 }
 
 /* Try It Section */
@@ -258,14 +271,15 @@
 }
 
 .example-output {
-    background: #000;
+    background: var(--editor-bg);
     border: 1px solid var(--border);
     border-left: 4px solid var(--green);
-    border-radius: 4px;
+    border-radius: 8px;
     padding: 1rem;
-    color: #e0e0e0;
-    font-size: 0.95rem;
-    min-height: 40px;
+    color: var(--editor-text);
+    color-scheme: dark;
+    font-size: 0.92rem;
+    min-height: 44px;
     margin: 0;
 }
 
@@ -273,14 +287,14 @@
 .example-tryit-editor {
     background: var(--bg-secondary);
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: var(--radius);
     padding: 1.5rem;
     margin-top: 1.5rem;
 }
 
 .tryit-title {
     font-size: 1.1rem;
-    color: var(--green);
+    color: var(--text);
     margin: 0 0 0.25rem 0;
 }
 
@@ -293,15 +307,16 @@
 .tryit-textarea {
     width: 100%;
     min-height: 150px;
-    background: #0a0a0a;
-    border: 1px solid var(--border);
-    color: #e0e0e0;
+    background: var(--editor-bg);
+    border: 1px solid var(--border-strong);
+    color: var(--editor-text);
+    color-scheme: dark;
     font-family: var(--font-mono);
-    font-size: 1rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
     padding: 1rem;
-    border-radius: 4px;
+    border-radius: 8px;
     resize: vertical;
-    outline: none;
     margin-bottom: 0.75rem;
 }
 

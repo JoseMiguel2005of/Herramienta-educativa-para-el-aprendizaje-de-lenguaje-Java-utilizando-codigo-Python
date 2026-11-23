@@ -50,17 +50,19 @@
 }
 
 .exercise-python-ref {
-    background: var(--bg-code);
+    background: var(--editor-bg);
+    color: var(--editor-text);
     padding: 1rem;
-    border-radius: var(--radius);
+    border-radius: var(--radius-sm);
     margin-bottom: 1rem;
+    border: 1px solid var(--border);
     border-left: 4px solid var(--python-color);
 }
 
 .exercise-python-ref code {
     font-family: var(--font-mono);
-    font-size: 1.05rem;
-    color: var(--status-success);
+    font-size: 0.96rem;
+    color: var(--editor-text);
     display: block;
     margin-top: 0.5rem;
 }

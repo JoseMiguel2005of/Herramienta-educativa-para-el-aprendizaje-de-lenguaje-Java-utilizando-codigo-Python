@@ -5,11 +5,11 @@
 {% block title %}{{ lesson.title }} — {{ t.site_title }}{% endblock %}
 
 {% block styles %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/lesson.css') }}">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
       rel="stylesheet"
       integrity="sha384-wFjoQjtV1y5jVHbt0p35Ui8aV8GVpEZkyF99OXWqP/eNJDU93D3Ugxkoyh6Y2I4A"
       crossorigin="anonymous" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/lesson.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -79,12 +79,14 @@
         {% if section_mappings %}
         {% for mapping in section_mappings %}
         <div class="w3-example section-example">
-            {% if section_mappings | length > 1 %}
-            <h3>{{ t.get('example_label', 'Ejemplo') }} {{ loop.index }}</h3>
-            {% else %}
-            <h3>{{ t.get('example_label', 'Ejemplo') }}</h3>
-            {% endif %}
-            <button type="button" class="btn-diff-toggle">Ver diferencias</button>
+            <div class="example-card-top">
+                {% if section_mappings | length > 1 %}
+                <h3>{{ t.get('example_label', 'Ejemplo') }} {{ loop.index }}</h3>
+                {% else %}
+                <h3>{{ t.get('example_label', 'Ejemplo') }}</h3>
+                {% endif %}
+                <button type="button" class="btn-diff-toggle">Ver diferencias</button>
+            </div>
             <section class="code-comparison">
                 <div class="code-panel code-panel-python">
                     <div class="code-panel-header">
@@ -151,8 +153,10 @@
     {% for mapping in lesson.code_mappings %}
     {% if mapping.section not in section_titles %}
     <div class="w3-example section-example" style="margin-top: 1.5rem;">
-        <h3>{{ mapping.section or t.get('example_label', 'Ejemplo') }}</h3>
-        <button type="button" class="btn-diff-toggle">Ver diferencias</button>
+        <div class="example-card-top">
+            <h3>{{ mapping.section or t.get('example_label', 'Ejemplo') }}</h3>
+            <button type="button" class="btn-diff-toggle">Ver diferencias</button>
+        </div>
         <section class="code-comparison">
             <div class="code-panel code-panel-python">
                 <div class="code-panel-header">

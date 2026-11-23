@@ -3,6 +3,7 @@
    ============================================= */
 :root,
 body {
+    color-scheme: dark;
     /* TIPOGRAFÍA MODERNA Y LEGIBLE */
     --font-display: "Plus Jakarta Sans", "Inter", system-ui, -apple-system, sans-serif;
     --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -90,6 +91,7 @@ body {
    ============================================= */
 [data-theme="light"],
 [data-theme="light"] body {
+    color-scheme: light;
     --green: #0369A1;              /* Azul océano profundo (5.93:1 sobre #FFFFFF) */
     --green-dark: #075985;
     --green-light: rgba(3, 105, 161, 0.1);
@@ -1019,7 +1021,7 @@ body::before {
 
 [data-theme="dark"] .interactive-line:hover,
 [data-theme="dark"] .interactive-line.active {
-    background-color: rgba(4, 170, 109, 0.2);
+    background-color: rgba(56, 189, 248, 0.14);
 }
 
 .btn-copy {
@@ -1124,7 +1126,8 @@ body::before {
 }
 
 .btn-translate:hover:not(:disabled) {
-    background: linear-gradient(135deg, var(--green-dark), #027a4d);
+    background: var(--btn-primary-hover);
+    color: var(--btn-primary-text);
     transform: translateY(-1px);
     box-shadow: var(--shadow);
 }
@@ -1136,21 +1139,21 @@ body::before {
 
 @keyframes transpileGlowAnim {
     0% {
-        box-shadow: 0 0 0 rgba(255, 75, 110, 0);
-        border-color: rgba(255, 75, 110, 0.2);
+        box-shadow: 0 0 0 rgba(56, 189, 248, 0);
+        border-color: var(--border);
     }
     50% {
-        box-shadow: 0 0 25px rgba(255, 75, 110, 0.55);
-        border-color: #FF4B6E;
+        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.35);
+        border-color: var(--green);
     }
     100% {
-        box-shadow: 0 0 0 rgba(255, 75, 110, 0);
+        box-shadow: 0 0 0 rgba(56, 189, 248, 0);
         border-color: var(--border);
     }
 }
 
 .translator-panel.transpile-glow {
-    animation: transpileGlowAnim 1.2s ease-out;
+    animation: transpileGlowAnim 0.9s ease-out;
 }
 
 .code-editor {
@@ -1158,19 +1161,20 @@ body::before {
     flex: 1;
     min-height: 220px;
     padding: 1rem;
-    font-family: "JetBrains Mono", monospace;
+    font-family: var(--font-mono);
     font-size: 0.9rem;
     line-height: 1.6;
     border: none;
     resize: vertical;
-    background: var(--bg-code);
-    color: var(--text);
+    background: var(--editor-bg);
+    color: var(--editor-text);
+    color-scheme: dark;
     outline: none;
     transition: box-shadow 0.2s ease;
 }
 
 .code-editor:focus {
-    box-shadow: inset 0 0 0 2px rgba(4, 170, 109, 0.25);
+    box-shadow: inset 0 0 0 2px var(--focus-ring);
 }
 
 .translator-output {
@@ -1592,17 +1596,13 @@ body::before {
 
 .exercise-hint-box {
     margin-top: 0.75rem;
-    padding: 0.75rem 1rem;
-    background: #fffde6;
-    border-left: 4px solid #f5d442;
-    border-radius: var(--radius);
-    font-size: 0.9rem;
-    color: #795548;
-}
-
-[data-theme="dark"] .exercise-hint-box {
-    background: #2d2b1f;
-    color: #ffe082;
+    padding: 0.85rem 1.05rem;
+    background: var(--status-warning-bg);
+    border: 1px solid var(--status-warning-border);
+    border-left: 4px solid var(--status-warning);
+    border-radius: var(--radius-sm);
+    font-size: 0.92rem;
+    color: var(--text);
 }
 
 /* =============================================
@@ -2537,7 +2537,7 @@ samp,
     text-align: center;
 }
 
-/* Bloques de código siempre legibles con Prism en modo oscuro y claro */
+/* Bloques de código unificados y sin cajas grises #2d2d2d de Prism */
 .code-block,
 .code-block-interactive,
 .code-editor,
@@ -2547,15 +2547,44 @@ samp,
 .exercise-freeform-editor,
 .find-error-code,
 .tryit-textarea,
-.ast-side {
+.ast-side,
+.practice-textarea,
+.console-output {
     background: var(--editor-bg);
     color: var(--editor-text);
+    color-scheme: dark;
+}
+
+.code-block pre,
+.code-block-interactive pre,
+.code-panel pre[class*="language-"],
+.example-code-block[class*="language-"],
+pre[class*="language-"].code-block,
+pre[class*="language-"].translator-output {
+    background: transparent;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    text-shadow: none;
 }
 
 .code-block code,
 .code-block-interactive code,
-.translator-output code {
+.translator-output code,
+pre[class*="language-"] > code[class*="language-"] {
+    background: transparent;
     color: var(--editor-text);
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    line-height: 1.65;
+    text-shadow: none;
+}
+
+@media (max-width: 1180px) {
+    .code-comparison {
+        grid-template-columns: minmax(0, 1fr);
+    }
 }
 
 /* --------------------------------------------------------------------------

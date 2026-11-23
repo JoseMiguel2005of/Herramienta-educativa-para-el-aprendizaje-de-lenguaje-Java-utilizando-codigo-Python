@@ -3,11 +3,11 @@
 {% block title %}{{ example.title }} — Ejemplos — {{ t.site_title }}{% endblock %}
 
 {% block styles %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/examples-page.css') }}">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
       rel="stylesheet"
       integrity="sha384-wFjoQjtV1y5jVHbt0p35Ui8aV8GVpEZkyF99OXWqP/eNJDU93D3Ugxkoyh6Y2I4A"
       crossorigin="anonymous" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/examples-page.css') }}">
 {% endblock %}
 
 {% block content %}
