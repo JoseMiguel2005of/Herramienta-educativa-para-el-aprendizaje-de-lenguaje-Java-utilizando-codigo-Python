@@ -1,43 +1,66 @@
 {% extends "base.html" %}
 
-{% block title %}Transpilador Visual - Py2Java Edu{% endblock %}
+{% block title %}Transpilador Visual — {{ t.site_title }}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/translator.css') }}">
+{% endblock %}
 
 {% block content %}
-<div class="page-content translator-page">
-    <h1 class="translator-title" style="color: var(--green); margin-bottom: 0.5rem; display:flex; align-items:center; gap:0.75rem;">
-        <div class="neu-icon-box" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" fill="none" stroke-width="2"><path d="M5 8l6 6-6 6"></path><line x1="12" y1="18" x2="19" y2="18"></line></svg>
+<article class="translator-page">
+    <header class="telemetry-header">
+        <div>
+            <h1>Transpilador Visual</h1>
+            <p class="dash-subtitle">
+                Escribe código Python a la izquierda y observa su equivalente en Java en tiempo real. Pasa el cursor sobre el código traducido para inspeccionar equivalencias.
+            </p>
         </div>
-        Transpilador Visual
-    </h1>
-    <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 1.05rem; max-width: 800px;">
-        Escribe código Python básico en el editor. Observa cómo se convierte en Java en tiempo real.
-        <strong>Pasa el cursor sobre el código traducido</strong> para ver qué parte de Python corresponde a cada parte de Java.
-    </p>
+        <span class="status-pill status-pill--available">Python → Java en vivo</span>
+    </header>
 
-    <!-- Snippet Buttons (3.6) -->
-    <div class="snippet-bar" role="group" aria-label="Ejemplos rápidos de código" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem;">
-        <span style="color: var(--text-muted); font-size: 0.82rem; align-self: center; margin-right: 0.5rem; font-family: var(--font-mono); font-weight: 600;">&gt;_ SNIPPETS:</span>
-        <button type="button" onclick="loadSnippet('hello_world')" class="snippet-btn">Hola Mundo</button>
-        <button type="button" onclick="loadSnippet('variables')" class="snippet-btn">Variables</button>
-        <button type="button" onclick="loadSnippet('conditionals')" class="snippet-btn">Condicionales</button>
-        <button type="button" onclick="loadSnippet('for_loop')" class="snippet-btn">Bucle For</button>
-        <button type="button" onclick="loadSnippet('fibonacci')" class="snippet-btn">Fibonacci</button>
-        <button type="button" onclick="loadSnippet('calculator')" class="snippet-btn">Calculadora</button>
-        <button type="button" onclick="loadSnippet('bubble_sort')" class="snippet-btn">Ordenamiento</button>
-        <button type="button" onclick="loadSnippet('class_animal')" class="snippet-btn">Clase Animal</button>
+    <!-- Barra compacta de ejemplos y métricas -->
+    <div class="translator-toolbar">
+        <div class="snippet-controls">
+            <label for="snippet-selector" class="snippet-label">Ejemplos rápidos:</label>
+            <select id="snippet-selector" class="snippet-select" aria-label="Seleccionar ejemplo de código Python">
+                <option value="">Elegir ejemplo...</option>
+                <option value="hello_world">Hola Mundo</option>
+                <option value="variables">Variables</option>
+                <option value="conditionals">Condicionales</option>
+                <option value="for_loop">Bucle For</option>
+                <option value="fibonacci">Fibonacci</option>
+                <option value="calculator">Calculadora</option>
+                <option value="bubble_sort">Bucle anidado</option>
+                <option value="class_animal">Datos de mascota</option>
+            </select>
+
+            <div class="snippet-quick-pills" role="group" aria-label="Accesos directos a ejemplos">
+                <button type="button" onclick="loadSnippet('hello_world')" class="snippet-btn" data-snippet="hello_world" aria-pressed="false">Hola Mundo</button>
+                <button type="button" onclick="loadSnippet('variables')" class="snippet-btn" data-snippet="variables" aria-pressed="false">Variables</button>
+                <button type="button" onclick="loadSnippet('conditionals')" class="snippet-btn" data-snippet="conditionals" aria-pressed="false">Condicionales</button>
+                <button type="button" onclick="loadSnippet('for_loop')" class="snippet-btn" data-snippet="for_loop" aria-pressed="false">Bucle For</button>
+            </div>
+        </div>
+
+        <div id="transpiler-metrics" class="transpiler-metrics" aria-live="polite">
+            <!-- Actualizado por transpiler.js -->
+        </div>
     </div>
 
-    <div class="translator-workspace" style="display: flex; flex-direction: column; gap: 2rem; max-width: 1400px; margin: 0 auto;">
-
-        <!-- Input Panel -->
-        <div class="input-panel" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
-            <div class="panel-header" style="background: var(--bg-elevated); padding: 0.6rem 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.35rem 0.75rem;">
-                <span class="lang-badge python-badge">&gt;_ Entrada Python</span>
-                <span style="font-size: 0.82rem; color: var(--text-muted);">Soporta: variables, print, if/else, for, def</span>
+    <!-- Espacio de trabajo principal lado a lado arriba del pliegue -->
+    <section class="translator-split" aria-label="Editor de Python y salida Java">
+        <!-- Panel izquierdo: Python editable + vista interactiva de tokens -->
+        <div class="translator-card translator-card--python">
+            <div class="translator-card-header">
+                <span class="lang-badge python-badge">Código Python</span>
+                <div class="mode-switch" role="group" aria-label="Modo del panel de Python">
+                    <button type="button" id="btn-mode-edit" class="mode-switch-btn" aria-pressed="true">Editar</button>
+                    <button type="button" id="btn-mode-inspect" class="mode-switch-btn" aria-pressed="false">Mapa interactivo</button>
+                </div>
             </div>
+
             <label for="python-input" class="sr-only">Código fuente en Python para transpilar a Java</label>
-            <textarea id="python-input" spellcheck="false" style="width: 100%; height: 160px; background: var(--editor-bg); border: none; padding: 1rem; color: var(--editor-text); font-family: var(--font-mono); font-size: 14px; resize: vertical; box-sizing: border-box; line-height: 1.55;"># Escribe aquí tu código Python
+            <textarea id="python-input" class="translator-editor" spellcheck="false"># Escribe aquí tu código Python
 nombre = "Carlos"
 print("Hola " + nombre)
 
@@ -45,203 +68,47 @@ if True:
     print("Es verdadero")
 
 for i in range(5):
-    print(i)
-</textarea>
+    print(i)</textarea>
+
+            <div id="python-ast-output" class="ast-content" hidden aria-label="Vista interactiva de tokens de Python">
+                <!-- Generado por transpiler.js -->
+            </div>
+
+            <div class="translator-card-footer">
+                <span>Soporta: variables, <code>print</code>, <code>if</code>, <code>for range</code> y comentarios.</span>
+            </div>
         </div>
 
-        <!-- Complexity Metrics (3.8) -->
-        <div id="transpiler-metrics" class="transpiler-metrics">
-            <!-- Auto-populated by transpiler.js -->
-        </div>
-
-        <!-- Export Buttons (3.7) -->
-        <div class="export-bar" style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-            <button type="button" onclick="downloadJavaFile()" class="export-btn">
-                <svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" style="vertical-align: -2px; margin-right: 4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                Descargar .java
-            </button>
-            <button type="button" onclick="copyJavaCode()" class="export-btn">
-                <svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" style="vertical-align: -2px; margin-right: 4px;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                Copiar código Java
-            </button>
-        </div>
-
-        <!-- Output Panel (Side by Side AST) -->
-        <div class="output-panel" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-
-            <div class="ast-side python-side" style="background: var(--editor-bg); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
-                <div class="panel-header ast-panel-header">
-                    <span class="lang-badge python-badge">[AST] PYTHON</span>
-                </div>
-                <div id="python-ast-output" class="ast-content" style="padding: 1rem; font-family: var(--font-mono); font-size: 14px; white-space: pre-wrap; color: var(--editor-text); background: var(--editor-bg); min-height: 250px;">
-                    <!-- Auto-generated -->
+        <!-- Panel derecho: Java generado en tiempo real -->
+        <div class="translator-card translator-card--java">
+            <div class="translator-card-header">
+                <span class="lang-badge java-badge">Código Java generado</span>
+                <div class="translator-card-actions">
+                    <button type="button" onclick="copyJavaCode()" class="export-btn">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        Copiar Java
+                    </button>
+                    <button type="button" onclick="downloadJavaFile()" class="export-btn">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        Descargar .java
+                    </button>
                 </div>
             </div>
 
-            <div class="ast-side java-side" style="background: var(--editor-bg); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
-                <div class="panel-header ast-panel-header">
-                    <span class="lang-badge java-badge">[AST] JAVA</span>
-                </div>
-                <div id="java-ast-output" class="ast-content" style="padding: 1rem; font-family: var(--font-mono); font-size: 14px; white-space: pre-wrap; color: var(--editor-text); background: var(--editor-bg); min-height: 250px;">
-                    <!-- Auto-generated -->
-                </div>
+            <div id="java-ast-output" class="ast-content" aria-label="Código Java generado en tiempo real">
+                <!-- Generado por transpiler.js -->
             </div>
 
+            <div class="translator-card-footer">
+                <span id="translator-hover-readout" class="translator-hover-readout">
+                    Pasa el cursor sobre una línea de Java para ver su equivalente en Python.
+                </span>
+            </div>
         </div>
-    </div>
-</div>
+    </section>
+</article>
+{% endblock %}
 
-<style>
-    /* Transpiler Specific Styles (WCAG AA/AAA Semantic Tokens) */
-    .translator-page {
-        padding: 1rem;
-    }
-    .translator-title {
-        font-size: 2.25rem;
-    }
-    .ast-side {
-        min-width: 0;
-    }
-    .ast-panel-header {
-        background: var(--bg-elevated);
-        padding: 0.55rem 1rem;
-        border-bottom: 1px solid var(--border);
-    }
-    .ast-content {
-        overflow-x: auto;
-    }
-    .token-span {
-        transition: background-color 0.18s ease, outline-color 0.18s ease;
-        border-radius: 3px;
-        padding: 0 2px;
-        margin: 0 -2px;
-        cursor: crosshair;
-    }
-
-    .token-span.hovered {
-        background-color: rgba(56, 189, 248, 0.28);
-        outline: 1px solid #38BDF8;
-    }
-
-    /* Token Colors (alto contraste garantizado sobre --editor-bg #0B1120/#0F172A/#000) */
-    .token-keyword     { color: #FDA4AF; font-weight: 600; }
-    .token-string      { color: #BAE6FD; }
-    .token-number      { color: #7DD3FC; }
-    .token-variable    { color: #DDD6FE; }
-    .token-punctuation { color: #F1F5F9; }
-    .token-comment     { color: #CBD5E1; font-style: italic; }
-
-    /* Snippet Buttons (3.6) */
-    .snippet-btn {
-        background: var(--bg-secondary);
-        border: 1px solid var(--border-strong);
-        color: var(--text);
-        padding: 0.45rem 0.85rem;
-        border-radius: var(--radius-sm, 8px);
-        font-family: var(--font-mono);
-        font-size: 0.8rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease, transform 0.15s ease;
-    }
-    .snippet-btn:hover {
-        border-color: var(--green);
-        color: var(--green);
-        background: var(--green-light);
-        transform: translateY(-1px);
-    }
-
-    /* Export Buttons (3.7) */
-    .export-btn {
-        background: var(--bg-secondary);
-        border: 1px solid var(--border-strong);
-        color: var(--text);
-        padding: 0.55rem 1.2rem;
-        border-radius: var(--radius-sm, 8px);
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
-    }
-    .export-btn:hover {
-        border-color: var(--green);
-        color: var(--green);
-        background: var(--green-light);
-    }
-
-    /* Complexity Metrics (3.8) */
-    .transpiler-metrics {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 1.5rem;
-        padding: 0.85rem 1.5rem;
-        background: var(--bg-secondary);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        font-family: var(--font-mono);
-        color: var(--text);
-    }
-    .metric-item {
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-    }
-    .metric-label {
-        font-size: 0.74rem;
-        color: var(--text-muted);
-        letter-spacing: 0.05em;
-    }
-    .metric-num {
-        font-size: 1.3rem;
-        font-weight: 700;
-        color: var(--text);
-    }
-    .metric-unit {
-        font-size: 0.74rem;
-        color: var(--text-muted);
-    }
-    .metric-arrow {
-        color: var(--text-muted);
-        font-size: 1.2rem;
-    }
-    .metric-ratio {
-        padding-left: 1rem;
-        border-left: 1px solid var(--border);
-    }
-
-    @media (max-width: 900px) {
-        .output-panel {
-            grid-template-columns: 1fr !important;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .translator-page {
-            padding: 0;
-        }
-        .translator-title {
-            font-size: 1.65rem;
-        }
-        .snippet-bar {
-            justify-content: flex-start;
-        }
-        .transpiler-metrics {
-            flex-wrap: wrap;
-            gap: 0.75rem;
-            padding: 0.75rem 1rem;
-        }
-        .metric-ratio {
-            padding-left: 0;
-            border-left: none;
-            width: 100%;
-            justify-content: center;
-            padding-top: 0.5rem;
-            border-top: 1px dashed var(--border);
-        }
-    }
-</style>
-
+{% block scripts %}
 <script src="{{ url_for('static', filename='js/transpiler.js') }}"></script>
 {% endblock %}

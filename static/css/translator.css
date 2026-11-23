@@ -1,0 +1,373 @@
+/* ==========================================================================
+   TRANSPILADOR VISUAL PYTHON → JAVA (WCAG 2.1 AA / ARRIBA DEL PLIEGUE)
+   ========================================================================== */
+
+.translator-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: var(--font-body);
+    color: var(--text);
+}
+
+/* Barra superior compacta: ejemplos + métricas en una fila equilibrada */
+.translator-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+    padding: 0.85rem 1.1rem;
+    margin-bottom: 1.25rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.snippet-controls {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.snippet-label {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-right: 0.15rem;
+}
+
+.snippet-select {
+    min-height: 40px;
+    padding: 0.4rem 0.85rem;
+    border-radius: 9px;
+    border: 1px solid var(--border-strong);
+    background: var(--bg-code);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.snippet-quick-pills {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.snippet-btn {
+    min-height: 38px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.35rem 0.78rem;
+    border-radius: 999px;
+    font-family: var(--font-body);
+    font-size: 0.83rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.18s ease, color 0.18s ease, background-color 0.18s ease;
+}
+
+.snippet-btn:hover {
+    border-color: var(--green);
+    color: var(--green);
+    background: var(--green-light);
+}
+
+.snippet-btn[aria-pressed="true"] {
+    background: var(--btn-primary-bg);
+    border-color: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+}
+
+/* Métricas informativas neutras (sin rojo de error) */
+.transpiler-metrics {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    font-family: var(--font-body);
+    color: var(--text);
+}
+
+.metric-item {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35rem;
+}
+
+.metric-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.metric-num {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+}
+
+.metric-num--python {
+    color: var(--python-color);
+}
+
+.metric-num--java {
+    color: var(--java-color);
+}
+
+.metric-num--ratio {
+    color: var(--status-info);
+}
+
+.metric-unit {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+}
+
+.metric-arrow {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.metric-ratio {
+    padding-left: 0.75rem;
+    border-left: 1px solid var(--border);
+}
+
+/* Espacio de trabajo principal lado a lado (arriba del pliegue) */
+.translator-split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1.25rem;
+    align-items: stretch;
+}
+
+.translator-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    box-shadow: var(--shadow);
+}
+
+.translator-card--python {
+    border-top: 3px solid var(--python-color);
+}
+
+.translator-card--java {
+    border-top: 3px solid var(--java-color);
+}
+
+.translator-card-header {
+    background: var(--bg-elevated);
+    padding: 0.65rem 1rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.translator-card-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+}
+
+/* Selector de vista del panel izquierdo: Editar vs Mapa de tokens */
+.mode-switch {
+    display: inline-flex;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 2px;
+    gap: 2px;
+}
+
+.mode-switch-btn {
+    min-height: 34px;
+    padding: 0.25rem 0.7rem;
+    border: none;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.mode-switch-btn:hover {
+    color: var(--text);
+}
+
+.mode-switch-btn[aria-pressed="true"] {
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+}
+
+.export-btn {
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    padding: 0.35rem 0.78rem;
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.18s ease, color 0.18s ease, background-color 0.18s ease;
+}
+
+.export-btn:hover {
+    border-color: var(--green);
+    color: var(--green);
+    background: var(--green-light);
+}
+
+.translator-editor,
+.ast-content {
+    width: 100%;
+    flex: 1;
+    min-height: 320px;
+    max-height: 460px;
+    padding: 1.05rem 1.15rem;
+    background: var(--editor-bg);
+    color: var(--editor-text);
+    color-scheme: dark;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    line-height: 1.65;
+    box-sizing: border-box;
+}
+
+.translator-editor {
+    border: none;
+    resize: vertical;
+    outline: none;
+}
+
+.translator-editor:focus {
+    box-shadow: inset 0 0 0 2px var(--focus-ring);
+}
+
+.ast-content {
+    white-space: pre-wrap;
+    overflow: auto;
+}
+
+.translator-card-footer {
+    padding: 0.55rem 1rem;
+    background: var(--bg-elevated);
+    border-top: 1px solid var(--border);
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    min-height: 38px;
+}
+
+.translator-hover-readout {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--text);
+}
+
+.translator-hover-readout strong {
+    font-family: var(--font-body);
+    color: var(--green);
+    font-weight: 700;
+}
+
+/* Resaltado interactivo de tokens */
+.token-span {
+    transition: background-color 0.15s ease, outline-color 0.15s ease;
+    border-radius: 4px;
+    padding: 0 2px;
+    margin: 0 -2px;
+    cursor: pointer;
+}
+
+.token-span.hovered {
+    background-color: rgba(56, 189, 248, 0.28);
+    outline: 1px solid #38BDF8;
+}
+
+/* Colores de tokens con alto contraste sobre --editor-bg */
+.token-keyword     { color: #FDA4AF; font-weight: 600; }
+.token-string      { color: #BAE6FD; }
+.token-number      { color: #7DD3FC; }
+.token-variable    { color: #DDD6FE; }
+.token-punctuation { color: #F1F5F9; }
+.token-comment     { color: #CBD5E1; font-style: italic; }
+
+/* Notificación de copiado/descarga con tokens semánticos */
+.translator-toast {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--status-success-border);
+    color: var(--status-success);
+    padding: 0.65rem 1.1rem;
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    font-weight: 600;
+    z-index: 10005;
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    transform: translateY(-6px);
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.translator-toast.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (max-width: 900px) {
+    .translator-split {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .translator-editor,
+    .ast-content {
+        min-height: 240px;
+    }
+}
+
+@media (max-width: 640px) {
+    .translator-toolbar {
+        padding: 0.75rem 0.9rem;
+    }
+
+    .snippet-quick-pills {
+        display: none;
+    }
+
+    .metric-ratio {
+        padding-left: 0;
+        border-left: none;
+    }
+}
