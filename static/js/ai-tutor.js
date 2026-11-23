@@ -15,26 +15,28 @@
 
         const panel = document.createElement('div');
         panel.id = TUTOR_PANEL_ID;
+        panel.setAttribute('role', 'dialog');
+        panel.setAttribute('aria-label', 'Tutor IA Educativo');
         panel.innerHTML = `
             <div class="ai-tutor-header">
                 <div class="ai-tutor-title">
-                    <span class="ai-tutor-avatar">
+                    <span class="ai-tutor-avatar" aria-hidden="true">
                         <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2">
                             <rect x="3" y="11" width="18" height="10" rx="2"></rect>
                             <circle cx="12" cy="5" r="2"></circle>
                             <path d="M12 7v4"></path>
                         </svg>
                     </span>
-                    <span>TUTOR IA EDUCATIVO</span>
+                    <span>Tutor IA Educativo</span>
                 </div>
                 <div class="ai-tutor-header-controls">
-                    <button class="ai-tutor-ctrl-btn" id="ai-tutor-expand" title="Expandir / Reducir tamaño">⛶</button>
-                    <button class="ai-tutor-ctrl-btn" id="ai-tutor-close" title="Cerrar">✕</button>
+                    <button type="button" class="ai-tutor-ctrl-btn" id="ai-tutor-expand" title="Expandir o reducir panel" aria-label="Expandir o reducir panel">⛶</button>
+                    <button type="button" class="ai-tutor-ctrl-btn" id="ai-tutor-close" title="Cerrar Tutor IA" aria-label="Cerrar Tutor IA">✕</button>
                 </div>
             </div>
             <div class="ai-tutor-messages" id="ai-tutor-messages">
                 <div class="ai-msg ai-msg-bot">
-                    <span class="ai-msg-avatar">
+                    <span class="ai-msg-avatar" aria-hidden="true">
                         <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2">
                             <rect x="3" y="11" width="18" height="10" rx="2"></rect>
                             <circle cx="12" cy="5" r="2"></circle>
@@ -52,14 +54,15 @@
                 </div>
             </div>
             <div class="ai-tutor-input-area">
+                <label for="ai-tutor-input" class="sr-only">Escribe tu pregunta al Tutor IA</label>
                 <input type="text" id="ai-tutor-input" class="ai-tutor-input" 
                        placeholder="Escribe tu duda sobre Python o Java..." autocomplete="off">
-                <button id="ai-tutor-send" class="ai-tutor-send" title="Enviar pregunta">
-                    <span id="ai-tutor-send-icon"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></span>
+                <button type="button" id="ai-tutor-send" class="ai-tutor-send" title="Enviar pregunta" aria-label="Enviar pregunta">
+                    <span id="ai-tutor-send-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" fill="none" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></span>
                 </button>
             </div>
             <div class="ai-tutor-actions">
-                <button id="ai-btn-analyze" class="ai-action-btn">Analizar Código del Editor</button>
+                <button type="button" id="ai-btn-analyze" class="ai-action-btn">Analizar código del editor</button>
             </div>
         `;
 
@@ -86,31 +89,57 @@
         }
     }
 
-    // ===== Create the floating toggle button =====
-    function createToggleButton() {
-        const btn = document.createElement('button');
-        btn.id = 'ai-tutor-toggle';
-        btn.className = 'ai-tutor-toggle';
-        btn.innerHTML = '<svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" fill="none" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path></svg>';
-        btn.title = 'Abrir Tutor IA';
-        btn.addEventListener('click', toggleTutor);
-        document.body.appendChild(btn);
+    function syncNavTriggerState(isOpen) {
+        const navBtn = document.getElementById('btn-ai-tutor-nav');
+        if (navBtn) {
+            navBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            navBtn.classList.toggle('nav-active-item', isOpen);
+        }
+    }
+
+    // ===== Wire sidebar Tutor IA trigger (sin FAB flotante que tape botones) =====
+    function wireNavToggleButton() {
+        const navBtn = document.getElementById('btn-ai-tutor-nav');
+        if (navBtn) {
+            navBtn.addEventListener('click', () => {
+                const sb = document.getElementById('main-sidebar');
+                const ov = document.getElementById('mobile-overlay');
+                const mt = document.getElementById('mobile-menu-toggle');
+                if (window.innerWidth <= 900 && sb && sb.classList.contains('active')) {
+                    sb.classList.remove('active');
+                    if (ov) ov.style.display = 'none';
+                    if (mt) mt.setAttribute('aria-expanded', 'false');
+                }
+                toggleTutor();
+            });
+        }
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && tutorPanel && tutorPanel.classList.contains('open')) {
+                e.preventDefault();
+                closeTutor();
+            }
+        });
     }
 
     // ===== Toggle / Open / Close =====
     function toggleTutor() {
         if (!tutorPanel) createTutorPanel();
-        tutorPanel.classList.toggle('open');
-        if (tutorPanel.classList.contains('open')) {
+        const opening = !tutorPanel.classList.contains('open');
+        tutorPanel.classList.toggle('open', opening);
+        syncNavTriggerState(opening);
+        if (opening) {
             setTimeout(() => {
                 const input = document.getElementById('ai-tutor-input');
                 if (input) input.focus();
-            }, 200);
+            }, 120);
         }
     }
 
     function closeTutor() {
-        if (tutorPanel) tutorPanel.classList.remove('open');
+        if (tutorPanel) {
+            tutorPanel.classList.remove('open');
+            syncNavTriggerState(false);
+        }
     }
 
     function toggleExpandTutor() {
@@ -464,7 +493,7 @@
 
     // ===== Init on DOM load =====
     document.addEventListener('DOMContentLoaded', () => {
-        createToggleButton();
+        wireNavToggleButton();
         injectHintButtons();
     });
 
